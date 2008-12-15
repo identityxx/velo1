@@ -20,6 +20,8 @@ package velo.ejb.seam;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.framework.EntityQuery;
@@ -63,15 +65,15 @@ public class GatewayList extends EntityQuery {
 		return gateway;
 	}
 
-	@Override
-	public List<String> getRestrictions() {
-		return Arrays.asList(RESTRICTIONS);
-	}
-
-	
 	
 	@Factory("gatewayTypes")
 	public GatewayType[] getGatewayTypes() {
 		return GatewayType.values();
 	}
+	
+	@PostConstruct
+    public void initialize() {
+    	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
+    	setEjbql(getEjbql());
+    }
 }
