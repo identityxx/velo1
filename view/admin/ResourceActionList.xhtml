@@ -1,0 +1,143 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <!-- 
+    <h:form id="resourceActionSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Resource Action Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Display Name</ui:define>
+                <h:inputText id="displayName" value="{resourceActionList.resourceAction.displayName}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Description</ui:define>
+                <h:inputText id="description" value="{resourceActionList.resourceAction.description}"/>
+            </s:decorate>
+
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/ResourceActionList.xhtml"/>
+        </div>
+        
+    </h:form>
+     -->
+     
+     
+     
+    <rich:panel>
+        <f:facet name="header">Resource Action Search Results</f:facet>
+    <div class="results" id="resourceActionList">
+
+    <h:outputText value="No resource action exists" 
+               rendered="#{empty resourceActionList.resultList}"/>
+               
+    <rich:dataTable id="resourceActionList" 
+                var="resourceAction"
+              value="#{resourceActionList.resultList}" 
+           rendered="#{not empty resourceActionList.resultList}">
+		<h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Resource #{resourceActionList.order=='resource.displayName asc' ? messages.down : ( resourceActionList.order=='resource.displayName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{resourceActionList.order=='resource.displayName asc' ? 'resource.displayName desc' : 'resource.displayName asc'}"/>
+                </s:link>
+            </f:facet>
+            #{resourceAction.resource.displayName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Operation Name #{resourceActionList.order=='resourceTypeOperation.resourceGlobalOperation.displayName asc' ? messages.down : ( resourceActionList.order=='resourceTypeOperation.resourceGlobalOperation.name desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{resourceActionList.order=='resourceTypeOperation.resourceGlobalOperation.displayname asc' ? 'resourceTypeOperation.resourceGlobalOperation.name desc' : 'resourceTypeOperation.resourceGlobalOperation.name asc'}"/>
+                </s:link>
+            </f:facet>
+            #{resourceAction.resourceTypeOperation.displayName}
+        </h:column>
+        
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Phase #{resourceActionList.order=='invokePhase asc' ? messages.down : ( resourceActionList.order=='invokePhase desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{resourceActionList.order=='invokePhase asc' ? 'invokePhase desc' : 'invokePhase asc'}"/>
+                </s:link>
+            </f:facet>
+            #{resourceAction.invokePhase}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/admin/#{empty from ? 'ResourceAction' : from}.xhtml" 
+                   value="Select" 
+                      id="resourceAction">
+                <f:param name="actionDefinitionId" value="#{resourceAction.actionDefinitionId}"/>
+                <f:param name="resourceId" value="#{resourceAction.resource.resourceId}"/>
+            </s:link>
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <s:link view="/admin/ResourceActionList.xhtml" 
+            rendered="#{resourceActionList.previousExists}" 
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+        
+        <s:link view="/admin/ResourceActionList.xhtml" 
+            rendered="#{resourceActionList.previousExists}" 
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult" 
+                    value="#{resourceActionList.previousFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/ResourceActionList.xhtml" 
+            rendered="#{resourceActionList.nextExists}" 
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult" 
+                    value="#{resourceActionList.nextFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/ResourceActionList.xhtml" 
+            rendered="#{resourceActionList.nextExists}" 
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult" 
+                    value="#{resourceActionList.lastFirstResult}"/>
+        </s:link>
+        
+    </div>
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/admin/ResourceActionEdit.xhtml"
+                    id="create" 
+                 value="Create resource action"
+                 rendered="false">
+            <f:param name="actionDefinitionId"/>
+        </s:button>
+    </s:div>
+    
+</ui:define>
+
+</ui:composition>
+

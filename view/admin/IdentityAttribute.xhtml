@@ -1,0 +1,134 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">IdentityAttribute</f:facet>
+
+		<s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Unique Name</ui:define>
+            #{identityAttributeHome.instance.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{identityAttributeHome.instance.displayName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{identityAttributeHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="identityAttributesGroup" template="layout/display.xhtml">
+            <ui:define name="label">Identity Attributes Group</ui:define>
+            #{identityAttributeHome.instance.identityAttributesGroup.name}
+        </s:decorate>
+        
+        <s:decorate id="displayPriority" template="layout/display.xhtml">
+            <ui:define name="label">Display Priority</ui:define>
+            #{identityAttributeHome.instance.displayPriority}
+        </s:decorate>
+        
+        <s:decorate id="minLength" template="layout/display.xhtml">
+            <ui:define name="label">Minimum Length</ui:define>
+            #{identityAttributeHome.instance.minLength}
+        </s:decorate>
+        
+        <s:decorate id="maxLength" template="layout/display.xhtml">
+            <ui:define name="label">Maximum Length</ui:define>
+            #{identityAttributeHome.instance.maxLength}
+        </s:decorate>
+        
+        <s:decorate id="minimumValues" template="layout/display.xhtml">
+            <ui:define name="label">Minimum Values</ui:define>
+            #{identityAttributeHome.instance.minValues}
+        </s:decorate>
+        
+        <s:decorate id="maximumValues" template="layout/display.xhtml">
+            <ui:define name="label">Maximum Values</ui:define>
+            #{identityAttributeHome.instance.maxValues}
+        </s:decorate>
+        
+        <s:decorate id="dataType" template="layout/display.xhtml">
+            <ui:define name="label">Data Type</ui:define>
+            #{identityAttributeHome.instance.dataType}
+        </s:decorate>
+        
+        <s:decorate id="regexpValidationValue" template="layout/display.xhtml">
+            <ui:define name="label">Regular Expression</ui:define>
+            #{identityAttributeHome.instance.regexpValidationString}
+        </s:decorate>
+        
+        <s:decorate id="required" template="layout/display.xhtml">
+            <ui:define name="label">Required?</ui:define>
+            <h:outputText value="Yes" rendered="#{identityAttributeHome.instance.required}" />
+			<h:outputText value="No" rendered="#{!identityAttributeHome.instance.required}" />
+        </s:decorate>
+        
+        <s:decorate id="visibleInRequest" template="layout/display.xhtml">
+            <ui:define name="label">Visible in Request?</ui:define>
+            <h:outputText value="Yes" rendered="#{identityAttributeHome.instance.visibleInRequest}" />
+			<h:outputText value="No" rendered="#{!identityAttributeHome.instance.visibleInRequest}" />
+        </s:decorate>
+        
+        <s:decorate id="requiredInRequest" template="layout/display.xhtml">
+            <ui:define name="label">Required in Request?</ui:define>
+            <h:outputText value="Yes" rendered="#{identityAttributeHome.instance.requiredInRequest}" />
+			<h:outputText value="No" rendered="#{!identityAttributeHome.instance.requiredInRequest}" />
+        </s:decorate>
+        
+        <s:decorate id="visibleInUserList" template="layout/display.xhtml">
+            <ui:define name="label">Visible in User List?</ui:define>
+            <h:outputText value="Yes" rendered="#{identityAttributeHome.instance.visibleInUserList}" />
+			<h:outputText value="No" rendered="#{!identityAttributeHome.instance.visibleInUserList}" />
+        </s:decorate>
+        
+        <s:decorate id="synchronized" template="layout/display.xhtml">
+            <ui:define name="label">Synchronized?</ui:define>
+            <h:outputText value="Yes" rendered="#{identityAttributeHome.instance.synchronize}" />
+			<h:outputText value="No" rendered="#{!identityAttributeHome.instance.synchronize}" />
+        </s:decorate>
+        
+        <s:decorate id="manager" template="layout/display.xhtml">
+            <ui:define name="label">Represents as a manager?</ui:define>
+            <h:outputText value="Yes" rendered="#{identityAttributeHome.instance.manager}" />
+            <h:outputText value="No" rendered="#{!identityAttributeHome.instance.manager}" />
+        </s:decorate>
+        
+        <s:decorate id="identifier" template="layout/display.xhtml">
+            <ui:define name="label">Represents as an Identifier?</ui:define>
+            <h:outputText value="Yes" rendered="#{identityAttributeHome.instance.identifier}" />
+            <h:outputText value="No" rendered="#{!identityAttributeHome.instance.identifier}" />
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/IdentityAttributeEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty identityAttributeFrom ? 'IdentityAttributeList' : identityAttributeFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+    </div>
+
+</ui:define>
+
+</ui:composition>

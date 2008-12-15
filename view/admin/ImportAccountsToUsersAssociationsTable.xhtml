@@ -1,0 +1,54 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="identityAttributeSearch" styleClass="edit">
+    	<rich:spacer height="20" />
+		<rich:datascroller  for="importAccountsToUsersDataTableList" maxPages="20" rendered="#{not empty importActions.importAccountsToUsersList}"/>
+		<rich:spacer height="20" />
+                                
+    	<rich:dataTable id="importAccountsToUsersDataTableList" width="100%" rows="10" value="#{importActions.importAccountsToUsersList}" var="atu" rendered="#{not empty importActions.importAccountsToUsersList}">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<h:column><h:outputText styleClass="headerText" value="User Name" /></h:column>
+					<h:column><h:outputText styleClass="headerText" value="Account Name" /></h:column>
+					<h:column><h:outputText styleClass="headerText" value="Target System Name" /></h:column>
+				</rich:columnGroup>
+			</f:facet>
+			<h:column><h:outputText value="#{atu.userName}" /></h:column>
+			<h:column><h:outputText value="#{atu.accountName}"/></h:column>
+			<h:column><h:outputText value="#{atu.resourceName}" /></h:column>
+		</rich:dataTable>
+		
+    </h:form>
+    
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button id="cancel"
+			value="Cancel" propagation="end"
+			view="/admin/Home.xhtml"
+		/>
+				
+        <s:button action="#{importActions.performImportAccountsToUsers}"
+                    id="associate" 
+                 value="Perform Associations"
+                 rendered="true">
+        </s:button>
+    </s:div>
+    
+</ui:define>
+
+</ui:composition>
+

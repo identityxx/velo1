@@ -1,0 +1,84 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    <h:messages globalOnly="false" styleClass="message" id="globalMessagesz" />
+    
+    <h:form id="identityAttributeSources" styleClass="edit">
+    <rich:panel>
+        <f:facet name="header">IdentityAttribute Sources for '#{identityAttributeHome.instance.displayName}'</f:facet>
+    
+    <a:outputPanel id="identityAttributeSourcesPanel">
+        <div class="results" id="identityAttributeList">
+        <h:outputText value="No identity attribute source exists" 
+               rendered="#{empty identityAttributeHome.instance.sources}"/>
+               
+    <rich:dataTable id="identityAttributeSourceDT" 
+                var="ias"
+              value="#{velo:setAsList(identityAttributeHome.instance.sources)}" 
+           rendered="#{not empty identityAttributeHome.instance.sources}">
+        <h:column>
+            <f:facet name="header">
+                <h:outputText value="Source Type"/>
+            </f:facet>
+            #{ias.displayableType}
+        </h:column>   
+		<h:column>
+            <f:facet name="header">
+                <h:outputText value="Description"/>
+            </f:facet>
+            <h:inputText value="#{ias.description}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <h:outputText value="Sequence"/>
+            </f:facet>
+            <h:inputText value="#{ias.sequence}" size="2"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <h:outputText value="Resource Attribute"/>
+            </f:facet>
+            
+            <h:selectOneMenu id="resourceAttribute" value="#{ias.resourceAttribute}" required="true" rendered="#{ias.type eq 'RESOURCE_ATTRIBUTE'}">
+                <s:selectItems value="#{guiResourceAttributes}" var="ra" label="#{ra.displayName} (#{ra.resource.displayName})" noSelectionLabel="---Select---" />
+                <s:convertEntity/>
+            </h:selectOneMenu>
+            <h:outputText value="[irrelevant]" rendered="#{!ias.type eq 'RESOURCE_ATTRIBUTE'}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+        </h:column>
+    </rich:dataTable>
+    </div>
+    </a:outputPanel>
+    </rich:panel>
+
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <a:commandButton value="Add Resource Attribute Source" action="#{identityAttributeHome.instance.factoryNewResourceAttributeSource}" reRender="identityAttributeSourcesPanel" ajaxSingle="true"/>
+        
+        <h:commandButton id="update" value="Save" action="#{identityAttributeHome.updateInstanceSources}" rendered="#{identityAttributeHome.managed}" />
+        
+        <s:button view="/admin/#{empty identityAttributeFrom ? 'IdentityAttributeList' : identityAttributeFrom}.xhtml"
+            id="done"
+            value="Done"/>
+    </s:div>
+    </h:form>
+    
+</ui:define>
+
+</ui:composition>
+

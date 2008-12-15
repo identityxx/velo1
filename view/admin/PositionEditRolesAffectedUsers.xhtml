@@ -1,0 +1,61 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:sb="http://myfaces.apache.org/sandbox"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="affectedUsersForm">
+    <rich:panel>
+        <f:facet name="header">Affected Users </f:facet>
+    <div class="results" id="affectedUsersList">
+
+   	<h:outputText value="No affected users found" 
+               rendered="#{empty positionHome.instance.users}"/>		
+  
+  
+    <rich:dataTable id="affectedUserList" 
+                var="currUser"
+              value="#{velo:setAsList(positionHome.instance.users)}" 
+           rendered="#{not empty positionHome.instance.users}">
+           <h:column>
+                <f:facet name="header">
+                    <h:outputText value="User Name"/>
+                </f:facet>
+                #{currUser.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Full Name"/>
+                </f:facet>
+                #{currUser.fullName}
+            </h:column>
+    </rich:dataTable>
+  
+    </div>
+    </rich:panel>
+    
+    <div class="actionButtons">
+        <s:button id="perform"
+            value="Perform modifications!" action="#{positionActions.showTasksOfModifyRolesInPosition}" propagation="end" view="/admin/Position.xhtml"/>
+        <s:button id="cancel"
+                value="Cancel" propagation="end"
+                view="/admin/Position.xhtml"/>   
+    </div>
+    
+    </h:form>
+    
+</ui:define>
+
+</ui:composition>

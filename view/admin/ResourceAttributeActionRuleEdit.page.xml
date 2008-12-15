@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd"
+      no-conversation-view-id="/admin/Home.xhtml"
+      login-required="true">
+   
+   <begin-conversation join="true"/>
+   
+   <action execute="#{resourceAttributeActionRuleHome.wire}"/>
+   
+   <param name="resourceAttributeActionRuleFrom"/>
+   <param name="resourceAttributeActionRuleId" value="#{resourceAttributeActionRuleHome.actionDefinitionId}"/>
+
+	<!-- Wire the resourceAttribute to resourceAttributeHome so it can be accessed when persisting the action rule -->
+	<param name="resourceAttributeId" value="#{resourceAttributeHome.resourceAttributeId}"/>
+
+
+   <navigation from-action="#{resourceAttributeActionRuleHome.persist}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceAttributeActionRule.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{resourceAttributeActionRuleHome.update}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceAttributeActionRule.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{resourceAttributeActionRuleHome.remove}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceAttributeActionRuleList.xhtml"/>
+   </navigation>
+   
+</page>

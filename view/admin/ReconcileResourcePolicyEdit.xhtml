@@ -1,0 +1,175 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="reconcileResourcePolicy" styleClass="edit">
+
+			<rich:panel>
+				<rich:panel>
+				<f:facet name="header">General Details</f:facet>
+
+				<s:decorate id="nameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Name</ui:define>
+					<h:inputText id="name" required="true" size="50" maxlength="50"
+						value="#{reconcileResourcePolicyHome.instance.name}">
+						<a:support event="onblur" reRender="nameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				<div style="clear: both"/>
+				</rich:panel>
+				
+				
+				<rich:panel>
+					<f:facet name="header">Reconcile Operations</f:facet>
+					<s:decorate id="reconcileAccountsDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Reconcile Accounts?</ui:define>
+						<h:selectBooleanCheckbox id="reconcileAccounts" value="#{reconcileResourcePolicyHome.instance.reconcileAccounts}"/>
+					</s:decorate>
+					<s:decorate id="reconcileGroupsDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Reconcile Groups?</ui:define>
+						<h:selectBooleanCheckbox id="reconcileGroups" value="#{reconcileResourcePolicyHome.instance.reconcileGroups}"/>
+					</s:decorate>
+					<s:decorate id="reconcileGroupMembershipDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Reconcile Group Membership?</ui:define>
+						<h:selectBooleanCheckbox id="reconcileGroupMembership" value="#{reconcileResourcePolicyHome.instance.reconcileGroupMembership}"/>
+					</s:decorate>
+					
+					<div style="clear: both"/>
+				</rich:panel>
+				
+				<rich:panel>
+				<f:facet name="header">Events Policy</f:facet>
+				<s:decorate id="confirmedAccountEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Confirm Account Event Action</ui:define>
+					<h:selectOneMenu id="confirmedAccountEvent" value="#{reconcileResourcePolicyHome.instance.confirmedAccountEventAction}">
+						<f:selectItem itemValue="NOTHING" itemLabel="Do Nothing"/>
+						<f:selectItem itemValue="SYNC_ACCOUNT_ATTRIBUTES" itemLabel="Synchronize Account Attributes"/>
+					</h:selectOneMenu> 
+				</s:decorate>
+				
+				<s:decorate id="deletedAccountEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Deleted Account Event Action</ui:define>
+					<h:selectOneMenu id="deleteAccountEventAction" value="#{reconcileResourcePolicyHome.instance.deletedAccountEventAction}">
+						<f:selectItem itemValue="NOTHING" itemLabel="Do Nothing"/>
+						<f:selectItem itemValue="REMOVE_ACCOUNT_FROM_IDM_REPOSITORY" itemLabel="Remove account from IDM repository"/>
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="unasignedAccountEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unasigned Account Event Action</ui:define>
+					<h:selectOneMenu id="unasignedAccountEventAction" value="#{reconcileResourcePolicyHome.instance.unasignedAccountEventAction}">
+						<f:selectItem itemValue="CREATE_ACCOUNT_IN_REPOSITORY_AND_ASSIGN_ACCOUNT_TO_MATCHED_USER" itemLabel="Create Account and Assign Account to Matched User"/>
+						<f:selectItem itemValue="CREATE_ACCOUNT_IN_REPOSITORY_WITHOUT_ASSIGN_ACCOUNT_TO_MATCHED_USER" itemLabel="Create Account Without Assigning Account to Matched User"/>
+					</h:selectOneMenu> 
+				</s:decorate>
+				
+				<s:decorate id="unmatchedAccountEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unmatched Account Event Action</ui:define>
+					<h:selectOneMenu id="unmatchedAccountEventAction" value="#{reconcileResourcePolicyHome.instance.unmatchedAccountEventAction}">
+						<f:selectItem itemValue="NOTHING" itemLabel="Do Nothing"/>
+						<f:selectItem itemValue="CREATE_NEW_USER_BASED_ON_RESOURCE_ACCOUNT" itemLabel="Create new User based on Resource Account"/>
+						<f:selectItem itemValue="CREATE_ACCOUNT_IN_REPOSITORY" itemLabel="Add account to repository without Linking to User"/>
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="confirmedAccountAttributeEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Confirmed Account Attribute Event Action</ui:define>
+					<h:selectOneMenu id="confirmedAccountAttributeEventAction" value="#{reconcileResourcePolicyHome.instance.confirmedAccountAttributeEventAction}">
+						<f:selectItem itemValue="NOTHING" itemLabel="Do Nothing"/>
+						<f:selectItem itemValue="CREATE_NEW_USER_BASED_ON_RESOURCE_ACCOUNT" itemLabel="Create new User based on Resource Account"/>
+						<f:selectItem itemValue="CREATE_ACCOUNT_IN_REPOSITORY" itemLabel="Add account to repository without Linking to User"/>
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				
+				<s:decorate id="unmatchedAccountAttributeEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unmatched Account Attribute Event Action</ui:define>
+					<h:selectOneMenu id="unmatchedAccountAttributeEventAction" value="#{reconcileResourcePolicyHome.instance.unmatchedAccountAttributeEventAction}">
+						<f:selectItem itemValue="NOTHING" itemLabel="Do Nothing"/>
+						<f:selectItem itemValue="UPDATE_ATTRIBUTE_VALUE_ON_RESOURCE" itemLabel="Override Attribute Value on Resource"/>
+					</h:selectOneMenu>
+				</s:decorate>
+				<div style="clear: both"/>
+				</rich:panel>
+				
+				
+				<rich:panel>
+				<f:facet name="header">Correlation Details</f:facet>
+				<s:decorate id="activateCorrelationRuleDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Activate Correlation Rule?</ui:define>
+					<h:selectBooleanCheckbox id="activateCorrelationRule" value="#{reconcileResourcePolicyHome.instance.activateCorrelationRule}"/>
+				</s:decorate>
+				
+				<s:decorate id="contextCorrelationRuleDecoration" template="layout/edit.xhtml" rendered="false">
+					<ui:define name="label">Context Creation Rule</ui:define>
+					<h:selectBooleanCheckbox id="activateCorrelationRulea" value="#{reconcileResourcePolicyHome.instance.activateCorrelationRule}"/>
+				</s:decorate>
+				
+				
+				<s:decorate id="autoCorrelateAccountIfMatchedToUserDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Auto Correlate account if matched to user?</ui:define>
+					<h:selectBooleanCheckbox id="autoCorrelateAccountIfMatchedToUser" value="#{reconcileResourcePolicyHome.instance.autoCorrelateAccountIfMatchedToUser}"/>
+				</s:decorate>
+				
+				
+				
+				<div style="clear: both"/>
+				</rich:panel>
+				
+				<rich:panel>
+				<f:facet name="header">Reconcile Groups Policies</f:facet>
+				<s:decorate id="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroupDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Reconcile Processes Number Group Keeps Being Deleted Before Remove Group</ui:define>
+					<h:inputText id="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup" required="true" size="4" maxlength="4"
+						value="#{reconcileResourcePolicyHome.instance.reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup}">
+						<a:support event="onblur" reRender="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroupDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<s:decorate id="deleteGroupAfterReconcileProcessesNumberExceededDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Delete group after Reconcile Processes number exceeded?</ui:define>
+					<h:selectBooleanCheckbox id="deleteGroupAfterReconcileProcessesNumberExceeded" value="#{reconcileResourcePolicyHome.instance.deleteGroupAfterReconcileProcessesNumberExceeded}"/>
+				</s:decorate>
+				
+				<div style="clear: both"/>
+				</rich:panel>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{reconcileResourcePolicyHome.persist}"
+				disabled="#{!reconcileResourcePolicyHome.wired}"
+				rendered="#{!reconcileResourcePolicyHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{reconcileResourcePolicyHome.update}"
+				rendered="#{reconcileResourcePolicyHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{reconcileResourcePolicyHome.remove}"
+				rendered="#{reconcileResourcePolicyHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ReconcileResourcePolicy.xhtml"
+				rendered="#{reconcileResourcePolicyHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty reconcileResourcePolicyFrom ? 'ReconcileResourcePolicyList' : reconcileResourcePolicyFrom}.xhtml"
+				rendered="#{!reconcileResourcePolicyHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

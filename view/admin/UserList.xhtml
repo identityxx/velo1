@@ -1,0 +1,191 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="userSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="User Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">User Name</ui:define>
+                <h:inputText id="userName" value="#{userList.userName}"/>
+                <rich:suggestionbox id="suggestionBoxId" for="userName" tokens=""
+                    rules="none"
+                    suggestionAction="#{userList.userSearchByNameAutoComplete}" var="user"
+                    fetchValue="#{user.name}" rows="0"
+                    first="0"
+                    minChars="2"
+                    shadowOpacity="1"
+                    border="1" width="200"
+                    height="150"
+                    shadowDepth="1"
+                    cellpadding="2">
+                <h:column>
+                    <s:link view="/admin/#{empty from ? 'UserManage' : from}.xhtml" action="#{userManageActions.manageUser}" 
+                        value="#{user.name}" 
+                        id="user">
+                        <f:param name="userId" value="#{user.userId}"/>
+                    </s:link>
+                </h:column>
+                </rich:suggestionbox>
+            </s:decorate>
+            
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">First Name</ui:define>
+                <h:inputText id="firstName" value="#{userList.firstName}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Last Name</ui:define>
+                <h:inputText id="lastName" value="#{userList.lastName}"/>
+            </s:decorate>
+            
+            <div style="clear: both"/>
+
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/UserList.xhtml"/>
+            
+            <s:button id="createUserManually" value="Create User" action="/admin/UserCreateManuallyAttributes.xhtml" propagation="begin"/>
+        </div>
+        
+    </h:form>
+    
+    <rich:panel>
+        <f:facet name="header">User Search Results</f:facet>
+    <div class="results" id="userList">
+
+    <h:outputText value="No user exists" 
+               rendered="#{empty userList.resultList}"/>
+               
+    <rich:dataTable id="userList" 
+                var="user"
+              value="#{userList.resultList}" 
+           rendered="#{not empty userList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="User Name #{userList.order=='name asc' ? messages.down : ( userList.order=='name desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{userList.order=='name asc' ? 'name desc' : 'name asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'UserManage' : from}.xhtml" action="#{userManageActions.manageUser}" value="#{user.name}">
+            	<f:param name="userId" value="#{user.userId}"/>
+            </s:link>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                First Name
+            </f:facet>
+            
+            #{user.firstName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                Last Name
+            </f:facet>
+            
+            #{user.lastName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="User Container #{userList.order=='userContainer.displayName asc' ? messages.down : ( userList.order=='userContainer.displayName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{userList.order=='userContainer.displayName asc' ? 'userContainer.displayName desc' : 'userContainer.displayName asc'}"/>
+                </s:link>
+            </f:facet>
+
+            <s:link view="/admin/#{empty from ? 'UserContainer' : from}.xhtml" 
+                   value="#{user.userContainer.displayName}" 
+                      id="userContainer">
+                <f:param name="userContainerId" 
+                        value="#{user.userContainer.userContainerId}"/>
+            </s:link>
+            &#160;
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Disabled? #{userList.order=='disabled asc' ? messages.down : ( userList.order=='disabled desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{userList.order=='disabled asc' ? 'disabled desc' : 'disabled asc'}"/>
+                </s:link>
+            </f:facet>
+            #{user.disabled}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Locked? #{userList.order=='locked asc' ? messages.down : ( userList.order=='locked desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{userList.order=='locked asc' ? 'locked desc' : 'locked asc'}"/>
+                </s:link>
+            </f:facet>
+            #{user.locked}
+        </h:column>
+        <h:column>
+            <f:facet name="header">action</f:facet>
+            <s:link view="/admin/#{empty from ? 'UserManage' : from}.xhtml" action="#{userManageActions.manageUser}" 
+                   value="Manage" 
+                      id="user">
+                <f:param name="userId" 
+                        value="#{user.userId}"/>
+            </s:link>
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <s:link view="/admin/UserList.xhtml" 
+            rendered="#{userList.previousExists}" 
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+        
+        <s:link view="/admin/UserList.xhtml" 
+            rendered="#{userList.previousExists}" 
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult" 
+                    value="#{userList.previousFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/UserList.xhtml" 
+            rendered="#{userList.nextExists}" 
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult" 
+                    value="#{userList.nextFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/UserList.xhtml" 
+            rendered="#{userList.nextExists}" 
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult" 
+                    value="#{userList.lastFirstResult}"/>
+        </s:link>
+        
+    </div>
+    
+</ui:define>
+
+</ui:composition>
+

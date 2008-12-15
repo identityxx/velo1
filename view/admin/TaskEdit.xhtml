@@ -1,0 +1,82 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="task" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Edit Task</f:facet>
+
+				<s:decorate id="id" template="layout/display.xhtml">
+            		<ui:define name="label">ID</ui:define>
+            		#{taskHome.instance.taskId}
+        		</s:decorate>
+        		
+        		<s:decorate id="statusDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Status</ui:define>
+					<h:selectOneMenu id="status"
+						value="#{taskHome.instance.status}" required="true">
+						<s:selectItems value="#{taskStatuses}" var="s"
+							label="#{s}" />
+						<s:convertEnum />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{taskHome.instance.description}" />
+				</s:decorate>
+				
+				<s:decorate id="failureCountsDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Failure Counts</ui:define>
+					<h:inputText id="failureCounts" required="true" size="3" maxlength="3"
+						value="#{taskHome.instance.failureCounts}">
+						<a:support event="onblur" reRender="failureCountsDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="bodyDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Body</ui:define>
+					<h:inputTextarea id="description" cols="130" rows="40"
+						required="false" value="#{taskHome.instance.body}" />
+				</s:decorate>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{taskHome.persist}"
+				disabled="#{!taskHome.wired}"
+				rendered="#{!taskHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{taskHome.update}"
+				rendered="#{taskHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{taskHome.remove}"
+				rendered="#{taskHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/Task.xhtml"
+				rendered="#{taskHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty taskFrom ? 'TaskList' : taskFrom}.xhtml"
+				rendered="#{!taskHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,84 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceAdmin" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Edit Resource Admin</f:facet>
+
+				<s:decorate id="resourceDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Resource</ui:define>
+					<h:selectOneMenu id="resource"
+						value="#{resourceAdminHome.instance.resource}" required="true">
+						<s:selectItems value="#{guiResources}" var="ts"
+							label="#{ts.displayName}" noSelectionLabel="---Select---" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="userNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">User Name</ui:define>
+					<h:inputText id="userName" required="true" size="50" maxlength="50"
+						value="#{resourceAdminHome.instance.userName}">
+						<a:support event="onblur" reRender="userNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="priorityDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Priority</ui:define>
+					<h:inputText id="priority" required="true" size="50" maxlength="50"
+						value="#{resourceAdminHome.instance.priority}">
+						<a:support event="onblur" reRender="priorityDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="passwordDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Password</ui:define>
+					<h:inputSecret id="password" required="true" size="50" maxlength="50"
+						value="#{resourceAdminHome.instance.password}">
+						<a:support event="onblur" reRender="passwordDecoration"
+							bypassUpdates="true" />
+					</h:inputSecret>
+				</s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{resourceAdminHome.persist}"
+				disabled="#{!resourceAdminHome.wired}"
+				rendered="#{!resourceAdminHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{resourceAdminHome.update}"
+				rendered="#{resourceAdminHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{resourceAdminHome.remove}"
+				rendered="#{resourceAdminHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ResourceAdmin.xhtml"
+				rendered="#{resourceAdminHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceAdminFrom ? 'ResourceAdminList' : resourceAdminFrom}.xhtml"
+				rendered="#{!resourceAdminHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

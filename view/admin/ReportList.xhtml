@@ -1,0 +1,93 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+    xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+    template="layout/template.xhtml">
+
+    <ui:define name="body">
+
+        <rich:panel style="text-align: center;">
+            <f:facet name="header">Reports</f:facet>
+
+                <h:panelGrid style="text-align:center;font-size:13px;" columns="2">
+                    <h:outputText value="1."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=accounts.rptdesign">
+                        <f:verbatim>Resource's Accounts Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="2."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=accounts_to_user.rptdesign">
+                        <f:verbatim>User's Accounts Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="3."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=users.rptdesign">
+                        <f:verbatim>Users Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="4."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=failureTasks.rptdesign">
+                        <f:verbatim>Failure Tasks Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="5."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=all_stale_accounts.rptdesign">
+                        <f:verbatim>Stale Accounts Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="6."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=roles_of_user.rptdesign">
+                        <f:verbatim>User Roles Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="7."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=targets_to_roles.rptdesign">
+                        <f:verbatim>Targets To Roles Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="8."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=accounts_to_responsibilities.rptdesign">
+                        <f:verbatim>Accounts To Responsibilities Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="9."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=responsibilities_to_account.rptdesign">
+                        <f:verbatim>Responsibilities To Account Report</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="10."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=users_of_role.rptdesign">
+                        <f:verbatim>Users Roles</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="11."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=users_to_be_deleted.rptdesign">
+                        <f:verbatim>Users to be deleted</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="12."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=historical_users.rptdesign">
+                        <f:verbatim>Historical users</f:verbatim>
+                    </h:outputLink>
+                    <h:outputText value="13."/>
+                    <h:outputLink target="_blank"
+                        value="/reports/frameset?__report=responsibilities_of_resource.rptdesign">
+                        <f:verbatim>Responsibilities of a resource</f:verbatim>
+                    </h:outputLink>
+                </h:panelGrid> 
+
+        </rich:panel>
+
+    </ui:define>
+
+</ui:composition>

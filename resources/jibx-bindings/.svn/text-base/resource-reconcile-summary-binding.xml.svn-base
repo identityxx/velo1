@@ -1,0 +1,45 @@
+<binding>
+  <mapping name="resourceReconcileSummary" class="velo.processSummary.resourceReconcileSummary.ResourceReconcileSummary">
+    <structure name="general">
+    <value name="description" field="description"/>
+    <structure name="times" field="times">
+      <value name="start-time" field="startTime"/>
+      <value name="end-time" field="endTime"/>
+      <value name="execution-duration" field="executionDuration"/>
+    </structure>
+    </structure>
+    
+    <structure name="specific">
+    	<structure name="accounts-removed-from-repository">
+    		<collection field="accountsRemovedFromRepository">
+    			<structure name="account" type="velo.processSummary.resourceReconcileSummary.SummaryAccount">
+    				<value style="attribute" name="uniqueId" field="name"/>
+	    		</structure>
+    		</collection>	
+    	</structure>
+		<structure name="accounts-inserted-to-repository">
+    		<collection field="accountsInsertedToRepository">
+    			<structure name="account" type="velo.processSummary.resourceReconcileSummary.SummaryAccount">
+    				<value style="attribute" name="uniqueId" field="name"/>
+	    		</structure>
+    		</collection>	
+    	</structure>
+    	<structure name="groups-removed-from-repository">
+    		<collection field="groupsRemovedFromRepository">
+    			<structure name="group" type="velo.processSummary.resourceReconcileSummary.SummaryGroup">
+    				<value style="attribute" name="uniqueId" field="name"/>
+	    		</structure>
+    		</collection>
+    	</structure>
+    	<structure name="groups-inserted-to-repository">
+    		<collection field="groupsInsertedToRepository">
+    			<structure name="group" type="velo.processSummary.resourceReconcileSummary.SummaryGroup">
+    				<value style="attribute" name="uniqueId" field="name"/>
+	    		</structure>
+    		</collection>
+    	</structure>
+    	<value name="accounts-amount-in-resource" field="accountsAmountInResource"/>
+    	<value name="groups-amount-in-resource" field="groupsAmountInResource"/>
+    </structure>
+  </mapping>
+</binding>

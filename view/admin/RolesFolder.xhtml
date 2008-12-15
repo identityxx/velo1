@@ -1,0 +1,166 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Roles Folder General nformation</f:facet>
+
+		<s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Unique Name</ui:define>
+            #{rolesFolderHome.instance.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{rolesFolderHome.instance.displayName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{rolesFolderHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="type" template="layout/display.xhtml">
+            <ui:define name="label">Type</ui:define>
+            #{rolesFolderHome.instance.type}
+        </s:decorate>
+        
+        <s:decorate id="parent" template="layout/display.xhtml" rendered="#{rolesFolderHome.instance.parentFolder ne NULL}">
+            <ui:define name="label">Parent Folder</ui:define>
+            #{rolesFolderHome.instance.parentFolder.displayName}
+        </s:decorate>
+        
+        
+        <s:decorate id="info1" template="layout/display.xhtml">
+            <ui:define name="label">Informative Attribute 1</ui:define>
+            #{rolesFolderHome.instance.info1}
+        </s:decorate>
+        
+        <s:decorate id="info2" template="layout/display.xhtml">
+            <ui:define name="label">Informative Attribute 2</ui:define>
+            #{rolesFolderHome.instance.info2}
+        </s:decorate>
+        
+        <s:decorate id="info3" template="layout/display.xhtml">
+            <ui:define name="label">Informative Attribute 3</ui:define>
+            #{rolesFolderHome.instance.info3}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+	</rich:panel>
+	
+	<rich:panel>
+        <f:facet name="header">Associated Roles</f:facet>
+        
+        <div class="results" id="roleList">
+        <rich:dataTable id="rolesList" 
+            var="role"
+            value="#{rolesFolderHome.instance.roles}" 
+            rendered="#{not empty rolesFolderHome.instance.roles}">
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Role Name"/>
+                </f:facet>
+                #{role.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Role Description"/>
+                </f:facet>
+                #{role.description}
+            </h:column>
+        </rich:dataTable>
+        </div>
+    </rich:panel>
+
+    <rich:panel>
+    	<f:facet name="header">Approval Groups</f:facet>
+        
+        <div class="results" id="AGList">
+        <rich:dataTable id="approverGroups" 
+			var="ag"
+			value="#{rolesFolderHome.instance.rolesFolderApproversGroups}" 
+			rendered="#{not empty rolesFolderHome.instance.rolesFolderApproversGroups}">
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Approval Groups Name"/>
+				</f:facet>
+				#{ag.approversGroup.displayName}
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Approval Level"/>
+				</f:facet>
+				#{ag.approvalLevel}
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Description"/>
+				</f:facet>
+				#{ag.description}
+			</h:column>
+		</rich:dataTable>
+		</div>
+	</rich:panel>
+	
+	<rich:panel>
+        <f:facet name="header">Child RoldersFolders</f:facet>
+        
+        <div class="results">
+        <rich:dataTable id="childRolesFolders" 
+            var="crf"
+            value="#{rolesFolderHome.instance.childFolders}" 
+            rendered="#{not empty rolesFolderHome.instance.childFolders}">
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Display Name"/>
+                </f:facet>
+                #{crf.displayName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Description"/>
+                </f:facet>
+                #{crf.description}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Type"/>
+                </f:facet>
+                #{crf.type}
+            </h:column>
+        </rich:dataTable>
+        </div>
+    </rich:panel>
+	
+	<div class="actionButtons">      
+	
+		<s:button view="/admin/RolesFolderEdit.xhtml" 
+			id="editInformativeDetails" 
+			value="Edit General Details &amp; Roles Associations"/>
+		
+		<s:button view="/admin/RolesFolderEditApproversGroups.xhtml" 
+			id="editAssociatedApproversGroups" 
+			value="Edit Associated Approvers Groups" propagation="nest"/>
+		
+		<s:button view="/admin/#{empty rolesFolderFrom ? 'RolesFolderList' : rolesFolderFrom}.xhtml"
+			id="done"
+			value="Done"/>
+	</div>
+
+</ui:define>
+
+</ui:composition>

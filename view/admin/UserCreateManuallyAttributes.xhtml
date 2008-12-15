@@ -1,0 +1,46 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:sb="http://myfaces.apache.org/sandbox"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+	
+
+	<ui:define name="body">
+
+		<h:form id="userIdentityAttributesForm">
+			<h:panelGrid columns="2" styleClass="userManageUserIdentityAttributeGroups" columnClasses="userManageUserIdentityAttributeGroupsColumn">
+				<c:forEach items="#{userManageActions.userIdentityAttributesGroups}" var="currUserIdentityAttributesGroup">
+					<rich:simpleTogglePanel label="#{currUserIdentityAttributesGroup.name}" switchType="client">
+						<c:forEach items="#{currUserIdentityAttributesGroup.userIdentityAttributes}" var="currUserIdentityAttribute">
+							<h:panelGrid columns="3" styleClass="panelUIA" headerClass="panelUIA" columnClasses="panelUIARequired,panelUIATitle,panelUIAValue">
+								<h:graphicImage url="/icons/required.gif" rendered="#{currUserIdentityAttribute.identityAttribute.required}" />
+								<h:outputText value="&#160;&#160;" rendered="#{!currUserIdentityAttribute.identityAttribute.required}"/>
+								<h:outputText value="#{currUserIdentityAttribute.identityAttribute.displayName}" />
+								<c:forEach items="#{currUserIdentityAttribute.values}" var="value">
+									<s:decorate id="uiav_id_#{currUserIdentityAttribute.identityAttribute.identityAttributeId}Decoration" template="layout/edit.xhtml">
+										<velo:valueInput id="uiav_id_#{currUserIdentityAttribute.identityAttribute.identityAttributeId}" value="#{value.value}" valueObject="#{value}" />
+									</s:decorate>
+								</c:forEach>
+							</h:panelGrid>
+						</c:forEach>
+					</rich:simpleTogglePanel>
+				</c:forEach>
+			</h:panelGrid>
+			<h:commandButton id="updateUserIdentityAttributes" value="Continue" action="/admin/UserCreateManually.xhtml" />
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

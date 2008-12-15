@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd"
+      no-conversation-view-id="/admin/Home.xhtml"
+      login-required="true">
+   
+   <begin-conversation join="true"/>
+   
+   <action execute="#{resourceActionHome.wire}"/>
+   
+   <param name="resourceFrom"/>
+   <!-- resourceId is a must, otherwise resourceHome.instance wont be available for the edit page -->
+   <param name="resourceId" value="#{resourceHome.resourceId}"/>
+   
+   <!-- doesnt work as resourceTypeOperation is entity and not ID, somehow have to set the right type -->
+   <param name="resourceTypeOperation" value="#{resourceActionHome.instance.resourceTypeOperation}"/>
+   
+   
+   <param name="actionDefinitionId" value="#{resourceActionHome.actionDefinitionId}"/>
+
+   <navigation from-action="#{resourceActionHome.persist}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceAction.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{resourceActionHome.update}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceAction.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{resourceActionHome.remove}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceActionList.xhtml"/>
+   </navigation>
+   
+</page>

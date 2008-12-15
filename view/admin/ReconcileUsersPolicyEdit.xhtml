@@ -1,0 +1,97 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="reconcileUsersPolicy" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Reconcile Users Policy</f:facet>
+
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{reconcileUsersPolicyHome.instance.uniqueName}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{reconcileUsersPolicyHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="newUserInSourceEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">An action to perform when a new user was found in source</ui:define>
+					<h:selectOneMenu id="newUserInSourceEventAction" value="#{reconcileUsersPolicyHome.instance.newUserInSourceEventAction}" required="true">
+						<f:selectItem itemValue="NOTHING" itemLabel="Do Nothing"/>
+						<f:selectItem itemValue="CREATE_CORRESPONDING_USER_IN_REPOSITORY" itemLabel="Create a Corresponding User in Repository"/>
+					</h:selectOneMenu> 
+				</s:decorate>
+				
+				<s:decorate id="deletedUserInSourceEventActionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">An action to perform when a user was deleted in source</ui:define>
+					<h:selectOneMenu id="deletedUserInSourceEventAction" value="#{reconcileUsersPolicyHome.instance.deletedUserInSourceEventAction}" required="true">
+						<f:selectItem itemValue="NOTHING" itemLabel="Do Nothing"/>
+						<f:selectItem itemValue="REMOVE_CORRESPONDING_USER_FROM_REPOSITORY" itemLabel="Remove corresponding User from Respository"/>
+					</h:selectOneMenu> 
+				</s:decorate>
+				
+				<s:decorate id="activeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Active?</ui:define>
+					<h:selectBooleanCheckbox id="active" value="#{reconcileUsersPolicyHome.instance.active}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				
+				<s:decorate id="resourceDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Source Target System</ui:define>
+					<h:selectOneMenu id="resource"
+						value="#{reconcileUsersPolicyHome.instance.sourceResource}" required="required">
+						<s:selectItems value="#{guiResources}" var="ts"
+							label="#{ts.displayName}" SelectionLabel="--select--" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>required fields</div>
+
+			</rich:panel>
+
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{reconcileUsersPolicyHome.persist}"
+				disabled="#{!reconcileUsersPolicyHome.wired}"
+				rendered="#{!reconcileUsersPolicyHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{reconcileUsersPolicyHome.update}"
+				rendered="#{reconcileUsersPolicyHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{reconcileUsersPolicyHome.remove}"
+				rendered="#{reconcileUsersPolicyHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ReconcileUsersPolicy.xhtml"
+				rendered="#{reconcileUsersPolicyHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty reconcileUsersPolicyFrom ? 'ReconcileUsersPolicyList' : reconcileUsersPolicyFrom}.xhtml"
+				rendered="#{!reconcileUsersPolicyHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

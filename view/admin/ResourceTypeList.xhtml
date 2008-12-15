@@ -1,0 +1,96 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceTypeSearch" styleClass="edit">
+
+			<rich:simpleTogglePanel label="Resource Search Parameters"
+				switchType="ajax">
+
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Unique Name</ui:define>
+					<h:inputText id="uniqueName"
+						value="#{resourceTypeList.resourceType.uniqueName}" />
+				</s:decorate>
+
+                <div style="clear: both"/>
+			</rich:simpleTogglePanel>
+
+			<div class="actionButtons"><h:commandButton id="search"
+				value="Search" action="/admin/ResourceTypeList.xhtml" /></div>
+
+		</h:form>
+
+		<rich:panel>
+			<f:facet name="header">Resource Search Results</f:facet>
+			<div class="results" id="resourceTypeList"><h:outputText
+				value="No resource type exists"
+				rendered="#{empty resourceTypeList.resultList}" /> <rich:dataTable
+				id="resourceTypeList" var="resourceType"
+				value="#{resourceTypeList.resultList}"
+				rendered="#{not empty resourceTypeList.resultList}">
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Unique Name #{resourceTypeList.order=='uniqueName asc' ? messages.down : ( resourceTypeList.order=='uniqueName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceTypeList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceType.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">action</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceType' : from}.xhtml"
+						value="Select" id="resourceType">
+						<f:param name="resourceTypeId"
+							value="#{resourceType.resourceTypeId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+		</rich:panel>
+
+		<div class="tableControl"><s:link view="/ResourceTypeList.xhtml"
+			rendered="#{resourceTypeList.previousExists}"
+			value="#{messages.left}#{messages.left} First Page" id="firstPage">
+			<f:param name="firstResult" value="0" />
+		</s:link> <s:link view="/ResourceTypeList.xhtml"
+			rendered="#{resourceTypeList.previousExists}"
+			value="#{messages.left} Previous Page" id="previousPage">
+			<f:param name="firstResult"
+				value="#{resourceTypeList.previousFirstResult}" />
+		</s:link> <s:link view="/ResourceTypeList.xhtml"
+			rendered="#{resourceTypeList.nextExists}"
+			value="Next Page #{messages.right}" id="nextPage">
+			<f:param name="firstResult"
+				value="#{resourceTypeList.nextFirstResult}" />
+		</s:link> <s:link view="/ResourceTypeList.xhtml"
+			rendered="#{resourceTypeList.nextExists}"
+			value="Last Page #{messages.right}#{messages.right}" id="lastPage">
+			<f:param name="firstResult"
+				value="#{resourceTypeList.lastFirstResult}" />
+		</s:link></div>
+
+		<s:div styleClass="actionButtons" rendered="#{empty from}">
+			<s:button view="/admin/ResourceTypeEdit.xhtml" id="create"
+				value="Create resourceType">
+				<f:param name="resourceTypeId" />
+			</s:button>
+		</s:div>
+
+	</ui:define>
+
+</ui:composition>
+

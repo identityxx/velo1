@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="https://ajax4jsf.dev.java.net/ajax">
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; UTF-8" />
+        <link href="style/global_elegant.css" rel="stylesheet" type="text/css" />
+        <link href="style/date.css" rel="stylesheet" type="text/css" />
+        <link href="style/modifyObjectsAssignment.css" rel="stylesheet" type="text/css" />
+        <link href="style/xmlTags.css" rel="stylesheet" type="text/css" />
+        
+    </head>
+    
+    <body>
+        <div id="document"> 
+            <div id="topHeader">
+                <span style="float: left;margin-top:5px;">
+                    <h:graphicImage url="/imgs_extra/orange_logo_thin.png" style="align:left;"/>
+                    Partner Communication, Ltd.
+                </span>
+                <span style="float: right;">
+                    <h:form id="topNavForm">
+                        <span>You are logged as: '#{identity.username}' | 
+                            <h:commandLink action="#{identity.logout}" value="Logout" style="color: white;text-decoration: none;"/>
+                            <br/><b>Administration Management</b>
+                            <br/><br/><br/><i><h:outputText value="#{messages['global.velo.server_version']}"/></i>
+                        </span>
+                    </h:form>
+                </span>
+            </div>
+            <div id="topNav"> 
+                <ui:insert name="topnav">
+                    <ui:include src="incl/top_nav.xhtml">
+                        <ui:param name="page" value="EventLog List" />
+                    </ui:include>
+                </ui:insert>
+            </div>
+            
+            <!--
+            <div id="sidebar">
+                <ui:insert name="leftSidePanel">
+                    
+                </ui:insert>
+            </div>
+            -->
+            
+            <div id="container">
+                <div id="content">
+                    <ui:debug hotkey="D"/>
+                    <div class="ajaxStatus">
+                        <a:status>
+                            <f:facet name="start">
+                                <h:graphicImage value="/img/spinner.gif"/>
+                            </f:facet>
+                        </a:status>
+                    </div>
+                    <ui:insert name="pageTitle">
+                        <h1>Page Title: <span style="color: #FF6500;">operation description</span></h1>
+                    </ui:insert>
+                    <ui:insert name="pageDescription">
+                        <div id="pageDescription" class="cntPageTitle">		
+                            <p>More detailed description regarding this page or the action....</p>
+                            <!--
+                        <dl>
+                            <dt style="color: #2C5298; font-weight: bold;">365 Products found in:</dt>
+                            <dd style="padding-left: 6px;"><a href="#">Personal Protection</a> > <a href="#">Hand Protection</a> > <a href="#">Gloves (365)</a></dd>
+                        </dl>
+						-->
+                        </div>
+                    </ui:insert>
+                    <div class="pageContent">
+                        <a:outputPanel ajaxRendered="true">
+                            <div class="facesStatusMessage">                       
+                                <h:messages globalOnly="true" layout="list" infoClass="infoFeedback" warnClass="warningFeedback" errorClass="errorFeedback"/>
+                            </div>
+                        </a:outputPanel>
+                        
+                        <div class="inputForm">
+                            <ui:insert name="content"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="copyright"><h:outputText value="#{messages['global.velo.bottom_copyright_text']}"/></div>
+        </div>
+    </body>
+</html>

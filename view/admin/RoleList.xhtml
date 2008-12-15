@@ -1,0 +1,193 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="suggestionbox_form" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Role Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Name</ui:define>
+                <h:inputText id="name" value="#{roleList.role.name}"/>
+				<rich:suggestionbox id="suggestionBoxId" for="name" tokens=""
+                rules="none"
+                suggestionAction="#{roleList.roleSearchByNameAutoComplete}" var="role"
+                fetchValue="#{role.name}" rows="0"
+                first="0"
+                minChars="2"
+                shadowOpacity="1"
+                border="1" width="200"
+                height="150"
+                shadowDepth="1"
+                cellpadding="2">
+                <h:column>
+                    <s:link view="/admin/#{empty from ? 'Role' : from}.xhtml"
+                   		value="#{role.name}">
+                		<f:param name="roleId" value="#{role.roleId}"/>
+            		</s:link>
+                </h:column>
+            	</rich:suggestionbox>
+                
+			</s:decorate>
+			
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Description</ui:define>
+                <h:inputText id="description" value="#{roleList.role.description}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Informative Attribute 1</ui:define>
+                <h:inputText id="info1" value="#{roleList.role.info1}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Informative Attribute 2</ui:define>
+                <h:inputText id="info1" value="#{roleList.role.info2}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Informative Attribute 3</ui:define>
+                <h:inputText id="info1" value="#{roleList.role.info3}"/>
+            </s:decorate>
+            
+            
+             <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Status</ui:define>
+                <h:selectOneRadio  id="disabled" value="#{roleList.role.disabled}">
+                	<f:selectItem id="si1"  itemLabel="Enabled" itemValue="false"/>
+  					<f:selectItem id="si2"  itemLabel="Disabled" itemValue="true"/> 
+  				</h:selectOneRadio>
+            </s:decorate>    
+            
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Associated to any position?</ui:define>
+				<h:selectOneMenu id="hasPositionsAssociated" value="#{roleList.hasPositionsAssociated}">
+					<s:selectItems value="#{hasPositionsAssociatedStatuses}" var="s" label="#{s}" noSelectionLabel="--Select--"/>
+					<s:convertEnum />
+				</h:selectOneMenu >
+            </s:decorate>
+                   
+                   
+          <s:decorate template="layout/display.xhtml">
+           		<ui:define name="label">Resource</ui:define>
+           		<h:selectOneMenu id="resourceUniqueName" 
+            		value="#{roleList.resourceUniqueName}" required="false">
+					<s:selectItems value="#{resourceListString.keySet()}" var="r"
+						label="#{resourceListString[r]}" noSelectionLabel="-Select-" />
+				</h:selectOneMenu>
+			</s:decorate>
+                   
+                   
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/RoleList.xhtml"/>
+            
+            <s:button view="/admin/RoleEdit.xhtml" id="create"
+				value="Create Role">
+				<f:param name="roleId" />
+			</s:button>
+        </div>
+        
+    </h:form>
+    
+    <rich:panel>
+        <f:facet name="header">Role Search Results</f:facet>
+    <div class="results" id="roleList">
+
+    <h:outputText value="No Role exists" 
+               rendered="#{empty roleList.resultList}"/>
+               
+    <rich:dataTable id="roleList" 
+                var="role"
+              value="#{roleList.resultList}" 
+           rendered="#{not empty roleList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Name #{roleList.order=='name asc' ? messages.down : ( roleList.order=='name desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{roleList.order=='name asc' ? 'name desc' : 'name asc'}"/>
+                </s:link>
+            </f:facet>
+            <s:link view="/admin/#{empty from ? 'Role' : from}.xhtml" id="roleName">
+                <f:param name="roleId" value="#{role.roleId}"/>
+            
+            <h:outputText value="#{role.name}" id="colRoleName">
+	           	<rich:toolTip direction="top-right" mode="client" verticalOffset="5" delay="500" zorder="200" styleClass="tooltip" layout="block">
+	           		<h:panelGrid columns="2">
+	           			<h:outputText value="Associated Resources: "/>
+						<ui:repeat var="res" value="#{velo:setAsList(role.resources)}">
+							<s:link view="/admin/Resource.xhtml" value="#{res.displayName}">
+								<f:param name="resourceId" value="#{res.resourceId}"/>
+							</s:link>
+							,
+						</ui:repeat>
+	           			<h:outputText value="Associated Access Groups: "/>
+						<ui:repeat var="ag" value="#{velo:setAsList(role.resourceGroups)}">
+							<h:outputText value="#{ag.displayName}"/>, 
+						</ui:repeat>
+					</h:panelGrid>
+				</rich:toolTip>
+			</h:outputText>
+			</s:link>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+            	<h:outputText value="Description"/>
+            </f:facet>
+            #{role.description}
+        </h:column>
+        <h:column>
+            <f:facet name="header">action</f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'Role' : from}.xhtml" 
+                   value="Select" 
+                      id="role">
+                <f:param name="roleId" 
+                        value="#{role.roleId}"/>
+            </s:link>
+
+        </h:column>
+    </rich:dataTable>
+
+	<ui:include src="/admin/incl/pagingPanel.xhtml">
+        			<ui:param name="currentPage" value="/admin/RoleList.xhtml" />
+        			<ui:param name="iteratedList" value="#{roleList}" />
+   </ui:include>
+    </div>
+    
+    
+    </rich:panel>
+    
+    	
+    
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+			<s:button view="/admin/RoleEdit.xhtml" id="create"
+				value="Create Role">
+				<f:param name="roleId" />
+			</s:button>
+	</s:div>
+    
+</ui:define>
+
+</ui:composition>
+

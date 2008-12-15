@@ -1,0 +1,150 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceTypeAttribute" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Edit override Resource Type Attribute</f:facet>
+				
+				<s:decorate id="resourceTypeDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Resource Type</ui:define>
+					<h:outputText value="#{resourceTypeAttributeHome.instance.resourceType.uniqueName}"/>
+				</s:decorate>
+
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name(as in resource)</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{resourceTypeAttributeHome.instance.uniqueName}" disabled="true">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{resourceTypeAttributeHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{resourceTypeAttributeHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<s:decorate id="dataTypeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Data Type</ui:define>
+					<h:selectOneMenu id="dataType" value="#{resourceTypeAttributeHome.instance.dataType}" required="true" disabled="#{!resourceTypeAttributeHome.instance.overridden}">
+						<f:selectItem itemValue="STRING" itemLabel="String" />
+						<f:selectItem itemValue="NUMERIC" itemLabel="Numeric" />
+						<f:selectItem itemValue="BOOLEAN" itemLabel="Boolean" />
+						<a:support event="onblur" reRender="dataTypeDecoration" bypassUpdates="true" />
+            		</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="minValuesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Minimum Values</ui:define>
+					<h:inputText id="minValues" required="true" size="3" maxlength="3"
+						value="#{resourceTypeAttributeHome.instance.minValues}" disabled="#{!resourceTypeAttributeHome.instance.overridden}">
+						<a:support event="onblur" reRender="minValuesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="maxValuesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Maximum Values</ui:define>
+					<h:inputText id="maxValues" required="true" size="3" maxlength="3"
+						value="#{resourceTypeAttributeHome.instance.maxValues}" disabled="#{!resourceTypeAttributeHome.instance.overridden}">
+						<a:support event="onblur" reRender="maxValuesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<s:decorate id="minLengthDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Minimum Length</ui:define>
+					<h:inputText id="minLength" required="true" size="3" maxlength="3"
+						value="#{resourceTypeAttributeHome.instance.minLength}" disabled="#{!resourceTypeAttributeHome.instance.overridden}">
+						<a:support event="onblur" reRender="minLengthDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="maxLengthDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Maximum Length</ui:define>
+					<h:inputText id="maxLength" required="true" size="3" maxlength="3"
+						value="#{resourceTypeAttributeHome.instance.maxLength}" disabled="#{!resourceTypeAttributeHome.instance.overridden}">
+						<a:support event="onblur" reRender="maxLengthDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="accountIdDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Is an Account ID Attribute?</ui:define>
+					<h:selectBooleanCheckbox id="accountId" value="#{resourceTypeAttributeHome.instance.accountId}" disabled="#{!resourceTypeAttributeHome.instance.overridden}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="passwordAttributeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Is a Password Attribute?</ui:define>
+					<h:selectBooleanCheckbox value="#{resourceTypeAttributeHome.instance.passwordAttribute}" disabled="#{!resourceTypeAttributeHome.instance.overridden}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="managedDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Managed?</ui:define>
+					<h:selectBooleanCheckbox id="managed" value="#{resourceTypeAttributeHome.instance.managed}" disabled="#{!resourceTypeAttributeHome.instance.overridden}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="requiredDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Required?</ui:define>
+					<h:selectBooleanCheckbox id="required" value="#{resourceTypeAttributeHome.instance.required}" disabled="#{!resourceTypeAttributeHome.instance.overridden}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="synced" template="layout/edit.xhtml">
+					<ui:define name="label">Synchronized?</ui:define>
+					<h:selectBooleanCheckbox id="synced" value="#{resourceTypeAttributeHome.instance.synced}" disabled="#{!resourceTypeAttributeHome.instance.overridden}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{resourceTypeAttributeHome.persistOverrideResourceTypeAttribute}"
+				disabled="#{!resourceTypeAttributeHome.wired}"
+				rendered="#{!resourceTypeAttributeHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{resourceTypeAttributeHome.update}"
+				rendered="#{resourceTypeAttributeHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{resourceTypeAttributeHome.remove}"
+				rendered="#{resourceTypeAttributeHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ResourceTypeAttribute.xhtml"
+				rendered="#{resourceTypeAttributeHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceTypeAttributeFrom ? 'ResourceType' : resourceTypeAttributeFrom}.xhtml"
+				rendered="#{!resourceTypeAttributeHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

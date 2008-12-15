@@ -1,0 +1,81 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Resource Action</f:facet>
+
+		<s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Resource</ui:define>
+            #{resourceActionHome.instance.resource.displayName}
+        </s:decorate>
+        
+        <s:decorate id="operation" template="layout/display.xhtml">
+            <ui:define name="label">Related to Operation</ui:define>
+            #{resourceActionHome.instance.resourceTypeOperation.displayName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{resourceActionHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="language" template="layout/display.xhtml">
+            <ui:define name="label">Scripting Language</ui:define>
+            #{resourceActionHome.instance.actionLanguage.name}
+        </s:decorate>
+        
+        <s:decorate id="phase" template="layout/display.xhtml">
+            <ui:define name="label">Operation Phase to Invoke Action</ui:define>
+            #{resourceActionHome.instance.invokePhase}
+        </s:decorate>
+        
+        <s:decorate id="showStopper" template="layout/display.xhtml">
+            <ui:define name="label">Show Stopper?</ui:define>
+            <h:outputText value="Yes" rendered="#{resourceActionHome.instance.showStopper}" />
+			<h:outputText value="No" rendered="#{!resourceActionHome.instance.showStopper}" />
+        </s:decorate>
+        
+        
+        
+        
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/ResourceActionEdit.xhtml" 
+                    id="edit" 
+                 value="Edit">
+                 <f:param name="resourceId" value="#{resourceActionHome.instance.resource.resourceId}"/>
+		</s:button>
+
+		<!-- 
+        <s:button view="/admin/#{empty resourceActionFrom ? 'ResourceActionList' : resourceActionFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+		-->
+		<s:button view="/admin/#{empty resourceActionFrom ? 'Resource' : resourceActionFrom}.xhtml"
+                    id="done"
+                 value="Done">
+        	<f:param name="resourceId" value="#{resourceActionHome.instance.resource.resourceId}"/>
+		</s:button>
+    </div>
+
+</ui:define>
+
+</ui:composition>

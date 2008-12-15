@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns="http://jboss.com/products/seam/components"
+            xmlns:core="http://jboss.com/products/seam/core"
+            xmlns:persistence="http://jboss.com/products/seam/persistence"
+            xmlns:drools="http://jboss.com/products/seam/drools"
+            xmlns:bpm="http://jboss.com/products/seam/bpm"
+            xmlns:security="http://jboss.com/products/seam/security"
+            xmlns:mail="http://jboss.com/products/seam/mail"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:theme="http://jboss.com/products/seam/theme"
+            xmlns:framework="http://jboss.com/products/seam/framework"
+            xmlns:web="http://jboss.com/products/seam/web"
+            xmlns:transaction="http://jboss.com/products/seam/transaction"
+            xsi:schemaLocation=
+                "http://jboss.com/products/seam/core http://jboss.com/products/seam/core-2.1.xsd 
+                 http://jboss.com/products/seam/persistence http://jboss.com/products/seam/persistence-2.1.xsd 
+                 http://jboss.com/products/seam/drools http://jboss.com/products/seam/drools-2.1.xsd
+                 http://jboss.com/products/seam/bpm http://jboss.com/products/seam/bpm-2.1.xsd
+                 http://jboss.com/products/seam/security http://jboss.com/products/seam/security-2.1.xsd
+                 http://jboss.com/products/seam/mail http://jboss.com/products/seam/mail-2.1.xsd
+                 http://jboss.com/products/seam/components http://jboss.com/products/seam/components-2.1.xsd">
+
+   <core:init debug="@debug@" jndi-pattern="@jndiPattern@"/>
+     
+   <core:manager concurrent-request-timeout="500" 
+                 conversation-timeout="120000" 
+                 conversation-id-parameter="cid"
+                 parent-conversation-id-parameter="pid"/>
+    
+   <persistence:managed-persistence-context name="entityManager"
+                                     auto-create="true"
+                      persistence-unit-jndi-name="java:/veloEntityManagerFactory"/>                          
+
+   <drools:rule-base name="securityRules">
+      <drools:rule-files>
+         <value>/security.drl</value>
+      </drools:rule-files>
+   </drools:rule-base>
+
+   <security:rule-based-permission-resolver security-rules="#{securityRules}"/> 
+   
+   <security:identity authenticate-method="#{authenticator.authenticate}" remember-me="true"/>
+   
+   <core:resource-loader>
+      <core:bundle-names>
+         <value>messages</value>
+         <value>messages_ss_cust</value>
+      </core:bundle-names>
+   </core:resource-loader>
+   
+   <theme:theme-selector cookie-enabled="true">
+    <theme:available-themes>
+        <value>cust_theme</value>
+        <value>theme_elegant</value>
+    </theme:available-themes>
+    </theme:theme-selector>
+   
+   <web:multipart-filter create-temp-files="true" max-request-size="10000000" url-pattern="*.seam"/>
+   
+   <!-- Is it required? -->
+   <web:character-encoding-filter encoding="UTF-8" override-client="true" url-pattern="*.seam"/> 
+   
+   
+   
+   
+   
+   
+   <!-- FRAMEWORK COMPONENTS -->
+   <framework:entity-query name="resources"
+        ejbql="select r from Resource r" />
+    <framework:entity-query name="identityAttributesGroups"
+        ejbql="select iag from IdentityAttributesGroup iag" />
+    <framework:entity-query name="identityAttributes"
+        ejbql="select ia from IdentityAttribute ia" />
+    <framework:entity-query name="resourceTypes"
+        ejbql="select rt from ResourceType rt" />
+    <framework:entity-query name="resourceAttributesManaged"
+        ejbql="select ra from ResourceAttribute ra WHERE ra.managed=1" />
+    <framework:entity-query name="reconcilePolicies"
+        ejbql="select rp from ReconcilePolicy rp" />
+    <framework:entity-query name="passwordPolicyContainers"
+        ejbql="select ppc from PasswordPolicyContainer ppc" />
+    <framework:entity-query name="passwordPolicies"
+        ejbql="select pp from PasswordPolicy pp" />
+    <framework:entity-query name="EQcapabilityFolders"
+        ejbql="select capabilityFolder from CapabilityFolder capabilityFolder" />
+    <framework:entity-query name="EQrolesFolders"
+        ejbql="select rolesFolder from RolesFolder rolesFolder" />
+    <framework:entity-query name="EQroles"
+        ejbql="select role from Role role" />
+
+
+
+    <factory name="guiPasswordPolicies" 
+             value="#{guiPasswordPoliciesQuery.resultList}" />
+    <framework:entity-query name="guiPasswordPoliciesQuery"
+                            ejbql="select p from PasswordPolicy p"
+                            order="p.displayName asc" />
+     
+    <factory name="guiWorkflowProcessDefinitions"  value="#{guiWorkflowProcessDefinitionsQuery.resultList}" />
+    <framework:entity-query name="guiWorkflowProcessDefinitionsQuery" 
+        ejbql="select wpd from WorkflowProcessDef wpd"
+        order="wpd.uniqueName asc"/>
+     
+    <factory name="guiPasswordPolicyContainers"  value="#{guiPasswordPolicyContainersQuery.resultList}" />
+    <framework:entity-query name="guiPasswordPolicyContainersQuery" 
+        ejbql="select ppc from PasswordPolicyContainer ppc"
+        order="ppc.displayName asc"/>
+        
+    <factory name="guiReconcilePolicies"  value="#{guiReconcilePoliciesQuery.resultList}" />
+    <framework:entity-query name="guiReconcilePoliciesQuery" 
+        ejbql="select rp from ReconcilePolicy rp"
+        order="rp.name asc"/>
+        
+    <factory name="guiResourceTypes"  value="#{guiResourceTypesQuery.resultList}" />
+    <framework:entity-query name="guiResourceTypesQuery" 
+        ejbql="select rt from ResourceType rt"
+        order="rt.uniqueName asc"/>
+        
+    <factory name="guiResources"  value="#{guiResourcesQuery.resultList}" />
+    <framework:entity-query name="guiResourcesQuery" 
+        ejbql="select r from Resource r"
+        order="r.displayName asc"/>
+        
+    <factory name="guiIdentityAttributes"  value="#{guiIdentityAttributesQuery.resultList}" />
+    <framework:entity-query name="guiIdentityAttributesQuery" 
+        ejbql="select ia from IdentityAttribute ia"
+        order="ia.displayName asc"/>
+        
+    <factory name="guiCapabilities"  value="#{guiCapabilitiesQuery.resultList}" />
+    <framework:entity-query name="guiCapabilitiesQuery" 
+        ejbql="select cap from Capability cap"
+        order="cap.description asc"/>
+        
+    <factory name="guiCapabilityFolders"  value="#{guiCapabilityFoldersQuery.resultList}" />
+    <framework:entity-query name="guiCapabilityFoldersQuery" 
+        ejbql="select cf from CapabilityFolder cf"
+        order="cf.displayName asc"/>
+        
+    <factory name="guiIdentityAttributesGroups"  value="#{guiIdentityAttributesGroupsQuery.resultList}" />
+    <framework:entity-query name="guiIdentityAttributesGroupsQuery" 
+        ejbql="select iag from IdentityAttributesGroup iag"
+        order="iag.name asc"/>
+        
+    <factory name="guiResourcesCanBeRequestedBySelfService"  value="#{guiResourcesCanBeRequestedBySelfServiceQuery.resultList}" />
+    <framework:entity-query name="guiResourcesCanBeRequestedBySelfServiceQuery" 
+        ejbql="select r from Resource r where r.requestableBySelfService=1"
+        order="r.displayName asc"/>
+    
+    <factory name="guiApproversGroups"  value="#{guiApproversGroupsQuery.resultList}" />
+    <framework:entity-query name="guiApproversGroupsQuery" 
+        ejbql="select ag from ApproversGroup ag"
+        order="ag.displayName asc"/>
+        
+    <factory name="guiTaskQueues"  value="#{guiTaskQueuesQuery.resultList}" />
+    <framework:entity-query name="guiTaskQueuesQuery" 
+        ejbql="select tq from TasksQueue tq"
+        order="tq.displayName asc"/>
+        
+
+    <factory name="guiGateways"  value="#{guiGatewaysQuery.resultList}" />
+    <framework:entity-query name="guiGatewaysQuery" 
+        ejbql="select gw from Gateway gw"
+        order="gw.displayName asc"/>
+        
+        
+    <factory name="guiActionLanguages"  value="#{guiActionLanguagesQuery.resultList}" />
+    <framework:entity-query name="guiActionLanguagesQuery" 
+        ejbql="select lang from ActionLanguage lang"
+        order="lang.name asc"/>
+    
+    <factory name="guiRoles"  value="#{guiRolesQuery.resultList}" />
+    <framework:entity-query name="guiRolesQuery" 
+        ejbql="select role from Role role"
+        order="role.name asc"/>
+        
+    <factory name="guiRolesFolders"  value="#{guiRolesFoldersQuery.resultList}" />
+    <framework:entity-query name="guiRolesFoldersQuery" 
+        ejbql="select rf from RolesFolder rf"
+        order="rf.displayName asc"/>
+    
+    
+    <factory name="guiRolesExposedToSS"  value="#{guiRolesExposedToSSQuery.resultList}" />
+    <framework:entity-query name="guiRolesExposedToSSQuery" 
+        ejbql="select role from Role role where role.exposedToSelfService = 1"
+        order="role.name asc"/>
+    
+    
+    
+    
+    <factory name="guiUserContainers"  value="#{guiUserContainersQuery.resultList}" />
+    <framework:entity-query name="guiUserContainersQuery" 
+        ejbql="select UserContainer from UserContainer userContainer"
+        order="userContainer.displayName asc"/>
+    
+    
+    <factory name="guiRoleResourceAttributeRules"  value="#{guiRoleResourceAttributeRulesQuery.resultList}" />
+    <framework:entity-query name="guiRoleResourceAttributeRulesQuery" 
+        ejbql="select RoleResourceAttributeRule from RoleResourceAttributeRule roleResourceAttributeRule"
+        order="roleResourceAttributeRule.description asc"/>
+    
+    
+    <!-- 14-dec-08 CLEANED while moved to Seam 2.1
+    <factory name="ssRequestOfWorkflowTask" 
+             value="#{ssRequestOfWorkflowTaskHome.instance}" 
+             scope="stateless" 
+             auto-create="true"/>
+    <framework:entity-home name="ssRequestOfWorkflowTaskHome" 
+                           entity-class="velo.entity.SelfServiceAccessRequest" 
+                           scope="conversation" 
+                           auto-create="true">
+        <framework:id>#{requestId}</framework:id>
+    </framework:entity-home>
+    -->
+    
+    <!-- Real nice and easy ways for WF to load requests/forms/etc... -->
+    <!-- Not functioning yet
+    <factory name="wfRequestInstance" 
+             value="#{wfRequestInstanceHome.instance}" 
+             scope="stateless" 
+             auto-create="true"/>
+    <framework:entity-home name="wfRequestInstanceHome" 
+                           entity-class="velo.entity.Request" 
+                           scope="conversation" 
+                           auto-create="true">
+        <framework:id>#{wfRequestId}</framework:id>
+    </framework:entity-home>
+    
+    <factory name="wfFormInstance" value="#{wfFormHome.instance}"/>
+    <framework:entity-home name="wfFormHome" entity-class="velo.entity.Form">
+        <framework:id>#{orderId}</framework:id>
+    </framework:entity-home>
+     -->
+    
+   
+   
+   
+   
+   
+   
+   <event type="org.jboss.seam.security.notLoggedIn">
+      <action execute="#{redirect.captureCurrentView}"/>
+   </event>
+   <event type="org.jboss.seam.security.loginSuccessful">
+      <action execute="#{redirect.returnToCapturedView}"/>
+   </event>
+   
+   <mail:mail-session host="localhost" port="2525" username="test" password="test" />
+
+   
+   
+   
+
+   <!-- For use with jBPM pageflow or process management -->
+   <bpm:jbpm>
+   </bpm:jbpm>
+</components>

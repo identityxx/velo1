@@ -1,0 +1,78 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="requestSearch" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Modified User Attributes for User: #{userHome.instance.name}</f:facet>
+				
+				<rich:dataTable width="100%"
+					id="modifiedUserIdentityAttributes"
+					rows="10" columnClasses="col"
+					value="#{velo:setAsList(userManageActions.modifiedUserIdentityAttributesByUpdateAction)}"
+					var="uia">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<h:column>
+								<h:outputText styleClass="headerText"
+									value="#{messages.attribute_name}" />
+							</h:column>
+							<h:column>
+								<h:outputText styleClass="headerText"
+									value="#{messages.old_value}" />
+							</h:column>
+							<h:column>
+								<h:outputText styleClass="headerText"
+									value="#{messages.new_value}" />
+							</h:column>
+						</rich:columnGroup>
+					</f:facet>
+					<h:column>
+						<h:outputText
+							value="#{uia.identityAttribute.displayName}" />
+					</h:column>
+					<h:column>
+						<h:dataTable id="oldValuesDataTable"
+							value="#{uia.oldValues}" var="value" rows="100">
+							<h:column>
+								<h:outputText value="#{value.value}" />
+							</h:column>
+						</h:dataTable>
+					</h:column>
+					<h:column>
+						<h:dataTable id="newValuesDataTable"
+							value="#{uia.values}" var="value" rows="100">
+							<h:column>
+								<h:outputText value="#{value.value}" />
+							</h:column>
+						</h:dataTable>
+					</h:column>
+				</rich:dataTable>
+
+			</rich:panel>
+
+			<div class="actionButtons">
+				<h:commandButton id="updateAttributes" value="Update Attributes Values" action="#{userManageActions.updateModifiedUserAttributes}" />
+				<s:button view="/admin/UserManage.xhtml" value="Cancel Modifications" propagation="none"/>
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+

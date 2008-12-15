@@ -1,0 +1,62 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+
+
+	<ui:define name="body">
+
+		<h:form id="xmlResourceCustomConfigurationForm">
+			<velo:XMLManager id="xmlManager"
+				type="content"
+				xmlContent="#{resourceHome.instance.configuration}" columns="3"
+				footerClass="panelGridActionFooter"
+				headerClass="panelGridActionHeader"
+				styleClass="panelGridActionStyle" columnClasses="subtitle,medium">
+
+				<rich:panel style="padding:0;width:700px;"
+					headerClass="outpanelHeader">
+					<f:facet name="header">Adapter Properties</f:facet>
+
+					<velo:XMLTagInputs
+						for="xmlResourceCustomConfigurationForm:xmlManager"
+						columns="2" tagName="adapter" />
+				</rich:panel>
+
+				<rich:panel style="padding:0;width:700px;"
+					headerClass="outpanelHeader">
+					<f:facet name="header">Specific-Type Properties</f:facet>
+
+					<velo:XMLTagInputs
+						for="xmlResourceCustomConfigurationForm:xmlManager"
+						columns="2" tagName="specific" />
+				</rich:panel>
+			</velo:XMLManager>
+
+
+			<div class="actionButtons"><h:commandButton
+				id="updateCustomProperties" value="Update Properties"
+				action="#{resourceActions.updateResourceCustomConfiguration}"
+				rendered="#{resourceHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/Resource.xhtml"
+				rendered="#{resourceHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceFrom ? 'ResourceList' : resourceFrom}.xhtml"
+				rendered="#{!resourceHome.managed}" /></div>
+		</h:form>
+
+
+
+	</ui:define>
+</ui:composition>

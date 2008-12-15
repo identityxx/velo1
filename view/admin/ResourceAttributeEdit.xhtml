@@ -1,0 +1,214 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceAttribute" styleClass="edit">
+
+			<rich:panel>
+			<rich:panel>
+			<f:facet name="header">General Details</f:facet>
+				
+				<s:decorate id="resourceDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Resource</ui:define>
+					<h:selectOneMenu id="resource"
+						value="#{resourceAttributeHome.instance.resource}" required="true">
+						<s:selectItems value="#{guiResources}" var="ts"
+							label="#{ts.displayName}" noSelectionLabel="---Select---" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				
+				<s:decorate id="resourceTypeDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Resource Type</ui:define>
+					<h:outputText value="#{resourceAttributeHome.instance.resource.resourceType.uniqueName}"/>
+				</s:decorate>
+
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name(as in resource)</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{resourceAttributeHome.instance.uniqueName}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{resourceAttributeHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{resourceAttributeHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<div style="clear: both"></div>
+			</rich:panel>
+			<rich:panel>
+			<f:facet name="header">Attribute Structure Details</f:facet>
+				
+				<s:decorate id="dataTypeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Data Type</ui:define>
+					<h:selectOneMenu id="dataType" value="#{resourceAttributeHome.instance.dataType}" required="true">
+						<f:selectItem itemValue="STRING" itemLabel="String" />
+						<f:selectItem itemValue="NUMERIC" itemLabel="Numeric" />
+						<f:selectItem itemValue="BOOLEAN" itemLabel="Boolean" />
+						<a:support event="onblur" reRender="dataTypeDecoration" bypassUpdates="true" />
+            		</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="minValuesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Minimum Values</ui:define>
+					<h:inputText id="minValues" required="true" size="3" maxlength="3"
+						value="#{resourceAttributeHome.instance.minValues}" >
+						<a:support event="onblur" reRender="minValuesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="maxValuesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Maximum Values</ui:define>
+					<h:inputText id="maxValues" required="true" size="3" maxlength="3"
+						value="#{resourceAttributeHome.instance.maxValues}">
+						<a:support event="onblur" reRender="maxValuesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<s:decorate id="minLengthDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Minimum Length</ui:define>
+					<h:inputText id="minLength" required="true" size="3" maxlength="3"
+						value="#{resourceAttributeHome.instance.minLength}">
+						<a:support event="onblur" reRender="minLengthDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="maxLengthDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Maximum Length</ui:define>
+					<h:inputText id="maxLength" required="true" size="3" maxlength="3"
+						value="#{resourceAttributeHome.instance.maxLength}">
+						<a:support event="onblur" reRender="maxLengthDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="priorityDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Priority</ui:define>
+                    <h:inputText id="priority" required="true" size="3" maxlength="3"
+                        value="#{resourceAttributeHome.instance.priority}">
+                        <a:support event="onblur" reRender="priorityDecoration"
+                            bypassUpdates="true" />
+                    </h:inputText>
+                </s:decorate>
+				
+				<div style="clear: both"></div>
+			</rich:panel>
+			
+			<rich:panel>
+			<f:facet name="header">Attribute Indication</f:facet>
+				<s:decorate id="accountIdDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Is an Account ID Attribute?</ui:define>
+					<h:selectBooleanCheckbox id="accountId" value="#{resourceAttributeHome.instance.accountId}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="passwordAttributeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Is a Password Attribute?</ui:define>
+					<h:selectBooleanCheckbox value="#{resourceAttributeHome.instance.passwordAttribute}" ></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<div style="clear: both"></div>
+			</rich:panel>
+			<rich:panel>
+			<f:facet name="header">Attribute Properties</f:facet>
+				<s:decorate id="managedDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Managed?</ui:define>
+					<h:selectBooleanCheckbox id="managed" value="#{resourceAttributeHome.instance.managed}" ></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="requiredDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Required?</ui:define>
+					<h:selectBooleanCheckbox id="required" value="#{resourceAttributeHome.instance.required}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="synced" template="layout/edit.xhtml">
+					<ui:define name="label">Synchronized?</ui:define>
+					<h:selectBooleanCheckbox id="synced" value="#{resourceAttributeHome.instance.synced}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<div style="clear: both"></div>
+			</rich:panel>
+			<rich:panel>
+			<f:facet name="header">Attribute Source</f:facet>
+				
+				<s:decorate id="sourceTypeDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Source Type</ui:define>
+					<h:selectOneMenu id="sourceType" value="#{resourceAttributeHome.instance.sourceType}" required="true">
+                		<s:selectItems value="#{resourceAttributeSourceTypes}" var="s" label="#{s}" noSelectionLabel="-all statuses-"/>
+						<s:convertEnum />
+					</h:selectOneMenu >
+				</s:decorate>
+				
+				
+				<s:decorate id="identityAttributeDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Identity Attribute Mapping</ui:define>
+					<h:selectOneMenu id="identityAttribute"
+						value="#{resourceAttributeHome.instance.identityAttribute}" required="false">
+						<s:selectItems value="#{guiIdentityAttributes}" var="ia"
+							label="#{ia.displayName}" noSelectionLabel="---No Mapping---" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<div style="clear: both">Please see attribute rules for more information about data sources</div>
+			</rich:panel>
+				
+				
+				<div style="clear: both"><span class="required">*</span>required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{resourceAttributeHome.persist}"
+				disabled="#{!resourceAttributeHome.wired}"
+				rendered="#{!resourceAttributeHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{resourceAttributeHome.update}"
+				rendered="#{resourceAttributeHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{resourceAttributeHome.remove}"
+				rendered="#{resourceAttributeHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ResourceAttribute.xhtml"
+				rendered="#{resourceAttributeHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceAttributeFrom ? 'ResourceAttributeList' : resourceAttributeFrom}.xhtml"
+				rendered="#{!resourceAttributeHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

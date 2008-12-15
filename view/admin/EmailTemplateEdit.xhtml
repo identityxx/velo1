@@ -1,0 +1,90 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->    
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+    
+	<ui:define name="body">
+
+		<h:form id="emailTemplate" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Edit Email Template</f:facet>
+
+				<s:decorate id="nameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Name</ui:define>
+					<h:inputText id="name" required="true" size="150" maxlength="150"
+						value="#{emailTemplateHome.instance.name}">
+						<a:support event="onblur" reRender="nameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputText id="description" size="150"
+						required="true" value="#{emailTemplateHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="recipientsEmailAddressesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Recipients Email Addresses</ui:define>
+					<h:inputText id="recipientsEmailAddresses" required="false" size="150" maxlength="150"
+						value="#{emailTemplateHome.instance.recipientsEmailAddresses}">
+						<a:support event="onblur" reRender="recipientsEmailAddressesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+
+				<s:decorate id="subjectDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Subject</ui:define>
+					<h:inputText id="subject" required="true" size="150" maxlength="150"
+						value="#{emailTemplateHome.instance.subject}">
+						<a:support event="onblur" reRender="subjectDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+
+
+				<s:decorate id="contentDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Content</ui:define>
+					<rich:editor id="content" cols="110" rows="45"
+						required="true" value="#{emailTemplateHome.instance.content}" />
+				</s:decorate>
+
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{emailTemplateHome.persist}"
+				disabled="#{!emailTemplateHome.wired}"
+				rendered="#{!emailTemplateHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{emailTemplateHome.update}"
+				rendered="#{emailTemplateHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{emailTemplateHome.remove}"
+				rendered="#{emailTemplateHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/EmailTemplate.xhtml"
+				rendered="#{emailTemplateHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty emailTemplateFrom ? 'EmailTemplateList' : emailTemplateFrom}.xhtml"
+				rendered="#{!emailTemplateHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

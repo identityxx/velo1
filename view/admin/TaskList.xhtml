@@ -1,0 +1,214 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="taskSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Task Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Task ID</ui:define>
+                <h:inputText id="taskId" value="#{taskList.task.taskId}">
+                	<f:validateLongRange minimum="1"/>
+                </h:inputText>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Description</ui:define>
+                <h:inputText id="description" value="#{taskList.task.description}"/>
+            </s:decorate>
+            
+            <s:decorate id="searchCreationDateDecoration" template="layout/display.xhtml">
+            
+                <ui:define name="label">Creation Date</ui:define>
+                <h:panelGrid columns="6">
+                <h:outputText value="From:"/>
+                <rich:calendar id="fromCreationDate" value="#{taskList.task.fromCreationDate}"
+					locale="#{locale}"
+					popup="true"
+					datePattern="dd/MM/yyyy"
+					converter="#{dateTimeConverter}"
+				/>
+				
+				<h:outputText value="To:"/>
+				<rich:calendar id="toCreationDate" value="#{taskList.task.toCreationDate}"
+					locale="#{locale}"
+					popup="true"
+					datePattern="dd/MM/yyyy"
+					converter="#{dateTimeConverter}"/>
+				</h:panelGrid>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Status</ui:define>
+				<h:selectOneMenu id="status" value="#{taskList.task.status}">
+					<!--<f:selectItem itemValue="" itemLabel="All Tasks"/>-->
+                	<s:selectItems value="#{taskStatuses}" var="s" label="#{s}" noSelectionLabel="-all statuses-"/>
+					<s:convertEnum />
+				</h:selectOneMenu >
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Max Results</ui:define>
+                <rich:inputNumberSlider id="maxResults" value="#{taskList.maxResults}">
+					<f:validateLongRange minimum="0"/>
+				</rich:inputNumberSlider>
+            </s:decorate>
+
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/TaskList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <rich:panel>
+        <f:facet name="header">Task Search Results</f:facet>
+    <div class="results" id="taskList">
+
+    <h:outputText value="No task exists" 
+               rendered="#{empty taskList.resultList}"/>
+               
+    <rich:dataTable id="taskList" 
+                var="task"
+              value="#{taskList.resultList}" 
+           rendered="#{not empty taskList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="ID #{taskList.order=='taskId asc' ? messages.down : ( taskList.order=='taskId desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{taskList.order=='taskId asc' ? 'taskId desc' : 'taskId asc'}"/>
+                </s:link>
+            </f:facet>
+            #{task.taskId}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Status #{taskList.order=='status asc' ? messages.down : ( taskList.order=='status desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{taskList.order=='status asc' ? 'status desc' : 'status asc'}"/>
+                </s:link>
+            </f:facet>
+            <h:outputText value="#{task.status}" rendered="#{task.status eq 'SUCCESS'}" style="color: green; font-weight: bold;"/>
+			<h:outputText value="#{task.status}" rendered="#{task.status eq 'RUNNING'}" style="color: blue; font-weight: bold;"/>
+			<h:outputText value="#{task.status}" rendered="#{task.status eq 'PENDING'}" style="color: gray; font-weight: bold;"/>
+			<h:outputText value="#{task.status}" rendered="#{task.status eq 'FAILURE'}" style="color: red; font-weight: bold;"/>
+			<h:outputText value="#{task.status}" rendered="#{task.status eq 'FATAL_ERROR'}" style="color: red; font-weight: bold;"/>
+			<h:outputText value="#{task.status}" rendered="#{task.status eq 'CANCELLED'}" style="color: chocolate; font-weight: bold;"/>
+			<h:outputText value="#{task.status}" rendered="#{task.status eq 'HANDLED_MANUALLY'}" style="color: darkmagenta; font-weight: bold;"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+            	<h:outputText value="Description"/>
+            </f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'Task' : from}.xhtml" value="#{task.description}">
+            	<f:param name="taskId" value="#{task.taskId}"/>
+            </s:link>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+            	<h:outputText value="Part of BT?"/>
+            </f:facet>
+            <s:link view="/admin/BulkTask.xhtml" 
+            	value="Yes(#{task.bulkTask.bulkTaskId})" rendered="#{task.bulkTask.bulkTaskId ne null}">
+				<f:param name="bulkTaskId" value="#{task.bulkTask.bulkTaskId}"/>
+			</s:link>
+			
+			<h:outputText value="No" rendered="#{task.bulkTask eq null}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Creation Date #{taskList.order=='creationDate asc' ? messages.down : ( taskList.order=='creationDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{taskList.order=='creationDate asc' ? 'creationDate desc' : 'creationDate asc'}"/>
+                </s:link>
+            </f:facet>
+            #{task.creationDate}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Expected Execution Date #{taskList.order=='expectedExecutionDate asc' ? messages.down : ( taskList.order=='expectedExecutionDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{taskList.order=='expectedExecutionDate asc' ? 'expectedExecutionDate desc' : 'expectedExecutionDate asc'}"/>
+                </s:link>
+            </f:facet>
+            #{task.expectedExecutionDate}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Last Execution Date #{taskList.order=='lastExecutionDate asc' ? messages.down : ( taskList.order=='lastExecutionDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{taskList.order=='lastExecutionDate asc' ? 'lastExecutionDate desc' : 'lastExecutionDate asc'}"/>
+                </s:link>
+            </f:facet>
+            #{task.lastExecutionDate}
+        </h:column>
+        <h:column>
+            <f:facet name="header">action</f:facet>
+            <s:link view="/admin/#{empty from ? 'Task' : from}.xhtml" 
+                   value="Select" 
+                      id="task">
+                <f:param name="taskId" 
+                        value="#{task.taskId}"/>
+            </s:link>
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <s:link view="/admin/TaskList.xhtml" 
+            rendered="#{taskList.previousExists}" 
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+        
+        <s:link view="/admin/TaskList.xhtml" 
+            rendered="#{taskList.previousExists}" 
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult" 
+                    value="#{taskList.previousFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/TaskList.xhtml" 
+            rendered="#{taskList.nextExists}" 
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult" 
+                    value="#{taskList.nextFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/TaskList.xhtml" 
+            rendered="#{taskList.nextExists}" 
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult" 
+                    value="#{taskList.lastFirstResult}"/>
+        </s:link>
+        
+    </div>
+    
+</ui:define>
+
+</ui:composition>
+

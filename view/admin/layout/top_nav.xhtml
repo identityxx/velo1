@@ -1,0 +1,148 @@
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:s="http://jboss.com/products/seam/taglib"
+     xmlns:t="http://myfaces.apache.org/tomahawk"
+     xmlns:rich="http://richfaces.ajax4jsf.org/rich">
+    <h:form>
+    	<!-- Not a component bug, but IE z-index bug, setting z-index to prevent overlapping -->
+        <rich:toolBar rendered="#{identity.loggedIn}" itemSeparator="line" style="z-index: 5000; position: relative;">
+            <rich:dropDownMenu value="Resources">
+            	<rich:menuItem submitMode="server" id="resources_resource_types" value="Resource Types" action="/admin/ResourceTypeList.xhtml" rendered="#{s:hasRole('manage_resources')}"/>
+            	<rich:menuSeparator/>
+                <rich:menuItem submitMode="server" id="resources_resources" value="Resources" action="/admin/ResourceList.xhtml" rendered="#{s:hasRole('manage_resources')}"/>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_identities" value="Identities">
+                <rich:menuItem id="identities_users" submitMode="server" value="User List" action="/admin/UserList.xhtml" rendered="#{s:hasRole('manage_users')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="accounts" submitMode="server" value="Accounts" action="/admin/AccountList.xhtml" rendered="#{s:hasRole('manage_users')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="identities_identity_attributes" submitMode="server" value="Identity Attributes" action="/admin/IdentityAttributeList.xhtml" rendered="#{s:hasRole('manage_identity_attributes')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="identities_identity_attribute_groups" submitMode="server" value="Identity Attributes Groups" action="/admin/IdentityAttributesGroupList.xhtml" rendered="#{s:hasRole('manage_identity_attribute_groups')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="userContainers" submitMode="server" value="User Containers" action="/admin/UserContainerList.xhtml" rendered="#{s:hasRole('manage_users')}"/>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_workflow" value="Workflow">
+            	<rich:menuItem id="approversGroups" submitMode="server" value="Approvers Groups" action="/admin/ApproversGroupList.xhtml" rendered="#{s:hasRole('super_user')}"/>
+            	<rich:menuItem id="workflowProcessDefinitions" submitMode="server" value="Workflow Process Definitions" action="/admin/WorkflowProcessDefList.xhtml" rendered="true"/>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_access" value="Access">
+                <rich:menuItem id="access_roles" submitMode="server" value="Roles" action="/admin/RoleList.xhtml" rendered="true"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="access_rolesFolder" submitMode="server" value="Roles-Folder List" action="/admin/RolesFolderList.xhtml" rendered="true"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="access_roles_resource_attributes_rules" submitMode="server" value="Roles Resource Attributes Rules" action="/admin/RoleResourceAttributeRuleList.xhtml" rendered="true"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="resource_groups" submitMode="server" value="Resource Groups" action="/admin/ResourceGroupList.xhtml" rendered="true"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="access_capabilities" submitMode="server" value="Capabilities" action="/admin/CapabilityList.xhtml" rendered="#{s:hasRole('manage_capabilities')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="access_capability_folders" submitMode="server" value="Capability Folders" action="/admin/CapabilityFolderList.xhtml" rendered="#{s:hasRole('manage_capabilities')}"/>
+            </rich:dropDownMenu>
+            
+            
+            <rich:dropDownMenu id="root_organizational" value="Org">
+            <!--<rich:dropDownMenu id="root_organizational" value="{messages['global.menus.topMenu.organizational']}">-->
+                <rich:menuItem id="organizational_positions" submitMode="server" value="Positions" action="/admin/PositionList.xhtml"/>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_reconcilidation" value="Reconciliation" rendered="#{s:hasRole('manage_resource_reconcile_policies')}">
+                <rich:menuGroup value="Resource Reconciliation">
+                    <rich:menuItem id="reconcilidation_fulls" submitMode="server" value="All Resource Reconciliation" action="/admin/ReconcileAllSystems.xhtml" rendered="false"/>
+                    <rich:menuSeparator/>
+                    <rich:menuItem id="reconcilidation_reconcile_a_resource" submitMode="server" value="Resource Reconciliation" action="/admin/ReconcileResource.xhtml" rendered="false"/>
+                    <!--<rich:menuSeparator/>-->
+                    <rich:menuItem id="reconcilidation_policies" submitMode="server" value="Reconcile Policies" action="/admin/ReconcileResourcePolicyList.xhtml" rendered="#{s:hasRole('manage_resource_reconcile_policies')}"/>
+                </rich:menuGroup>
+                
+                <rich:menuGroup value="Users Reconciliation">
+                    <rich:menuItem id="reconcilidation_users" submitMode="server" value="#{messages['global.menus.topMenu.reconciliation.usersReconciliation']}" action="/admin/ReconcileUsers.xhtml" rendered="false"/>
+                    <rich:menuItem id="reconcilidation_users_policies" submitMode="server" value="#{messages['global.menus.topMenu.reconciliation.reconcileUsersPolicies']}" action="/admin/ReconcileUsersPolicyList.xhtml" rendered="false"/>
+                    <rich:menuItem id="reconcilidation_identity_attributes" submitMode="server" value="Reconcile Identity Attributes" action="/admin/ReconcileIdentityAttributes.xhtml" rendered="#{s:hasRole('manage_resource_reconcile_policies')}"/>
+                </rich:menuGroup>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_tasks" value="Tasks">
+                <rich:menuItem id="tasks_task_list" value="Tasks" submitMode="server" action="/admin/TaskList.xhtml" rendered="#{s:hasRole('manage_tasks')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="tasks_bulk_task_list" submitMode="server" value="BulkTask List" action="/admin/BulkTaskList.xhtml" rendered="#{s:hasRole('manage_bulk_tasks')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="tasks_tasks_queues" submitMode="server" value="Tasks Queues" action="/admin/TasksQueueList.xhtml" rendered="#{s:hasRole('manage_tasks')}"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="tasks_tasks_summary" submitMode="server" value="Tasks Summary" action="/admin/TasksSummary.xhtml"/>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_requests" value="Requests" rendered="#{s:hasRole('view_requests')}">
+                <rich:menuItem id="requests_pending_approval_request_list" submitMode="server" value="Pending Approval Requests" action="/admin/RequestList.xhtml?status=PENDING_APPROVAL"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="requests_list" submitMode="server" value="Request List" action="/admin/RequestList.xhtml"/>
+            </rich:dropDownMenu>
+            
+            
+            <rich:dropDownMenu id="root_auditing" value="Auditing">
+                <rich:menuItem id="auditing_event_log" submitMode="server" value="Event Log" action="/admin/EventLogList.xhtml" rendered="true"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="auditing_reports" submitMode="server" value="Reports" action="/admin/ReportList.xhtml"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="resource_reconcile_summaries" submitMode="server" value="Resource Reconcile Summaries" action="/admin/ResourceReconcileSummaryList.xhtml"/>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_misc" value="Misc">
+                <rich:menuItem id="misc_event_definition_list" submitMode="server" value="Event Definitions" action="/eventDefinitionList.xhtml" rendered="#{s:hasRole('manage_event_definitions')}" disabled="true"/>
+                <rich:menuSeparator/>
+                <rich:menuGroup value="Imports">
+                    <rich:menuItem id="import_accounts_to_users_assoications" submitMode="server" value="Accounts To Users Associations" action="/admin/ImportAccountsToUsersAssociationsPre.xhtml" disabled="false"/>
+                    <rich:menuSeparator/>
+                    <rich:menuItem id="import_users_to_position_associations" submitMode="server" value="Users To Position Associations" action="/admin/ImportUsersToPositionAssociationsPre.xhtml" disabled="false"/>
+                    <rich:menuSeparator/>
+                    <rich:menuItem id="import_roles_to_position_associations" submitMode="server" value="Roles To Position Associations" action="/admin/ImportRolesToPositionAssociationsPre.xhtml" disabled="false"/>
+                    <rich:menuSeparator/>
+                    <rich:menuItem id="import_roles_creation" submitMode="server" value="Import New Roles" action="/admin/ImportNewRolesPre.xhtml" disabled="false"/>
+                    </rich:menuGroup>
+                <rich:menuSeparator/>
+                <rich:menuItem id="event_list" submitMode="server" value="Events" action="/admin/EventDefinitionList.xhtml"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="emails_email_templates" value="Email Templates" submitMode="server" action="/admin/EmailTemplateList.xhtml"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="scanner_list" submitMode="server" value="Scanner List" action="/admin/ScannerList.xhtml"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="system_configuration" submitMode="server" value="System Configuration" action="/admin/SystemConfiguration.xhtml"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="gateway_list" submitMode="server" value="Gateway List" action="/admin/GatewayList.xhtml"/>
+                <rich:menuSeparator/>
+                <rich:menuGroup value="Scheduler">
+                    <rich:menuItem id="scheduler_triggers" submitMode="server" value="Trigger List" action="/schedulerTriggerList.xhtml" disabled="true"/>
+                    <rich:menuItem id="scheduler_jobs_definitions" submitMode="server" value="Jobs Definition List" action="/schedulerJobDefinitionList.xhtml" disabled="true"/>
+                </rich:menuGroup>
+                <rich:menuSeparator/>
+                <rich:menuGroup value="Plugins">
+                    <rich:menuItem id="user_plugin_id" submitMode="server" value="User Plugin ID" action="/admin/UserPluginIdEdit.xhtml" disabled="true"/>
+                </rich:menuGroup>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="root_password_sync" value="Password Sync" rendered="#{s:hasRole('manage_password_sync')}">
+                <rich:menuItem id="pass_sync_password_policy_list" submitMode="server" value="Password Policies" action="/admin/PasswordPolicyList.xhtml" disabled="true"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="pass_sync_password_policy_containers_list" submitMode="server" value="PasswordPolicy Containers" action="/admin/PasswordPolicyContainerList.xhtml" disabled="true"/>
+            </rich:dropDownMenu>
+            
+            <rich:dropDownMenu id="about" value="Help">
+                <rich:menuItem id="about_online_site" submitMode="server" value="Velo Online Site" action="/veloHomePage.xhtml"/>
+                <rich:menuItem id="version_history" submitMode="server" value="Version History" action="/veloVersionHistory.xhtml"/>
+                <rich:menuSeparator/>
+                <rich:menuItem id="about_about" submitMode="server" value="About Velo" action="/about.xhtml"/>
+            </rich:dropDownMenu>
+        </rich:toolBar>
+        
+        
+    </h:form>
+</div>

@@ -1,0 +1,82 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:sb="http://myfaces.apache.org/sandbox"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="capabilityFolder" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">CapabilityFolder Folder</f:facet>
+
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{capabilityFolderHome.instance.uniqueName}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{capabilityFolderHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{capabilityFolderHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				
+				<s:decorate id="capabilitiesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Assigned Capabilities</ui:define>
+					<h:selectManyListbox id="capabilities" size="5" value="#{capabilityFolderHome.instance.capabilities}">
+						<s:selectItems value="#{guiCapabilities}" var="cap" label="#{cap.description}" />
+						<s:convertEntity entityClass="velo.entity.Capability"/>
+					</h:selectManyListbox>
+				</s:decorate>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{capabilityFolderHome.persist}"
+				disabled="#{!capabilityFolderHome.wired}"
+				rendered="#{!capabilityFolderHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{capabilityFolderHome.update}"
+				rendered="#{capabilityFolderHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{capabilityFolderHome.remove}"
+				rendered="#{capabilityFolderHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/CapabilityFolder.xhtml"
+				rendered="#{capabilityFolderHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty capabilityFolderFrom ? 'CapabilityFolderList' : capabilityFolderFrom}.xhtml"
+				rendered="#{!capabilityFolderHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

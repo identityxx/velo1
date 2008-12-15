@@ -1,0 +1,33 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<rich:panel style="text-align: center;">
+			<f:facet name="header">Sync Default Repository Data</f:facet>
+
+			<h:form>
+				<h:commandButton action="#{confBean.syncResourceTypes}" value="Sync Resource Types"/>
+				<!-- 
+				<h:commandButton action="{confBean.syncActionLanguages}" value="Sync Action Languages"/>
+				<h:commandButton action="{confBean.syncResourceTypeAttributes}" value="Sync Resource Type Attributes"/>
+				<h:commandButton action="{confBean.syncResourceActionDefinitions}" value="Sync Resource Action Definitions"/>
+				-->
+			</h:form>
+		</rich:panel>
+
+	</ui:define>
+
+</ui:composition>

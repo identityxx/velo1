@@ -1,0 +1,382 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Request Summary</f:facet>
+
+        <s:decorate id="requestId" template="layout/display.xhtml">
+            <ui:define name="label">Request ID</ui:define>
+            #{requestHome.instance.requestId}
+        </s:decorate>
+        
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Requested Creation Date</ui:define>
+            <h:outputText value="#{requestHome.instance.creationDate.time}">
+                <s:convertDateTime type="both"/>
+            </h:outputText>
+        </s:decorate>
+        
+        <s:decorate id="requester" template="layout/display.xhtml">
+            <ui:define name="label">Requester</ui:define>
+            #{requestHome.instance.requester.name}
+        </s:decorate>
+        
+        <s:decorate id="status" template="layout/display.xhtml">
+            <ui:define name="label">Approval Status</ui:define>
+            #{requestHome.instance.status}
+        </s:decorate>
+        
+        <s:decorate id="notes" template="layout/display.xhtml">
+            <ui:define name="label">Notes</ui:define>
+            #{requestHome.instance.notes}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <rich:panel rendered="#{requestHome.instance.type eq 'CREATE_USER'}">
+        <f:facet name="header">Requested User Attributes</f:facet>
+        <rich:dataTable id="requestList" 
+            var="rua"
+            value="#{requestHome.instance.attributes}" 
+            rendered="#{not empty requestHome.instance.attributes}">
+            <h:column>
+                <f:facet name="header">Attribute Name</f:facet>
+                #{rua.displayName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Attribute Value</f:facet>
+                #{rua.firstValue.asString}
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+    <!-- Show bulkTasks+tasks if the request status is approved-->
+    <rich:panel rendered="#{requestHome.instance.status eq 'APPROVED'}">
+        <f:facet name="header">Associated Bulk Tasks</f:facet>
+        <rich:dataTable id="bulkTaskList" 
+            var="bulkTask"
+            value="#{velo:setAsList(requestHome.instance.bulkTasks)}" 
+            rendered="#{not empty requestHome.instance.bulkTasks}">
+            <h:column>
+                <f:facet name="header">ID</f:facet>
+                #{bulkTask.bulkTaskId}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Description</f:facet>
+                <s:link view="/admin/BulkTask.xhtml" value="#{bulkTask.description}">
+                    <f:param name="bulkTaskId" value="#{bulkTask.bulkTaskId}"/>
+                </s:link>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Associated Tasks</f:facet>
+                    <rich:dataTable id="tasksInBulkTask" 
+                        var="task"
+                        value="#{velo:setAsList(bulkTask.tasks)}" 
+                        rendered="#{not empty bulkTask.tasks}">
+                        <h:column>
+                            <f:facet name="header">ID</f:facet>
+                            <s:link view="/admin/Task.xhtml" value="#{task.taskId}">
+                                <f:param name="taskId" value="#{task.taskId}"/>
+                            </s:link>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Description</f:facet>
+                            #{task.description}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Status</f:facet>
+                            #{task.status}
+                        </h:column>
+                    </rich:dataTable>
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+    
+    <!-- Show direct tasks if the request status is approved-->
+    <rich:panel rendered="#{requestHome.instance.status eq 'APPROVED'}">
+        <f:facet name="header">Associated Direct Tasks</f:facet>
+        <rich:dataTable id="taskList" 
+            var="task"
+            value="#{velo:setAsList(requestHome.instance.tasks)}" 
+            rendered="#{not empty requestHome.instance.tasks}">
+            <h:column>
+                <f:facet name="header">ID</f:facet>
+                #{task.taskId}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Status</f:facet>
+                #{task.status}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Description</f:facet>
+                #{bulkTask.description}
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+    <!-- Roles Associated with Request -->
+    <!-- TODO, support modify Roles request here? or another panel? -->
+    <rich:panel rendered="#{ ( (requestHome.instance.type eq 'CREATE_USER') and (not empty requestHome.instance.requestRoles) )}">
+        <f:facet name="header">Requested Roles</f:facet>
+        <rich:dataTable id="roleList" 
+            var="reqRole"
+            value="#{velo:setAsList(requestHome.instance.requestRoles)}" 
+            rendered="#{not empty requestHome.instance.requestRoles}">
+            <h:column>
+                <f:facet name="header">Role Name</f:facet>
+                #{reqRole.name}
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    <!-- Positions to be associated to user -->
+    <rich:panel rendered="#{ ( (requestHome.instance.type eq 'CREATE_USER') and (not empty requestHome.instance.requestedPositions) )}">
+        <f:facet name="header">Requested Positions</f:facet>
+        <rich:dataTable id="reqPosList" 
+            var="reqPos"
+            value="#{velo:setAsList(requestHome.instance.requestedPositions)}" 
+            rendered="#{not empty requestHome.instance.requestedPositions}">
+            <h:column>
+                <f:facet name="header">Position Unique Identifier</f:facet>
+                #{reqPos.uniqueIdentifier}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Position Display Name</f:facet>
+                #{reqPos.displayName}
+            </h:column>
+            <h:column>
+            	<f:facet name="header">Roles Assigned to the Position</f:facet>
+            	<ui:repeat var="posRole" value="#{velo:setAsList(reqPos.positionRoles)}" rendered="#{not empty reqPos.positionRoles}">
+					<h:outputText value="#{posRole.role.name};  "  />
+				</ui:repeat>
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+    
+
+    
+    <!-- MODIFY USER ROLES REQUEST -->
+    <!--Positions to revoke from user-->
+    <rich:panel rendered="#{ ( (requestHome.instance.type eq 'MODIFY_USER_ROLES') and (not empty requestHome.instance.requestedPositionsToAssign) )}">
+        <f:facet name="header">Requested Positions to Assign</f:facet>
+        <rich:dataTable id="posToAssignList" 
+            var="rpta"
+            value="#{velo:setAsList(requestHome.instance.requestedPositionsToAssign)}" 
+            rendered="#{not empty requestHome.instance.requestedPositionsToAssign}">
+            <h:column>
+                <f:facet name="header">Position Unique Identifier</f:facet>
+                #{rpta.position.uniqueIdentifier}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Position Display Name</f:facet>
+                #{rpta.position.displayName}
+            </h:column>
+            <h:column>
+            	<f:facet name="header">Roles Assigned to the Position</f:facet>
+            	<ui:repeat var="posToAssignRole" value="#{velo:setAsList(rpta.position.positionRoles)}" rendered="#{not empty rpta.position.positionRoles}">
+					<h:outputText value="#{posToAssignRole.role.name}"/><br/>
+				</ui:repeat>
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    <rich:panel rendered="#{ ( (requestHome.instance.type eq 'MODIFY_USER_ROLES') and (not empty requestHome.instance.requestedPositionsToRevoke) )}">
+        <f:facet name="header">Requested Positions to Revoke</f:facet>
+        <rich:dataTable id="posToRevokeList" 
+            var="rptr"
+            value="#{velo:setAsList(requestHome.instance.requestedPositionsToRevoke)}" 
+            rendered="#{not empty requestHome.instance.requestedPositionsToRevoke}">
+            <h:column>
+                <f:facet name="header">Position Unique Identifier</f:facet>
+                #{rptr.position.uniqueIdentifier}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Position Display Name</f:facet>
+                #{rptr.position.displayName}
+            </h:column>
+            <h:column>
+            	<f:facet name="header">Roles Assigned to the Position</f:facet>
+            	<ui:repeat var="posToRevokeRole" value="#{velo:setAsList(rptr.position.positionRoles)}" rendered="#{not empty rptr.position.positionRoles}">
+					<h:outputText value="#{posToRevokeRole.role.name}"/> <br/>
+				</ui:repeat>
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+    
+    
+    
+    
+    
+	<!-- WTF?! -->
+	<rich:panel rendered="#{requestHome.instance.type eq 'CREATE_USER1'}">
+        <f:facet name="header">Accounts to be affected that associated to user</f:facet>
+        <rich:dataTable id="userAccountList" 
+            var="account"
+            value="#{velo:setAsList(requestHome.instance.user.accounts)}" 
+            rendered="#{not empty requestHome.instance.user.accounts}">
+            <h:column>
+                <f:facet name="header">Account Name</f:facet>
+                #{account.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Target System</f:facet>
+                #{account.resource.displayName}
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+
+
+    <!-- Accounts Request -->
+    <rich:panel rendered="#{requestHome.instance.type eq 'Accounts Request'}">
+        <f:facet name="header">Accounts to Delete</f:facet>
+        <rich:dataTable id="accountsToDelete" 
+            var="accountToDelete"
+            value="#{velo:setAsList(requestHome.instance.accountsToDelete)}" 
+            rendered="#{not empty requestHome.instance.accountsToDelete}">
+            <h:column>
+                <f:facet name="header">Account Name</f:facet>
+                #{accountToDelete.accountName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Target System</f:facet>
+                #{accountToDelete.resourceName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Expected Execution Time</f:facet>
+                <h:outputText value="#{accountToDelete.expectedExecutionDate}">
+                    <s:convertDateTime type="both"/>
+                </h:outputText>
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+    <rich:panel rendered="#{requestHome.instance.type eq 'Accounts Request'}">
+        <f:facet name="header">Accounts to Suspend</f:facet>
+        <rich:dataTable id="accountsToSuspend" 
+            var="accountToSuspend"
+            value="#{velo:setAsList(requestHome.instance.accountsToSuspend)}" 
+            rendered="#{not empty requestHome.instance.accountsToSuspend}">
+            <h:column>
+                <f:facet name="header">Account Name</f:facet>
+                #{accountToSuspend.accountName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Target System</f:facet>
+                #{accountToSuspend.resourceName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Expected Execution Time</f:facet>
+                <h:outputText value="#{accountToSuspend.expectedExecutionDate}">
+                    <s:convertDateTime type="both"/>
+                </h:outputText>
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+        
+    <rich:panel rendered="#{requestHome.instance.type eq 'Self Service Access Request'}">
+        <f:facet name="header">Self Service Access Request</f:facet>
+        
+        <s:decorate id="requesterAccesOnTarget" template="layout/display.xhtml">
+            <ui:define name="label">Requested Access:</ui:define>
+            #{requestHome.instance.role.name}
+        </s:decorate>
+                
+                
+        <s:decorate id="requstedAccessForUser" template="layout/display.xhtml">
+            <ui:define name="label">Requested Access For User:</ui:define>
+            #{requestHome.instance.requestedAccessForUser.name}
+        </s:decorate>
+                
+        <s:decorate id="anotherEmployeeThatHasMyAccess" template="layout/display.xhtml">
+            <ui:define name="label">Another employee that has my access: </ui:define>
+            #{requestHome.instance.userThatHasMyAccess.name}
+        </s:decorate>     
+                
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Request Description:</ui:define>
+                #{requestHome.instance.description}
+        </s:decorate>
+                   
+        <div style="clear: both"></div>
+        <h:form id="modifyRequestAccess">
+            <s:button value="Modify Request Access" view="/admin/SelfServiceModifyRequestedAccess.xhtml" rendered="#{requestHome.instance.status ne 'APPROVED'}"/>
+        </h:form>
+        
+    </rich:panel>
+    
+    
+    
+    
+    
+    <rich:panel>
+        <f:facet name="header">Request Logs</f:facet>
+        <rich:dataTable width="100%" id="requestLogsDataTableList" rows="100" 
+            columnClasses="col" value="#{velo:setAsList(requestHome.instance.logs)}" var="log" 
+            rendered="#{not empty requestHome.instance.logs}">
+            <h:column>
+                <f:facet name="header">Creation Date</f:facet>
+                <h:outputText value="#{log.creationDate}">
+                    <s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Severity</f:facet>
+                #{log.severity}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Summary Message</f:facet>
+                #{log.summaryMessage}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Detailed Message</f:facet>
+                #{log.detailedMessage}
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>
+    
+    
+    
+    
+    
+    
+    <div class="actionButtons">
+    <h:form id="actions">      
+
+        <!-- 
+        <s:button view="/admin/#{empty requestFrom ? 'RequestList' : requestFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+         -->
+         
+         <s:button view="/admin/#{empty requestFrom ? 'RequestList' : requestFrom}.xhtml"
+            id="backToList"
+            value="Back to List">
+                <f:param name="status" value="#{empty status ? '' : status}" />
+        </s:button>
+        <h:commandButton value="Approve" action="#{requestActions.finallyApproveRequest}" class="button" disabled="#{s:hasRole('approve_requests') and requestHome.instance.status ne 'PENDING_APPROVAL'}"/>
+        <h:commandButton value="Reject" action="#{requestActions.finallyRejectRequest}" class="button" disabled="#{s:hasRole('approve_requests') and requestHome.instance.status ne 'PENDING_APPROVAL'}"/>
+    </h:form>
+    </div>
+
+</ui:define>
+
+</ui:composition>

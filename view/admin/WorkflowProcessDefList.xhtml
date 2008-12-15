@@ -1,0 +1,155 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:sb="http://myfaces.apache.org/sandbox"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="workflowProcessDefSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Workflow Process Definition Search Parameters" switchType="ajax">
+        
+        	<s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Workflow Process Definition Name</ui:define>
+                <h:inputText id="uniqueName" value="#{workflowProcessDefList.workflowProcessDef.uniqueName}"/>
+            </s:decorate>
+            
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/WorkflowProcessDefList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <h:form id="workflowProcessDefList">
+    <rich:panel>
+        <f:facet name="header">Workflow Process Definition Search Results</f:facet>
+    <div class="results" id="workflowProcessDefList">
+
+    <h:outputText value="No workflow Process Definition exists" 
+               rendered="#{empty workflowProcessDefList.resultList}"/>
+               
+    <rich:dataTable id="workflowProcessDefList" 
+                var="workflowProcessDef"
+              value="#{workflowProcessDefList.resultList}" 
+           rendered="#{not empty workflowProcessDefList.resultList}">
+		<h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Unique Name #{workflowProcessDefList.order=='uniqueName asc' ? messages.down : ( workflowProcessDefList.order=='uniqueName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{workflowProcessDefList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'WorkflowProcessDef' : from}.xhtml" value="#{workflowProcessDef.uniqueName}" >
+                <f:param name="workflowProcessDefId" value="#{workflowProcessDef.workflowProcessDefId}"/>
+            </s:link>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                Version
+            </f:facet>
+            #{workflowProcessDef.version}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Associated to User#{workflowProcessDefList.order=='user.name asc' ? messages.down : ( workflowProcessDefList.order=='user.name desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{workflowProcessDefList.order=='user.name asc' ? 'user.name desc' : 'user.name asc'}"/>
+                </s:link>
+            </f:facet>
+            #{workflowProcessDef.uniqueName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Creation Date#{workflowProcessDefList.order=='creationDate asc' ? messages.down : ( workflowProcessDefList.order=='creationDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{workflowProcessDefList.order=='creationDate asc' ? 'creationDate desc' : 'creationDate asc'}"/>
+                </s:link>
+            </f:facet>
+            #{workflowProcessDef.creationDate}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Description #{workflowProcessDefList.order=='description asc' ? messages.down : ( workflowProcessDefList.order=='description desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{workflowProcessDefList.order=='description asc' ? 'description desc' : 'description asc'}"/>
+                </s:link>
+            </f:facet>
+            #{workflowProcessDef.description}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/admin/#{empty from ? 'WorkflowProcessDef' : from}.xhtml" 
+                   value="Select" 
+                      id="workflowProcessDef">
+                <f:param name="workflowProcessDefId" 
+                        value="#{workflowProcessDef.workflowProcessDefId}"/>
+            </s:link>
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <s:link view="/admin/WorkflowProcessDefList.xhtml" 
+            rendered="#{workflowProcessDefList.previousExists}" 
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+        
+        <s:link view="/admin/WorkflowProcessDefList.xhtml" 
+            rendered="#{workflowProcessDefList.previousExists}" 
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult" 
+                    value="#{workflowProcessDefList.previousFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/WorkflowProcessDefList.xhtml" 
+            rendered="#{workflowProcessDefList.nextExists}" 
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult" 
+                    value="#{workflowProcessDefList.nextFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/WorkflowProcessDefList.xhtml" 
+            rendered="#{workflowProcessDefList.nextExists}" 
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult" 
+                    value="#{workflowProcessDefList.lastFirstResult}"/>
+        </s:link>
+        
+    </div>
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/admin/WorkflowProcessDefEdit.xhtml"
+                    id="create" 
+                 value="Add a new workflow process definition"
+                 rendered="true">
+            <f:param name="workflowProcessDefId"/>
+        </s:button>
+    </s:div>
+    </h:form>
+    
+</ui:define>
+
+</ui:composition>
+

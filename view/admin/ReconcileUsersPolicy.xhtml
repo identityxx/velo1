@@ -1,0 +1,48 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Reconcile Users Policy</f:facet>
+
+		<s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Unique Name</ui:define>
+            #{reconcileUsersPolicyHome.instance.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{reconcileUsersPolicyHome.instance.displayName}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/ReconcileUsersPolicyEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty reconcileUsersPolicyFrom ? 'ReconcileUsersPolicyList' : reconcileUsersPolicyFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+                 
+    </div>
+
+</ui:define>
+
+</ui:composition>

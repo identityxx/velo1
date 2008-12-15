@@ -1,0 +1,148 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="eventDefinitionSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Event Definition Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Unique Name</ui:define>
+                <h:inputText id="uniqueName" value="#{eventDefinitionList.eventDefinition.uniqueName}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Display Name</ui:define>
+                <h:inputText id="displayName" value="#{eventDefinitionList.eventDefinition.displayName}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Description</ui:define>
+                <h:inputText id="description" value="#{eventDefinitionList.eventDefinition.description}"/>
+            </s:decorate>
+
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/EventDefinitionList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <rich:panel>
+        <f:facet name="header">EventDefinition Search Results</f:facet>
+    <div class="results" id="eventDefinitionList">
+
+    <h:outputText value="No eventDefinition exists" 
+               rendered="#{empty eventDefinitionList.resultList}"/>
+               
+    <rich:dataTable id="eventDefinitionList" 
+                var="eventDefinition"
+              value="#{eventDefinitionList.resultList}" 
+           rendered="#{not empty eventDefinitionList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Display Name #{eventDefinitionList.order=='displayName asc' ? messages.down : ( eventDefinitionList.order=='displayName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{eventDefinitionList.order=='displayName asc' ? 'displayName desc' : 'displayName asc'}"/>
+                </s:link>
+            </f:facet>
+            #{eventDefinition.displayName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Unique Name #{eventDefinitionList.order=='uniqueName asc' ? messages.down : ( eventDefinitionList.order=='uniqueName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{eventDefinitionList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}"/>
+                </s:link>
+            </f:facet>
+            #{eventDefinition.uniqueName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Description #{eventDefinitionList.order=='description asc' ? messages.down : ( eventDefinitionList.order=='description desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{eventDefinitionList.order=='description asc' ? 'description desc' : 'description asc'}"/>
+                </s:link>
+            </f:facet>
+            #{eventDefinition.description}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/admin/#{empty from ? 'EventDefinition' : from}.xhtml" 
+                   value="Select" 
+                      id="eventDefinition">
+                <f:param name="eventDefinitionId" 
+                        value="#{eventDefinition.eventDefinitionId}"/>
+            </s:link>
+            <h:outputText value="&#160;|&#160;"/>
+            <s:link view="/admin/#{empty from ? 'EventResponseList' : from}.xhtml" value="Responses">
+				<f:param name="eventDefinitionId" value="#{eventDefinition.eventDefinitionId}" />
+			</s:link>
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <s:link view="/admin/EventDefinitionList.xhtml" 
+            rendered="#{eventDefinitionList.previousExists}" 
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+        
+        <s:link view="/admin/EventDefinitionList.xhtml" 
+            rendered="#{eventDefinitionList.previousExists}" 
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult" 
+                    value="#{eventDefinitionList.previousFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/EventDefinitionList.xhtml" 
+            rendered="#{eventDefinitionList.nextExists}" 
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult" 
+                    value="#{eventDefinitionList.nextFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/EventDefinitionList.xhtml" 
+            rendered="#{eventDefinitionList.nextExists}" 
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult" 
+                    value="#{eventDefinitionList.lastFirstResult}"/>
+        </s:link>
+        
+    </div>
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/admin/EventDefinitionEdit.xhtml"
+                    id="create" 
+                 value="Create Event Definition"
+                 rendered="false">
+            <f:param name="eventDefinitionId"/>
+        </s:button>
+    </s:div>
+    
+</ui:define>
+
+</ui:composition>
+

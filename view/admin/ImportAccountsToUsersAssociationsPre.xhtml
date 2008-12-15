@@ -1,0 +1,56 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+	<h:form enctype="multipart/form-data">
+		<rich:panel style="text-align: center;">
+			<f:facet name="header">Import Accounts to Users Assoications</f:facet>
+
+			<!-- 
+			<s:decorate id="fileTypeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">File Type</ui:define>
+					<h:selectOneMenu id="fileType" value="{importActions.fileType}">
+						<f:selectItem itemValue="EXCEL" itemLabel="Excel"/>
+					</h:selectOneMenu> 
+			</s:decorate>
+			 -->
+			 
+			<s:decorate id="spreadSheetNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Spread-Sheet Name</ui:define>
+					<h:inputText id="spreadSheetName" required="false" size="50" maxlength="50"
+						value="#{importActions.spreadSheetName}">
+						<a:support event="onblur" reRender="spreadSheetNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+			</s:decorate>
+			 
+			<s:decorate id="fileToImportDecoration" template="layout/edit.xhtml">
+				<ui:define name="label">File to Import</ui:define>
+				<s:fileUpload id="uploadedFile" data="#{importActions.uploadedFile}" accept="*"
+              		contentType="#{importActions.contentType}" fileName="#{importActions.fileName}"/>
+			</s:decorate>
+
+			<div style="clear:both"/>
+			
+			<h:commandButton action="#{importActions.showAccountsToUsersAssoications}" 
+				id="showAssociations" 
+				value="Show Associations"/>
+		</rich:panel>
+	</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,136 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">BulkTask</f:facet>
+		<s:decorate id="bulkTaskId" template="layout/display.xhtml">
+            <ui:define name="label">Bulk Task ID</ui:define>
+            #{bulkTaskHome.instance.bulkTaskId}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{bulkTaskHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Creation Date</ui:define>
+            <h:outputText value="#{bulkTaskHome.instance.creationDate}">
+            	<s:convertDateTime type="both"/>
+            </h:outputText>
+        </s:decorate>
+        
+        <s:decorate id="request" template="layout/display.xhtml" rendered="#{bulkTaskHome.instance.request ne null}">
+            <ui:define name="label">Related to Request ID</ui:define>
+            <s:link view="/admin/Request.xhtml" 
+            	value="Request ID #{bulkTaskHome.instance.request.requestId}">
+				<f:param name="requestId" value="#{bulkTaskHome.instance.request.requestId}"/>
+			</s:link>
+        </s:decorate>
+        
+        <s:decorate id="workflowProcessId" template="layout/display.xhtml" rendered="#{bulkTaskHome.instance.workflowProcessId ne NULL}">
+            <ui:define name="label">Associated with Workflow Process ID</ui:define>
+            <h:outputText value="#{bulkTaskHome.instance.workflowProcessId}"/>
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+        <rich:spacer width="1" height="8"/><rich:separator /><rich:spacer width="1" height="8"/>
+        
+        <rich:panel>
+        	<f:facet name="header">Logs</f:facet>
+        	<rich:dataTable width="100%" id="bulkTaskLogsDataTableList" rows="100" 
+				columnClasses="col" value="#{velo:setAsList(bulkTaskHome.instance.bulkTaskLogs)}" var="btl" 
+				rendered="#{not empty bulkTaskHome.instance.bulkTaskLogs}">
+				<h:column>
+            		<f:facet name="header">Creation Date</f:facet>
+            		#{btl.creationDate}
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Severity</f:facet>
+            		#{btl.severity}
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Summary Message</f:facet>
+            		#{btl.summaryMessage}
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Detailed Message</f:facet>
+            		#{btl.detailedMessage}
+        		</h:column>
+			</rich:dataTable>
+        
+        	<div style="clear:both"/>
+	    </rich:panel>
+	    
+		<rich:spacer width="1" height="8"/><rich:separator /><rich:spacer width="1" height="8"/>
+			    
+	    <rich:panel>
+			<f:facet name="header">Associated Tasks</f:facet>
+			<rich:dataTable width="100%" id="tasksDataTableList" rows="100" 
+				columnClasses="col" value="#{velo:setAsList(bulkTaskHome.instance.tasks)}" var="task" 
+				rendered="#{not empty bulkTaskHome.instance.tasks}">
+				<h:column>
+					<f:facet name="header">Task ID</f:facet>
+					<s:link view="/admin/Task.xhtml" value="#{task.taskId}">
+						<f:param name="taskId" value="#{task.taskId}"/>
+					</s:link>
+        		</h:column>
+				<h:column>
+					<f:facet name="header">Creation Date</f:facet>
+					#{task.creationDate}
+        		</h:column>
+        		<h:column>
+	            	<f:facet name="header">Task Type</f:facet>
+            		#{task.taskDefinition.description}
+        		</h:column>
+        		<h:column>
+	            	<f:facet name="header">Description</f:facet>
+            		#{task.description}
+        		</h:column>
+        		<h:column>
+	            	<f:facet name="header">Status</f:facet>
+            		#{task.status}
+        		</h:column>
+        		<h:column>
+	            	<f:facet name="header">Failure Counts</f:facet>
+            		#{task.failureCounts}
+        		</h:column>
+        		<h:column>
+	            	<f:facet name="header">Expected Execution Date</f:facet>
+            		#{task.expectedExecutionDate}
+        		</h:column>
+        		<h:column>
+	            	<f:facet name="header">Last Execution Date</f:facet>
+            		#{task.lastExecutionDate}
+        		</h:column>
+			</rich:dataTable>
+	        
+        	<div style="clear:both"/>
+		</rich:panel>
+	</rich:panel>
+		
+	<div class="actionButtons">      
+	
+		<s:button view="/admin/#{empty bulkTaskFrom ? 'BulkTaskList' : bulkTaskFrom}.xhtml"
+			id="done"
+			value="Done"/>
+	</div>
+
+</ui:define>
+
+</ui:composition>

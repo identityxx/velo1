@@ -1,0 +1,247 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Resource Attributes Modifications</f:facet>
+
+		<rich:panel>
+	        <f:facet name="header">Resource</f:facet>
+        	<h:form>
+        	<s:decorate template="layout/display.xhtml">
+           		<ui:define name="label">Resource</ui:define>
+           		<h:selectOneMenu id="resourceUniqueName" 
+            		value="#{roleActions.selectedResource}" required="false">
+            		<s:convertEntity/>
+					<s:selectItems value="#{roleHome.instance.resources}" var="r"
+						label="#{r.displayName}" noSelectionLabel="-Select-" />
+					<a:support event="onchange" ajaxSingle="true" reRender="resourceAttributeList" />
+				</h:selectOneMenu>
+			</s:decorate>
+			</h:form>
+			
+        	<div style="clear:both"/>
+	        
+		</rich:panel>
+
+		<h:panelGrid columns="2" columnClasses="gridContent" width="100%">
+		<rich:panel>
+	        <f:facet name="header">Entire Resource Attribute List</f:facet>
+	        <a:outputPanel id="resourceAttributeList">
+	        <h:outputText value="Please select a resource above" style="color: red;" rendered="#{roleActions.selectedResource eq null}"/>
+	        
+			<s:div id="resourceAttributeListz" rendered="#{roleActions.selectedResource ne null}"><h:outputText
+				value="No resource attribute exists"
+				rendered="#{empty roleActions.selectedResource.attributes}" /> <rich:dataTable
+				id="totalResourceAttributeList" var="resourceAttribute"
+				value="#{velo:setAsList(roleActions.selectedResource.attributes)}"
+				rendered="#{not empty roleActions.selectedResource.attributes}">
+				<h:column>
+					<f:facet name="header">
+						Name as In Resource
+					</f:facet>
+            		#{resourceAttribute.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+							Display Name
+					</f:facet>
+            		#{resourceAttribute.displayName}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						Data Type
+					</f:facet>
+            		#{resourceAttribute.dataType}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Managed?" />
+					</f:facet>
+					<h:outputText value="Yes" rendered="#{resourceAttribute.managed}" />
+					<h:outputText value="No" rendered="#{!resourceAttribute.managed}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">Action</f:facet>
+					<h:form>
+					<a:commandLink id="addRoleResAttrAsText" action="#{roleActions.addTextualResourceAttributeToAssign(resourceAttribute)}" reRender="roleResourceAttributesToAddCartPanel">
+            			<h:outputText value="Add as Text"/>
+            		</a:commandLink>
+            		|
+            		<a:commandLink id="addRoleResAttrAsRule" action="#{roleActions.addRuleResourceAttributeToAssign(resourceAttribute)}" reRender="roleResourceAttributesToAddCartPanel">
+            			<h:outputText value="Add as Rule"/>
+            		</a:commandLink>
+            		</h:form>
+				</h:column>
+			</rich:dataTable>
+			</s:div>
+		</a:outputPanel>
+		</rich:panel>
+		<rich:panel>
+		<f:facet name="header">Original Role Resource Attributes Assignment</f:facet>
+	        <a:outputPanel id="originalRoleAttributesAssignmentPanel">
+	        
+			<div><h:outputText
+				value="No role resource attribute were set"
+				rendered="#{empty roleHome.instance.roleResourceAttributes}" /> <rich:dataTable
+				id="orgResourceAttributeList" var="rra"
+				value="#{velo:setAsList(roleHome.instance.roleResourceAttributes)}"
+				rendered="#{not empty roleHome.instance.roleResourceAttributes}">
+				<h:column>
+					<f:facet name="header">
+						Name as In Resource
+					</f:facet>
+            		#{rra.resourceAttribute.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+							Display Name
+					</f:facet>
+            		#{rra.resourceAttribute.displayName}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+							Priority
+					</f:facet>
+            		#{rra.priority}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+							Set Value as
+					</f:facet>
+            		#{rra.type}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+							Value
+					</f:facet>
+            		<h:outputText value="#{rra.value}" rendered="#{rra.type eq 'TEXTUAL'}"/>
+					<h:outputText value="[irrelevant]" rendered="#{rra.type ne 'TEXTUAL'}"/>
+        		</h:column>
+				<h:column>
+					<f:facet name="header">Action</f:facet>
+					<h:form>
+            		<a:commandLink id="removeRoleResAttrAssignment" action="#{roleActions.addRoleResourceAttributesToDelete(rra)}" reRender="roleResourceAttributesToRevokeCartPanel">
+            			<h:outputText value="Remove"/>
+            		</a:commandLink>
+            		</h:form>
+				</h:column>
+			</rich:dataTable>
+			</div>
+		</a:outputPanel>
+		</rich:panel>
+		</h:panelGrid>
+		
+		
+		
+		
+		
+		<rich:spacer width="1" height="1"/><rich:separator lineType="double"/><rich:spacer width="1" height="1"/>
+		<h:form id="cartForm">
+			<h:panelGrid columns="2" columnClasses="gridContent" width="100%">
+			<h:panelGroup>
+			<a:outputPanel id="roleResourceAttributesToAddCartPanel">
+			<rich:panel>
+				<f:facet name="header">Resource Attributes modifications to Assign</f:facet>
+				
+				<rich:dataTable id="cartRoleResourceAttributesToAssignList" var="rra"
+					value="#{velo:setAsList(roleHome.instance.roleResourceAttributesToAssign)}" rendered="true">
+					<h:column>
+            			<f:facet name="header">Display Name</f:facet>
+            			#{rra.resourceAttribute.displayName}
+            		</h:column>
+            		<h:column>
+            			<f:facet name="header">Priority</f:facet>
+            			<h:inputText id="priority" required="true" size="2"
+						maxlength="2"
+						value="#{rra.priority}"/>
+            		</h:column>
+            		<h:column>
+            			<f:facet name="header">Textual Value</f:facet>
+            			<h:inputTextarea id="value" cols="35" rows="2" required="true" value="#{rra.value}" rendered="#{rra.type eq 'TEXTUAL'}"/>
+            		</h:column>
+            		
+            		<h:column>
+            			<f:facet name="header">Rule</f:facet>
+            			<h:selectOneMenu id="resourceType" value="#{rra.actionRule}" required="true" rendered="#{rra.type eq 'RULE'}">
+	                		<s:selectItems value="#{guiRoleResourceAttributeRules}" var="rule" label="#{rule.description}" noSelectionLabel="---Select---" />
+    	            		<s:convertEntity/>
+        	    		</h:selectOneMenu>
+            		</h:column>
+            		
+        			<h:column>
+	            		<f:facet name="header">Action</f:facet>
+	            		<a:commandLink id="removeRoleResAttrToAssignList" action="#{roleActions.removeResourceAttributeToAssign(rra)}" reRender="roleResourceAttributesToAddCartPanel" bypassUpdates="true">
+	            			<!--<h:graphicImage url="../icons/action_delete.gif"/>-->
+	            			<h:outputText value="cancel"/>
+	            		</a:commandLink>
+        			</h:column>
+        		</rich:dataTable>
+			</rich:panel>
+			</a:outputPanel>
+			</h:panelGroup>
+			
+			<h:panelGroup>
+			<a:outputPanel id="roleResourceAttributesToRevokeCartPanel">
+			<rich:panel>
+				<f:facet name="header">Resource Attributes modifications to delete</f:facet>
+				
+				<rich:dataTable id="roleResourceAttributesToRemoveList"  var="group"
+					value="#{velo:setAsList(roleHome.instance.roleResourceAttributesToDelete)}" 
+					rendered="true">
+					<h:column>
+            			<f:facet name="header">Display Name</f:facet>
+            			#{group.resourceAttribute.displayName}
+            		</h:column>
+        			<h:column>
+	            		<f:facet name="header">Action</f:facet>
+	            		<a:commandLink id="removeGroupToRevokeList" action="#{roleActions.removeRoleResourceAttributesToDelete(group)}" reRender="roleResourceAttributesToRevokeCartPanel">
+	            			<!-- <h:graphicImage url="../icons/action_delete.gif"/>-->
+	            			<h:outputText value="cancel"/>
+	            		</a:commandLink>
+        			</h:column>
+        		</rich:dataTable>
+			</rich:panel>
+			</a:outputPanel>
+			</h:panelGroup>
+			</h:panelGrid>
+			
+			<center>
+			<h:commandButton id="modifyResourceAttributesInInsertedRole" action="#{roleActions.modifyResourceAttributesInRole}" value="Perform Modifications"/>
+			<s:button view="/admin/Role.xhtml" id="manageRolePage" value="Cancel Resource Attriutes Modifications" propagation="none">
+				<f:param name="roleId" value="#{roleHome.instance.roleId}"/>
+			</s:button>
+			</center>
+			
+			
+			<rich:modalPanel  id="mp" minHeight="200" minWidth="450" height="200" width="500" zindex="2000">
+            <f:facet name="header">
+                <h:outputText value="Modal Panel Title" />
+            </f:facet>
+            <f:facet name="controls">
+                <h:graphicImage value="/images/modal/close.png" style="cursor:pointer" onclick="Richfaces.hideModalPanel('mp')" />
+            </f:facet>
+            <a href="javascript:Richfaces.hideModalPanel('mp')">hide this panel</a>
+        </rich:modalPanel>
+			
+		</h:form>
+		
+	</rich:panel>
+
+</ui:define>
+
+</ui:composition>

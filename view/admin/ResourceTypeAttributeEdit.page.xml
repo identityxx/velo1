@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd"
+      no-conversation-view-id="/SourceSystemList.xhtml"
+      login-required="true">
+   
+   <action execute="#{resourceTypeAttributeHome.wire}"/>
+   
+   <param name="resourceTypeAttributeFrom"/>
+   <param name="resourceAttributeId" value="#{resourceTypeAttributeHome.resourceAttributeId}"/>
+
+
+   <navigation from-action="#{resourceTypeAttributeHome.persistOverrideResourceTypeAttribute}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceType.xhtml">
+			<param name="resourceTypeId" value="#{resourceTypeAttributeHome.instance.resourceType.resourceTypeId}"/>
+       </redirect>
+   </navigation>
+   
+   <navigation from-action="#{resourceTypeAttributeHome.remove}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceType.xhtml">
+			<param name="resourceTypeId" value="#{resourceTypeAttributeHome.instance.resourceType.resourceTypeId}"/>
+       </redirect>
+   </navigation>
+   
+   <navigation from-action="#{resourceTypeAttributeHome.update}">
+       <end-conversation/>
+       <redirect view-id="/admin/ResourceTypeAttribute.xhtml"/>
+   </navigation>
+   
+</page>

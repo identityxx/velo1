@@ -1,0 +1,16 @@
+#Wed Aug 06 19:35:32 BST 2008
+action.package=velo
+action.sources=/velo/src/hot
+eclipse.preferences.version=1
+model.package=velo
+model.sources=/velo/src/main
+seam.ejb.project=velo
+seam.project.connection.profile=
+seam.project.deployment.type=ear
+seam.project.settings.version=1.1
+seam.project.web.root.folder=/velo/view
+seam.runtime.name=
+seam.test.creating=true
+seam.test.project=velo
+test.package=velo.test
+test.sources=/velo/src/test

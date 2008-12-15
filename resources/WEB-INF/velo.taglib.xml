@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<!DOCTYPE facelet-taglib PUBLIC 
+"-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+"http://java.sun.com/dtd/faces-taglib_1_0.dtd">
+
+<facelet-taglib>
+    <namespace>http://open-identity.net/products/velo/taglib</namespace>
+    
+    <!-- 
+	<tag>
+		<tag-name>valueGenericInput</tag-name>
+		<component>
+			<component-type>velo.UIValueGenericInput</component-type>
+		</component>
+	</tag>
+	 -->
+	
+    <tag>
+        <tag-name>valueInput</tag-name>
+        <component>
+            <component-type>velo.UIValueInput</component-type>
+        </component>
+    </tag>
+    
+    <tag>
+        <tag-name>XMLTagInput</tag-name>
+        <component>
+            <component-type>velo.XMLTagInput</component-type>
+        </component>
+    </tag>
+    
+    <tag>
+        <tag-name>XMLTagInputs</tag-name>
+        <component>
+            <component-type>velo.XMLTagInputs</component-type>
+        </component>
+    </tag>
+    
+    <tag>
+        <tag-name>XMLManager</tag-name>
+        <component>
+            <component-type>velo.XMLManager</component-type>
+        </component>
+    </tag>
+    
+    <!-- 
+	<tag>
+		<tag-name>valueSelectboxInput</tag-name>
+		<component>
+			<component-type>velo.UIValueSelectboxInput</component-type>
+		</component>
+	</tag>
+	 -->
+	 
+	<function>
+		<function-name>setAsList</function-name>
+		<function-class>velo.utils.SetAsList</function-class>
+		<function-signature>java.util.List asList(java.util.Collection)</function-signature>
+	</function>
+	
+	<tag>
+		<tag-name>UserAccountAssocicationValidator</tag-name>
+		<validator>
+			<validator-id>UserAccountAssocicationValidator</validator-id>
+		</validator>
+	</tag>
+    
+</facelet-taglib>

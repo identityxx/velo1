@@ -1,0 +1,78 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">EventDefinition</f:facet>
+
+		<s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Unique Name</ui:define>
+            #{eventDefinitionHome.instance.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{eventDefinitionHome.instance.displayName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{eventDefinitionHome.instance.description}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <rich:panel>
+        <f:facet name="header">Responses</f:facet>
+        
+        <rich:dataTable id="eventResponseList" var="er"
+			value="#{velo:setAsList(eventDefinitionHome.instance.eventResponses)}" 
+			rendered="#{not empty eventDefinitionHome.instance.eventResponses}">
+			<h:column>
+				<f:facet name="header">
+					Description
+				</f:facet>
+				#{er.description}
+			</h:column>
+			<h:column>
+				<f:facet name="header">Action</f:facet>
+				<s:link view="/admin/#{empty from ? 'EventResponseEdit' : from}.xhtml" 
+            		value="Edit" id="eventResponseId">
+					<f:param name="eventResponseId" value="#{er.actionDefinitionId}"/>
+				</s:link>
+			</h:column>
+    	</rich:dataTable>
+	</rich:panel>
+    
+    
+    <div class="actionButtons">      
+
+		<!-- 
+        <s:button view="/admin/EventDefinitionEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+		 -->
+		 
+        <s:button view="/admin/#{empty eventDefinitionFrom ? 'EventDefinitionList' : eventDefinitionFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+    </div>
+
+</ui:define>
+
+</ui:composition>

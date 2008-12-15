@@ -1,0 +1,96 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="gateway" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Gateway</f:facet>
+
+				<s:decorate id="gatewayType" template="layout/display.xhtml">
+            		<ui:define name="label">Gateway Type</ui:define>
+            		#{gatewayHome.instance.type}
+        		</s:decorate>
+				
+				
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{gatewayHome.instance.uniqueName}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{gatewayHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{gatewayHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<s:decorate id="hostNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Host Name</ui:define>
+					<h:inputText id="hostName" required="true" size="50" maxlength="50"
+						value="#{gatewayHome.instance.hostName}">
+						<a:support event="onblur" reRender="hostNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="portDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Port</ui:define>
+					<h:inputText id="port" required="true" size="50" maxlength="50"
+						value="#{gatewayHome.instance.port}">
+						<a:support event="onblur" reRender="portDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{gatewayHome.persist}"
+				disabled="#{!gatewayHome.wired}"
+				rendered="#{!gatewayHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{gatewayHome.update}"
+				rendered="#{gatewayHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{gatewayHome.remove}"
+				rendered="#{gatewayHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/Gateway.xhtml"
+				rendered="#{gatewayHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty gatewayFrom ? 'GatewayList' : gatewayFrom}.xhtml"
+				rendered="#{!gatewayHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

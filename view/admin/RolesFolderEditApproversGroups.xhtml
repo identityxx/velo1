@@ -1,0 +1,157 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+	<h:form id="allApproversGroups">
+		<rich:panel label="Approvers Groups List" switchType="ajax">
+			<f:facet name="header">All Approvers Groups</f:facet>
+			
+			<rich:dataTable id="approversGroupsList"  var="ag"
+					value="#{guiApproversGroups}" 
+					rendered="#{not empty guiApproversGroups}">
+           			<h:column>
+           				<f:facet name="header">Display Name</f:facet>
+           				#{ag.displayName}
+           			</h:column>
+           			<h:column>
+           				<f:facet name="header">Description</f:facet>
+           				#{ag.description}
+           			</h:column>
+           			<h:column>
+	           			<f:facet name="header">Action</f:facet>
+           				<a:commandLink id="assignApproversGroupToRolesFolder" action="#{rolesFolderActions.addApproversGroupToAssign(ag)}" reRender="approversGroupsToAssignCartPanel">
+           					<h:graphicImage url="../icons/action_add.gif"/>
+           				</a:commandLink>
+        			</h:column>
+        		</rich:dataTable>
+
+           	<div style="clear:both"/>
+		</rich:panel>
+            
+	</h:form>
+	
+	
+	
+	<h:panelGrid columns="2" columnClasses="gridContent" width="100%">
+
+	<rich:panel>
+		<f:facet name="header">Current Assignment</f:facet>
+			
+		<h:form>
+			<a:outputPanel id="originalApproversGroupsAssignmentPanel">
+				<h:outputText value="No approvers groups -currently- assigned" rendered="#{empty rolesFolderHome.instance.rolesFolderApproversGroups}"/>
+				<rich:dataTable id="originalGroupsAssignmentList"  var="ag"
+					value="#{velo:setAsList(rolesFolderHome.instance.rolesFolderApproversGroups)}" 
+					rendered="#{not empty rolesFolderHome.instance.rolesFolderApproversGroups}">
+					<h:column>
+            			<f:facet name="header">Display Name</f:facet>
+            			#{ag.approversGroup.displayName}
+            		</h:column>
+            		<h:column>
+            			<f:facet name="header">Approval Level</f:facet>
+            			#{ag.approvalLevel}
+            		</h:column>
+            		<h:column>
+            			<f:facet name="header">Assignment Description</f:facet>
+            			#{ag.description}
+            		</h:column>
+            		<h:column>
+	            		<f:facet name="header">Action</f:facet>
+            			<a:commandLink id="addRolesFolderApproversGroupToDeleteList" action="#{rolesFolderActions.addRolesFolderApproversGroupToDelete(ag)}" reRender="cartRolesFolderApproversGroupsToDeleteList">
+            				<h:graphicImage url="../icons/action_delete.gif"/>
+            			</a:commandLink>
+        			</h:column>
+        		</rich:dataTable>
+			</a:outputPanel>
+		</h:form>
+	</rich:panel>
+	</h:panelGrid>
+	
+	
+<h:form id="cartForm">
+	
+	<rich:spacer width="1" height="1"/><rich:separator lineType="double"/><rich:spacer width="1" height="1"/>
+		
+			<h:panelGrid columns="2" columnClasses="gridContent" width="100%">
+			<h:panelGroup>
+			<a:outputPanel id="approversGroupsToAssignCartPanel">
+			<rich:panel>
+				<f:facet name="header">Approvers Groups to Assign</f:facet>
+				
+				<rich:dataTable id="cartApproversGroupsToAssignList"  var="ag"
+					value="#{velo:setAsList(rolesFolderHome.instance.approversGroupsToAssign)}" rendered="true">
+					<h:column>
+            			<f:facet name="header">Display Name</f:facet>
+            			#{ag.displayName}
+            		</h:column>
+            		<h:column style="align: center;">
+            			<f:facet name="header">Assignment Description</f:facet>
+            			<h:inputText value="#{ag.assignmentDescription}" size="32" required="false"/>
+            		</h:column>
+            		<h:column style="align: center;">
+            			<f:facet name="header">Approval Level</f:facet>
+            			<h:inputText value="#{ag.approvalLevel}" size="2" required="false"/>
+            		</h:column>
+        			<h:column>
+	            		<f:facet name="header">Action</f:facet>
+	            		<a:commandLink id="removeApproversGroupFromAssignList" action="#{rolesFolderActions.removeApproversGroupToAssign(group)}" reRender="approversGroupsToAssignCartPanel">
+	            			<h:graphicImage url="../icons/action_delete.gif"/>
+	            		</a:commandLink>
+        			</h:column>
+        		</rich:dataTable>
+			</rich:panel>
+			</a:outputPanel>
+			</h:panelGroup>
+			
+			<h:panelGroup>
+			<a:outputPanel id="cartRolesFolderApproversGroupsToDeleteList">
+			<rich:panel>
+				<f:facet name="header">Approvers Groups to Delete</f:facet>
+				
+				<rich:dataTable id="cartApproversGroupsToDeleteList"  var="ag"
+					value="#{velo:setAsList(rolesFolderHome.instance.rolesFolderApproversGroupsToDelete)}" 
+					rendered="true">
+					<h:column>
+            			<f:facet name="header">Display Name</f:facet>
+            			#{ag.approversGroup.displayName}
+            		</h:column>
+        			<h:column>
+	            		<f:facet name="header">Action</f:facet>
+	            		<a:commandLink id="removeApproversGroupFromDeleteList" action="#{rolesFolderActions.removeRoleApproversGroupToDelete(ag)}" reRender="cartApproversGroupsToDeleteList">
+	            			<h:graphicImage url="../icons/action_delete.gif"/>
+	            		</a:commandLink>
+        			</h:column>
+        		</rich:dataTable>
+			</rich:panel>
+			</a:outputPanel>
+			</h:panelGroup>
+			</h:panelGrid>
+		
+		<h:panelGroup>
+			<center>
+				<!-- <h:commandButton id="modify" value="Modify Groups Assignment!" onclick="javascript:Richfaces.showModalPanel('mp',{width:450, top:200})"/>-->
+				<h:commandButton id="modifyGroupsInInsertedRole" action="#{rolesFolderActions.modifyApproversGroupsInRolesFolder}" value="Perform Modifications"/>
+				<s:button view="/admin/RolesFolder.xhtml" id="manageRolesFolderPage" value="Cancel Approvers Groups Assignment" propagation="none">
+					<f:param name="rolesFolderId" value="#{rolesFolderHome.instance.rolesFolderId}"/>
+				</s:button>
+			</center>
+		</h:panelGroup>
+		
+</h:form>
+</ui:define>
+
+</ui:composition>
+

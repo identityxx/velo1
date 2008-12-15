@@ -1,0 +1,131 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="rolesFolder" styleClass="edit">
+
+			<rich:panel>
+				<rich:panel>
+				<f:facet name="header">Informative Details</f:facet>
+
+                <s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Unique Name</ui:define>
+                    <h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+                        value="#{rolesFolderHome.instance.uniqueName}">
+                        <a:support event="onblur" reRender="uniqueNameDecoration"
+                            bypassUpdates="true" />
+                    </h:inputText>
+                </s:decorate>
+                
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{rolesFolderHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{rolesFolderHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<s:decorate id="parentFolderDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Parent Folder</ui:define>
+                    <h:selectOneMenu id="parentFolder" value="#{rolesFolderHome.instance.parentFolder}" required="false">
+                        <s:selectItems value="#{rolesFolderList.getRolesFolders(rolesFolderHome.instance)}" var="rf" label="#{rf.displayName}" noSelectionLabel="---Select---" />
+                        <s:convertEntity/>
+                    </h:selectOneMenu>
+                </s:decorate>
+				
+				<s:decorate id="typeDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Type</ui:define>
+                    <h:inputText id="type" required="false" size="50" maxlength="50"
+                        value="#{rolesFolderHome.instance.type}">
+                        <a:support event="onblur" reRender="typeDecoration"
+                            bypassUpdates="true" />
+                    </h:inputText>
+                </s:decorate>
+                
+                <s:decorate id="info1Decoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Informative Attribute 1</ui:define>
+                    <h:inputText id="info1" required="false" size="150" maxlength="50"
+                        value="#{rolesFolderHome.instance.info1}">
+                        <a:support event="onblur" reRender="info1Decoration"
+                            bypassUpdates="true" />
+                    </h:inputText>
+                </s:decorate>
+                
+                <s:decorate id="info2Decoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Informative Attribute 2</ui:define>
+                    <h:inputText id="info2" required="false" size="150" maxlength="50"
+                        value="#{rolesFolderHome.instance.info2}">
+                        <a:support event="onblur" reRender="info2Decoration"
+                            bypassUpdates="true" />
+                    </h:inputText>
+                </s:decorate>
+                
+                <s:decorate id="info3Decoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Informative Attribute 3</ui:define>
+                    <h:inputText id="info2" required="false" size="150" maxlength="50"
+                        value="#{rolesFolderHome.instance.info3}">
+                        <a:support event="onblur" reRender="info3Decoration"
+                            bypassUpdates="true" />
+                    </h:inputText>
+                </s:decorate>
+                
+				<div style="clear: both"><span class="required">*</span>required fields</div>
+				</rich:panel>
+				
+				<rich:panel>
+					<f:facet name="header">Roles Associations</f:facet>
+					<s:decorate id="roleDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Assigned Roles</ui:define>
+						<h:selectManyListbox id="roles" size="5" value="#{rolesFolderHome.instance.roles}" required="false">
+							<s:selectItems value="#{guiRoles}" var="r" label="#{r.name}" />
+							<s:convertEntity entityClass="velo.entity.Role"/>
+						</h:selectManyListbox>
+					</s:decorate>
+					
+					<div style="clear: both"/>
+				</rich:panel>
+				
+				
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{rolesFolderHome.persist}"
+				disabled="#{!rolesFolderHome.wired}"
+				rendered="#{!rolesFolderHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{rolesFolderHome.update}"
+				rendered="#{rolesFolderHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{rolesFolderHome.remove}"
+				rendered="#{rolesFolderHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/RolesFolder.xhtml"
+				rendered="#{rolesFolderHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty rolesFolderFrom ? 'RolesFolderList' : rolesFolderFrom}.xhtml"
+				rendered="#{!rolesFolderHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

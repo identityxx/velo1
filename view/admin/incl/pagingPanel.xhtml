@@ -1,0 +1,62 @@
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:s="http://jboss.com/products/seam/taglib">
+<ui:composition>
+<div class="tableControl">
+				
+													
+					<!-- <h:outputText value="Page  "></h:outputText>
+					
+					<h:outputText value="#{iteratedList.nextExists ? (iteratedList.nextFirstResult div iteratedList.maxResults) : ((iteratedList.previousFirstResult div iteratedList.maxResults) +1)}" 
+									rendered = "#{iteratedList.previousExists or iteratedList.nextExists}">
+								<f:convertNumber type="number" integerOnly = "true" maxFractionDigits="0"/>	
+					</h:outputText>
+					
+					<h:outputText value=" from "></h:outputText>
+					
+					<h:outputText value="#{iteratedList.lastFirstResult div iteratedList.maxResults}">
+						<f:convertNumber type="number" integerOnly = "true" maxFractionDigits="0"/>	
+					</h:outputText>
+					-->
+					
+					
+      				<s:link view="#{currentPage}" 
+	            					rendered="#{iteratedList.previousExists}" 
+	               					id="firstPage">
+	               			<h:graphicImage value="/icons/2leftarrow.png" styleClass="imgLink" alt="First Page"></h:graphicImage>
+	               			<f:param name="firstResult" value="0"/>
+	        		</s:link>
+        
+	        		<s:link view="#{currentPage}" 
+	            					rendered="#{iteratedList.previousExists}" 
+	               					id="previousPage">
+	                  	<h:graphicImage value="/icons/1leftarrow.png" styleClass="imgLink" alt="Previous Page"></h:graphicImage>
+	            		<f:param name="firstResult" value="#{iteratedList.previousFirstResult}"/>
+	        		</s:link>
+	        
+	        		<s:link view="#{currentPage}" 
+	            					rendered="#{iteratedList.nextExists}" 
+	               					id="nextPage">
+	               		<h:graphicImage value="/icons/1rightarrow.png" styleClass="imgLink" alt="Next Page"></h:graphicImage>			
+	            		<f:param name="firstResult" value="#{iteratedList.nextFirstResult}"/>
+	        		</s:link>
+	        
+	        		<s:link view="#{currentPage}" 
+	            				rendered="#{iteratedList.nextExists}" 
+	               				id="lastPage">
+	               		<h:graphicImage value="/icons/2rightarrow.png" styleClass="imgLink" alt="Last Page"></h:graphicImage>
+	            		<f:param name="firstResult" value="#{iteratedList.lastFirstResult}"/>
+        			</s:link>
+        		
+    			</div>
+    </ui:composition>
+</html>    
+    

@@ -1,0 +1,37 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:webuijsf="http://www.sun.com/webui/webuijsf"
+	template="admin/layout/template.xhtml">
+
+	<ui:define name="body">
+		<rich:panel style="width: 500px">
+			<f:facet name="header">About Velo</f:facet>
+			<h:panelGrid cols="2">
+
+				<rich:spacer height="20" />
+				<h:outputText value="Velo Server Version: #{globalConf.getString('general.version.velo_server_version')}"/>
+				<!--<h:outputText value="Build id: M07042007-001&#160;&#160;" />-->
+				<h:panelGroup>
+					<h:outputText value="Visit:" />
+					<h:outputLink value="http://velo.safehaus.org">
+						<f:verbatim>Velo Homepage</f:verbatim>
+					</h:outputLink>
+					<h:outputText
+						value="&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;" />
+				</h:panelGroup>
+				<rich:spacer height="20" />
+			</h:panelGrid>
+		</rich:panel>
+	</ui:define>
+</ui:composition>

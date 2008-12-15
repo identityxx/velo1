@@ -1,0 +1,71 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form enctype="multipart/form-data" id="workflowProcessDef" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Workflow Process Definition</f:facet>
+
+<!-- 
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="{workflowProcessDefHome.instance.uniqueName}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+ -->
+				
+				
+				<!-- rendered="{!workflowProcessDefHome.managed}" -->
+				<s:decorate id="processFileToImportDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Upload Process File</ui:define>
+					<s:fileUpload id="processUploadedFile" required="true" data="#{workflowProcessDefHome.processUploadedFile}" accept="*"
+              			contentType="#{workflowProcessDefHome.processContentType}" fileName="#{workflowProcessDefHome.processFileName}"/>
+				</s:decorate>
+				
+				<!-- rendered="{!workflowProcessDefHome.managed}" -->
+				<s:decorate id="imageFileToImportDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Upload Process Image</ui:define>
+					<s:fileUpload id="imageUploadedFile" required="true" data="#{workflowProcessDefHome.imageUploadedFile}" accept="*"
+              			contentType="#{workflowProcessDefHome.imageContentType}" fileName="#{workflowProcessDefHome.imageFileName}"/>
+				</s:decorate>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+				
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{workflowProcessDefHome.persist}"
+				disabled="#{!workflowProcessDefHome.wired}"
+				rendered="#{!workflowProcessDefHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{workflowProcessDefHome.update}"
+				rendered="#{workflowProcessDefHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{workflowProcessDefHome.remove}"
+				rendered="#{workflowProcessDefHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/WorkflowProcessDef.xhtml"
+				rendered="#{workflowProcessDefHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty workflowProcessDefFrom ? 'WorkflowProcessDefList' : workflowProcessDefFrom}.xhtml"
+				rendered="#{!workflowProcessDefHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,113 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:sb="http://myfaces.apache.org/sandbox"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="eventResponse" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Event Response</f:facet>
+
+				<s:decorate id="eventDefinitionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">For Event Definition</ui:define>
+					<h:outputText value="#{eventDefinitionHome.instance.displayName}"/>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{eventResponseHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<s:decorate id="sequenceDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Sequence</ui:define>
+					<h:inputText id="sequence" required="true" size="2" maxlength="2"
+						value="#{eventResponseHome.instance.sequence}">
+						<a:support event="onblur" reRender="sequenceDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="languageDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Action Language</ui:define>
+					<h:selectOneMenu id="language"
+						value="#{eventResponseHome.instance.actionLanguage}" required="true">
+						<s:selectItems value="#{guiActionLanguages}" var="lang"
+							label="#{lang.name}" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="activeDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Active?</ui:define>
+                    <h:selectBooleanCheckbox value="#{eventResponseHome.instance.active}"></h:selectBooleanCheckbox>
+                </s:decorate>
+                
+				<s:decorate id="showStopperDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Show Stopper?</ui:define>
+					<h:selectBooleanCheckbox value="#{eventResponseHome.instance.showStopper}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="persistenceDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Persistence?</ui:define>
+                    <h:selectBooleanCheckbox value="#{eventResponseHome.instance.persistence}">
+                        <a:support event="onchange" reRender="executionTimeDifferenceOutputPanel" ajaxSingle="true"/>
+                    </h:selectBooleanCheckbox>
+                </s:decorate>
+                
+                <a:outputPanel id="executionTimeDifferenceOutputPanel">
+                    <s:decorate id="executionTimeDifferenceDecoration" template="layout/edit.xhtml" rendered="#{eventResponseHome.instance.persistence}">
+                        <ui:define name="label">Execution Time Difference (in hours)</ui:define>
+                        <h:inputText size="5" value="#{eventResponseHome.instance.executionTimeDifference}" required="#{eventResponseHome.instance.persistence}"/>
+                    </s:decorate>
+                </a:outputPanel>
+                
+				
+				<s:decorate id="contentDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Action Content</ui:define>
+					<h:inputTextarea id="content" required="true" cols="100" rows="40"
+						value="#{eventResponseHome.instance.content}">
+					</h:inputTextarea>
+				</s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{eventResponseHome.persist}"
+				disabled="#{!eventResponseHome.wired}"
+				rendered="#{!eventResponseHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{eventResponseHome.update}"
+				rendered="#{eventResponseHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{eventResponseHome.remove}"
+				rendered="#{eventResponseHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/EventResponseList.xhtml"
+				rendered="#{eventResponseHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty eventResponseFrom ? 'EventResponseList' : eventResponseFrom}.xhtml"
+				rendered="#{!eventResponseHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

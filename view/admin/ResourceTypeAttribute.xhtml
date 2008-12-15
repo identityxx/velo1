@@ -1,0 +1,106 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Resource Type Attribute</f:facet>
+		
+		<s:decorate id="id" template="layout/display.xhtml">
+            <ui:define name="label">Internal ID</ui:define>
+            #{resourceTypeAttributeHome.instance.resourceAttributeId}
+        </s:decorate>
+        
+		<s:decorate id="type" template="layout/display.xhtml">
+            <ui:define name="label">Resource Type</ui:define>
+            #{resourceTypeAttributeHome.instance.resourceType.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Unique Name(as in resource)</ui:define>
+            #{resourceTypeAttributeHome.instance.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{resourceTypeAttributeHome.instance.displayName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{resourceTypeAttributeHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="dataType" template="layout/display.xhtml">
+            <ui:define name="label">Data Type</ui:define>
+            #{resourceTypeAttributeHome.instance.dataType}
+        </s:decorate>
+        
+        <s:decorate id="minValues" template="layout/display.xhtml">
+            <ui:define name="label">Minimum Number of Values</ui:define>
+            #{resourceTypeAttributeHome.instance.minValues}
+        </s:decorate>
+        
+        <s:decorate id="maxValues" template="layout/display.xhtml">
+            <ui:define name="label">Maximum Number of Values</ui:define>
+            #{resourceTypeAttributeHome.instance.maxValues}
+        </s:decorate>
+        
+        <s:decorate id="minLength" template="layout/display.xhtml">
+            <ui:define name="label">Minimum Length</ui:define>
+            #{resourceTypeAttributeHome.instance.minLength}
+        </s:decorate>
+        
+        <s:decorate id="maxLength" template="layout/display.xhtml">
+            <ui:define name="label">Maximum Length</ui:define>
+            #{resourceTypeAttributeHome.instance.maxLength}
+        </s:decorate>
+        
+        <s:decorate id="mappedToIE" template="layout/display.xhtml">
+            <ui:define name="label">Mapped to Identity Attribute?</ui:define>
+            #{resourceTypeAttributeHome.instance.identityAttribute.displayName}
+        </s:decorate>
+
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+		<!-- Override by type level -->
+        <s:button action="#{resourceTypeAttributeHome.override}"
+                    id="overrideResrouceTypeLevel" 
+                 value="Override (Resource Type Level)" rendered="#{!resourceTypeAttributeHome.instance.overridden}"/>
+		
+		<!-- Ovveride by resource level -->
+		<s:button action="#{resourceAttributeHome.override}"
+                    id="overrideResourceLevel" 
+                 value="Override (Resource Level)" rendered="#{resourceId != null}"/>
+                 
+                 
+		<s:button view="/admin/ResourceTypeAttributeEdit.xhtml" 
+                    id="edit" 
+                 value="Edit" rendered="#{resourceTypeAttributeHome.instance.overridden}"/>
+		
+        <s:button id="done"
+				value="Done" propagation="end" view="/admin/ResourceType.xhtml"
+				rendered="#{resourceTypeAttributeHome.managed}">
+				<f:param name="resourceTypeId" value="#{resourceTypeAttributeHome.instance.resourceType.resourceTypeId}"/>
+		</s:button> 
+				
+    </div>
+
+</ui:define>
+
+</ui:composition>

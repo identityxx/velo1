@@ -1,0 +1,55 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:sb="http://myfaces.apache.org/sandbox"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="resultedTasksForm">
+    <rich:panel>
+        <f:facet name="header">Resulted tasks</f:facet>
+    <div class="results" id="affectedUsersList">
+
+   	<h:outputText value="No tasks were created from your operation" 
+               rendered="#{empty positionHome.instance.bulkTaskOfRolesModification}"/>		
+  
+  
+    <rich:dataTable id="taskList" 
+                var="currTask"
+              value="#{velo:setAsList(positionHome.instance.bulkTaskOfRolesModification.tasks)}" 
+           rendered="#{not empty positionHome.instance.bulkTaskOfRolesModification.tasks}">
+           <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Description"/>
+                </f:facet>
+                #{currTask.description}
+            </h:column>
+    </rich:dataTable>
+  
+    </div>
+    </rich:panel>
+    
+    <div class="actionButtons">
+        <s:button id="perform"
+            value="Perform modifications!" action="#{positionActions.performModifyRolesInPosition}" propagation="end" view="/admin/Position.xhtml"/>
+        <s:button id="cancel"
+                value="Cancel" propagation="end"
+                view="/admin/Position.xhtml"/>   
+    </div>
+    
+    </h:form>
+    
+</ui:define>
+
+</ui:composition>

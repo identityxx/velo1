@@ -1,0 +1,16 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich">
+
+
+	<s:button styleClass="iteamGenericButton" action="#{wfNodesManager.loadTaskNode}"  
+		taskInstance="#{jTask}" value="#{messages['mizrahi.ss.wfprocess.Review']}"  
+		view="/ss/mizrahi/reviewApprovalTask.xhtml"
+		rendered="#{jTask.name eq 'approval'}"
+	/>
+	
+</div>

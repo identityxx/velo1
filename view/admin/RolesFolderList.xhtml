@@ -1,0 +1,140 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="suggestionbox_form" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Role Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Unique Name</ui:define>
+                <h:inputText id="uniqueName" value="#{rolesFolderList.rolesFolder.uniqueName}"/>
+			</s:decorate>
+			
+			<s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Display Name</ui:define>
+                <h:inputText id="displayName" value="#{rolesFolderList.rolesFolder.displayName}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Description</ui:define>
+                <h:inputText id="description" value="#{rolesFolderList.rolesFolder.description}"/>
+            </s:decorate>
+            
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/RolesFolderList.xhtml"/>
+            
+            <s:button view="/admin/RolesFolderEdit.xhtml" id="create"
+				value="Create Roles Folder">
+				<f:param name="rolesFolderId" />
+			</s:button>
+        </div>
+        
+    </h:form>
+    
+    <rich:panel>
+        <f:facet name="header">Roles Folder Search Results</f:facet>
+    <div class="results" id="rolesFolderList">
+
+    <h:outputText value="No Roles Folder exists" 
+               rendered="#{empty rolesFolderList.resultList}"/>
+               
+    <rich:dataTable id="rolesFolderList" 
+                var="rf"
+              value="#{rolesFolderList.resultList}" 
+           rendered="#{not empty rolesFolderList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Unique Name #{rolesFolderList.order=='uniqueName asc' ? messages.down : ( rolesFolderList.order=='uniqueName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{rolesFolderList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}"/>
+                </s:link>
+            </f:facet>
+            <s:link view="/admin/#{empty from ? 'RolesFolder' : from}.xhtml" id="rolesFolderName">
+                <f:param name="rolesFolderId" value="#{rf.rolesFolderId}"/>
+            
+            <h:outputText value="#{rf.uniqueName}" id="colRolesFolderName">
+	           	<rich:toolTip direction="top-right" mode="client" verticalOffset="5" delay="500" zorder="200" styleClass="tooltip" layout="block">
+	           		<h:panelGrid columns="2">
+	           			<h:outputText value="Associated Roles: "/>
+						<ui:repeat var="role" value="#{rf.roles}">
+							<s:link view="/admin/Resource.xhtml" value="#{role.name}">
+								<f:param name="roleId" value="#{role.roleId}"/>
+							</s:link>
+							,
+						</ui:repeat>
+					</h:panelGrid>
+				</rich:toolTip>
+			</h:outputText>
+			</s:link>
+        </h:column>
+        
+        
+        <h:column>
+            <f:facet name="header">
+                <h:outputText value="Display Name"/>
+            </f:facet>
+            #{rf.displayName}
+        </h:column>
+        
+        
+        <h:column>
+            <f:facet name="header">
+            	<h:outputText value="Description"/>
+            </f:facet>
+            #{rf.description}
+        </h:column>
+        <h:column>
+            <f:facet name="header">action</f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'RolesFolderEdit' : from}.xhtml" 
+                   value="Select" 
+                      id="rolesFolder">
+                <f:param name="rolesFolderId" 
+                        value="#{rf.rolesFolderId}"/>
+            </s:link>
+
+        </h:column>
+    </rich:dataTable>
+
+	<ui:include src="/admin/incl/pagingPanel.xhtml">
+        			<ui:param name="currentPage" value="/admin/rolesFolderList.xhtml" />
+        			<ui:param name="iteratedList" value="#{rolesFolderList}" />
+   </ui:include>
+    </div>
+    
+    
+    </rich:panel>
+    
+    	
+    
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+			<s:button view="/admin/RolesFolderEdit.xhtml" id="create"
+				value="Create Roles Folder">
+				<f:param name="rolesFolderId" />
+			</s:button>
+	</s:div>
+    
+</ui:define>
+
+</ui:composition>
+

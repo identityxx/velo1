@@ -1,0 +1,220 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:webuijsf="http://www.sun.com/webui/webuijsf"
+	template="layout/template.xhtml"
+	xmlns:a4j="http://richfaces.org/a4j"
+	>
+
+	<ui:define name="body">
+		<rich:panel>
+			<h:panelGrid columns="2" columnClasses="gridContent" width="100%">
+				<rich:panel bodyClass="inpanelBody">
+					<f:facet name="header"><h:outputText style="color:red;" value="Last Failed Tasks"/></f:facet>
+					<h:form>
+					<rich:inputNumberSlider id="failedTaskAmount" value="#{homeActions.failedTaskList.maxResults}">
+						<f:validateLongRange minimum="0"/>
+						<a:support event="onchange" reRender="failedTaskListPanel" bypassUpdates="false" />
+					</rich:inputNumberSlider>
+					</h:form>
+					<a:outputPanel id="failedTaskListPanel">
+					<rich:dataTable id="lastFailedTasks" var="failedTask" value="#{homeActions.failedTaskList.resultList}" rendered="#{not empty homeActions.failedTaskList.resultList}">
+        				<h:column>
+            				<f:facet name="header">
+            					ID
+            				</f:facet>
+            				<s:link view="/admin/Task.xhtml" value="#{failedTask.taskId}">
+								<f:param name="taskId" value="#{failedTask.taskId}"/>
+							</s:link>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Description
+            				</f:facet>
+						#{failedTask.description}            			
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Status
+            				</f:facet>
+						#{failedTask.status}            			
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Creation Date
+            				</f:facet>
+							#{failedTask.creationDate}            			
+        				</h:column>
+        			</rich:dataTable>
+        			</a:outputPanel>
+				</rich:panel>
+				
+				<rich:panel bodyClass="inpanelBody">
+					<f:facet name="header"><h:outputText style="color:red;" value="Last Failed Requests"/></f:facet>
+					<h:form>
+					<rich:inputNumberSlider id="failedRequestsAmount" value="#{homeActions.lastFailedRequests.maxResults}">
+						<f:validateLongRange minimum="0"/>
+						<a:support event="onchange" reRender="lastFailedRequestsPanel" bypassUpdates="false" />
+					</rich:inputNumberSlider>
+					</h:form>
+					<a:outputPanel id="lastFailedRequestsPanel">
+					<rich:dataTable id="lastFailedRequestsDT" var="lfr" value="#{homeActions.lastFailedRequests.resultList}" rendered="#{not empty homeActions.lastFailedRequests.resultList}">
+        				<h:column>
+            				<f:facet name="header">
+            					ID
+            				</f:facet>
+            				<s:link view="/admin/Request.xhtml" value="#{lfr.requestId}">
+								<f:param name="requestId" value="#{lfr.requestId}"/>
+							</s:link>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Notes
+            				</f:facet>
+						#{lfr.notes}            			
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Creation Date
+            				</f:facet>
+            		    <h:outputText value="#{lfr.creationDate}">
+                            <s:convertDateTime pattern="yyyy-MM-dd hh:mm:ss"/>
+            		    </h:outputText>
+        				</h:column>
+        			</rich:dataTable>
+        			</a:outputPanel>
+				</rich:panel>
+				
+				<rich:panel bodyClass="inpanelBody">
+					<f:facet name="header">Last Approved Requests</f:facet>
+					<h:form>
+					<rich:inputNumberSlider id="failedTaskAmount" value="#{homeActions.lastApprovedRequests.maxResults}">
+						<f:validateLongRange minimum="0"/>
+						<a:support event="onchange" reRender="lastApprovedRequestsPanel" bypassUpdates="false" />
+					</rich:inputNumberSlider>
+					</h:form>
+					<a:outputPanel id="lastApprovedRequestsPanel">
+					<rich:dataTable id="lastApprovedRequestsDataList" var="lar" value="#{homeActions.lastApprovedRequests.resultList}" rendered="#{not empty homeActions.lastApprovedRequests.resultList}">
+        				<h:column>
+            				<f:facet name="header">
+            					ID
+            				</f:facet>
+            				<s:link view="/admin/Request.xhtml" value="#{lar.requestId}">
+								<f:param name="requestId" value="#{lar.requestId}"/>
+							</s:link>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Notes
+            				</f:facet>
+						#{lar.notes}            			
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Creation Date
+            				</f:facet>
+            		    <h:outputText value="#{lar.creationDate}">
+                            <s:convertDateTime pattern="yyyy-MM-dd hh:mm:ss"/>
+            		    </h:outputText>
+        				</h:column>
+        			</rich:dataTable>
+        			</a:outputPanel>
+				</rich:panel>
+				
+				<rich:panel bodyClass="inpanelBody">
+					<f:facet name="header">Last Requests Waiting for Approval</f:facet>
+					<s:link view="/admin/RequestList.seam" value="There are -#{homeActions.lastRequestsWaitingForApproval.resultCount}- request waiting for approval.">
+						<f:param name="status" value="PENDING_APPROVAL"/>
+					</s:link>
+					<h:form>
+					<rich:inputNumberSlider id="failedTaskAmount" value="#{homeActions.lastRequestsWaitingForApproval.maxResults}">
+						<f:validateLongRange minimum="0"/>
+						<a:support event="onchange" reRender="lastRequestsWaitingForApprovalListPanel" bypassUpdates="false" />
+					</rich:inputNumberSlider>
+					</h:form>
+					<a:outputPanel id="lastRequestsWaitingForApprovalListPanel">
+					<rich:dataTable id="lastRequestsWaitingForApproval" var="lrwfa" value="#{homeActions.lastRequestsWaitingForApproval.resultList}" rendered="#{not empty homeActions.lastRequestsWaitingForApproval.resultList}">
+        				<h:column>
+            				<f:facet name="header">
+            					ID
+            				</f:facet>
+            				<s:link view="/admin/Request.xhtml" value="#{lrwfa.requestId}">
+								<f:param name="requestId" value="#{lrwfa.requestId}"/>
+							</s:link>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Notes
+            				</f:facet>
+						#{lrwfa.notes}            			
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Creation Date
+            				</f:facet>
+            			<h:outputText value="#{lrwfa.creationDate}">
+                            <s:convertDateTime pattern="yyyy-MM-dd hh:mm:ss"/>
+						</h:outputText>            			
+        				</h:column>
+        			</rich:dataTable>
+        			</a:outputPanel>
+				</rich:panel>
+				
+				
+				<rich:panel bodyClass="inpanelBody">
+					<f:facet name="header">Last Created Users</f:facet>
+					<h:form>
+					<rich:inputNumberSlider id="lastCreatedUsers" value="#{homeActions.lastCreatedUsers.maxResults}">
+						<f:validateLongRange minimum="0"/>
+						<a:support event="onchange" reRender="lastCreatedUsersPanel" bypassUpdates="false" />
+					</rich:inputNumberSlider>
+					</h:form>
+					<a:outputPanel id="lastCreatedUsersPanel">
+					<rich:dataTable id="lastCreatedUsersDataTable" var="lcu" value="#{homeActions.lastCreatedUsers.resultList}" rendered="#{not empty homeActions.lastCreatedUsers.resultList}">
+        				<h:column>
+            				<f:facet name="header">
+            					Name
+            				</f:facet>
+            				<s:link view="/admin/#{empty from ? 'UserManage' : from}.xhtml" action="#{userManageActions.manageUser}" 
+                   				value="#{lcu.name}" 
+								id="user">
+                				<f:param name="userId" value="#{lcu.userId}"/>
+            				</s:link>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Full Name
+            				</f:facet>
+						    <h:outputText value="#{lcu.firstName}&#160;#{lcu.lastName}"/>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					Creation Date
+            				</f:facet>
+						    <h:outputText value="#{lcu.creationDate}">
+            					<s:convertDateTime pattern="yyyy-MM-dd hh:mm:ss"/>
+            				</h:outputText>
+        				</h:column>
+        			</rich:dataTable>
+        			</a:outputPanel>
+				</rich:panel>
+				<rich:panel bodyClass="inpanelBody">
+					<f:facet name="header">Task Amount (last day) per Resource</f:facet>
+					<!--<s:graphicImage value="{homeActions.chart}"/>-->
+				</rich:panel>
+				
+			</h:panelGrid>
+		</rich:panel>
+		
+	</ui:define>
+</ui:composition>

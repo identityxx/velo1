@@ -1,0 +1,89 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+
+
+	<ui:define name="body">
+		<h:form id="xmlSysConfForm">
+		<velo:XMLManager id="mainXmlConf" filename="#{confActions.veloConfig.getString('system.directory.system_conf')}/conf/velo_config.xml" type="file" columns="3" footerClass="panelGridActionFooter"
+			headerClass="panelGridActionHeader" styleClass="panelGridActionStyle"
+			columnClasses="subtitle,medium">
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Directory and Files</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="system.directory"/>
+				<rich:spacer width="1" height="4"/>
+				<rich:separator height="2" lineType="dotted"/>
+				<rich:spacer width="1" height="4"/>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="system.files"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Email</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="email-conf"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Reconcilliation</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="reconcile"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Tasks</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="tasks"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Requests</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="requests"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Access Control</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="access_control"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Roles</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="roles"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Accounts</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="accounts"/>
+			</rich:panel>
+                        
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Users</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="users"/>
+			</rich:panel>
+			
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Users Security</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="security.users"/>
+			</rich:panel>
+			
+			<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+				<f:facet name="header">Users Authentication</f:facet>
+				<velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="security.authentication.admin_interface"/>
+			</rich:panel>
+		</velo:XMLManager>
+		<rich:spacer width="1" height="10"/>
+		
+		<h:commandButton id="updateSysConf" action="#{confActions.saveSysConf}" value="#{messages['global.buttons.update']}" styleClass="button" />
+	</h:form>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,47 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="taskSearch" styleClass="edit">
+    
+    <div class="actionButtons">
+        <a:commandButton value="Refresh" reRender="taskAmountPanel"/>
+    </div>
+    <rich:panel>
+        <f:facet name="header">Tasks Summary</f:facet>
+        <a:outputPanel id="tasksAmountPanel">
+        <h:panelGrid columns="2">
+            <h:outputText value="Success Tasks: "/>
+            <h:outputText value="#{taskList.getTasksAmountForStatus('SUCCESS')}"/>
+            <h:outputText value="Pending Tasks: "/>
+            <h:outputText value="#{taskList.getTasksAmountForStatus('PENDING')}"/>
+            <h:outputText value="Running Tasks: "/>
+            <h:outputText value="#{taskList.getTasksAmountForStatus('RUNNING')}"/>
+            <h:outputText value="Failed Tasks: "/>
+            <h:outputText value="#{taskList.getTasksAmountForStatus('FAILURE')}"/>
+            <h:outputText value="Fatal Error Tasks: "/>
+            <h:outputText value="#{taskList.getTasksAmountForStatus('FATAL_ERROR')}"/>
+            <h:outputText value="Cancelled Tasks: "/>
+            <h:outputText value="#{taskList.getTasksAmountForStatus('CANCELLED')}"/>
+            <h:outputText value="Handled Manually Tasks: "/>
+            <h:outputText value="#{taskList.getTasksAmountForStatus('HANDLED_MANUALLY')}"/>
+        </h:panelGrid>
+        </a:outputPanel>
+    </rich:panel>
+    </h:form>
+</ui:define>
+
+</ui:composition>

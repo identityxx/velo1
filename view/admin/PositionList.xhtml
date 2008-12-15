@@ -1,0 +1,192 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:sb="http://myfaces.apache.org/sandbox"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="positionSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Position Search Parameters" switchType="ajax">
+        
+        	<s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Position Name</ui:define>
+                <h:inputText id="displayName" value="#{positionList.position.displayName}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Organization Unit</ui:define>
+                <h:inputText id="orgUnit" value="#{positionList.position.uniqueOrgUnitId}"/>
+            </s:decorate>
+            
+             <s:decorate id="searchCreationDateDecoration" template="layout/display.xhtml">
+            
+                <ui:define name="label">Creation Date</ui:define>
+                <h:panelGrid columns="6">
+                <h:outputText value="From:"/>
+                <rich:calendar id="fromCreationDate" value="#{positionList.position.fromCreationDate}"
+					locale="#{locale}"
+					popup="true"
+					datePattern="dd/MM/yyyy"
+					converter="#{dateTimeConverter}"
+				/>
+				
+				<h:outputText value="To:"/>
+				<rich:calendar id="toCreationDate" value="#{positionList.position.toCreationDate}"
+					locale="#{locale}"
+					popup="true"
+					datePattern="dd/MM/yyyy"
+					converter="#{dateTimeConverter}"/>
+				</h:panelGrid>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Status</ui:define>
+                <h:selectOneRadio  id="disabled" value="#{positionList.position.disabled}">
+                	<f:selectItem id="si1"  itemLabel="Active" itemValue="false"/>
+  					<f:selectItem id="si2"  itemLabel="Non-active" itemValue="true"/> 
+  				</h:selectOneRadio>
+            </s:decorate>
+            
+            
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Has Roles Associated?</ui:define>
+				<h:selectOneMenu id="hasRolesAssociated" value="#{positionList.hasRolesAssociated}">
+					<s:selectItems value="#{hasRolesAssociatedStatuses}" var="s" label="#{s}" noSelectionLabel="--Select--"/>
+					<s:convertEnum />
+				</h:selectOneMenu >
+            </s:decorate>
+                      
+            
+            
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/PositionList.xhtml"/>
+            <s:button id="sync" value="Sync Positions" onclick="if (!confirm('This will initialize positions  synchronization process, please confirm your action.')) return false" action="#{positionActions.syncPositions}"/>
+        </div>
+        
+    </h:form>
+    
+    <h:form id="positionList">
+    <rich:panel>
+        <f:facet name="header">Position Search Results</f:facet>
+    <div class="results" id="positionList">
+
+   	<h:outputText value="No Positions found" 
+               rendered="#{empty positionList.resultList}"/>		
+  
+               
+    <rich:dataTable id="positionList" 
+                var="currPosition"
+              value="#{positionList.resultList}" 
+           rendered="#{not empty positionList.resultList}">
+		<h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Display Name #{positionList.order=='displayName asc' ? messages.down : ( positionList.order=='displayName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{positionList.order=='displayName asc' ? 'displayName desc' : 'displayName asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'Position' : from}.xhtml" value="#{currPosition.displayName}" >
+                <f:param name="positionId" value="#{currPosition.positionId}"/>
+            </s:link>
+            <rich:toolTip direction="top-right" mode="client" verticalOffset="5" delay="500" zorder="200" styleClass="tooltip" layout="block">
+	           		<h:panelGrid columns="2">
+	           			<h:outputText value="No roles are currently associated" rendered="#{empty currPosition.positionRoles}" />
+	           			<h:outputText value="Associated Roles: " rendered="#{not empty currPosition.positionRoles}"/>
+						<ui:repeat var="currPositionRole" value="#{velo:setAsList(currPosition.positionRoles)}">
+							<s:link view="/admin/Role.xhtml" value="#{currPositionRole.role.name}">
+								<f:param name="roleId" value="#{currPositionRole.role.roleId}"/>
+							</s:link>
+							,   
+						</ui:repeat>
+	           		</h:panelGrid>
+				</rich:toolTip>
+        </h:column>
+		<h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Organization Unit #{positionList.order=='uniqueOrgUnitId asc' ? messages.down : ( positionList.order=='uniqueOrgUnitId desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{positionList.order=='uniqueOrgUnitId asc' ? 'uniqueOrgUnitId desc' : 'uniqueOrgUnitId asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            <h:outputText value="#{currPosition.uniqueOrgUnitId}" />
+        </h:column>
+        
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Disabled?">
+                    <f:param name="order" value="#{positionList.order=='disabled asc' ? 'disabled desc' : 'disabled asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            <h:graphicImage url="../icons/ok.png" rendered="#{currPosition.disabled}"/>
+            <h:graphicImage url="../icons/no.png" rendered="#{!currPosition.disabled}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Has roles assigned?">
+                </s:link>
+            </f:facet>
+            <h:graphicImage url="../icons/ok.png" rendered="#{not empty currPosition.positionRoles}"/>
+            <h:graphicImage url="../icons/no.png" rendered="#{empty currPosition.positionRoles}"/>
+        </h:column>
+        
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Creation Date#{positionList.order=='creationDate asc' ? messages.down : ( positionList.order=='creationDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{positionList.order=='creationDate asc' ? 'creationDate desc' : 'creationDate asc'}"/>
+                </s:link>
+            </f:facet>
+            <h:outputText value="#{currPosition.creationDate}" />
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/admin/#{empty from ? 'Position' : from}.xhtml" 
+                   value="Select" 
+                      id="position">
+                <f:param name="positionId" 
+                        value="#{currPosition.positionId}"/>
+            </s:link>
+            <h:outputText value="&#160;|&#160;"/>
+					<s:link view="/admin/#{empty from ? 'PositionEditRoles' : from}.xhtml"
+						value="Edit Associations" id="positionEditRoles" propagation="nest">
+						<f:param name="positionId" 
+                        value="#{currPosition.positionId}"/>
+					</s:link>
+        </h:column>
+    </rich:dataTable>
+  
+  		<ui:include src="/admin/incl/pagingPanel.xhtml">
+        	<ui:param name="currentPage" value="/admin/PositionList.xhtml" />
+        	<ui:param name="iteratedList" value="#{positionList}" />
+   		</ui:include>
+									  
+    </div>
+    </rich:panel>
+       
+    
+    </h:form> 
+    
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,78 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:sb="http://myfaces.apache.org/sandbox"
+	template="layout/template.xhtml">
+	
+
+	<ui:define name="body">
+
+		<h:form id="userAdd" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Create User (General Details)</f:facet>
+
+				<!-- Only render if there's no automated mechanism for generating user names -->
+				<s:decorate id="userNameDecoration" template="layout/edit.xhtml" rendered="#{globalConf.getString('users.plugin_id_enabled') ne 'true'}">
+					<ui:define name="label">User Name</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{userHome.instance.name}">
+						<a:support event="onblur" reRender="userNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="lockedDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Locked?</ui:define>
+					<h:selectBooleanCheckbox value="#{userHome.instance.locked}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="protectedDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Protected?</ui:define>
+					<h:selectBooleanCheckbox value="#{userHome.instance.protected}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="authenticateLocallyDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Authenticate Locally?</ui:define>
+					<h:selectBooleanCheckbox value="#{userHome.instance.authenticatedViaLocalPassword}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="localPasswordDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Authenticate Locally?</ui:define>
+					<h:inputSecret id="password" value="#{userHome.instance.password}" required="false">
+					</h:inputSecret>
+				</s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+				
+				<div><h:outputText value="Note: The username will be automatically generated!" rendered="#{globalConf.getString('users.plugin_id_enabled') eq 'true'}"/></div>
+
+			</rich:panel>
+			
+			<div class="actionButtons">
+				<h:commandButton id="save"
+					value="Save" action="#{userManageActions.createUser}"
+					disabled="#{!userHome.wired}"
+					rendered="#{!userHome.managed}" />
+				<s:button id="cancel"
+					value="Cancel" propagation="end"
+					view="/admin/#{empty userFrom ? 'UserList' : userFrom}.xhtml"
+					rendered="#{!userHome.managed}" />
+			</div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

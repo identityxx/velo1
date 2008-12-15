@@ -1,0 +1,284 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Role General Information</f:facet>
+
+		<s:decorate id="name" template="layout/display.xhtml">
+            <ui:define name="label">Name</ui:define>
+            #{roleHome.instance.name}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{roleHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="aas" template="layout/display.xhtml">
+            <ui:define name="label">Is role disabled?</ui:define>
+            <h:outputText value="#{roleHome.instance.disabled}"/>
+        </s:decorate>
+        
+        <s:decorate id="isRoleDisabled" template="layout/display.xhtml">
+            <ui:define name="label">Active Access Synchronization?</ui:define>
+            <h:outputText value="#{roleHome.instance.activeAccessSync}"/>
+        </s:decorate>
+        
+        
+        <s:decorate id="exposedToSelfService" template="layout/display.xhtml">
+            <ui:define name="label">Exposed to Self Service?</ui:define>
+            <h:outputText value="#{roleHome.instance.exposedToSelfService}"/>
+        </s:decorate>
+        
+        <div style="clear:both"/>
+	</rich:panel>
+	
+	<rich:panel>
+        <f:facet name="header">Associated Resources and Access</f:facet>
+        
+        <s:decorate id="resources" template="layout/display.xhtml">
+            <ui:define name="label">Resources Associated with Role</ui:define>
+            
+            <h:dataTable id="targetList" 
+				var="res"
+				value="#{velo:setAsList(roleHome.instance.resources)}" 
+				rendered="#{not empty roleHome.instance.resources}">
+				<h:column>
+					- 
+					<s:link view="/admin/Resource.xhtml" value="#{res.displayName}">
+						<f:param name="resourceId" value="#{res.resourceId}"/>
+					</s:link>
+				</h:column>
+			</h:dataTable>
+        </s:decorate>
+        
+        
+        <s:decorate id="groupsAmount" template="layout/display.xhtml">
+            <ui:define name="label">Resource Groups associated to role</ui:define>
+            
+            <h:dataTable id="targetGroupList" 
+				var="resGroup"
+				value="#{velo:setAsList(roleHome.instance.resourceGroups)}" 
+				rendered="#{not empty roleHome.instance.resourceGroups}">
+				<h:column>
+					- #{resGroup.displayName} (#{resGroup.resource.displayName})
+				</h:column>
+			</h:dataTable>
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+	</rich:panel>
+    
+    
+    <rich:panel>
+        <f:facet name="header">Positions the role is assigned to</f:facet>
+        	<div class="results" id="roleList">
+            	<h:dataTable id="positionList" 
+					var="pos"
+					value="#{velo:setAsList(roleHome.instance.positionRoles)}" 
+					rendered="#{not empty roleHome.instance.positionRoles}">
+						<h:column>
+							<s:link view="/admin/Position.xhtml" value="#{pos.position.displayName}">
+							<f:param name="positionId" value="#{pos.position.positionId}"/>
+						</s:link>
+						</h:column>
+				</h:dataTable>
+       		</div>
+        
+    </rich:panel>
+    
+    
+    <rich:panel>
+    	<f:facet name="header">Role Approval Groups</f:facet>
+        
+        <div class="results" id="roleList">
+        <rich:dataTable id="approverGroups" 
+			var="ag"
+			value="#{roleHome.instance.roleApproversGroups}" 
+			rendered="#{not empty roleHome.instance.roleApproversGroups}">
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Approval Groups Name"/>
+				</f:facet>
+				#{ag.approversGroup.displayName}
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Approval Level"/>
+				</f:facet>
+				#{ag.approvalLevel}
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Description"/>
+				</f:facet>
+				#{ag.description}
+			</h:column>
+		</rich:dataTable>
+		</div>
+	</rich:panel>
+	
+	<rich:panel>
+    	<f:facet name="header">Role Resource Attributes</f:facet>
+        
+        <div class="results" id="roleList">
+        <rich:dataTable id="roleResourceAttributes" 
+			var="rra"
+			value="#{velo:setAsList(roleHome.instance.roleResourceAttributes)}" 
+			rendered="#{not empty roleHome.instance.roleResourceAttributes}">
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Resource Attribute Unique Name"/>
+				</f:facet>
+				#{rra.resourceAttribute.uniqueName}
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Resource Attribute Display Name"/>
+				</f:facet>
+				#{rra.resourceAttribute.displayName}
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Value Set As"/>
+				</f:facet>
+				#{rra.type}
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Value"/>
+				</f:facet>
+				<h:outputText value="#{rra.value}" rendered="#{rra.type eq 'TEXTUAL'}"/>
+				<h:outputText value="[set by rule]" rendered="#{rra.type ne 'TEXTUAL'}"/>
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Rule"/>
+				</f:facet>
+				<h:outputText value="#{rra.actionRule.description}" rendered="#{rra.type eq 'RULE'}"/>
+				<h:outputText value="[set by value]" rendered="#{rra.type ne 'RULE'}"/>
+			</h:column>
+		</rich:dataTable>
+		</div>
+	</rich:panel>
+	
+	
+	<rich:panel>
+        <f:facet name="header">Associated Roles Folders</f:facet>
+        
+        <div class="results" id="rolesFolderList">
+            <rich:dataTable id="rolesFolderList" 
+                var="rf"
+                value="#{roleHome.instance.rolesFolders}" 
+                rendered="#{not empty roleHome.instance.rolesFolders}">
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Unique Name"/>
+                    </f:facet>
+                    #{rf.uniqueName}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Display Name"/>
+                    </f:facet>
+                    #{rf.displayName}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Description"/>
+                    </f:facet>
+                    #{rf.description}
+                </h:column>
+            </rich:dataTable>
+            </div>
+    </rich:panel>
+	
+	
+	<rich:panel>
+        <f:facet name="header">Journaling</f:facet>
+        
+        <div class="results" id="journalingList">
+        <rich:dataTable id="journalingDT" 
+            var="je"
+            value="#{velo:setAsList(roleHome.instance.journaling)}" 
+            rendered="#{not empty roleHome.instance.journaling}">
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Date"/>
+                </f:facet>
+                <h:outputText value="#{je.creationDate}">
+                    <s:convertDateTime type="both"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Performed by User"/>
+                </f:facet>
+                <h:outputText value="#{je.performedBy.name}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Action Type"/>
+                </f:facet>
+                <h:outputText value="#{je.actionType}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Summary Message"/>
+                </f:facet>
+                <h:outputText value="#{je.summaryMessage}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Detailed Message"/>
+                </f:facet>
+                <h:outputText value="#{je.detailedMessage}"/>
+            </h:column>
+        </rich:dataTable>
+        </div>
+    </rich:panel>
+		
+	<div class="actionButtons">      
+	
+		<s:button view="/admin/RoleEdit.xhtml" 
+			id="editInformativeDetails" 
+			value="Edit Details"/>
+		
+		<s:button view="/admin/RoleEditTargetGroups.xhtml" 
+			id="editAssociatedAccessGroups" 
+			value="Edit Associated Access Groups" propagation="nest"/>
+			
+		<s:button view="/admin/RoleEditApproversGroups.xhtml" 
+			id="editAssociatedApproversGroups" 
+			value="Edit Associated Approvers Groups" propagation="nest"/>
+		
+		<s:button view="/admin/RoleEditResourceAttributes.xhtml" 
+			id="editResourceAttributes" 
+			value="Edit Resource Attributes" propagation="nest"/>
+			
+		<s:button action="#{roleActions.changeRoleStatus}" id="crs" 
+			value="#{roleHome.instance.disabled ? 'Enable role' : 'Disable role'}"/>	
+			
+		<s:button view="/admin/#{empty roleFrom ? 'RoleList' : roleFrom}.xhtml"
+			id="done"
+			value="Done"/>
+	</div>
+
+</ui:define>
+
+</ui:composition>

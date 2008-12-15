@@ -1,0 +1,64 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Account</f:facet>
+
+        <s:decorate id="name" template="layout/display.xhtml">
+            <ui:define name="label">Account Name</ui:define>
+            #{accountHome.instance.name}
+        </s:decorate>
+        
+        <s:decorate id="resource" template="layout/display.xhtml">
+            <ui:define name="label">Target-System</ui:define>
+            #{accountHome.instance.resource.displayName}
+        </s:decorate>
+
+        <s:decorate id="user" template="layout/display.xhtml">
+            <ui:define name="label">Associated to User?</ui:define>
+            <s:link view="/admin/UserManage.xhtml" 
+            	value="Yes (#{accountHome.instance.user.name})" rendered="#{accountHome.instance.user ne null}">
+				<f:param name="userId" value="#{accountHome.instance.user.userId}"/>
+			</s:link>
+			
+            <h:outputText value="No" rendered="#{accountHome.instance.user eq null}"/>
+        </s:decorate>
+        
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Creation Date</ui:define>
+            #{accountHome.instance.creationDate}
+        </s:decorate>
+        
+        <s:decorate id="lastUpdateDate" template="layout/display.xhtml">
+            <ui:define name="label">Last Update Date</ui:define>
+            #{accountHome.instance.lastUpdateDate}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/#{empty accountFrom ? 'AccountList' : accountFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+
+    </div>
+
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd">
+    
+	<!--<begin-conversation join="true"/>-->
+   <action execute="#{userHome.wire}"/>
+
+	<!-- Ajax tab movement cause action execution per tab click!
+   <action execute="#{userManageActions.manageUser}"/>
+   -->
+   
+    <param name="userFrom"/>
+    <param name="userId" value="#{userHome.userId}"/>
+
+    <navigation from-action="#{userHome.remove}">
+       <end-conversation/>
+       <redirect view-id="/admin/UserList.xhtml"/>
+   </navigation>
+</page>

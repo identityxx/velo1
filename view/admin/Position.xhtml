@@ -1,0 +1,160 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Position</f:facet>
+
+        <s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{positionHome.instance.displayName}
+        </s:decorate>
+        
+       <s:decorate id="orgUnit" template="layout/display.xhtml">
+            <ui:define name="label">Organization Unit</ui:define>
+            #{positionHome.instance.uniqueOrgUnitId}
+        </s:decorate>
+
+		<s:decorate id="isDisabled" template="layout/display.xhtml">
+            <ui:define name="label">Is disabled?</ui:define>
+            #{positionHome.instance.disabled}
+        </s:decorate>		
+		
+		
+		<s:decorate id="isDeleted" template="layout/display.xhtml">
+            <ui:define name="label">Is deleted?</ui:define>
+            #{positionHome.instance.deleted}
+        </s:decorate>		
+			
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Creation Date</ui:define>
+            #{positionHome.instance.creationDate}
+        </s:decorate>
+        
+        <s:decorate id="lastUpdateDate" template="layout/display.xhtml">
+            <ui:define name="label">Last Update Date</ui:define>
+            #{positionHome.instance.lastUpdateDate}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+    </rich:panel>
+    
+    <h:panelGrid columns="1" style="width: 100%;" >
+  
+    <rich:panel style="width : 100%">
+			<f:facet name="header">Roles Assigned to the Position:</f:facet>
+			<h:form>
+				<a:outputPanel id="originalPositionRolesAssignmentPanel">
+					<h:outputText value="No roles currently assigned to #{positionHome.instance.displayName}" rendered="#{empty positionHome.instance.positionRoles}"/>
+					<rich:dataTable id="originalPositionRolesAssignmentList"  var="currPositionRole"
+						value="#{velo:setAsList(positionHome.instance.positionRoles)}" 
+						rendered="#{not empty positionHome.instance.positionRoles}">
+						<h:column>
+           					<f:facet name="header">Name</f:facet>
+           					#{currPositionRole.role.name}
+           				</h:column>
+           				<h:column>
+           					<f:facet name="header">Description</f:facet>
+           					#{currPositionRole.role.description}
+           				</h:column>
+           				
+        			</rich:dataTable>
+				</a:outputPanel>
+			</h:form>
+	</rich:panel>
+ 	    
+     <rich:panel style="width : 100%">
+			<f:facet name="header">Users Associated with the Position:</f:facet>
+			<h:form>
+				<a:outputPanel id="usersOfPositionAssociationPanel">
+					<h:outputText value="No users are currently associated with #{positionHome.instance.displayName}" rendered="#{empty positionHome.instance.users}"/>
+					<rich:dataTable id="usersOfPositionAssociationList"  var="currPositionUser"
+						value="#{velo:setAsList(positionHome.instance.users)}" 
+						rendered="#{not empty positionHome.instance.users}">
+						<h:column>
+							<s:link view="/admin/#{empty from ? 'UserManage' : from}.xhtml" action="#{userManageActions.manageUser}" value="#{currPositionUser.name}">
+            					<f:param name="userId" value="#{currPositionUser.userId}"/>
+            				</s:link>
+           				</h:column>
+           			</rich:dataTable>
+				</a:outputPanel>
+			</h:form>
+		</rich:panel>
+		
+	<rich:panel>
+        <f:facet name="header">Journaling</f:facet>
+        
+        <div class="results" id="journalingList">
+        <rich:dataTable id="journalingDT" 
+            var="je"
+            value="#{velo:setAsList(positionHome.instance.journaling)}" 
+            rendered="#{not empty positionHome.instance.journaling}">
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Date"/>
+                </f:facet>
+                <h:outputText value="#{je.creationDate}">
+                    <s:convertDateTime type="both"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Performed by User"/>
+                </f:facet>
+                <h:outputText value="#{je.performedBy.name}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Action Type"/>
+                </f:facet>
+                <h:outputText value="#{je.actionType}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Summary Message"/>
+                </f:facet>
+                <h:outputText value="#{je.summaryMessage}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Detailed Message"/>
+                </f:facet>
+                <h:outputText value="#{je.detailedMessage}"/>
+            </h:column>
+        </rich:dataTable>
+        </div>
+    </rich:panel>	
+		
+		
+ 	</h:panelGrid>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/#{empty positionFrom ? 'PositionList' : positionFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+		<s:button view="/admin/PositionEditRoles.xhtml" 
+			id="editAssociatedRoles" 
+			value="Edit Associated Roles">
+			<f:param name="positionId" 
+                        value="#{positionHome.instance.positionId}"/>
+		</s:button>	
+    </div>
+
+</ui:define>
+
+</ui:composition>

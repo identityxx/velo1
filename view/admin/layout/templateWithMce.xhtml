@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+      xmlns:s="http://jboss.com/products/seam/taglib">
+      
+      <f:view contentType="text/html" >
+<head>    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Velo Admin Interface</title>
+    <link href="stylesheet/theme.css" rel="stylesheet" type="text/css" />
+    <!-- For users who access the template via public folder -->
+    <link href="admin/stylesheet/theme.css" rel="stylesheet" type="text/css" />
+    <link href="admin/stylesheet/xmlTags.css" rel="stylesheet" type="text/css" />
+    
+    <!-- tinyMCE -->
+    <script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    <script language="javascript" type="text/javascript">
+        // Notice: The simple theme does not use all options some of them are limited to the advanced theme
+        tinyMCE.init({
+        mode : "textareas",
+        theme : "advanced",
+        plugins : "devkit,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras",theme_advanced_buttons1_add_before : "save,newdocument,separator",theme_advanced_buttons1_add : "fontselect,fontsizeselect",theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,separator,forecolor,backcolor,advsearchreplace",theme_advanced_buttons2_add_before: "cut,copy,paste,pastetext,pasteword,separator,search,replace,separator",
+        theme_advanced_buttons3_add : "ltr,rtl"
+        });
+    </script>
+    <!-- /tinyMCE -->
+    
+    
+</head>
+
+<body>
+
+
+<h:dataTable value="#{conversationList}" var="entry"
+        rendered="#{not empty conversationList}">
+    <h:column>
+        <f:facet name="header">Workspace</f:facet>
+        <h:commandLink action="#{entry.select}" value="#{entry.description}"/>
+        <h:outputText value="[current]" rendered="#{entry.current}"/>
+    </h:column>
+    <h:column>
+        <f:facet name="header">Activity</f:facet>
+        <h:outputText value="#{entry.startDatetime}">
+            <f:convertDateTime type="time" pattern="hh:mm a"/>
+        </h:outputText>
+        <h:outputText value=" - "/>
+        <h:outputText value="#{entry.lastDatetime}">
+            <f:convertDateTime type="time" pattern="hh:mm a"/>
+        </h:outputText>
+    </h:column>
+    <h:column>
+        <f:facet name="header">Action</f:facet>
+        <h:commandButton action="#{entry.select}" value="#{msg.Switch}"/>
+        <h:commandButton action="#{entry.destroy}" value="#{msg.Destroy}"/>
+    </h:column>
+</h:dataTable>
+
+
+	<div id="topHeader">
+		<span style="float: left;margin-top:5px;">
+				Velo - An open Source Identity Management Solution.
+		</span>
+		<span style="float: right;">
+			<h:form id="topNavForm">
+				<span>You are logged as: '#{identity.username}' | 
+					<s:link view="/AdminGoodBye.xhtml" action="#{identity.logout}" value="Logout" rendered="#{identity.loggedIn}" style="color: white;text-decoration: none;"/>
+					<br/><b>Administration Management</b>
+					<br/><br/><br/><i><h:outputText value="#{messages['global.velo.server_version']}"/></i>
+				</span>
+			</h:form>
+		</span>
+	</div>
+	<ui:include src="top_nav.xhtml">
+        	<ui:param name="projectName" value="Velo"/>
+    </ui:include>
+	
+
+	<div class="body">
+		<a:outputPanel ajaxRendered="true">
+			<h:messages globalOnly="true" styleClass="message" id="globalMessages" />
+		</a:outputPanel>
+		<ui:insert name="body"/>
+	</div>
+
+	<div class="footer">
+		<h:outputLink value="http://velo.safehaus.org">Velo - An open source Identity Management Solution</h:outputLink> 
+	</div>
+
+</body>
+</f:view>
+</html>

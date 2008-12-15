@@ -1,0 +1,163 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Task</f:facet>
+
+        <s:decorate id="id" template="layout/display.xhtml">
+            <ui:define name="label">ID</ui:define>
+            #{taskHome.instance.taskId}
+        </s:decorate>
+        
+        <s:decorate id="status" template="layout/display.xhtml">
+            <ui:define name="label">Status</ui:define>
+            #{taskHome.instance.status}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{taskHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Creation Date</ui:define>
+            <h:outputText value="#{taskHome.instance.creationDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
+        </s:decorate>
+        
+        <s:decorate id="expectedExecutionDate" template="layout/display.xhtml">
+            <ui:define name="label">Exepected Execution Date</ui:define>
+            
+            <h:outputText value="#{taskHome.instance.expectedExecutionDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
+        </s:decorate>
+        
+        <s:decorate id="lastExecutionDate" template="layout/display.xhtml">
+            <ui:define name="label">Last Execution Date</ui:define>
+            <h:outputText value="#{taskHome.instance.lastExecutionDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
+        </s:decorate>
+        
+        <s:decorate id="workflowProcessId" template="layout/display.xhtml" rendered="#{taskHome.instance.workflowProcessId ne NULL}">
+            <ui:define name="label">Associated with Workflow Process ID</ui:define>
+            <h:outputText value="#{taskHome.instance.workflowProcessId}"/>
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+        <rich:spacer width="1" height="8"/><rich:separator /><rich:spacer width="1" height="8"/>
+        
+
+        <rich:panel>
+        	<f:facet name="header">Task Logs</f:facet>
+        	<rich:dataTable width="100%" id="taskLogsDataTableList" rows="100" 
+				columnClasses="col" value="#{velo:setAsList(taskHome.instance.taskLogs)}" var="tl" 
+				rendered="#{not empty taskHome.instance.taskLogs}">
+				<h:column>
+            		<f:facet name="header">Creation Date</f:facet>
+            		<h:outputText value="#{tl.creationDate}">
+            			<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            		</h:outputText>
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Severity</f:facet>
+            		#{tl.severity}
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Summary Message</f:facet>
+            		#{tl.summaryMessage}
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Detailed Message</f:facet>
+            		#{tl.detailedMessage}
+        		</h:column>
+			</rich:dataTable>
+		</rich:panel>
+
+
+		<rich:panel>
+        	<f:facet name="header">Task Dependencies</f:facet>
+        	<rich:dataTable width="100%" id="taskDependencyDataTableList" rows="100" 
+				columnClasses="col" value="#{velo:setAsList(taskHome.instance.dependencyTasks)}" var="td" 
+				rendered="#{not empty taskHome.instance.dependencyTasks}">
+				<h:column>
+            		<f:facet name="header">ID</f:facet>
+            		#{td.taskId}
+        		</h:column>
+				<h:column>
+            		<f:facet name="header">Creation Date</f:facet>
+            		#{td.creationDate}
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Type</f:facet>
+            		#{td.taskDefinition.name}
+        		</h:column>
+        		<h:column>
+            		<f:facet name="header">Status</f:facet>
+            		#{td.status}
+        		</h:column>
+			</rich:dataTable>
+        
+        	<div style="clear:both"/>
+        </rich:panel>	
+        
+        
+        <rich:panel rendered="#{taskHome.instance.class.name eq 'velo.entity.SpmlTask'}">
+        	<f:facet name="header">SPML Details</f:facet>
+        	
+        	<s:decorate id="spmlXmlContent" template="layout/display.xhtml">
+            	<ui:define name="label">SPML Task Content</ui:define>
+            	<pre><h:outputText style="color: green;" value="#{taskHome.instance.body}"/></pre>
+        	</s:decorate>
+        	
+        	<div style="clear:both"/>
+		</rich:panel>
+        
+        
+	</rich:panel>
+    
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/#{empty taskFrom ? 'TaskList' : taskFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+                 
+        <s:button view="/admin/TaskEdit.xhtml" 
+			id="edit" 
+			value="Edit" rendered="#{taskHome.instance.status ne 'SUCCESS'}"/>
+                 
+		<s:button action="#{taskActions.executeTask()}"
+                    id="executeTask"
+                 value="Execute Task Now!" rendered="#{taskHome.instance.status ne 'SUCCESS'}"/>
+        <s:button id="requeueTask" value="Re-Queue Task" action="#{taskActions.reQueueTask()}" rendered="#{taskHome.instance.status eq 'FATAL_ERROR'}"/>
+       	<s:button action="#{taskActions.cancelTask}"
+	       	id="cancelTask"
+			value="Cancel Task" rendered="#{taskHome.instance.status ne 'SUCCESS'}"/>
+         
+         <s:button action="#{taskActions.handledManuallyTask}"
+	       	id="handledManually"
+			value="Handled Manually" rendered="#{taskHome.instance.status ne 'SUCCESS'}"/>
+         
+    </div>
+
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,66 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Target System</f:facet>
+
+        <s:decorate id="shortName" template="layout/display.xhtml">
+            <ui:define name="label">Short Name</ui:define>
+            #{userHome.instance.shortName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{userHome.instance.displayName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{userHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="type" template="layout/display.xhtml">
+            <ui:define name="label">Type</ui:define>
+            #{userHome.instance.userType.nameIdentifier}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/UserEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty userFrom ? 'UserList' : userFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+		
+		<s:button action="#{userActions.testConnectivity}"
+                    id="testConnectivity"
+                 value="Test Connectivity"/>
+                 
+		<s:button action="#{reconcileActions.reconcileUser}"
+                    id="reconcileUser"
+                 value="Reconcile Target Now!"/>
+                 
+    </div>
+
+</ui:define>
+
+</ui:composition>

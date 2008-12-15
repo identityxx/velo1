@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:s="http://jboss.com/products/seam/taglib"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+      xmlns:ec="http://jboss.com/products/seam/entityconverter/taglib"
+      xmlns:rich="http://richfaces.ajax4jsf.org/rich">
+    
+    <body>
+        <f:view>
+            <ui:composition template="#{theme.template_file}">
+                <ui:define name="topnav">
+                    <ui:include src="/WEB-INF/incl/top_nav.xhtml">
+                        <ui:param name="page" value="Reconcile Target System" />
+                    </ui:include>
+                </ui:define> 
+                
+                <ui:define name="sidebar">
+                    <ui:include src="/WEB-INF/incl/left_nav.xhtml" />
+                </ui:define>
+                
+                <ui:define name="pageTitle">
+                    <h1>#{messages.reconcile_module_title}: <span style="color: #F68938">#{messages.reconcile_resource_title}</span></h1>
+                </ui:define>
+                
+                <ui:define name="pageDescription">
+                    <div id="pageDescription" class="cntPageTitle">		
+                        <p>#{messages.reconcile_resource_page_desc}</p>
+                    </div>
+                </ui:define>
+                
+                <ui:define name="content">
+                    <div class="pageUtils">
+                        <h:form>
+                            <fieldset class="fieldsetActions">
+                                <legend><h:outputText value="#{messages.actions}"/></legend>
+                                <span class="actions">
+                                    
+                                    
+                                    <div class="label"><h:outputLabel for="reconcileAccountsByResource">Select the Target-System to reconcile: </h:outputLabel></div>
+                                    <div class="input">
+                                        
+                                        <h:selectOneMenu  id="reconcileAccountsByResource" value="#{reconcileManager.resourceToReconcile}" required="true" >
+                                            <s:selectItems value="#{resources.resultList}" var="t" label="#{t.displayName}" noSelectionLabel="---Select---" />
+                                            <ec:convertEntity/>
+                                        </h:selectOneMenu>
+                                        
+                                        <span class="errors"><h:message for="reconcileAccountsByResource" /></span>
+                                        
+                                        </div>
+                                    
+                                    <div class="entry">
+                                        <div class="label"><h:outputLabel>With Syncing Active Data?</h:outputLabel></div>
+                                        <div class="input"><h:selectBooleanCheckbox
+                                                id="syncData" title="Is Account ID Attribute ?"
+                                                value="#{reconcileManager.syncDataInReconciliationResourceProcess}"></h:selectBooleanCheckbox>
+                                            <span class="errors"><br/><h:message for="syncData" /></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <rich:spacer height="15" />
+                                    <a:commandButton id="btnReconcileTS" value="Reconcile the selected Target-System now!" action="#{reconcileManager.reconcileResource}" onclick="if (!confirm('Reconcile process may take some time to run, are you sure you want to perform reconcile now?')) return false" styleClass="button"/>
+                                    <rich:spacer height="15" />
+                                </span>
+                            </fieldset>
+                        </h:form>
+                    </div>
+                </ui:define>
+            </ui:composition> 
+        </f:view>
+    </body> 
+</html>

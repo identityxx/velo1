@@ -1,0 +1,134 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Resource Attribute</f:facet>
+
+        <s:decorate id="uniqueName" template="layout/display.xhtml">
+            <ui:define name="label">Name as in Resource</ui:define>
+            #{resourceAttributeHome.instance.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{resourceAttributeHome.instance.displayName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{resourceAttributeHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="type" template="layout/display.xhtml">
+            <ui:define name="label">Resource</ui:define>
+            #{resourceAttributeHome.instance.resource.displayName}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <rich:panel>
+        <f:facet name="header">Attribute Action Rules</f:facet>
+        <div class="results" id="actionRulesDiv"><h:outputText
+			value="No Attribute Action Rules attached"
+			rendered="#{empty resourceAttributeHome.instance.actionRules}" /> <rich:dataTable
+			id="supportedOperations" var="acr"
+			value="#{velo:setAsList(resourceAttributeHome.instance.actionRules)}"
+			rendered="#{not empty resourceAttributeHome.instance.actionRules}">
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Description"/>
+				</f:facet>
+            	#{acr.description}
+        	</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Sequence"/>
+				</f:facet>
+            	#{acr.sequence}
+        	</h:column>
+        	<h:column>
+				<f:facet name="header">
+					<h:outputText value="Actions"/>
+				</f:facet>
+            	<s:link view="/admin/ResourceAttributeActionRule.xhtml" value="Select" 
+					id="createAction">
+					<f:param name="resourceAttributeId" value="#{resourceAttributeHome.instance.resourceAttributeId}"/>
+					<f:param name="resourceAttributeActionRuleId" value="#{acr.actionDefinitionId}"/>
+					<f:param name="resourceActionFrom" value="ResourceAttribute"/>
+            	</s:link>
+        	</h:column>
+		</rich:dataTable></div>
+        
+        <s:div styleClass="actionButtons" rendered="#{empty from}">
+			<s:button view="/admin/ResourceAttributeActionRuleEdit.xhtml" id="create"
+				value="Create new action rule">
+				<f:param name="resourceAttributeId" value="#{resourceAttributeHome.instance.resourceAttributeId}"/>
+			</s:button>
+		</s:div>
+	</rich:panel>
+	
+	
+	<rich:panel>
+        <f:facet name="header">Roles reference to this Attribute</f:facet>
+        <div class="results" id="actionRulesDiv"><h:outputText
+			value="No Roles reference to this attribute."
+			rendered="#{empty resourceAttributeHome.instance.roleResourceAttributes}" /> <rich:dataTable
+			id="roleReferencesThisAttributeList" var="rra"
+			value="#{velo:setAsList(resourceAttributeHome.instance.roleResourceAttributes)}"
+			rendered="#{not empty resourceAttributeHome.instance.roleResourceAttributes}">
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Role Name"/>
+				</f:facet>
+            	#{rra.role.name}
+        	</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Value set as"/>
+				</f:facet>
+            	#{rra.type}
+        	</h:column>
+        	<h:column>
+				<f:facet name="header">
+					<h:outputText value="Value"/>
+				</f:facet>
+            	<h:outputText value="#{rra.value}" rendered="#{rra.type eq 'TEXTUAL'}"/>
+				<h:outputText value="[set by rule]" rendered="#{rra.type ne 'TEXTUAL'}"/>
+        	</h:column>
+		</rich:dataTable></div>
+	</rich:panel>
+	
+	
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/ResourceAttributeEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty resourceAttributeFrom ? 'ResourceAttributeList' : resourceAttributeFrom}.xhtml"
+                    id="done"
+                 value="Done">
+			<f:param name="resourceId" value="#{resourceAttributeHome.instance.resource.resourceId}"/>
+		</s:button>
+    </div>
+
+</ui:define>
+
+</ui:composition>

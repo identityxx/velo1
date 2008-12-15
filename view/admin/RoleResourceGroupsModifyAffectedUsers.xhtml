@@ -1,0 +1,77 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:sb="http://myfaces.apache.org/sandbox"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="affectedUsersForm">
+    	<rich:panel>
+        	<f:facet name="header">Affected directly-assigned Users </f:facet>
+    			<div class="results" id="affectedUsersList">
+
+   					<h:outputText value="No affected users found" 
+               			rendered="#{empty roleHome.instance.affectedUsers}"/>		
+  
+  
+    				<rich:dataTable id="affectedUserList" 
+                		var="currUser"
+              			value="#{velo:setAsList(roleHome.instance.affectedUsers)}" 
+           				rendered="#{not empty roleHome.instance.affectedUsers}">
+           				<h:column>
+                			<f:facet name="header">
+                    			<h:outputText value="User Name"/>
+                			</f:facet>
+               				 #{currUser.name}
+            			</h:column>
+    				</rich:dataTable>
+  
+    			</div>
+    	</rich:panel>
+    	
+    	<rich:panel>
+    		<f:facet name="header">Affected position-inherited Users </f:facet>
+    		<h:outputText value="No positions is associated to the role #{roleHome.instance.name}"  rendered="#{empty roleHome.instance.positionRoles}"/>
+			<ui:repeat var="currPositionRole" value="#{velo:setAsList(roleHome.instance.positionRoles)}" rendered="#{not empty roleHome.instance.positionRoles}">
+					
+	    		<h:panelGrid columns="1" width="20%">
+					 <h:outputText value="#{currPositionRole.position.displayName}" style="background-color:lightblue;"/>
+		    		 <rich:dataTable id="userList" var="currUser" value="#{velo:setAsList(currPositionRole.position.users)}" 
+		    		 				styleClass="halfWidthTable"
+									columnClasses="wideTableCell">
+						<h:column style="width:10%;">
+							<h:graphicImage value="../img/linking_arrow.gif"/>
+			            </h:column>	
+						<h:column style="width:20%;">
+							<h:outputText value="#{currUser.name}"/>
+						</h:column>
+								
+					</rich:dataTable>
+				</h:panelGrid>
+			</ui:repeat>	
+    	</rich:panel>
+    
+    <div class="actionButtons">
+        <h:commandButton id="perform"
+            value="Perform modifications!" action="#{roleActions.modifyGroupsInRole}"/>
+        <s:button id="cancel"
+                value="Cancel" propagation="end"
+                view="/admin/Role.xhtml"/>   
+    </div>
+    
+   </h:form>
+    
+</ui:define>
+
+</ui:composition>

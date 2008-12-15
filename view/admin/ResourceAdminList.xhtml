@@ -1,0 +1,111 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceAdminSearch" styleClass="edit">
+			<rich:simpleTogglePanel label="Resource Admin Search Parameters"
+				switchType="ajax">
+
+				<h:outputText value="For Resource: #{resourceHome.instance.displayName}"/>
+				
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Admin Username</ui:define>
+					<h:inputText id="username"
+						value="#{resourceAdminList.resourceAdmin.userName}" />
+				</s:decorate>
+
+				<!-- 
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Resource</ui:define>
+					<h:selectOneMenu id="resource"
+						 required="false">
+						<s:selectItems value="{guiResources}" var="ts"
+							label="{ts.displayName}" noSelectionLabel="-select-" />
+					</h:selectOneMenu>
+				</s:decorate>
+				-->
+                <div style="clear: both"/>
+			</rich:simpleTogglePanel>
+
+			<div class="actionButtons"><h:commandButton id="search"
+				value="Search" action="/admin/ResourceAdminList.xhtml" /></div>
+
+		</h:form>
+		
+		
+		
+		<rich:panel>
+			<f:facet name="header">Resource Admin Search Results</f:facet>
+			<div class="results" id="resourceAdminList"><h:outputText
+				value="No resource admin exists"
+				rendered="#{empty resourceAdminList.resultList}" /> <rich:dataTable
+				id="resourceAdminList" var="resourceAdmin"
+				value="#{velo:setAsList(resourceHome.instance.resourceAdmins)}"
+				rendered="#{not empty resourceHome.instance.resourceAdmins}">
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="User Name #{resourceAttributeList.order=='userName asc' ? messages.down : ( resourceAdminList.order=='userName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAdminList.order=='userName asc' ? 'userName desc' : 'userName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAdmin.userName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Priority #{resourceAdminList.order=='priority asc' ? messages.down : ( resourceAdminList.order=='priority desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAdminList.order=='priority asc' ? 'priority desc' : 'priority asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAdmin.priority}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Resource #{resourceAdminList.order=='resource.displayName asc' ? messages.down : ( resourceAdminList.order=='resource.displayName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAdminList.order=='resource.displayName asc' ? 'resource.displayName desc' : 'resource.displayName asc'}" />
+						</s:link>
+					</f:facet>
+					<s:link view="/admin/Resource.xhtml" value="#{resourceAdmin.resource.displayName}">
+						<f:param name="resourceId" value="#{resourceAdmin.resource.resourceId}"/>
+					</s:link>
+        		</h:column>
+				<h:column>
+					<f:facet name="header">action</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceAdmin' : from}.xhtml"
+						value="Select" id="resourceAdmin">
+						<f:param name="resourceAdminId"
+							value="#{resourceAdmin.resourceAdminId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+		</rich:panel>
+		
+		<s:div styleClass="actionButtons" rendered="#{empty from}">
+			<s:button view="/admin/ResourceAdminEdit.xhtml" id="create"
+				value="Create Resource Admin">
+				<f:param name="resourceAdminId" />
+			</s:button>
+		</s:div>
+
+	</ui:define>
+
+</ui:composition>
+

@@ -1,0 +1,57 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Resource Admin</f:facet>
+
+		<s:decorate id="resource" template="layout/display.xhtml">
+            <ui:define name="label">Related to Resource</ui:define>
+            <s:link view="/admin/Resource.xhtml" value="#{resourceAdminHome.instance.resource.displayName}">
+				<f:param name="resourceId" value="#{resourceAdminHome.instance.resource.resourceId}"/>
+			</s:link>
+        </s:decorate>
+        
+        <s:decorate id="shortName" template="layout/display.xhtml">
+            <ui:define name="label">User Name</ui:define>
+            #{resourceAdminHome.instance.userName}
+        </s:decorate>
+        
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Priority</ui:define>
+            #{resourceAdminHome.instance.priority}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/ResourceAdminEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty resourceAdminFrom ? 'ResourceAdminList' : resourceAdminFrom}.xhtml"
+                    id="done"
+                 value="Done"
+        >
+        <f:param name="resourceId" value="#{resourceAdminHome.instance.resource.resourceId}"/>
+        </s:button>
+    </div>
+
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,81 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="roleResourceAttributeRule" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Role Resource Attribute Rule</f:facet>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{roleResourceAttributeRuleHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+
+
+
+				<s:decorate id="languageDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Action Language</ui:define>
+					<h:selectOneMenu id="language"
+						value="#{roleResourceAttributeRuleHome.instance.actionLanguage}" required="true">
+						<s:selectItems value="#{guiActionLanguages}" var="lang"
+							label="#{lang.name}" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				
+				<s:decorate id="showStopperDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Show Stopper?</ui:define>
+					<h:selectBooleanCheckbox value="#{roleResourceAttributeRuleHome.instance.showStopper}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="contentDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Action Content</ui:define>
+					<h:inputTextarea id="content" required="true" cols="100" rows="40"
+						value="#{roleResourceAttributeRuleHome.instance.content}">
+					</h:inputTextarea>
+				</s:decorate>
+								
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{roleResourceAttributeRuleHome.persist}"
+				disabled="#{!roleResourceAttributeRuleHome.wired}"
+				rendered="#{!roleResourceAttributeRuleHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{roleResourceAttributeRuleHome.update}"
+				rendered="#{roleResourceAttributeRuleHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{roleResourceAttributeRuleHome.remove}"
+				rendered="#{roleResourceAttributeRuleHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/RoleResourceAttributeRule.xhtml"
+				rendered="#{roleResourceAttributeRuleHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty roleResourceAttributeRuleFrom ? 'RoleResourceAttributeRuleList' : roleResourceAttributeRuleFrom}.xhtml"
+				rendered="#{!roleResourceAttributeRuleHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

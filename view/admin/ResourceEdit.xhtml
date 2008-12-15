@@ -1,0 +1,232 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+			<!-- Cannot be ajax, ruins the XML, for some reason, ALL xml attributes of the ENTIRE file gets rendered per XmlTagInputs-->
+			<rich:tabPanel switchType="client">
+			<rich:tab id="genericAttributes" label="General">
+			
+			<h:form id="resource" styleClass="edit">
+			<rich:panel>
+				<f:facet name="header">Edit Resource</f:facet>
+
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">
+						<ui:include src="layout/help.xhtml">
+                    	<ui:param name="helpText" value="The unique name of the resource, note that after saving the resource, the unique name can never be changed." />
+                		</ui:include>
+						Unique Name
+					</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{resourceHome.instance.uniqueName}" disabled="#{resourceHome.managed}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">
+						<ui:include src="layout/help.xhtml">
+                    		<ui:param name="helpText" value="The display name of the resource, this name will be used only for display porpuses." />
+                		</ui:include>
+						Display Name
+					</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{resourceHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">
+						<ui:include src="layout/help.xhtml">
+                    		<ui:param name="helpText" value="Several free text lines to describe the resource, its location, type, etc..."/>
+                		</ui:include>
+						Description
+					</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{resourceHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<s:decorate id="typeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">
+						<ui:include src="layout/help.xhtml">
+                    		<ui:param name="helpText" value="The type of the resource, please select one of the available options"/>
+                		</ui:include>
+						Type
+					</ui:define>
+					<h:selectOneMenu id="resourceType" value="#{resourceHome.instance.resourceType}" required="true">
+                		<s:selectItems value="#{guiResourceTypes}" var="tst" label="#{tst.uniqueName}" noSelectionLabel="---Select---" />
+                		<s:convertEntity/>
+            		</h:selectOneMenu>
+				</s:decorate>
+
+				<s:decorate id="activeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Active?</ui:define>
+					<h:selectBooleanCheckbox title="Active?"
+						value="#{resourceHome.instance.active}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="requestableBySelfServiceDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Can be requested by self service?</ui:define>
+					<h:selectBooleanCheckbox title="Active?"
+						value="#{resourceHome.instance.requestableBySelfService}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="delAccountIfLastRoleRefToThisResourceIsRevokedDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Delete account if last role references this resource is revoked from user?</ui:define>
+                    <h:selectBooleanCheckbox title="Yes?"
+                        value="#{resourceHome.instance.delAccountIfLastRoleRefToThisResourceIsRevoked}"></h:selectBooleanCheckbox>
+                </s:decorate>
+				
+				<s:decorate id="caseSensitiveDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Case Sensitive?</ui:define>
+					<h:selectBooleanCheckbox title="Active?"
+						value="#{resourceHome.instance.caseSensitive}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="reconcilePolicyDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Reconcile Policy</ui:define>
+					<h:selectOneMenu id="reconcilePolicy" value="#{resourceHome.instance.reconcilePolicy}" required="true">
+                		<s:selectItems value="#{guiReconcilePolicies}" var="rp" label="#{rp.name}" noSelectionLabel="---Select---" />
+                		<s:convertEntity/>
+            		</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="passwordPolicyContainerDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Password Policy Container</ui:define>
+					<h:selectOneMenu id="passwordPolicyContainer" value="#{resourceHome.instance.passwordPolicyContainer}" required="true">
+                		<s:selectItems value="#{guiPasswordPolicyContainers}" var="ppc" label="#{ppc.displayName}" noSelectionLabel="---Select---" />
+                		<s:convertEntity/>
+            		</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="tasksQueueDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Gateway</ui:define>
+					<h:selectOneMenu id="tasksQueue" value="#{resourceHome.instance.gateway}" required="false">
+                		<s:selectItems value="#{guiGateways}" var="gw" label="#{gw.displayName}" noSelectionLabel="-NONE-" />
+                		<s:convertEntity/>
+            		</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="approversGroupDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Approvers Group(Owner)</ui:define>
+                    <h:selectOneMenu id="approversGroup" value="#{resourceHome.instance.approversGroupOwner}" required="false">
+                        <s:selectItems value="#{guiApproversGroups}" var="ag" label="#{ag.displayName}" noSelectionLabel="-NONE-" />
+                        <s:convertEntity/>
+                    </h:selectOneMenu>
+                </s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+			</rich:panel>
+			
+			
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save and Continue Configuration" action="#{resourceHome.persist}"
+				disabled="#{!resourceHome.wired}"
+				rendered="#{!resourceHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{resourceHome.update}"
+				rendered="#{resourceHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{resourceHome.remove}"
+				rendered="#{resourceHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/Resource.xhtml"
+				rendered="#{resourceHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceFrom ? 'ResourceList' : resourceFrom}.xhtml"
+				rendered="#{!resourceHome.managed}" /></div>
+		
+			</h:form>
+			</rich:tab>
+			
+			
+			
+			<rich:tab id="additionalAttributes" label="Additional" rendered="#{resourceHome.managed}">
+				<h:form id="xmlResourceCustomConfigurationForm">
+					<velo:XMLManager id="xmlManager" type="content" xmlContent="#{resourceHome.instance.configuration}" columns="3" footerClass="panelGridActionFooter"
+						headerClass="panelGridActionHeader" styleClass="panelGridActionStyle"
+						columnClasses="subtitle,medium">
+                        
+						<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+							<f:facet name="header">Adapter Properties</f:facet>
+
+							<velo:XMLTagInputs for="xmlResourceCustomConfigurationForm:xmlManager" columns="2" tagName="adapter"/>
+						</rich:panel>
+						
+						<rich:panel style="padding:0;width:700px;" headerClass="outpanelHeader">
+							<f:facet name="header">Specific-Type Properties</f:facet>
+
+							<velo:XMLTagInputs for="xmlResourceCustomConfigurationForm:xmlManager" columns="2" tagName="specific"/>
+						</rich:panel>
+					</velo:XMLManager>
+					
+					
+					<div class="actionButtons"><h:commandButton id="updateCustomProperties"
+						value="Update Properties" action="#{resourceActions.updateResourceCustomConfiguration}"
+						rendered="#{resourceHome.managed}"/>
+						<s:button id="done"
+							value="Done" propagation="end" view="/admin/Resource.xhtml"
+							rendered="#{resourceHome.managed}" /> <s:button id="cancel"
+							value="Cancel" propagation="end"
+							view="/admin/#{empty resourceFrom ? 'ResourceList' : resourceFrom}.xhtml"
+							rendered="#{!resourceHome.managed}" />
+						</div>
+				</h:form>
+			</rich:tab>
+			<rich:tab id="devTab" label="Development" rendered="#{resourceHome.managed}">
+				<h:form id="devFieldsForm" styleClass="edit">
+				<rich:panel>
+				<f:facet name="header">Development Fields</f:facet>
+				
+				<s:decorate id="contentDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Configuration as XML</ui:define>
+					<h:inputTextarea id="content" cols="110" rows="25"
+						required="true" value="#{resourceHome.instance.configuration}" />
+				</s:decorate>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+				</rich:panel>
+				
+				
+				<div class="actionButtons"><h:commandButton id="save"
+				value="Save and Continue Configuration" action="#{resourceHome.persist}"
+				disabled="#{!resourceHome.wired}"
+				rendered="#{!resourceHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{resourceHome.update}"
+				rendered="#{resourceHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{resourceHome.remove}"
+				rendered="#{resourceHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/Resource.xhtml"
+				rendered="#{resourceHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceFrom ? 'ResourceList' : resourceFrom}.xhtml"
+				rendered="#{!resourceHome.managed}" /></div>
+				
+				
+				</h:form>
+			</rich:tab>
+			
+			
+		</rich:tabPanel>
+	</ui:define>
+
+</ui:composition>

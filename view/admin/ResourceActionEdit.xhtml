@@ -1,0 +1,123 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceAction" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Edit Resource Action</f:facet>
+
+				<s:decorate id="resourceDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Resource</ui:define>
+					<h:outputText value="#{resourceHome.instance.displayName}"/>
+				</s:decorate>
+				
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputText id="description" required="true" size="50" maxlength="50"
+						value="#{resourceActionHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<s:decorate id="sequenceDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Sequence</ui:define>
+					<h:inputText id="sequence" required="true" size="2" maxlength="2"
+						value="#{resourceActionHome.instance.sequence}">
+						<a:support event="onblur" reRender="sequenceDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<s:decorate id="languageDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Action Language</ui:define>
+					<h:selectOneMenu id="language"
+						value="#{resourceActionHome.instance.actionLanguage}" required="true">
+						<s:selectItems value="#{guiActionLanguages}" var="lang"
+							label="#{lang.name}" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				
+				
+				<s:decorate id="operationDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Operation</ui:define>
+					<h:selectOneMenu id="operation"
+						value="#{resourceActionHome.instance.resourceTypeOperation}" required="true">
+						<s:selectItems value="#{resourceHome.instance.resourceType.supportedOperations}" var="r"
+							label="#{r.resourceGlobalOperation.displayName}" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+
+
+				<s:decorate id="phaseDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Operation Phase to Invoke Action</ui:define>
+					<h:selectOneMenu id="phase"
+						value="#{resourceActionHome.instance.invokePhase}" required="true">
+						<s:selectItems value="#{resourceActionInvokePhases}" var="r"
+							label="#{r}" />
+						<s:convertEnum />
+					</h:selectOneMenu>
+				</s:decorate>
+
+					
+				<s:decorate id="showStopperDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Show Stopper?</ui:define>
+					<h:selectBooleanCheckbox value="#{resourceActionHome.instance.showStopper}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="contentDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Action Content</ui:define>
+					<h:inputTextarea id="content" required="true" cols="100" rows="40"
+						value="#{resourceActionHome.instance.content}">
+					</h:inputTextarea>
+				</s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{resourceActionHome.persist}"
+				disabled="#{!resourceActionHome.wired}"
+				rendered="#{!resourceActionHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{resourceActionHome.update}"
+				rendered="#{resourceActionHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{resourceActionHome.remove}"
+				rendered="#{resourceActionHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ResourceAction.xhtml"
+				rendered="#{resourceActionHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceActionFrom ? 'ResourceActionList' : resourceActionFrom}.xhtml"
+				rendered="#{!resourceActionHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

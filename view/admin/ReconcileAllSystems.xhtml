@@ -1,0 +1,34 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<rich:panel style="text-align: center;">
+			<f:facet name="header">Reconcile All Systems</f:facet>
+
+			<h:form>
+				<span class="actions"> <h:commandButton
+					id="btnReconcileAllNow"
+					value="Reconcile all active Target-System now!"
+					action="#{reconcileManager.reconcileAccountsAllActiveResources}"
+					onclick="if (!confirm('Reconcile process for ALL Target Systems may take long time to run, are you sure you want to perform the process now?')) return false"
+					styleClass="button" disabled="true"/> </span>
+			</h:form>
+
+		</rich:panel>
+
+	</ui:define>
+
+</ui:composition>

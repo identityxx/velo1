@@ -1,0 +1,89 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceType" styleClass="edit">
+			<rich:panel>
+				<f:facet name="header">Edit Resource Type</f:facet>
+
+				<s:decorate id="uniqueNameDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name</ui:define>
+					<h:inputText id="shortName" required="true" size="50"
+						maxlength="50"
+						value="#{resourceTypeHome.instance.uniqueName}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+
+				<s:decorate id="resourceControllerClassNameDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Resource Controller full qualified class name</ui:define>
+					<h:inputText id="displayName" required="true" size="150"
+						value="#{resourceTypeHome.instance.resourceControllerClassName}">
+						<a:support event="onblur" reRender="resourceControllerClassNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="resourceControllerTypeDecoration"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Controller Type</ui:define>
+					<h:selectOneMenu id="controllerType" value="#{resourceTypeHome.instance.resourceControllerType}" required="true">
+                		<s:selectItems value="#{resourceTypeControllerTypes}" var="ct" label="#{ct}" noSelectionLabel="-resource type-"/>
+						<s:convertEnum />
+					</h:selectOneMenu >
+				</s:decorate>
+				
+				<s:decorate id="gatewayRequired" template="layout/edit.xhtml">
+					<ui:define name="label">Gateway Required?</ui:define>
+					<h:selectBooleanCheckbox title="Gateway Required?"
+						value="#{resourceTypeHome.instance.gatewayRequired}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="contentDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Configuration Template</ui:define>
+					<h:inputTextarea id="content" cols="110" rows="25"
+						required="true" value="#{resourceTypeHome.instance.configurationTemplate}" />
+				</s:decorate>
+				
+
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+			</rich:panel>
+
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save and Continue Configuration"
+				action="#{resourceTypeHome.persist}"
+				disabled="#{!resourceTypeHome.wired}"
+				rendered="#{!resourceTypeHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{resourceTypeHome.update}"
+				rendered="#{resourceTypeHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{resourceTypeHome.remove}"
+				rendered="#{resourceTypeHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ResourceType.xhtml"
+				rendered="#{resourceTypeHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty resourceTypeFrom ? 'ResourceTypeList' : resourceTypeFrom}.xhtml"
+				rendered="#{!resourceTypeHome.managed}" /></div>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

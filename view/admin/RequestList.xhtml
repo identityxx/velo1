@@ -1,0 +1,164 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+
+<script language="javascript">
+/* <![CDATA[ */	
+	function selectAllCheckBoxes(theCheckBox)
+     {
+     	var theForm = theCheckBox.form;
+		var e = theForm.getElementsByTagName("input");
+		var i;
+		var isTheCheckBoxChecked = theCheckBox.checked;
+			for ( i = 0;i<e.length;i++)
+			{
+			if (e[i].type == "checkbox" && e[i].id != theCheckBox.id)
+				{
+					e[i].checked = isTheCheckBoxChecked;
+				}
+			}
+		}
+/* ]]> */
+</script>
+    <h:form id="requestSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Request Search Parameters" switchType="ajax">
+        
+        	<s:decorate template="layout/display.xhtml">
+                <ui:define name="label">ID</ui:define>
+                <h:inputText id="id" value="#{requestList.request.requestId}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Notes</ui:define>
+                <h:inputText id="notes" value="#{requestList.request.notes}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Status</ui:define>
+				<h:selectOneMenu id="status" value="#{requestList.request.status}">
+                	<s:selectItems value="#{requestStatuses}" var="s" label="#{s}" noSelectionLabel="-all statuses-"/>
+					<s:convertEnum />
+				</h:selectOneMenu >
+            </s:decorate>
+            
+            <s:decorate id="searchCreationDateDecoration" template="layout/display.xhtml">
+                <ui:define name="label">Creation Date</ui:define>
+                <h:panelGrid columns="6">
+                <h:outputText value="From:"/>
+                <rich:calendar id="fromCreationDate" value="#{requestList.request.fromCreationDate}"
+					locale="#{locale}"
+					popup="true"
+					datePattern="dd/M/yyyy"
+					converter="velo.jsf.converters.DateConverter"
+				/>
+				
+				<h:outputText value="To:"/>
+				<rich:calendar id="toCreationDate" value="#{requestList.request.toCreationDate}"
+					locale="#{locale}"
+					popup="true"
+					datePattern="dd/M/yyyy"
+					converter="velo.jsf.converters.DateConverter"
+				/>
+				</h:panelGrid>
+            </s:decorate>
+            
+		 	<div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/RequestList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <h:form id="actions">
+    <rich:panel>
+        <f:facet name="header">Request Search Results</f:facet>
+    <div class="results" id="requestList">
+
+    <h:outputText value="No request exists" 
+               rendered="#{empty requestList.resultList}"/>
+    <rich:dataTable id="requestList" 
+		var="req"
+		value="#{requestList.resultList}" 
+		rendered="#{not empty requestList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Status #{requestList.order=='status asc' ? messages.down : ( requestList.order=='status desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{requestList.order=='status asc' ? 'status desc' : 'status asc'}"/>
+                </s:link>
+            </f:facet>
+            #{req.readableStatus}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Message #{requestList.order=='notes asc' ? messages.down : ( requestList.order=='notes desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{requestList.order=='notes asc' ? 'notes desc' : 'notes asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            
+            <s:link view="/admin/#{empty from ? 'Request' : from}.xhtml" 
+                   value="#{req.notes}">
+                <f:param name="requestId" value="#{req.requestId}"/>
+                <f:param name="status" value="#{empty status? '': status}"/>
+            </s:link>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Creation Date #{requestList.order=='creationDate asc' ? messages.down : ( requestList.order=='creationDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{requestList.order=='creationDate asc' ? 'creationDate desc' : 'creationDate asc'}"/>
+                </s:link>
+            </f:facet>
+            #{req.creationDate} 
+            
+        </h:column>
+        <h:column>
+            <f:facet name="header">action</f:facet>
+            <s:link view="/admin/#{empty from ? 'Request' : from}.xhtml" 
+                   value="Select" 
+                      id="request">
+                <f:param name="requestId" 
+                        value="#{req.requestId}"/>
+            </s:link>
+        </h:column>
+        
+        <h:column>
+			<f:facet name="header">
+				<h:selectBooleanCheckbox id="selectAllCheckBox"  onclick="selectAllCheckBoxes(this);"/>
+			</f:facet>
+			<h:selectBooleanCheckbox value="#{requestList.requestSelection[req]}"  />
+		</h:column>
+    </rich:dataTable>
+	<ui:include src="/admin/incl/pagingPanel.xhtml">
+        <ui:param name="currentPage" value="/admin/RequestList.xhtml" />
+        <ui:param name="iteratedList" value="#{requestList}" />
+    </ui:include>
+    </div>
+    </rich:panel>
+    
+        <s:div styleClass="actionButtons">
+        	<h:commandButton action="#{requestActions.multipleFinallyApproveRequest}" id="approveRequests" value="Approve Selected Requests"/>
+			<h:commandButton action="#{requestActions.multipleFinallyRejectRequest}" id="rejectRequests" value="Reject Selected Requests"/>
+    </s:div>
+    
+    </h:form>
+</ui:define>
+
+</ui:composition>

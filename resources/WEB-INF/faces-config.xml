@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="1.2"
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+
+
+<!-- 
+   <application>
+      <locale-config>
+         <default-locale>en</default-locale>
+         <supported-locale>bg</supported-locale>
+         <supported-locale>de</supported-locale>
+         <supported-locale>en</supported-locale>
+         <supported-locale>fr</supported-locale>
+         <supported-locale>it</supported-locale>
+         <supported-locale>tr</supported-locale>
+      </locale-config>
+      <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+   </application>
+ -->
+
+
+
+
+
+    <component>
+        <component-type>velo.UIValueInput</component-type>
+        <component-class>velo.uiComponents.UIValueInput</component-class>
+    </component>
+    <component>
+        <component-type>velo.UIValueGenericInput</component-type>
+        <component-class>velo.uiComponents.UIValueGenericInput</component-class>
+    </component>
+    <component>
+        <component-type>velo.XMLTagInput</component-type>
+        <component-class>velo.uiComponents.XMLTagInput</component-class>
+    </component>
+    <component>
+        <component-type>velo.XMLTagInputs</component-type>
+        <component-class>velo.uiComponents.XMLTagInputs</component-class>
+    </component>
+    <component>
+        <component-type>velo.XMLManager</component-type>
+        <component-class>velo.uiComponents.XMLManager</component-class>
+    </component>
+    
+    <component>
+        <component-type>org.j4j.idProxy</component-type>
+        <component-class>org.j4j.components.UIIDProxy</component-class>
+    </component>
+    <component>
+        <component-type>org.j4j.defaultAction</component-type>
+        <component-class>org.j4j.components.UIDefaultAction</component-class>
+    </component>
+    <component>
+        <component-type>org.j4j.param</component-type>
+        <component-class>org.j4j.components.UIParam</component-class>
+    </component>
+
+
+
+    <converter>
+        <converter-id>velo.jsf.converters.DateConverter</converter-id>
+        <converter-class>
+            velo.jsf.converters.DateConverter
+        </converter-class>
+    </converter>
+    
+    
+    <application>
+      <message-bundle>messages</message-bundle>
+      <locale-config>
+            <default-locale>he_IL</default-locale>
+            <supported-locale>he_IL</supported-locale>
+            <supported-locale>en_US</supported-locale>
+      </locale-config>
+      <!-- Disabled when using Ajax4JSF -->
+      <!--
+      <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+      -->
+      <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+   </application>
+
+
+    <validator>
+        <validator-id>UserAccountAssocicationValidator</validator-id>   
+        <validator-class>velo.jsf.validators.UserAccountAssociationValidator</validator-class>
+    </validator>
+
+    
+</faces-config>

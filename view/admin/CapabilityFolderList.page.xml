@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd">
+      
+   <param name="firstResult" value="#{capabilityFolderList.firstResult}"/>
+   <param name="order" value="#{capabilityFolderList.order}"/>
+   <param name="from"/>
+   <param name="uniqueName" value="#{capabilityFolderList.capabilityFolder.uniqueName}"/>
+   <param name="displayName" value="#{capabilityFolderList.capabilityFolder.displayName}"/>
+   <param name="description" value="#{capabilityFolderList.capabilityFolder.description}"/>
+
+</page>

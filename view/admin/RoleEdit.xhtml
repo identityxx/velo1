@@ -1,0 +1,143 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="role" styleClass="edit">
+
+			<rich:panel>
+				<rich:panel>
+				<f:facet name="header">Informative Details</f:facet>
+
+				<s:decorate id="nameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Name</ui:define>
+					<h:inputText id="name" required="true" size="50" maxlength="50"
+						value="#{roleHome.instance.name}">
+						<a:support event="onblur" reRender="nameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{roleHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<s:decorate id="info1Decoration" template="layout/edit.xhtml">
+					<ui:define name="label">Informative Attribute 1</ui:define>
+					<h:inputText id="info1" required="false" size="50" maxlength="50"
+						value="#{roleHome.instance.info1}">
+						<a:support event="onblur" reRender="info1Decoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="info2Decoration" template="layout/edit.xhtml">
+					<ui:define name="label">Informative Attribute 2</ui:define>
+					<h:inputText id="info2" required="false" size="50" maxlength="50"
+						value="#{roleHome.instance.info2}">
+						<a:support event="onblur" reRender="info2Decoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="info3Decoration" template="layout/edit.xhtml">
+					<ui:define name="label">Informative Attribute 3</ui:define>
+					<h:inputText id="info2" required="false" size="50" maxlength="50"
+						value="#{roleHome.instance.info3}">
+						<a:support event="onblur" reRender="info3Decoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<s:decorate id="workflowProcessDefDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Workflow Process Definition</ui:define>
+                    <h:selectOneMenu id="workflowProcessDef" value="#{roleHome.instance.workflowProcessDef}" required="false">
+                        <s:selectItems value="#{guiWorkflowProcessDefinitions}" var="wpd" label="#{wpd.uniqueName}" noSelectionLabel="---Select---" />
+                        <s:convertEntity/>
+                    </h:selectOneMenu>
+                </s:decorate>
+                
+                
+                <s:decorate id="activeDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Active Access Synchronization?</ui:define>
+                    <h:selectBooleanCheckbox title="Active Access Synchronization?"
+                        value="#{roleHome.instance.activeAccessSync}"></h:selectBooleanCheckbox>
+                </s:decorate>
+                
+                <s:decorate id="exposedToSelfServiceDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Exposed to Self Service?</ui:define>
+                    <h:selectBooleanCheckbox title="Exposed to Self Service?"
+                        value="#{roleHome.instance.exposedToSelfService}"></h:selectBooleanCheckbox>
+                </s:decorate>
+                
+                
+                
+				<div style="clear: both"><span class="required">*</span>required fields</div>
+				</rich:panel>
+				
+				<rich:panel>
+					<f:facet name="header">Resources Associations</f:facet>
+					<s:decorate id="resourceDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Assigned Resources</ui:define>
+						<h:selectManyListbox id="resources" size="5" value="#{roleHome.instance.resources}" required="false">
+							<s:selectItems value="#{guiResources}" var="ts" label="#{ts.displayName}" />
+							<s:convertEntity entityClass="velo.entity.ResourceGroups"/>
+						</h:selectManyListbox>
+					</s:decorate>
+					
+					<div style="clear: both"/>
+				</rich:panel>
+				
+				
+				<rich:panel>
+                    <f:facet name="header">Roles Folders</f:facet>
+                    <s:decorate id="rolesFoldersDecoration" template="layout/edit.xhtml">
+                        <ui:define name="label">Associated Roles Folders</ui:define>
+                        <h:selectManyListbox id="rfs" size="5" value="#{roleHome.instance.rolesFolders}" required="false">
+                            <s:selectItems value="#{guiRolesFolders}" var="rf" label="#{rf.displayName}" />
+                            <s:convertEntity entityClass="velo.entity.RolesFolder"/>
+                        </h:selectManyListbox>
+                    </s:decorate>
+                    
+                    <div style="clear: both"/>
+                </rich:panel>
+				
+				
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{roleHome.persist}"
+				disabled="#{!roleHome.wired}"
+				rendered="#{!roleHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{roleHome.update}"
+				rendered="#{roleHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{roleHome.remove}"
+				rendered="#{roleHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/RolesFolder.xhtml"
+				rendered="#{roleHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty roleFrom ? 'RoleList' : roleFrom}.xhtml"
+				rendered="#{!roleHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

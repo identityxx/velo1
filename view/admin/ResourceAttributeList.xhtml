@@ -1,0 +1,335 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+		<!-- 
+		<h:form id="resourceAttributeSearch" styleClass="edit">
+
+			<rich:simpleTogglePanel label="Resource Attribute Search Parameters"
+				switchType="ajax">
+
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName"
+						value="#{resourceAttributeList.resourceAttribute.displayName}" />
+				</s:decorate>
+				
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Unique Name(as in resource)</ui:define>
+					<h:inputText id="name"
+						value="#{resourceAttributeList.resourceAttribute.uniqueName}" />
+				</s:decorate>
+
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputText id="description"
+						value="#{resourceAttributeList.resourceAttribute.description}" />
+				</s:decorate>
+				
+				<s:decorate id="typeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Resource</ui:define>
+					<h:selectOneMenu id="resource" value="#{resourceAttributeList.resourceAttribute.resource}" disabled="true">
+                		<s:selectItems value="#{guiResources}" var="ts" label="#{ts.displayName}" noSelectionLabel="-Select-" />
+            		</h:selectOneMenu>
+				</s:decorate>
+				
+			</rich:simpleTogglePanel>
+
+			<div class="actionButtons"><h:commandButton id="search"
+				value="Search" action="/admin/ResourceAttributeList.xhtml" /></div>
+
+		</h:form>
+		 -->
+		 
+		<h:outputText value="Atributes for system named: #{resourceHome.instance.displayName}"/>
+		<rich:panel>
+			<rich:panel>
+			<f:facet name="header">Resource Attributes (from all levels)</f:facet>
+			<div class="results" id="resourceAttributeList"><h:outputText
+				value="No resource attribute exists"
+				rendered="#{empty resourceHome.instance.attributes}" /> <rich:dataTable
+				id="totalResourceAttributeList" var="resourceAttribute"
+				value="#{velo:setAsList(resourceHome.instance.attributes)}"
+				rendered="#{not empty resourceHome.instance.attributes}">
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Name as In Resource #{resourceAttributeList.order=='uniqueName asc' ? messages.down : ( resourceAttributeList.order=='uniqueName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Display Name #{resourceAttributeList.order=='displayName asc' ? messages.down : ( resourceAttributeList.order=='displayName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='displayName asc' ? 'displayName desc' : 'displayName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.displayName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Description #{resourceAttributeList.order=='description asc' ? messages.down : ( resourceAttributeList.order=='description desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='description asc' ? 'description desc' : 'description asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.description}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Resource #{resourceAttributeList.order=='resource.displayName asc' ? messages.down : ( resourceAttributeList.order=='resource.displayName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='resource.displayName asc' ? 'resource.displayName desc' : 'resource.displayName asc'}" />
+						</s:link>
+					</f:facet>
+					<s:link view="/admin/Resource.xhtml" value="#{resourceAttribute.resource.displayName}">
+						<f:param name="resourceId" value="#{resourceAttribute.resource.resourceId}"/>
+					</s:link>
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Data Type #{resourceAttributeList.order=='dataType asc' ? messages.down : ( resourceAttributeList.order=='dataType desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='dataType asc' ? 'dataType desc' : 'dataType asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.dataType}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Managed?" />
+					</f:facet>
+					<h:outputText value="Yes" rendered="#{resourceAttribute.managed}" />
+					<h:outputText value="No" rendered="#{!resourceAttribute.managed}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Required?" />
+					</f:facet>
+					<h:outputText value="Yes" rendered="#{resourceAttribute.required}" />
+					<h:outputText value="No" rendered="#{!resourceAttribute.required}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">action</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceAttribute' : from}.xhtml"
+						value="Select" id="resourceAttribute" rendered="#{resourceAttribute.resourceAttributeId ne null}">
+						<f:param name="resourceAttributeId"
+							value="#{resourceAttribute.resourceAttributeId}" />
+						<f:param name="resourceId"
+							value="#{resourceId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+			</rich:panel>
+		</rich:panel>
+		
+		<rich:spacer width="1" height="15"/><rich:separator /><rich:spacer width="1" height="25"/>
+		
+		<rich:simpleTogglePanel label="Show Attribute Overridings" switchType="ajax">
+		<rich:panel>
+			<f:facet name="header">Resource Attributes</f:facet>
+			<div class="results" id="resourceAttributeList"><h:outputText
+				value="No resource attribute exists"
+				rendered="#{empty resourceHome.instance.resourceAttributes}" /> <rich:dataTable
+				id="resourceAttributeList" var="resourceAttribute"
+				value="#{velo:setAsList(resourceHome.instance.resourceAttributes)}"
+				rendered="#{not empty resourceHome.instance.resourceAttributes}">
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Name as In Resource #{resourceAttributeList.order=='uniqueName asc' ? messages.down : ( resourceAttributeList.order=='uniqueName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Display Name #{resourceAttributeList.order=='displayName asc' ? messages.down : ( resourceAttributeList.order=='displayName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='displayName asc' ? 'displayName desc' : 'displayName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.displayName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Description #{resourceAttributeList.order=='description asc' ? messages.down : ( resourceAttributeList.order=='description desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='description asc' ? 'description desc' : 'description asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.description}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Resource #{resourceAttributeList.order=='resource.displayName asc' ? messages.down : ( resourceAttributeList.order=='resource.displayName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='resource.displayName asc' ? 'resource.displayName desc' : 'resource.displayName asc'}" />
+						</s:link>
+					</f:facet>
+					<s:link view="/admin/Resource.xhtml" value="#{resourceAttribute.resource.displayName}">
+						<f:param name="resourceId" value="#{resourceAttribute.resource.resourceId}"/>
+					</s:link>
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Data Type #{resourceAttributeList.order=='dataType asc' ? messages.down : ( resourceAttributeList.order=='dataType desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceAttributeList.order=='dataType asc' ? 'dataType desc' : 'dataType asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceAttribute.dataType}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Managed?" />
+					</f:facet>
+					<h:outputText value="Yes" rendered="#{resourceAttribute.managed}" />
+					<h:outputText value="No" rendered="#{!resourceAttribute.managed}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Required?" />
+					</f:facet>
+					<h:outputText value="Yes" rendered="#{resourceAttribute.required}" />
+					<h:outputText value="No" rendered="#{!resourceAttribute.required}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">action</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceAttribute' : from}.xhtml"
+						value="Select" id="resourceAttribute">
+						<f:param name="resourceAttributeId"
+							value="#{resourceAttribute.resourceAttributeId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+		</rich:panel>
+		
+		
+		<rich:panel>
+        <f:facet name="header">Type level overrides</f:facet>
+			<div class="results" id="overriddenResourceTypeAttributes"><h:outputText
+				value="No resource type attribute that were not overridden exists"
+				rendered="#{empty resourceHome.instance.resourceType.overriddenResourceTypeAttributes}" /> <rich:dataTable
+				id="overriddenResourceTypeAttributes" var="rta"
+				value="#{velo:setAsList(resourceHome.instance.resourceType.overriddenResourceTypeAttributes)}"
+				rendered="#{not empty resourceHome.instance.resourceType.overriddenResourceTypeAttributes}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Unique Name"/>
+					</f:facet>
+            		#{rta.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Display Name"/>
+					</f:facet>
+            		#{rta.displayName}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">Select</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceTypeAttribute' : from}.xhtml"
+						value="Select" id="resrouceTypeAttribute">
+						<f:param name="overrideResrouceTypeAttributeId"
+							value="#{rta.resourceAttributeId}" />
+						<f:param name="resourceId" value="#{resourceId}"/>
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+
+	    </rich:panel>
+	    
+		
+		<rich:panel>
+        <f:facet name="header">Default Attributes (not yet overridden)</f:facet>
+			<div class="results" id="notOverriddenResourceTypeAttributes"><h:outputText
+				value="No resource type attribute that were not override exists"
+				rendered="#{empty resourceHome.instance.resourceType.notOverriddenResourceTypeAttributes}" /> <rich:dataTable
+				id="notOverriddenResourceTypeAttributes" var="rta"
+				value="#{velo:setAsList(resourceHome.instance.resourceType.notOverriddenResourceTypeAttributes)}"
+				rendered="#{not empty resourceHome.instance.resourceType.notOverriddenResourceTypeAttributes}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Unique Name"/>
+					</f:facet>
+            		#{rta.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Display Name"/>
+					</f:facet>
+            		#{rta.displayName}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">Select</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceTypeAttribute' : from}.xhtml"
+						value="Select" id="resrouceTypeAttribute">
+						<f:param name="overrideResrouceTypeAttributeId"
+							value="#{rta.resourceAttributeId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+
+	    </rich:panel>
+		</rich:simpleTogglePanel>
+		
+		
+
+		<div class="tableControl"><s:link view="/ResourceAttributeList.xhtml"
+			rendered="#{resourceAttributeList.previousExists}"
+			value="#{messages.left}#{messages.left} First Page" id="firstPage">
+			<f:param name="firstResult" value="0" />
+		</s:link> <s:link view="/ResourceAttributeList.xhtml"
+			rendered="#{resourceAttributeList.previousExists}"
+			value="#{messages.left} Previous Page" id="previousPage">
+			<f:param name="firstResult"
+				value="#{resourceAttributeList.previousFirstResult}" />
+		</s:link> <s:link view="/ResourceAttributeList.xhtml"
+			rendered="#{resourceAttributeList.nextExists}"
+			value="Next Page #{messages.right}" id="nextPage">
+			<f:param name="firstResult"
+				value="#{resourceAttributeList.nextFirstResult}" />
+		</s:link> <s:link view="/ResourceAttributeList.xhtml"
+			rendered="#{resourceAttributeList.nextExists}"
+			value="Last Page #{messages.right}#{messages.right}" id="lastPage">
+			<f:param name="firstResult"
+				value="#{resourceAttributeList.lastFirstResult}" />
+		</s:link></div>
+
+		<s:div styleClass="actionButtons" rendered="#{empty from}">
+			<s:button view="/admin/ResourceAttributeEdit.xhtml" id="create"
+				value="Create Resource Attribute">
+				<f:param name="resourceAttributeId" />
+			</s:button>
+		</s:div>
+
+	</ui:define>
+
+</ui:composition>
+

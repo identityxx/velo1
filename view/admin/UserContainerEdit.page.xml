@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd"
+      no-conversation-view-id="/SourceSystemList.xhtml"
+      login-required="true">
+   
+   <begin-conversation join="true"/>
+   
+   <action execute="#{userContainerHome.wire}"/>
+   
+   <param name="userContainerFrom"/>
+   <param name="userContainerId" value="#{userContainerHome.userContainerId}"/>
+
+
+   <navigation from-action="#{userContainerHome.persist}">
+       <end-conversation/>
+       <redirect view-id="/admin/UserContainer.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{userContainerHome.update}">
+       <end-conversation/>
+       <redirect view-id="/admin/UserContainer.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{userContainerHome.remove}">
+       <end-conversation/>
+       <redirect view-id="/admin/UserContainerList.xhtml"/>
+   </navigation>
+   
+</page>

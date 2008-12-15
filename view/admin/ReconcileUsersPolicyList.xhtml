@@ -1,0 +1,137 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="reconcileUsersPolicySearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="ReconcileUsersPolicy Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Unique Name</ui:define>
+                <h:inputText id="uniqueName" value="#{reconcileUsersPolicyList.reconcileUsersPolicy.uniqueName}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Display Name</ui:define>
+                <h:inputText id="displayName" value="#{reconcileUsersPolicyList.reconcileUsersPolicy.displayName}"/>
+            </s:decorate>
+
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/ReconcileUsersPolicyList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <rich:panel>
+        <f:facet name="header">ReconcileUsersPolicy Search Results</f:facet>
+    <div class="results" id="reconcileUsersPolicyList">
+
+    <h:outputText value="No reconcileUsersPolicy exists" 
+               rendered="#{empty reconcileUsersPolicyList.resultList}"/>
+               
+    <rich:dataTable id="reconcileUsersPolicyList" 
+                var="reconcileUsersPolicy"
+              value="#{reconcileUsersPolicyList.resultList}" 
+           rendered="#{not empty reconcileUsersPolicyList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Unique Name #{reconcileUsersPolicyList.order=='uniqueName asc' ? messages.down : ( reconcileUsersPolicyList.order=='uniqueName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{reconcileUsersPolicyList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}"/>
+                </s:link>
+            </f:facet>
+            #{reconcileUsersPolicy.uniqueName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Display Name #{reconcileUsersPolicyList.order=='displayName asc' ? messages.down : ( reconcileUsersPolicyList.order=='displayName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{reconcileUsersPolicyList.order=='displayName asc' ? 'description desc' : 'displayName asc'}"/>
+                </s:link>
+            </f:facet>
+            #{reconcileUsersPolicy.displayName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+            	<h:outputText value="Active?"/>
+            </f:facet>
+            <h:outputText value="Yes" rendered="#{reconcileUsersPolicy.active}" />
+			<h:outputText value="No" rendered="#{!reconcileUsersPolicy.active}" />
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/admin/#{empty from ? 'ReconcileUsersPolicy' : from}.xhtml" 
+                   value="Select" 
+                      id="reconcileUsersPolicy">
+                <f:param name="reconcileUsersPolicyId" 
+                        value="#{reconcileUsersPolicy.reconcileUsersPolicyId}"/>
+            </s:link>
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <s:link view="/admin/ReconcileUsersPolicyList.xhtml" 
+            rendered="#{reconcileUsersPolicyList.previousExists}" 
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+        
+        <s:link view="/admin/ReconcileUsersPolicyList.xhtml" 
+            rendered="#{reconcileUsersPolicyList.previousExists}" 
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult" 
+                    value="#{reconcileUsersPolicyList.previousFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/ReconcileUsersPolicyList.xhtml" 
+            rendered="#{reconcileUsersPolicyList.nextExists}" 
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult" 
+                    value="#{reconcileUsersPolicyList.nextFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/ReconcileUsersPolicyList.xhtml" 
+            rendered="#{reconcileUsersPolicyList.nextExists}" 
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult" 
+                    value="#{reconcileUsersPolicyList.lastFirstResult}"/>
+        </s:link>
+        
+    </div>
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/admin/ReconcileUsersPolicyEdit.xhtml"
+                    id="create" 
+                 value="Create reconcileUsersPolicy"
+                 rendered="true">
+            <f:param name="reconcileUsersPolicyId"/>
+        </s:button>
+    </s:div>
+    
+</ui:define>
+
+</ui:composition>
+

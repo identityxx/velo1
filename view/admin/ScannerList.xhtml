@@ -1,0 +1,65 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<rich:panel>
+			<f:facet name="header">Scanners</f:facet>
+
+			<a:outputPanel id="scannersPanel">
+				<h:form id="scannersForm">
+					<rich:panel style="width: 500px">
+						<h:panelGrid columns="2" style="height: 100%; width: 100%;">
+							<h:outputText value="Task Scanner" />
+							<a:commandLink action="#{taskActions.changeTaskScannerMode}"
+								reRender="scannersPanel">
+								<h:outputText value="De-Activate Scanner"
+									rendered="#{taskActions.taskScannerActivate}" />
+								<h:outputText value="Activate Scanner"
+									rendered="#{!taskActions.taskScannerActivate}" />
+							</a:commandLink>
+							<h:outputText value="Requests Scanner" />
+							<a:commandLink
+								action="#{requestActions.changeRequestScannerMode}"
+								reRender="scannersPanel">
+								<h:outputText value="De-Activate Scanner"
+									rendered="#{requestActions.requestScannerActivate}"/>
+								<h:outputText value="Activate Scanner"
+									rendered="#{!requestActions.requestScannerActivate}"/>
+							</a:commandLink>
+							
+							
+							<h:outputText value="Access Guardian Scanner" rendered="false"/>
+							<a:commandLink
+								action="#{accessGuardianEjb.changeAccessGuardianScannerMode}"
+								reRender="scannersPanel"
+								rendered="false">
+								<h:outputText value="De-Activate Scanner"
+									rendered="#{accessGuardianEjb.accessGuardianScannerActivate}"/>
+								<h:outputText value="Activate Scanner"
+									rendered="#{!accessGuardianEjb.accessGuardianScannerActivate}"/>
+							</a:commandLink>
+							
+						</h:panelGrid>
+					</rich:panel>
+				</h:form>
+			</a:outputPanel>
+
+			<div style="clear: both" />
+		</rich:panel>
+
+	</ui:define>
+
+</ui:composition>

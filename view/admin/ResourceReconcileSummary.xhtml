@@ -1,0 +1,144 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">General Details</f:facet>
+		<s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{resourceReconcileSummaryHome.instance.data.description}
+        </s:decorate>
+        
+        <s:decorate id="accountsAmountInResource" template="layout/display.xhtml">
+            <ui:define name="label">Accounts amount in resource</ui:define>
+            #{resourceReconcileSummaryHome.instance.data.accountsAmountInResource}
+        </s:decorate>
+        
+        <s:decorate id="groupsAmountInResource" template="layout/display.xhtml">
+            <ui:define name="label">Groups amount in resource</ui:define>
+            #{resourceReconcileSummaryHome.instance.data.groupsAmountInResource}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+    </rich:panel>
+
+	<rich:panel>
+        <f:facet name="header">Timing Details</f:facet>
+		<s:decorate id="startTime" template="layout/display.xhtml">
+            <ui:define name="label">Start Time</ui:define>
+            #{resourceReconcileSummaryHome.instance.data.times.startTime}
+        </s:decorate>
+        
+        <s:decorate id="endTime" template="layout/display.xhtml">
+            <ui:define name="label">End Time</ui:define>
+            #{resourceReconcileSummaryHome.instance.data.times.endTime}
+        </s:decorate>
+        
+        <s:decorate id="executionDuration" template="layout/display.xhtml">
+            <ui:define name="label">Execution Duration</ui:define>
+            #{resourceReconcileSummaryHome.instance.data.times.executionDuration} ms
+        </s:decorate>
+        
+        
+        <div style="clear:both"/>
+    </rich:panel>
+    
+    
+    <rich:panel>
+        <f:facet name="header">Accounts inserted into repository</f:facet>
+        
+        <rich:dataTable id="accountsInsertedToRepositoryList" 
+			var="arfr"
+			value="#{resourceReconcileSummaryHome.instance.data.accountsInsertedToRepository}" 
+			rendered="#{not empty resourceReconcileSummaryHome.instance.data.accountsInsertedToRepository}">
+        	<h:column>
+            	<f:facet name="header">
+            	Account Name
+            	</f:facet>
+            	#{arfr.name}
+        	</h:column>
+        </rich:dataTable>
+        
+        <div style="clear:both"/>
+    </rich:panel>
+    
+    <rich:panel>
+        <f:facet name="header">Accounts removed from repository</f:facet>
+        <rich:dataTable id="accountsRemovedFromRepositoryList" 
+			var="arfr"
+			value="#{resourceReconcileSummaryHome.instance.data.accountsRemovedFromRepository}" 
+			rendered="#{not empty resourceReconcileSummaryHome.instance.data.accountsRemovedFromRepository}">
+        	<h:column>
+            	<f:facet name="header">
+            	Account Name
+            	</f:facet>
+            	#{arfr.name}
+        	</h:column>
+        </rich:dataTable>
+        
+        
+        <div style="clear:both"/>
+    </rich:panel>
+    
+    
+    <rich:panel>
+        <f:facet name="header">Groups inserted into repository</f:facet>
+        
+        <rich:dataTable id="groupsInsertedToRepositoryList" 
+			var="grfr"
+			value="#{resourceReconcileSummaryHome.instance.data.groupsInsertedToRepository}" 
+			rendered="#{not empty resourceReconcileSummaryHome.instance.data.groupsInsertedToRepository}">
+        	<h:column>
+            	<f:facet name="header">
+            	Group Name
+            	</f:facet>
+            	#{grfr.name}
+        	</h:column>
+        </rich:dataTable>
+        
+        <div style="clear:both"/>
+    </rich:panel>
+    
+    
+    <rich:panel>
+        <f:facet name="header">Groups removed from repository</f:facet>
+        <rich:dataTable id="groupsRemovedFromRepositoryList" 
+			var="grfr"
+			value="#{resourceReconcileSummaryHome.instance.data.groupsRemovedFromRepository}" 
+			rendered="#{not empty resourceReconcileSummaryHome.instance.data.groupsRemovedFromRepository}">
+        	<h:column>
+            	<f:facet name="header">
+            	Group Name
+            	</f:facet>
+            	#{grfr.name}
+        	</h:column>
+        </rich:dataTable>
+        
+        
+        <div style="clear:both"/>
+    </rich:panel>
+    
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/#{empty resourceReconcileSummaryFrom ? 'ResourceReconcileSummaryList' : resourceReconcileSummaryFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+
+    </div>
+
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,124 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="resourceGroupSearch" styleClass="edit">
+
+			<rich:simpleTogglePanel label="Resource Group Search Parameters"
+				switchType="ajax">
+
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Group Unique ID</ui:define>
+					<h:inputText id="uniqueId"
+						value="#{resourceGroupList.resourceGroup.uniqueId}" />
+				</s:decorate>
+
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName"
+						value="#{resourceGroupList.resourceGroup.displayName}" />
+				</s:decorate>
+				
+				<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Resource(unique name)</ui:define>
+            	<h:selectOneMenu id="resourceUniqueName" 
+            		value="#{resourceGroupList.resourceUniqueName}" required="false">
+					<s:selectItems value="#{resourceListString.keySet()}" var="r"
+						label="#{resourceListString[r]}" noSelectionLabel="-Select-" />
+				</h:selectOneMenu>
+
+			</s:decorate>
+            
+            <div style="clear: both"/>
+			</rich:simpleTogglePanel>
+
+			<div class="actionButtons"><h:commandButton id="search"
+				value="Search" action="/admin/ResourceGroupList.xhtml" /></div>
+
+		</h:form>
+
+		<rich:panel>
+			<f:facet name="header">Resource Group Search Results</f:facet>
+			<div class="results" id="resourceList"><h:outputText
+				value="No resource group exists"
+				rendered="#{empty resourceGroupList.resultList}" /> <rich:dataTable
+				id="resourceGroupList" var="resourceGroup"
+				value="#{resourceGroupList.resultList}"
+				rendered="#{not empty resourceGroupList.resultList}">
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Group Unique ID #{resourceGroupList.order=='uniqueId asc' ? messages.down : ( resourceGroupList.order=='uniqueId desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceGroupList.order=='uniqueId asc' ? 'uniqueId desc' : 'uniqueId asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceGroup.uniqueId}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Display Name #{resourceGroupList.order=='displayName asc' ? messages.down : ( resourceGroupList.order=='displayName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceGroupList.order=='displayName asc' ? 'displayName desc' : 'displayName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceGroup.displayName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Description #{resourceGroupList.order=='description asc' ? messages.down : ( resourceGroupList.order=='description desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceGroupList.order=='description asc' ? 'description desc' : 'description asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceGroup.description}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Resource #{resourceGroupList.order=='resource.uniqueName asc' ? messages.down : ( resourceGroupList.order=='resource.uniqueName desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{resourceGroupList.order=='resource.uniqueName asc' ? 'resource.uniqueName desc' : 'resource.uniqueName asc'}" />
+						</s:link>
+					</f:facet>
+            		#{resourceGroup.resource.uniqueName}
+        		</h:column>
+				
+				<h:column>
+					<f:facet name="header">action</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceGroup' : from}.xhtml"
+						value="Select" id="resourceGroup">
+						<f:param name="resourceGroupId"
+							value="#{resourceGroup.resourceGroupId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable>
+			<ui:include src="/admin/incl/pagingPanel.xhtml" >
+        		<ui:param name="currentPage" value="/admin/ResourceGroupList.xhtml" />
+        		<ui:param name="iteratedList" value="#{resourceGroupList}" />
+    		</ui:include>
+			</div>
+		</rich:panel>
+
+	
+
+		
+
+	</ui:define>
+
+</ui:composition>
+

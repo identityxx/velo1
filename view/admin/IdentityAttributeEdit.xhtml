@@ -1,0 +1,187 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:sb="http://myfaces.apache.org/sandbox"
+	template="layout/template.xhtml">
+	
+	
+
+	<ui:define name="body">
+
+		<h:form id="identityAttribute" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">IdentityAttribute Folder</f:facet>
+
+				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Unique Name</ui:define>
+					<h:inputText id="uniqueName" required="true" size="50" maxlength="50"
+						value="#{identityAttributeHome.instance.uniqueName}">
+						<a:support event="onblur" reRender="uniqueNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="displayNameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Name</ui:define>
+					<h:inputText id="displayName" required="true" size="50" maxlength="50"
+						value="#{identityAttributeHome.instance.displayName}">
+						<a:support event="onblur" reRender="displayNameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="descriptionDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputTextarea id="description" cols="80" rows="3"
+						required="true" value="#{identityAttributeHome.instance.description}">
+						<a:support event="onblur" reRender="descriptionDecoration" 
+							bypassUpdates="true" />
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<s:decorate id="identityAttributesGroupDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Identity Attributes Group</ui:define>
+					<h:selectOneMenu id="identityAttributesGroup" value="#{identityAttributeHome.instance.identityAttributesGroup}" required="true">
+                		<s:selectItems value="#{guiIdentityAttributesGroups}" var="iag" label="#{iag.name}" noSelectionLabel="---Select---" />
+                		<s:convertEntity/>
+            		</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="minLengthDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Minimum Length</ui:define>
+					<h:inputText id="maxLength" required="true" size="5" maxlength="5"
+						value="#{identityAttributeHome.instance.minLength}">
+						<a:support event="onblur" reRender="minLengthDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="maxLengthDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Max Length</ui:define>
+					<h:inputText id="maxLength" required="true" size="5" maxlength="5"
+						value="#{identityAttributeHome.instance.maxLength}">
+						<a:support event="onblur" reRender="maxLengthDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="minValuesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Minimum Values</ui:define>
+					<h:inputText id="minValues" required="true" size="5" maxlength="5"
+						value="#{identityAttributeHome.instance.minValues}">
+						<a:support event="onblur" reRender="minValuesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="maxValuesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Maximum Values</ui:define>
+					<h:inputText id="maxValues" required="true" size="5" maxlength="5"
+						value="#{identityAttributeHome.instance.maxValues}">
+						<a:support event="onblur" reRender="maxValuesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="dataTypeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Data Type</ui:define>
+					<h:selectOneMenu id="data_type" value="#{identityAttributeHome.instance.dataType}">
+                		<f:selectItem itemValue="STRING" itemLabel="String"/>
+                		<f:selectItem itemValue="LONG" itemLabel="Long"/>
+                		<f:selectItem itemValue="INTEGER" itemLabel="Integer"/>
+						<f:selectItem itemValue="BOOLEAN" itemLabel="Boolean"/>
+                		<f:selectItem itemValue="DATE" itemLabel="Date"/>
+            		</h:selectOneMenu> 
+				</s:decorate>
+				
+				<s:decorate id="visualRenderingTypeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Graphical Renderer Type</ui:define>
+					<h:selectOneMenu id="visualRenderingType" value="#{identityAttributeHome.instance.visualRenderingType}">
+						<f:selectItem itemValue="INPUT" itemLabel="Text Input"/>
+                		<f:selectItem itemValue="SELECTBOX" itemLabel="Selectbox"/>
+            		</h:selectOneMenu> 
+				</s:decorate>
+				
+				<s:decorate id="regexpValidationStringDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Regexp Validation Value</ui:define>
+					<h:inputText id="regexpValidationString" required="false" size="50" maxlength="50"
+						value="#{identityAttributeHome.instance.regexpValidationString}">
+						<a:support event="onblur" reRender="regexpValidationString"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="requiredDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Required?</ui:define>
+					<h:selectBooleanCheckbox value="#{identityAttributeHome.instance.required}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="requiredInRequestDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Required In Request?</ui:define>
+					<h:selectBooleanCheckbox value="#{identityAttributeHome.instance.requiredInRequest}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="visibileInRequestDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Visible In Request?</ui:define>
+					<h:selectBooleanCheckbox value="#{identityAttributeHome.instance.visibleInRequest}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="synchronizeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Synchronize?</ui:define>
+					<h:selectBooleanCheckbox value="#{identityAttributeHome.instance.synchronize}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="managerDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Represents as a manager?</ui:define>
+                    <h:selectBooleanCheckbox value="#{identityAttributeHome.instance.manager}"></h:selectBooleanCheckbox>
+                </s:decorate>
+                
+                <s:decorate id="identifierDecoration" template="layout/edit.xhtml">
+                    <ui:define name="label">Represents as an Identifier?</ui:define>
+                    <h:selectBooleanCheckbox value="#{identityAttributeHome.instance.identifier}"></h:selectBooleanCheckbox>
+                </s:decorate>
+				
+				<s:decorate id="displayPriorityDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Display Priority</ui:define>
+					<h:inputText id="displayPriority" required="true" size="5" maxlength="5"
+						value="#{identityAttributeHome.instance.displayPriority}">
+						<a:support event="onblur" reRender="displayPriorityDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{identityAttributeHome.persist}"
+				disabled="#{!identityAttributeHome.wired}"
+				rendered="#{!identityAttributeHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{identityAttributeHome.update}"
+				rendered="#{identityAttributeHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{identityAttributeHome.remove}"
+				rendered="#{identityAttributeHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/IdentityAttribute.xhtml"
+				rendered="#{identityAttributeHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty identityAttributeFrom ? 'IdentityAttributeList' : identityAttributeFrom}.xhtml"
+				rendered="#{!identityAttributeHome.managed}" /></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

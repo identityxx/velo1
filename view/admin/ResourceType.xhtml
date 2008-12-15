@@ -1,0 +1,146 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Resource Type Details</f:facet>
+
+        <s:decorate id="shortName" template="layout/display.xhtml">
+            <ui:define name="label">Unique Name</ui:define>
+            #{resourceTypeHome.instance.uniqueName}
+        </s:decorate>
+        
+        
+        <s:decorate id="type" template="layout/display.xhtml">
+            <ui:define name="label">Controller Class Name</ui:define>
+            #{resourceTypeHome.instance.resourceControllerClassName}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <rich:spacer width="1" height="5"/><rich:separator /><rich:spacer width="1" height="5"/>
+    
+    <rich:panel>
+        <f:facet name="header">Supported Operations</f:facet>
+		
+		<div class="results" id="supportedOperationsDiv"><h:outputText
+				value="Resource type does not support any operations"
+				rendered="#{empty resourceTypeHome.instance.supportedOperations}" /> <rich:dataTable
+				id="supportedOperations" var="o"
+				value="#{velo:setAsList(resourceTypeHome.instance.supportedOperations)}"
+				rendered="#{not empty resourceTypeHome.instance.supportedOperations}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Unique Name"/>
+					</f:facet>
+            		#{o.resourceGlobalOperation.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Display Name"/>
+					</f:facet>
+            		#{o.resourceGlobalOperation.displayName}
+        		</h:column>
+		</rich:dataTable></div>
+        
+    </rich:panel>
+    
+    <rich:spacer width="1" height="5"/><rich:separator /><rich:spacer width="1" height="5"/>
+    
+    <rich:panel>
+    <rich:panel>
+        <f:facet name="header">Default Shipped Attributes</f:facet>
+		
+		
+		<div class="results" id="notOverriddenResourceTypeAttributes"><h:outputText
+				value="No resource type attribute that were not override exists"
+				rendered="#{empty resourceTypeHome.instance.notOverriddenResourceTypeAttributes}" /> <rich:dataTable
+				id="notOverriddenResourceTypeAttributes" var="rta"
+				value="#{velo:setAsList(resourceTypeHome.instance.notOverriddenResourceTypeAttributes)}"
+				rendered="#{not empty resourceTypeHome.instance.notOverriddenResourceTypeAttributes}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Unique Name"/>
+					</f:facet>
+            		#{rta.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Display Name"/>
+					</f:facet>
+            		#{rta.displayName}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">Select</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceTypeAttribute' : from}.xhtml"
+						value="Select" id="resrouceTypeAttribute">
+						<f:param name="overrideResrouceTypeAttributeId"
+							value="#{rta.resourceAttributeId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+		
+    </rich:panel>
+    
+    <rich:panel>
+        <f:facet name="header">Overrided Attributes</f:facet>
+		    <div class="results" id="overriddenResourceTypeAttributes"><h:outputText
+				value="No override resource type attribute exists"
+				rendered="#{empty resourceTypeHome.instance.overriddenResourceTypeAttributes}" /> <rich:dataTable
+				id="overriddenResourceTypeAttributes" var="rta"
+				value="#{velo:setAsList(resourceTypeHome.instance.overriddenResourceTypeAttributes)}"
+				rendered="#{not empty resourceTypeHome.instance.overriddenResourceTypeAttributes}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Unique Name"/>
+					</f:facet>
+            		#{rta.uniqueName}
+        		</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Display Name"/>
+					</f:facet>
+            		#{rta.displayName}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">Select</f:facet>
+					<s:link view="/admin/#{empty from ? 'ResourceTypeAttribute' : from}.xhtml"
+						value="Select" id="resrouceTypeAttribute">
+						<f:param name="overrideResrouceTypeAttributeId"
+							value="#{rta.resourceAttributeId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+    </rich:panel>
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+		<s:button view="/admin/ResourceTypeEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+                 
+        <s:button view="/admin/#{empty resourceAttributeFrom ? 'ResourceTypeList' : resourceTypeFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+		
+    </div>
+
+</ui:define>
+
+</ui:composition>

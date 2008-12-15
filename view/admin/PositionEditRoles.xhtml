@@ -1,0 +1,181 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    <h:outputText value="Modifying Roles Association of the Position:" />
+    <h:outputText value="'#{positionHome.instance.displayName}'" styleClass="pageHeader"/>
+    
+   <h:panelGrid columns="1" style="width: 100%;" >
+  
+    <rich:panel style="width : 100%">
+			<f:facet name="header">Original Assignment</f:facet>
+			<h:form>
+				<a:outputPanel id="originalPositionRolesAssignmentPanel">
+					<h:outputText value="No roles currently assigned to #{positionHome.instance.displayName}" rendered="#{empty positionHome.instance.positionRoles}"/>
+					<rich:dataTable id="originalPositionRolesAssignmentList"  var="currPositionRole"
+						value="#{velo:setAsList(positionHome.instance.positionRoles)}" 
+						rendered="#{not empty positionHome.instance.positionRoles}">
+						<h:column>
+           					<f:facet name="header">Name</f:facet>
+           					#{currPositionRole.role.name}
+           				</h:column>
+           				<h:column>
+           					<f:facet name="header">Description</f:facet>
+           					#{currPositionRole.role.description}
+           				</h:column>
+           				<h:column>
+                            <f:facet name="header">Expiration</f:facet>
+                            #{currPositionRole.expirationTime}
+                        </h:column>
+           				<h:column>
+	           				<f:facet name="header">Action</f:facet>
+           					<a:commandLink id="addRoleToRevokeList" action="#{positionActions.addPositionRoleToRevoke(currPositionRole)}" reRender="positionRolesToRevokeCartPanel">
+           						Remove Role!
+           					</a:commandLink>
+           				</h:column>
+        			</rich:dataTable>
+				</a:outputPanel>
+			</h:form>
+		</rich:panel>
+ 	</h:panelGrid>
+ 
+ 	<h:panelGrid columns="2" style="width: 100%;"  rowClasses="alignedTab">
+   
+    			<rich:panel>
+		    			<h:panelGroup>
+							<rich:panel style="height : 110px;">
+								<f:facet name="header">Role Search Parameters</f:facet>
+								
+								<h:form id="searchRoles">
+									<s:decorate template="layout/display.xhtml">
+               							<ui:define name="label">Role name </ui:define>
+               							<h:inputText id="name" value="#{roleList.role.name}"/>
+           							</s:decorate>
+           						
+           							<h:commandButton id="search" value="Search" action="/admin/PositionEditRoles.xhtml"/>
+           						</h:form>
+							</rich:panel>
+				
+							<rich:panel>
+								<f:facet name="header">Role Search Result</f:facet>
+								
+								<h:form>
+									<a:outputPanel id="searchRolesResultPanel">
+										<h:outputText value="No roles found" rendered="#{empty roleList.resultList}"/>
+										<!-- 
+										<rich:datascroller for="rolesSearchResultList" maxPages="6"/>
+									 	-->
+										<rich:dataTable id="rolesSearchResultList"  var="role"
+											value="#{roleList.resultList}" 
+											rendered="#{not empty roleList.resultList}">
+											<h:column>
+           										<f:facet name="header">Name</f:facet>
+           										#{role.name}
+           									</h:column>
+           									<h:column>
+           										<f:facet name="header">Description</f:facet>
+           										#{role.description}
+           									</h:column>
+           									<h:column>
+	           									<f:facet name="header">Action</f:facet>
+           										<a:commandLink id="addRoleToAssignList" action="#{positionActions.addRoleToAssign(role)}" reRender="positionRolesToAssociateCartPanel">
+           											<h:graphicImage url="../icons/action_add.gif"/>
+           										</a:commandLink>
+        									</h:column>
+        								</rich:dataTable>
+        								<ui:include src="/admin/incl/pagingPanel.xhtml">
+        									<ui:param name="currentPage" value="/admin/PositionEditRoles.xhtml" />
+        									<ui:param name="iteratedList" value="#{roleList}" />
+    									</ui:include>
+									</a:outputPanel>
+								</h:form>
+							</rich:panel>
+						</h:panelGroup>
+					</rich:panel>
+				
+			<h:panelGroup>			
+			<rich:panel>
+				<h:form>
+    					<h:panelGrid columns="2" style="width: 100%;" rowClasses="alignedTab">
+							<rich:panel>
+								<f:facet name="header">Roles to be associated</f:facet>
+								<a:outputPanel id="positionRolesToAssociateCartPanel">
+									<rich:dataTable id="cartRolesToAssignList"  var="currPositionRole"
+										value="#{velo:setAsList(positionHome.instance.positionRolesToAssign)}" 
+										rendered="true">
+										<h:column>
+            								<f:facet name="header">Name</f:facet>
+            								#{currPositionRole.role.name}
+					            		</h:column>
+					            		<h:column>
+            								<f:facet name="header">Expiration Time</f:facet>
+            								<rich:calendar id="toCreationDate" value="#{currPositionRole.expirationTime}"
+                                                locale="#{locale}"
+                                                popup="true"
+                                                datePattern="dd/MM/yyyy"
+                                                converter="velo.jsf.converters.DateConverter"/>
+            							</h:column>
+        								<h:column>
+	            							<f:facet name="header">Action</f:facet>
+	            							<a:commandLink id="removePositionRoleToAssignList" action="#{positionActions.removePositionRoleToAssign(currPositionRole)}" reRender="positionRolesToAssociateCartPanel">
+	            								<h:graphicImage url="../icons/action_delete.gif"/>
+	            							</a:commandLink>
+	            						</h:column>
+        							</rich:dataTable>
+								</a:outputPanel>
+									
+							</rich:panel>
+				
+							<rich:panel>
+								<f:facet name="header">Roles to be revoked</f:facet>
+								
+								<a:outputPanel id="positionRolesToRevokeCartPanel">
+									<rich:dataTable id="cartRolesToRevokeList"  var="currPositionRole"
+										value="#{velo:setAsList(positionHome.instance.positionRolesToRevoke)}" 
+										rendered="true">
+										<h:column>
+            								<f:facet name="header">Name</f:facet>
+            								#{currPositionRole.role.name}
+            							</h:column>
+        								<h:column>
+	            							<f:facet name="header">Action</f:facet>
+	            							<a:commandLink id="removeRoleToRevokeList" action="#{positionActions.removeRoleToRevoke(currRole)}" reRender="positionRolesToRevokeCartPanel">
+	            								<h:graphicImage url="../icons/action_delete.gif"/>
+	            							</a:commandLink>
+        								</h:column>
+        							</rich:dataTable>
+								</a:outputPanel>
+							</rich:panel>
+						</h:panelGrid>
+					
+					<center>
+						<h:commandButton id="modify" value="Modify Roles Assignment!" onclick="if (!confirm('This action will affect the content of the position, please confirm your action.')) return false" action="#{positionActions.showModifyRolesInPosition}"/>
+						<s:button view="/admin/Position.xhtml" id="managePositionPage" value="Cancel Role Assignment" propagation="end"/>
+					</center>
+					</h:form>
+				</rich:panel>
+				
+			
+			
+			</h:panelGroup>
+				
+			</h:panelGrid>
+ 	</ui:define>
+
+
+
+</ui:composition>
+

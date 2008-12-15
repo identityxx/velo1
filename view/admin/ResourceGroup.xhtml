@@ -1,0 +1,89 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Resource Group</f:facet>
+
+        <s:decorate id="name" template="layout/display.xhtml">
+            <ui:define name="label">Group Name</ui:define>
+            #{resourceGroupHome.instance.displayName}
+        </s:decorate>
+        
+       
+        <s:decorate id="uniqueId" template="layout/display.xhtml">
+            <ui:define name="label">Group Unique ID</ui:define>
+            #{resourceGroupHome.instance.uniqueId}
+        </s:decorate>
+
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Group Description</ui:define>
+            #{resourceGroupHome.instance.description}
+        </s:decorate>
+          
+        <s:decorate id="resource" template="layout/display.xhtml">
+            <ui:define name="label">Group Resource</ui:define>
+            #{resourceGroupHome.instance.resource.uniqueName}
+        </s:decorate>
+        
+        <s:decorate id="type" template="layout/display.xhtml">
+            <ui:define name="label">Group Type</ui:define>
+            #{resourceGroupHome.instance.type}
+        </s:decorate>
+        
+             
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Creation Date</ui:define>
+            #{resourceGroupHome.instance.creationDate}
+        </s:decorate>
+        
+        <s:decorate id="lastUpdateDate" template="layout/display.xhtml">
+            <ui:define name="label">Last Update Date</ui:define>
+            #{resourceGroupHome.instance.lastUpdateDate}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <rich:panel>
+        <f:facet name="header">Roles the gResource Group is associated with:</f:facet>
+        	<div class="results" id="roleListDiv">
+            	<h:dataTable id="roleList" 
+					var="currRole"
+					value="#{velo:setAsList(resourceGroupHome.instance.roles)}" 
+					rendered="#{not empty resourceGroupHome.instance.roles}">
+						<h:column>
+							<s:link view="/admin/Position.xhtml" value="#{currRole.name}">
+							<f:param name="positionId" value="#{currRole.roleId}"/>
+						</s:link>
+						</h:column>
+				</h:dataTable>
+       		</div>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/#{empty resourceGroupFrom ? 'ResourceGroupList' : resourceGroupFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+
+    </div>
+
+</ui:define>
+
+</ui:composition>

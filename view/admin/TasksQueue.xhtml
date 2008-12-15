@@ -1,0 +1,86 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Tasks Queue</f:facet>
+
+        <s:decorate id="displayName" template="layout/display.xhtml">
+            <ui:define name="label">Display Name</ui:define>
+            #{tasksQueueHome.instance.displayName}
+        </s:decorate>
+        
+        <s:decorate id="destinationQueueName" template="layout/display.xhtml">
+            <ui:define name="label">Destination Queue Name</ui:define>
+            #{tasksQueueHome.instance.destinationQueueName}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{tasksQueueHome.instance.description}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    
+    
+    
+    <rich:panel>
+		<f:facet name="header">Assigned Target Systems</f:facet>
+		<div class="results" id="assignedResources">
+
+			<h:outputText value="No assigned target systems found" 
+				rendered="#{empty tasksQueueHome.instance.resources}"/>
+               
+			<rich:dataTable id="assignedResources" 
+				var="ts"
+				value="#{velo:setAsList(tasksQueueHome.instance.resources)}" 
+				rendered="#{not empty tasksQueueHome.instance.resources}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Unique Name"/>
+					</f:facet>
+					#{ts.uniqueName}
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Display Name"/>
+					</f:facet>
+					#{ts.displayName}
+				</h:column>
+			</rich:dataTable>
+		</div>
+		
+	</rich:panel>
+    
+    <div style="clear: both"><span class="required">*</span>Assigning Target Systems is done via the Target System edit interface</div>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/TasksQueueEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty tasksQueueFrom ? 'TasksQueueList' : tasksQueueFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+    </div>
+
+</ui:define>
+
+</ui:composition>

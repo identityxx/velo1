@@ -1,0 +1,18 @@
+<binding>
+    <mapping name="requests" class="xml.Requests">
+        <collection field="requests" item-type="velo.entity.CreateUserRequest"/>
+    </mapping>
+    
+    <mapping class="velo.entity.Request" abstract="true" type-name="req">
+        <value name="notes" field="notes"/>
+        <value name="status" field="status"/>
+        <value name="businessProcess" field="businessProcessName"/>
+        
+        <collection name="request-attributes" field="attributes" factory="xml.Requests.requestAttributesListFactory">
+            <structure name="attribute" type="velo.entity.RequestAttribute">
+                <value style="attribute" name="uniqueName" field="uniqueName"/>
+            </structure>
+        </collection>
+    </mapping>
+    
+</binding>

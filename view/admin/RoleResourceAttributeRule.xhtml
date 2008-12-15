@@ -1,0 +1,53 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Role Resource Attribute</f:facet>
+
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{roleResourceAttributeRuleHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="active" template="layout/display.xhtml">
+            <ui:define name="label">Active?</ui:define>
+            #{roleResourceAttributeRuleHome.instance.active}
+        </s:decorate>
+        
+        <s:decorate id="langName" template="layout/display.xhtml">
+            <ui:define name="label">Language?</ui:define>
+            #{roleResourceAttributeRuleHome.instance.actionLanguage.name}
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <div class="actionButtons">      
+
+        <s:button view="/admin/RoleResourceAttributeRuleEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty roleResourceAttributeRuleFrom ? 'RoleResourceAttributeRuleList' : roleResourceAttributeRuleFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+                 
+    </div>
+
+</ui:define>
+
+</ui:composition>

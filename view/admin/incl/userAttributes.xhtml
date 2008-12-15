@@ -1,0 +1,265 @@
+
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	template="layout/template.xhtml">
+
+	<ui:define name="body"> 
+
+		<h:outputText value="Managing User: #{userHome.instance.name}" />
+		<s:button id="done" value="Done" propagation="end" view="/admin/UserList.xhtml"/>
+		<rich:tabPanel switchType="ajax">
+			<!-- TAB: User Identity Attributes -->
+			<rich:tab id="userAttributesTab" label="User Profile and Identity Attributes">
+				<h:form id="userIdentityAttributesForm">
+					<h:panelGrid columns="2" styleClass="userManageUserIdentityAttributeGroups" columnClasses="userManageUserIdentityAttributeGroupsColumn">
+					<c:forEach items="#{userManageActions.userIdentityAttributesGroups}" var="currUserIdentityAttributesGroup">
+						<rich:simpleTogglePanel label="#{currUserIdentityAttributesGroup.name}" switchType="client">
+							<c:forEach items="#{currUserIdentityAttributesGroup.userIdentityAttributes}" var="currUserIdentityAttribute">
+								<h:panelGrid columns="3" styleClass="panelUIA" headerClass="panelUIA" columnClasses="panelUIARequired,panelUIATitle,panelUIAValue">
+									<h:graphicImage url="/icons/required.gif" rendered="#{currUserIdentityAttribute.identityAttribute.required}" />
+									<h:outputText value="&#160;&#160;" rendered="#{!currUserIdentityAttribute.identityAttribute.required}"/>
+									<h:outputText value="#{currUserIdentityAttribute.identityAttribute.displayName}" />
+									<c:forEach items="#{currUserIdentityAttribute.values}" var="value">
+										<s:decorate id="uiav_id_#{currUserIdentityAttribute.identityAttribute.identityAttributeId}Decoration" template="layout/edit.xhtml">
+											<velo:valueInput id="uiav_id_#{currUserIdentityAttribute.identityAttribute.identityAttributeId}" value="#{value.value}" valueObject="#{value}" />
+										</s:decorate>
+									</c:forEach>
+								</h:panelGrid>
+							</c:forEach>
+						</rich:simpleTogglePanel>
+					</c:forEach>
+					</h:panelGrid>
+					
+					<h:commandButton id="updateUserIdentityAttributes" value="Update" view="/admin/UserManage.xhtml" action="#{userManageActions.viewModifiedUserIdentityAttributes}" />
+				</h:form>
+			</rich:tab>
+
+			<!-- TAB: User Details -->
+			<rich:tab id="userDetailsTab" label="User Details">
+				<h:form id="userDetailsForm">
+					<rich:panel>
+						<f:facet name="header">User Details</f:facet>
+					
+						<s:decorate id="nameDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Current User Status</ui:define>
+							<h:outputText value="Disabled" rendered="#{userHome.instance.disabled}"/>
+							<h:outputText value="Enabled" rendered="#{!userHome.instance.disabled}"/>
+						</s:decorate>
+					
+						<s:decorate id="protectedDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Is user protected?</ui:define>
+							<h:selectBooleanCheckbox value="#{userHome.instance.protected}"></h:selectBooleanCheckbox>
+						</s:decorate>
+					
+						<s:decorate id="lockedDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Is user locked?</ui:define>
+							<h:selectBooleanCheckbox value="#{userHome.instance.locked}"></h:selectBooleanCheckbox>
+						</s:decorate>
+					
+						<s:decorate id="synchronizeIdentityAttributesDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Synchronize Identity Attributes?</ui:define>
+							<h:selectBooleanCheckbox value="#{userHome.instance.syncIdentityAttributes}"></h:selectBooleanCheckbox>
+						</s:decorate>
+					
+						<s:decorate id="passwordDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Local Password</ui:define>
+							<h:inputSecret id="password" value="#{userHome.instance.password}" required="false">
+								<!--wtf, ajax support change the value in DB!<a:support event="onblur" reRender="passwordDecoration" bypassUpdates="true" />-->
+								<!-- TODO: Add internal password policy as a JSF validator -->
+							</h:inputSecret>
+						</s:decorate>
+						
+						<s:decorate id="userContainerDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">User Container</ui:define>
+							<h:selectOneMenu id="userContainers" value="#{userHome.instance.userContainer}" required="false">
+                				<s:selectItems value="#{guiUserContainers}" var="uc" label="#{uc.displayName}" noSelectionLabel="---Select---" />
+                				<s:convertEntity/>
+            				</h:selectOneMenu>
+						</s:decorate>
+					
+						<div style="clear: both"><span class="required">*</span>required fields</div>
+					</rich:panel>
+					
+					<div class="actionButtons">
+						<h:commandButton id="updateUserDetails" value="Update Details" action="#{userHome.update}" disabled="#{!userHome.wired}" rendered="#{userHome.managed}" />
+						<h:commandButton value="Enable User &amp; Accounts" action="#{userManageActions.enableUser}" onclick="if (!confirm('This operation will ENABLE the user and its associated accounts too, do you want to proceed?')) return false" rendered="#{userHome.instance.disabled}"/>
+						<h:commandButton value="Disable User &amp; Accounts" action="#{userManageActions.disableUser}" onclick="if (!confirm('This operation will DISABLE the user and its associated accounts too, do you want to proceed?')) return false" rendered="#{!userHome.instance.disabled}"/>
+					</div>
+				</h:form>
+			</rich:tab>
+			<rich:tab id="accountsAjaxTab" label="User Accounts">
+				<a:outputPanel id="accountListPanel">
+				<h:form id="accountSelection">
+					<h:outputText value="No account associated to user #{userHome.instance.name}"  rendered="#{empty userHome.instance.accounts}"/>
+               
+    				<rich:dataTable id="userAccountsList"  var="account"
+    					value="#{velo:setAsList(userHome.instance.accounts)}" 
+           				rendered="#{not empty userHome.instance.accounts}">
+						<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Account Name"/>
+            				</f:facet>
+            				#{account.name}
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Target System"/>
+            				</f:facet>
+            				#{account.resource.displayName}
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Status"/>
+            				</f:facet>
+            				#{account.status}
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Selected?"/>
+            				</f:facet>
+            				<h:selectBooleanCheckbox value="#{accountList.accountSelection[account]}"  />
+        				</h:column>
+        			</rich:dataTable>
+        			
+        			<rich:spacer width="1" height="15"/><rich:separator /><rich:spacer width="1" height="25"/>
+					<a:commandButton action="#{accountActions.disableAccounts}" id="disableAccounts" value="Disable selected account(s)">
+        			</a:commandButton>
+        			<a:commandButton action="#{accountActions.enableAccounts}" id="enableAccounts" value="Enable selected account(s)">
+        			</a:commandButton>
+        			<a:commandButton action="#{accountActions.deleteAccounts}" id="deleteAccounts" value="Delete selected account(s)">
+        			</a:commandButton>
+        			<a:commandButton id="refreshAccountsStatus" value="Refresh Accounts Status" 
+						action="#{userManageActions.refreshUserAccounts}" reRender="accountListPanel"/>
+        		</h:form>
+				</a:outputPanel>
+			</rich:tab>
+			<rich:tab id="userRolesTab" label="Roles">
+				<a:outputPanel id="rolesAjaxPanel">
+					<h:outputText value="No roles associated to user #{userHome.instance.name}"  rendered="#{empty userHome.instance.userRoles}"/>
+               
+    				<rich:dataTable id="userRoleList"  var="userRole"
+    					value="#{velo:setAsList(userHome.instance.userRoles)}" 
+           				rendered="#{not empty userHome.instance.userRoles}">
+						<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Role Name"/>
+            				</f:facet>
+            				#{userRole.role.name}
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Description"/>
+            				</f:facet>
+            				#{userRole.role.description}
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Assignment Date"/>
+            				</f:facet>
+            				<h:outputText value="#{userRole.creationDate}">
+            					<s:convertDateTime type="both"/>
+            				</h:outputText>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Expiration Date"/>
+            				</f:facet>
+            				<h:outputText value="#{userRole.expirationDate}">
+            					<s:convertDateTime type="both"/>
+            				</h:outputText>
+        				</h:column>
+        				<h:column>
+            				<f:facet name="header">
+            					<h:outputText value="Inherited?"/>
+            				</f:facet>
+							<h:outputText value="Yes" rendered="#{userRole.inherited == true}"/>
+							<h:outputText value="False" rendered="#{userRole.inherited == false}"/>
+        				</h:column>
+        			</rich:dataTable>
+				</a:outputPanel>
+				
+				<rich:spacer width="1" height="15"/><rich:separator /><rich:spacer width="1" height="25"/>
+				<s:button view="/admin/UserModifyRoles.xhtml" id="performRoleAssignment" value="Perform Role Assignment"/>
+				
+			</rich:tab>
+			<rich:tab id="positionsTab" label="Positions" disabled="true"
+				rendered="false">
+			</rich:tab>
+			<rich:tab id="capabilityTab" label="Capabilities">
+				<h:form id="capabilitiesForm">
+					<rich:panel>
+						<f:facet name="header">Assigned Capability Folders</f:facet>
+
+						<s:decorate id="assignedCapabilityFoldersDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Assigned Capability Folders</ui:define>
+							<h:selectManyListbox id="assignedCapabilityFolders" size="5" value="#{userHome.instance.capabilityFolders}">
+								<s:selectItems value="#{guiCapabilityFolders}" var="cf" label="#{cf.description}" />
+								<s:convertEntity entityClass="velo.entity.CapabilityFolder"/>
+							</h:selectManyListbox>
+						</s:decorate>
+
+						<div style="clear: both"></div>
+					</rich:panel>
+					
+					<rich:panel>
+						<f:facet name="header">Assigned Capabilities</f:facet>
+						<s:decorate id="assignedCapabilitiesDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Assigned Capabilities</ui:define>
+							<h:selectManyListbox id="assignedCapabilities" size="5" value="#{userHome.instance.capabilities}">
+								<s:selectItems value="#{guiCapabilities}" var="cap" label="#{cap.description}" />
+								<s:convertEntity entityClass="velo.entity.Capability"/>
+							</h:selectManyListbox>
+						</s:decorate>
+						
+						<div style="clear: both"></div>
+					</rich:panel>
+					
+					<div>
+					<h:commandButton value="Update Capabilities"
+						action="#{userHome.update}" class="button" 
+						disabled="#{!s:hasRole('assign_users_to_capabilities')}" />
+					</div>
+				</h:form>
+			</rich:tab>
+			<rich:tab id="approversGroups" label="Approvers Groups" disabled="#{!s:hasRole('approver')}">
+				<h:form id="approversGroupsForm">
+					<rich:panel>
+						<f:facet name="header">Assigned Approvers Groups</f:facet>
+
+						<s:decorate id="assignedApproversGroupsDecoration" template="layout/edit.xhtml">
+							<ui:define name="label">Assigned Approvers Groups</ui:define>
+							<h:selectManyListbox id="assignedApproversGroups" size="5" value="#{userHome.instance.approversGroups}">
+								<s:selectItems value="#{guiApproversGroups}" var="ag" label="#{ag.displayName}" />
+								<s:convertEntity entityClass="velo.entity.ApproversGroup"/>
+							</h:selectManyListbox>
+						</s:decorate>
+
+						<div style="clear: both"></div>
+					</rich:panel>
+					
+					<div>
+						<h:commandButton value="Update Approver Group"
+							action="#{userHome.update}" class="button" 
+							disabled="#{!s:hasRole('approver')}" />
+					</div>
+				</h:form>
+			</rich:tab>
+			<rich:tab id="passwordSyncTab" label="Password Sync" disabled="true">
+			</rich:tab>
+		</rich:tabPanel>
+	</ui:define>
+
+</ui:composition>
