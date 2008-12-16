@@ -59,6 +59,18 @@ public class RolesFolderList extends EntityQuery {
     	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
     	setEjbql(EJBQL);
     }
+	
+	
+	//used by 'EditRolesFolder'
+	public List<RolesFolder> getRolesFolders(RolesFolder excluded) {
+		if (excluded.getRolesFolderId() != null) {
+			return getEntityManager().createQuery("select rolesFolder from RolesFolder rolesFolder WHERE rolesFolder.rolesFolderId != :excludedId").setParameter("excludedId", excluded.getRolesFolderId()).getResultList();
+		} else {
+			return getResultList();
+		}
+	}
+	
+	
 
 	/*
 	@Override
@@ -75,6 +87,7 @@ public class RolesFolderList extends EntityQuery {
 	*/
 
 	
+	
 	/*
 	public String[] getExtraRestricions() {
 		return extraRestricions;
@@ -84,15 +97,6 @@ public class RolesFolderList extends EntityQuery {
 		this.extraRestricions = extraRestricions;
 	}
 	
-	
-	
-	public List<RolesFolder> getRolesFolders(RolesFolder excluded) {
-		if (excluded.getRolesFolderId() != null) {
-			return getEntityManager().createQuery("select rolesFolder from RolesFolder rolesFolder WHERE rolesFolder.rolesFolderId != :excludedId").setParameter("excludedId", excluded.getRolesFolderId()).getResultList();
-		} else {
-			return getResultList();
-		}
-	}
 	*/
 	
 	//public RolesFoldersTree getRolesFoldersTree() {

@@ -97,6 +97,9 @@ public class RolesFolderApproversGroup extends EntityApprovers implements
 		if (approversGroup.getAssignmentDescription() != null) 
 			rfag.setDescription(approversGroup.getAssignmentDescription());
 		
+		if (approversGroup.getAssignmentType() != null)
+			rfag.setType(approversGroup.getAssignmentType());
+		
 		return rfag;
 	}
 

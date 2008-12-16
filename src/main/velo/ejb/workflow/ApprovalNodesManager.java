@@ -68,7 +68,6 @@ public class ApprovalNodesManager {
 			}
 		}
 
-		
 		for (Object pooledActorName : taskInstance.getPooledActors()) {
 			PooledActor currPooledActor = (PooledActor)pooledActorName;
 			if (loggedUser.isMemberOfApproversGroup(currPooledActor.getActorId())) {

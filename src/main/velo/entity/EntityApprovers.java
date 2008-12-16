@@ -29,9 +29,9 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class EntityApprovers extends BaseEntity {
 
-	private Integer approvalLevel = 1;
-	
+	private Integer approvalLevel = 0;
 	private String description;
+	private String type;
 	
 	/**
 	 * @return the approvalLevel
@@ -60,4 +60,13 @@ public class EntityApprovers extends BaseEntity {
 		this.description = description;
 	}
 	
+	@Column(name="TYPE")
+	public String getType() {
+		return type;
+	}
+	
+	
+	public void setType(String type) {
+		this.type = type;
+	}
 }

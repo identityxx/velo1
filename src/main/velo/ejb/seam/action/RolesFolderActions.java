@@ -98,6 +98,7 @@ public class RolesFolderActions  {
 	}
 	
 	public void addApproversGroupToAssign(ApproversGroup ag) {
+		System.out.println("Adding object: " + ag);
 		try {
 			rolesFolder.addApproversGroupToAssign(ag);
 		} catch (CollectionElementInsertionException ex) {
@@ -106,16 +107,18 @@ public class RolesFolderActions  {
 	}
 
 	public void removeApproversGroupToAssign(ApproversGroup ag) {
-		System.out.println("!!!!!!!!!APPROVERS GROUP TO REMOVE: " + ag.getApproversGroupId());
+		System.out.println("Removing object: " + ag);
 		
-		System.out.println("!!!!!!!!!size(1): " + rolesFolder.getApproversGroupsToAssign().size()); 
+		//System.out.println("!!!!!!!!!APPROVERS GROUP TO REMOVE: " + ag.getApproversGroupId());
+		
+		System.out.println("!!!!!!!!!size(1): " + rolesFolder.getApproversGroupsToAssign().size());
 		rolesFolder.removeApproversGroupToAssign(ag);
 		System.out.println("!!!!!!!!!size(2): " + rolesFolder.getApproversGroupsToAssign().size());
 	}
 
 	
 	public List<RolesFolder> getRoleFoldersByType(String type) {
-		System.out.println("!!!!!!!!!!: " + type);
+		//System.out.println("!!!!!!!!!!: " + type);
 		
 		
 		/*doesn't work (for unknown reason, verified that restriction is added, maybe wrong understanding of Seam QueryList flow)

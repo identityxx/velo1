@@ -70,7 +70,7 @@ public class ApproversGroup extends BaseEntity implements Serializable {
 	//transient, just for gui, just a wrapper for the entityApproversGroup assignment's level/desc
 	private Integer approvalLevel;
 	private String assignmentDescription;
-
+	private String assignmentType;
 	
 
 	/**
@@ -218,9 +218,18 @@ public class ApproversGroup extends BaseEntity implements Serializable {
 	public void setAssignmentDescription(String assignmentDescription) {
 		this.assignmentDescription = assignmentDescription;
 	}
+	
+	public String getAssignmentType() {
+		return assignmentType;
+	}
 
+	public void setAssignmentType(String assignmentType) {
+		this.assignmentType = assignmentType;
+	}
 	
 	
+	
+
 	public boolean isMember(String userName) {
 		for (User currApprover : getApprovers()) { 
 			if (currApprover.getName().equals(userName)) {

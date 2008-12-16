@@ -102,12 +102,16 @@
             			<h:inputText value="#{ag.assignmentDescription}" size="32" required="false"/>
             		</h:column>
             		<h:column style="align: center;">
+                        <f:facet name="header">Assignment Type</f:facet>
+                        <h:inputText value="#{ag.assignmentType}" size="8" required="false"/>
+                    </h:column>
+            		<h:column style="align: center;">
             			<f:facet name="header">Approval Level</f:facet>
             			<h:inputText value="#{ag.approvalLevel}" size="2" required="false"/>
             		</h:column>
         			<h:column>
 	            		<f:facet name="header">Action</f:facet>
-	            		<a:commandLink id="removeApproversGroupFromAssignList" action="#{rolesFolderActions.removeApproversGroupToAssign(group)}" reRender="approversGroupsToAssignCartPanel">
+	            		<a:commandLink id="removeApproversGroupFromAssignList" action="#{rolesFolderActions.removeApproversGroupToAssign(ag)}" reRender="removeApproversGroupFromAssignList,approversGroupsToAssignCartPanel">
 	            			<h:graphicImage url="../icons/action_delete.gif"/>
 	            		</a:commandLink>
         			</h:column>
@@ -130,7 +134,7 @@
             		</h:column>
         			<h:column>
 	            		<f:facet name="header">Action</f:facet>
-	            		<a:commandLink id="removeApproversGroupFromDeleteList" action="#{rolesFolderActions.removeRoleApproversGroupToDelete(ag)}" reRender="cartApproversGroupsToDeleteList">
+	            		<a:commandLink id="removeApproversGroupFromDeleteList" action="#{rolesFolderActions.removeRolesFolderApproversGroupToDelete(ag)}" reRender="cartApproversGroupsToDeleteList">
 	            			<h:graphicImage url="../icons/action_delete.gif"/>
 	            		</a:commandLink>
         			</h:column>
