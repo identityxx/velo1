@@ -42,7 +42,7 @@ import velo.entity.ResourceType;
 @Scope(SESSION)
 @Name("sysConfManager")
 public class SysConf {
-	private final static String VELO_SERVER_VERSION = "1.3beta";
+	private final static String VELO_SERVER_VERSION = "1.3beta-WR";
     private final static String veloINIConfFileName = "velo_config.ini";
     private final static String veloXMLConfFileName = "velo_config.xml";
     //private static ConfigurationFactory factory;

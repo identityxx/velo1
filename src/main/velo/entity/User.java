@@ -53,8 +53,6 @@ import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 //import org.hibernate.lucene.Indexed;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.jboss.seam.annotations.Name;
@@ -192,6 +190,10 @@ import velo.tools.FileUtils;
      */
     private int authFailureCounter;
     
+    private User delegator;
+    
+    private List<User> delegatorOf;
+    
     private Set<UserRole> userRoles = new HashSet<UserRole>();
     
     private List<Position> positions = new ArrayList<Position>();
@@ -261,7 +263,7 @@ import velo.tools.FileUtils;
     @Column(name = "NAME", nullable = false, unique = true)
     @Length(min = 1, max = 100)
     @NotNull
-    @Field(index=Index.TOKENIZED)
+    //@Field(index=Index.TOKENIZED)
     //seam
     public String getName() {
         if (name != null) {
@@ -677,6 +679,24 @@ import velo.tools.FileUtils;
 		this.journaling = journaling;
 	}
 	
+	@ManyToOne
+	@JoinColumn(name = "DELEGATOR_USER_ID", nullable = true, unique = false)
+	public User getDelegator() {
+		return delegator;
+	}
+
+	public void setDelegator(User delegator) {
+		this.delegator = delegator;
+	}
+
+	@OneToMany(mappedBy = "delegator", fetch = FetchType.LAZY)
+	public List<User> getDelegatorOf() {
+		return delegatorOf;
+	}
+
+	public void setDelegatorOf(List<User> delegatorOf) {
+		this.delegatorOf = delegatorOf;
+	}
 	
 	
 	
@@ -689,7 +709,7 @@ import velo.tools.FileUtils;
 	
 	
 	
-	
+
 	//Transient accessors
 	 /**
      * @param passwordConfirm The passwordConfirm to set.

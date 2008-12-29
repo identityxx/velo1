@@ -18,22 +18,37 @@
 package velo.ejb.seam;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.Query;
 
+import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.bpm.ProcessInstance;
 import org.jboss.seam.framework.EntityQuery;
+import org.jbpm.JbpmContext;
+import org.jbpm.JbpmException;
+import org.jbpm.graph.def.ProcessDefinition;
+
+import velo.entity.Resource;
 import velo.entity.WorkflowProcessDef;
+import velo.entity.Task.TaskStatus;
 
 @Name("workflowProcessDefList")
 public class WorkflowProcessDefList extends EntityQuery {
-
+	
+	@In
+	JbpmContext jbpmContext;
+	
+	
 	private static final String[] RESTRICTIONS = {
 			"lower(workflowProcessDef.uniqueName) like concat(lower(#{workflowProcessDefList.workflowProcessDef.uniqueName}),'%')"};
 
 	private WorkflowProcessDef workflowProcessDef = new WorkflowProcessDef();
-
 
 	private static final String EJBQL = "select workflowProcessDef from WorkflowProcessDef workflowProcessDef";
 
@@ -52,4 +67,7 @@ public class WorkflowProcessDefList extends EntityQuery {
     	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
     	setEjbql(EJBQL);
     }
+	
+	
+	
 }

@@ -28,6 +28,7 @@ public class Generic {
 	
 	
 	public static void main(String args[]) {
-		System.out.println(Generic.isEmailValid(null));
+		System.out.println("ASDFSADF");
+		System.out.println(Generic.isEmailValid("asaf000@gmail.com"));
 	}
 }

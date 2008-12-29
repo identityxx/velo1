@@ -37,6 +37,10 @@ public class ObserveInitialization {
 	      
     	  taskManager.changeTaskScannerMode();
     	  if(!taskManager.isTaskScannerActivate())taskManager.changeTaskScannerMode();
+    	  
+    	  
+    	  //if required, start the JBPM scheduler
+    	  //SysConf.getConfProperty(propertyName)
       }
       catch(OperationException oe){
     	  log.warn("Cannot change Scanner status due to: " + oe.getMessage());

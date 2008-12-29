@@ -5,7 +5,7 @@
           "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
-  <session-factory>
+  <session-factory name="java:/jbpmHibernateSessionFactory">
 
     <property name="show_sql">false</property>
     <property name="connection.datasource">java:/veloDatasource</property>

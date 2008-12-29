@@ -66,8 +66,9 @@ public class WorkflowBean {//implements WorkflowManagerLocal {
     	//jbpmContext.getJbpmConfiguration().createSchema();
     	
     }
+
     
-	public void deployProcessDefinition(String xmlProcessDefinition, WorkflowProcessDef wfProcessDefEntity) throws OperationException {
+    public void deployProcessDefinition(String xmlProcessDefinition, WorkflowProcessDef wfProcessDefEntity) throws OperationException {
 		try {
 			ProcessDefinition pd = jbpm.getProcessDefinitionFromXml(xmlProcessDefinition);
 			wfProcessDefEntity.setUniqueName(pd.getName());

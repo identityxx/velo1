@@ -32,6 +32,7 @@
             
             <rich:dropDownMenu id="root_workflow" value="Workflow">
             	<rich:menuItem id="approversGroups" submitMode="server" value="Approvers Groups" action="/admin/ApproversGroupList.xhtml" rendered="#{s:hasRole('super_user')}"/>
+            	<rich:menuItem id="workflowProcesses" submitMode="server" value="Workflow Process List" action="/admin/ProcessList.xhtml" rendered="true"/>
             	<rich:menuItem id="workflowProcessDefinitions" submitMode="server" value="Workflow Process Definitions" action="/admin/WorkflowProcessDefList.xhtml" rendered="true"/>
             </rich:dropDownMenu>
             

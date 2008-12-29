@@ -60,8 +60,12 @@
 
 				<s:decorate id="contentDecoration" template="layout/edit.xhtml">
 					<ui:define name="label">Content</ui:define>
-					<rich:editor id="content" cols="110" rows="45"
-						required="true" value="#{emailTemplateHome.instance.content}" />
+					<rich:editor id="content" width="765" height="450" theme="advanced" plugins="directionality"
+						required="true" value="#{emailTemplateHome.instance.content}">
+						<f:param name="theme_advanced_buttons1_add" value="fontselect,fontsizeselect"/>
+						<f:param name="theme_advanced_buttons2_add" value="separator,insertdate,inserttime,preview,separator,forecolor,backcolor,advsearchreplace"/>
+						<f:param name="theme_advanced_buttons3_add" value="ltr,rtl"/>
+				    </rich:editor>
 				</s:decorate>
 
 				

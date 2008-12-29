@@ -17,6 +17,8 @@
  */
 package velo.jbpm;
 
+import java.util.Date;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -151,7 +153,7 @@ public class MailHandler implements ActionHandler  {
 		et.addContentVar("process", executionContext.getProcessInstance());
 		//the current node
 		et.addContentVar("node", executionContext.getNode());
-		
+		et.addContentVar("currentTime",new Date());
 		
 		/*
 		Transition t = executionContext.getNode().getDefaultLeavingTransition();
@@ -271,6 +273,16 @@ public class MailHandler implements ActionHandler  {
 			addresses = address;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	String evaluate(String expression) {

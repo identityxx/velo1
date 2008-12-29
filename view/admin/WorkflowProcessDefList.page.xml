@@ -7,9 +7,9 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd">
       
-   <param name="firstResult" value="#{workflowProcessList.firstResult}"/>
-   <param name="order" value="#{workflowProcessList.order}"/>
+   <param name="firstResult" value="#{workflowProcessDefList.firstResult}"/>
+   <param name="order" value="#{workflowProcessDefList.order}"/>
    <param name="from"/>
-   <param name="uniqueName" value="#{workflowProcessList.workflowProcess.uniqueName}"/>
+   <param name="uniqueName" value="#{workflowProcessDefList.workflowProcessDef.uniqueName}"/>
 
 </page>

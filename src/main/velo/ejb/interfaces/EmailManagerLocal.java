@@ -33,4 +33,5 @@ import velo.exceptions.EmailNotificationException;
 public interface EmailManagerLocal {
 	public EmailTemplate findEmailTemplate(String name);
 	public void sendEmailsToApproversGroup(String agUniqueName, String emailTemplateName, Map<String,Object> varsMap) throws EmailNotificationException;
+	public void sendEmailToUser(String userName, String emailTemplateName, Map<String,Object> varsMap) throws EmailNotificationException;
 }

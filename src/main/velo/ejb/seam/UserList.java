@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.framework.EntityQuery;
@@ -30,8 +31,9 @@ import velo.validators.Generic;
 
 @Name("userList")
 public class UserList extends EntityQuery {
+	
 	private static final String[] RESTRICTIONS = {
-			"lower(user.name) like concat(trim(lower(#{userList.userName})),'%')",
+			"lower(user.name) like concat(trim(lower(#{userList.userName})),'%')"
 	};
 
 	private User user = new User();
@@ -41,32 +43,71 @@ public class UserList extends EntityQuery {
 	//http://seamframework.org/Community/BypassingValidationsWhenUsingEntityQuery
 	private String userName;
 
-	private static final String EJBQL = "select user from User user";
-	
-	/*WHEN MOVED TO SEAM 2.1
 	@Override
 	public String getEjbql() {
 		setOrder("name");
 		
+		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (!Generic.isNotEmptyAndNotNull(getLastName())) ) {
+			return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
+		} else if ( (!Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
+			return "select user from User user, IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+		} else if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
+			return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+		}
+		else {
+			return "select user from User user";
+		}
+		
+		
+		/*
 		if (super.getEjbql() == null) {
 
-			if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (!Generic.isNotEmptyAndNotNull(getLastName())) ) {
-				return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
-			} else if ( (!Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
-				return "select user from User user, IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
-			} else if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
-				return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
-			}
-			else {
-				return "select user from User user";
-			}
+			
 			
 			//return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
 		} else {
 			return super.getEjbql();
 		}
+		*/
 	}
-	*/
+	
+	
+	public List<String> getRestrictionStrings() {
+		List<String> arr = Arrays.asList(RESTRICTIONS);
+		
+		ArrayList<String> a = new ArrayList<String>();
+		a.addAll(arr);
+		
+		//System.out.print("!!!!!!!!! IS FIRST NAME NULL? ");
+		if (Generic.isNotEmptyAndNotNull(getFirstName())) {
+			//System.out.println("!!!!!!!!! NO!!!! ");
+			a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
+		} else {
+			//System.out.println("!!!!!!!!! YES!!!! ");
+		}
+		
+		//System.out.print("!!!!!!!!! IS LAST NAME NULL? ");
+		if (Generic.isNotEmptyAndNotNull(getLastName())) {
+			//System.out.println("!!!!!!!!! NO!!!! ");
+			a.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
+		} else {
+			//System.out.println("!!!!!!!!! YES!!!! ");
+		}
+		/*
+		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) ) {
+			if (getFirstName().length() > 0) {
+				a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) = #{userList.firstName}");
+			}
+		}
+		*/
+		/*
+		return a; 
+		*/
+		
+		return a;
+	}
+	
+	
 	
 	@Override
 	public Integer getMaxResults() {
@@ -119,11 +160,34 @@ public class UserList extends EntityQuery {
 	*/
 	
 	
-	public List userSearchByNameAutoComplete(Object suggest) {
-        String pref = (String)suggest;
-        getUser().setName(pref);
+	public List<SelectItem> userSearchByNameAutoCompleteForSelectItem(Object suggest) {
+		SelectItem si = new SelectItem();
+		si.setLabel("moo1");
+		si.setValue("value1");
+		
+		SelectItem si1 = new SelectItem();
+		si1.setLabel("moo2");
+		si.setValue("value2");
+		
+		List<SelectItem> sil = new ArrayList<SelectItem>();
+		
+		System.out.println("!!Bla: " + sil.size());
+		return sil;
+	}
+	
+	
+	public List<User> userSearchByNameAutoComplete(Object suggest) {
+		System.out.println("!!!SUGGESTED: " + suggest);
+		
+		String pref = (String)suggest;
+        //getUser().setName(pref);
+		userName = pref;
+		
+		initialize();
         
-        List users = getResultList();
+        List<User> users = getResultList();
+        
+        System.out.println("!!RETURNED: " + users.size());
         
         return users;
     }
@@ -182,7 +246,7 @@ public class UserList extends EntityQuery {
 	
 	@PostConstruct
     public void initialize() {
-    	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
-    	setEjbql(EJBQL);
+    	setRestrictionExpressionStrings(getRestrictionStrings());
+    	setEjbql(getEjbql());
     }
 }

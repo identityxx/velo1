@@ -18,7 +18,7 @@
 		<h:form enctype="multipart/form-data" id="workflowProcessDef" styleClass="edit">
 
 			<rich:panel>
-				<f:facet name="header">Workflow Process Definition</f:facet>
+				<f:facet name="header">Workflow Process Definition '#{workflowProcessDefHome.instance.uniqueName}'</f:facet>
 
 <!-- 
 				<s:decorate id="uniqueNameDecoration" template="layout/edit.xhtml">
@@ -30,7 +30,6 @@
 					</h:inputText>
 				</s:decorate>
  -->
-				
 				
 				<!-- rendered="{!workflowProcessDefHome.managed}" -->
 				<s:decorate id="processFileToImportDecoration" template="layout/edit.xhtml">

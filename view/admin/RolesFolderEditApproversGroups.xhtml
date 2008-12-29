@@ -107,7 +107,19 @@
                     </h:column>
             		<h:column style="align: center;">
             			<f:facet name="header">Approval Level</f:facet>
-            			<h:inputText value="#{ag.approvalLevel}" size="2" required="false"/>
+            			<!--<h:inputText value="{ag.approvalLevel}" size="2" required="false"/>-->
+            			<h:selectOneMenu value="#{ag.approvalLevel}" required="false">
+            			     <f:selectItem itemValue="1" itemLabel="1"/>
+            			     <f:selectItem itemValue="2" itemLabel="2"/>
+            			     <f:selectItem itemValue="3" itemLabel="3"/>
+            			     <f:selectItem itemValue="4" itemLabel="4"/>
+            			     <f:selectItem itemValue="5" itemLabel="5"/>
+            			     <f:selectItem itemValue="6" itemLabel="6"/>
+            			     <f:selectItem itemValue="7" itemLabel="7"/>
+            			     <f:selectItem itemValue="8" itemLabel="8"/>
+            			     <f:selectItem itemValue="9" itemLabel="9"/>
+            			     <f:selectItem itemValue="10" itemLabel="10"/>
+            			</h:selectOneMenu>
             		</h:column>
         			<h:column>
 	            		<f:facet name="header">Action</f:facet>

@@ -35,7 +35,6 @@
 	<classpathentry kind="lib" path="lib/jta.jar"/>
 	<classpathentry kind="lib" path="lib/core.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-embedded-api.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-search.jar"/>
 	<classpathentry kind="lib" path="lib/richfaces-api.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.6-bin.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core.jar"/>
@@ -71,7 +70,6 @@
 	<classpathentry kind="lib" path="lib/xmlwriter-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/sqlbuilder-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jcifs-1.2.18.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-search.jar"/>
 	<classpathentry kind="lib" path="C:/data/apps/jbdevstudio/jboss-eap/jboss-as/client/jbossws-native-core.jar"/>
 	<classpathentry kind="output" path="test-build"/>
 </classpath>

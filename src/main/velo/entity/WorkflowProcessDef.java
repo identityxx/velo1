@@ -48,7 +48,6 @@ public class WorkflowProcessDef extends BaseEntity implements Serializable {
 	private String processDefEngineKey;
 	
 	
-	
 	/**
 	 * @return the workflowProcessDefId
 	 */

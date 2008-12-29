@@ -84,6 +84,15 @@
         <h:column>
             <f:facet name="header">
                 <s:link styleClass="columnHeader"
+                             value="Creation Date#{workflowProcessDefList.order=='lastUpdateDate asc' ? messages.down : ( workflowProcessDefList.order=='lastUpdateDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{workflowProcessDefList.order=='lastUpdateDate asc' ? 'lastUpdateDate desc' : 'lastUpdateDate asc'}"/>
+                </s:link>
+            </f:facet>
+            #{workflowProcessDef.lastUpdateDate}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
                              value="Description #{workflowProcessDefList.order=='description asc' ? messages.down : ( workflowProcessDefList.order=='description desc' ? messages.up : '' )}">
                     <f:param name="order" value="#{workflowProcessDefList.order=='description asc' ? 'description desc' : 'description asc'}"/>
                 </s:link>

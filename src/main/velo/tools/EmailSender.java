@@ -71,6 +71,8 @@ public abstract class EmailSender {
     		if (validateEmailAddress(currRec)) {
     			log.info("Email address is not valid, skipping sending mail to address: " + currRec);
     			continue;
+    		} else {
+    			log.trace("Email address is valid, will send email to: " + currRec);
     		}
     		
     		recps.add(currRec);

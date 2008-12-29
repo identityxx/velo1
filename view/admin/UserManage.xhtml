@@ -447,6 +447,43 @@
 					</div>
 				</h:form>
 			</rich:tab>
+			<rich:tab id="delegatorTab" label="Delegation">
+			     <h:form id="delegatorForm">
+                    <rich:panel>
+                        <f:facet name="header">Delegator</f:facet>
+
+                        <s:decorate id="delegatorDecoration" template="layout/edit.xhtml">
+                            <ui:define name="label">Selected Delegator</ui:define>
+                            <rich:inplaceSelect id="userName" value="#{userHome.instance.delegator}" required="false">
+                        <s:convertEntity/>
+                    </rich:inplaceSelect>
+                    
+                            
+                            <rich:suggestionbox id="suggestionBoxId" for="userName" tokens=""
+                                rules="none"
+                                suggestionAction="#{userList.userSearchByNameAutoComplete}" var="u"
+                                fetchValue="#{u}" rows="0"
+                                first="0"
+                                minChars="1"
+                                shadowOpacity="1"
+                                border="1" width="200"
+                                height="150"
+                                shadowDepth="1"
+                                cellpadding="2">
+                                <h:column>
+                                    #{u}
+                                </h:column>
+                        </rich:suggestionbox>
+                        </s:decorate>
+
+                        <div style="clear: both"></div>
+                    </rich:panel>
+                    
+                    <div>
+                        <h:commandButton value="Update" action="#{userHome.update}" class="button"/>
+                    </div>
+                </h:form>
+            </rich:tab>
 			<rich:tab id="passwordSyncTab" label="Password Sync" disabled="true">
 			</rich:tab>
 			<rich:tab id="journaling" label="Journaling">

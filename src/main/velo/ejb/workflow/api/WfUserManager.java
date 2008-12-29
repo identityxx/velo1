@@ -61,7 +61,6 @@ public class WfUserManager {
 		return currManagerInLevel;
 	}
 	
-	
 	/**
 	 * Determines whether a user name is a manager of a certain user name. 
 	 * @param userName - 
@@ -166,26 +165,29 @@ public class WfUserManager {
 	public User getManagerForUser(String userName) {
 		log.debug("Getting manager for user '#0'",userName);
 		User user = findUser(userName);
-		
+
 		if (user == null) {
-			log.info("Cannot get manager for user name '#0' since user does not exist.");
+			log.debug("Cannot get manager for user name '#0' since user does not exist.");
 			return null;
 		}
 		
 		if (getManagerIAName() == null) {
-			log.info("The IdentityAttribute that represents a manager was not set.");
+			log.debug("The IdentityAttribute that represents a manager was not set.");
 			return null;
 		}
+		log.debug("Found IdentityAttribute that represents a 'Manager' named '#0'",getManagerIAName());
+		
 		if (getIdentifierIAName() == null) {
-			log.info("The IdentityAttribute that represents an identifier was not set.");
+			log.debug("The IdentityAttribute that represents an identifier was not set.");
 			return null;
 		}
+		log.debug("Found IdentityAttribute that represents an 'Identitifer' named '#0'",getManagerIAName());
 		
 		
 		
 		if (user.isUserAttributeExistsWithFirstValue(getManagerIAName())) {
 			String managerDN = user.getUserIdentityAttribute(getManagerIAName()).getFirstValueAsString();
-			log.debug("Manager's DN was found in manager's 'AD_MANAGER_DN' attribute with value: '#0'", managerDN);
+			log.debug("Manager's IA was found with value: '#0'", managerDN);
 			
 			//now we have the manager's DN, lets get its user
 			User managerUser = findUser(getIdentifierIAName(), managerDN);

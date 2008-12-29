@@ -31,6 +31,11 @@
                                      auto-create="true"
                       persistence-unit-jndi-name="java:/veloEntityManagerFactory"/>                          
 
+    <persistence:hibernate-session-factory name="hibernateSessionFactory"/>
+    
+    <persistence:managed-hibernate-session name="jbpmHibernateSessionFactory" auto-create="true"/>    
+           
+
    <drools:rule-base name="securityRules">
       <drools:rule-files>
          <value>/security.drl</value>

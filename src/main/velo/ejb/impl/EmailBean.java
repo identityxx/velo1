@@ -32,9 +32,12 @@ import javax.transaction.TransactionManager;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.log4j.Logger;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 
 import velo.ejb.interfaces.ApproversGroupManagerLocal;
 import velo.ejb.interfaces.EmailManagerLocal;
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.ApproversGroup;
 import velo.entity.EmailTemplate;
 import velo.entity.User;
@@ -44,6 +47,8 @@ import velo.tools.EdmEmailSender;
 import velo.validators.Generic;
 
 @Stateless()
+@Name("emailBean")
+@AutoCreate
 public class EmailBean implements EmailManagerLocal {
 	
 	private static Logger log = Logger.getLogger(EmailBean.class.getName());
@@ -58,7 +63,8 @@ public class EmailBean implements EmailManagerLocal {
 	@EJB
 	public ApproversGroupManagerLocal approversGroupManager;
 	
-	
+	@EJB
+	public UserManagerLocal userManager;
 	
 	public EmailTemplate findEmailTemplate(String name) {
 		log.debug("Finding Email Template in repository for name '" + name + "'");
@@ -139,6 +145,44 @@ public class EmailBean implements EmailManagerLocal {
 			}
 		}
 		
+		
+		try {
+			email.send();
+		}catch(EmailException e) {
+			throw new EmailNotificationException(e);
+		}
+	}
+	
+	public void sendEmailToUser(String userName, String emailTemplateName, Map<String,Object> varsMap) throws EmailNotificationException {
+		EmailTemplate et = findEmailTemplate(emailTemplateName);
+		if (et == null) {
+			throw new EmailNotificationException("Could not find Email Template with name '" + emailTemplateName + "'");
+		}
+		
+		User user = userManager.findUser(userName);
+		
+		if (user == null) {
+			throw new EmailNotificationException("Could not find User name '" + emailTemplateName + "'");
+		}
+		
+		
+		EdmEmailSender es = new EdmEmailSender();
+		Email email = null;
+		try {
+			email = es.factoryEmail(et.getSubject(),et.getParsedContent());
+		}catch (EmailException e) {
+			log.error("Could not factory email objecT: " + e.getMessage());
+			throw new EmailNotificationException(e);
+		}catch (ExpressionCreationException e) {
+			log.error("Could parsing email content: " + e.getMessage());
+			throw new EmailNotificationException(e);
+		}
+		
+		try {
+			email.addTo(user.getEmail());
+		}catch(EmailException e) {
+				log.error("Could not send email to user: " + user.getName() + " (email address: '" + user.getEmail() + "')" + "' due to: " + e.getMessage());
+		}
 		
 		try {
 			email.send();

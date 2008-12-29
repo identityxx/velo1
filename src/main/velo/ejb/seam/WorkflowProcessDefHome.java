@@ -84,7 +84,7 @@ public class WorkflowProcessDefHome extends EntityHome<WorkflowProcessDef> {
 		String fileContent = new String(getProcessUploadedFile());
 		log.trace("File name: #0, Content Type: #1",getProcessFileName(),getProcessContentType());
 		log.trace("-START- of dumping process xml content");
-		log.trace(fileContent);
+		//log.trace(fileContent);
 		log.trace("-END- of dumping process xml content");
 		
 		try {
@@ -108,7 +108,7 @@ public class WorkflowProcessDefHome extends EntityHome<WorkflowProcessDef> {
 		String fileContent = new String(getProcessUploadedFile());
 		log.trace("File name: #0, Content Type: #1",getProcessFileName(),getProcessContentType());
 		log.trace("-START- of dumping process xml content");
-		log.trace(fileContent);
+		//log.trace(fileContent);
 		log.trace("-END- of dumping process xml content");
 		
 		try {
