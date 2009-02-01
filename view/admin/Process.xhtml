@@ -1,0 +1,80 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">General Details for Process '#{selectedProcessInstance.id}'</f:facet>
+
+        <s:decorate id="id" template="layout/display.xhtml">
+            <ui:define name="label">ID</ui:define>
+            #{selectedProcessInstance.id}
+        </s:decorate>
+        
+        <s:decorate id="defName" template="layout/display.xhtml">
+            <ui:define name="label">Definition Name</ui:define>
+            #{selectedProcessInstance.processDefinition.name}
+        </s:decorate>
+        
+        <s:decorate id="defDesc" template="layout/display.xhtml">
+            <ui:define name="label">Definition Description</ui:define>
+            #{selectedProcessInstance.processDefinition.name}
+        </s:decorate>
+        
+        <s:decorate id="status" template="layout/display.xhtml">
+            <ui:define name="label">Process Status</ui:define>
+            <h:outputText value="Running" rendered="#{selectedProcessInstance.end eq null}"/>
+            <h:outputText value="Finished [at: #{selectedProcessInstance.end}]" rendered="#{selectedProcessInstance.end ne null}"/>
+        </s:decorate>
+        
+        <s:decorate id="currNode" template="layout/display.xhtml">
+            <ui:define name="label">Current Node</ui:define>
+            <h:outputText value="#{selectedProcessInstance.rootToken.node.name}"/>
+        </s:decorate>
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    <rich:panel>
+        <f:facet name="header">Process Variables</f:facet>
+        
+        <!-- 
+        <rich:dataTable value="{velo:setAsList(selectedProcessInstance.contextInstance.variables.entrySet)}" var="v">
+            <h:column>
+                <f:facet name="header">Var Name</f:facet>
+                {v.getKey()}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Var Value</f:facet>
+                {v.getValue()}
+            </h:column>
+        </rich:dataTable>
+         -->
+         
+        <div style="clear:both"/>
+    </rich:panel>
+    
+
+
+    <div class="actionButtons">      
+        <s:button view="/admin/#{empty processFrom ? 'ProcessList' : processFrom}.xhtml"
+                    id="done"
+                    propagation="none"
+                 value="Done"/>
+    </div>
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,210 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:sb="http://myfaces.apache.org/sandbox"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="processSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Process Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Process ID</ui:define>
+                <h:inputText id="id" value="#{workflowProcessList.processId}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Process Definition</ui:define>
+                <h:selectOneMenu id="processDefinition" 
+                    value="#{workflowProcessList.processDefinitionName}" required="false">
+                    <s:selectItems value="#{latestProcessDefinitionNames.keySet()}" var="pd"
+                        label="#{latestProcessDefinitionNames[pd]}" noSelectionLabel="-Select-" />
+                    <a:support event="onchange" reRender="processVarsPanel" ajaxSingle="true"/>
+                </h:selectOneMenu>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Suspended?</ui:define>
+                <h:selectBooleanCheckbox value="#{workflowProcessList.suspended}"></h:selectBooleanCheckbox>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Status</ui:define>
+                <h:selectOneMenu id="status" value="#{workflowProcessList.status}">
+                    <f:selectItem itemValue="ALL" itemLabel="All"/>
+                    <f:selectItem itemValue="ACTIVE " itemLabel="Active"/>
+                    <f:selectItem itemValue="FINISHED" itemLabel="Finished"/>
+                </h:selectOneMenu>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+            <ui:define name="label">Search by Variable</ui:define>
+            <a:outputPanel id="processVarsPanel">
+                <h:selectOneMenu id="processVarSelectOneMenu" 
+                    value="#{workflowProcessList}" required="false">
+                    <f:selectItem itemValue="requesteeUserName" itemLabel="Requestee User Name"/>
+                    <f:selectItem itemValue="requesteeFullName" itemLabel="Requestee Full Name"/>
+                    <f:selectItem itemValue="requesterUserName" itemLabel="Requester User Name"/>
+                    <f:selectItem itemValue="requesterFullName" itemLabel="Requester Full Name"/>
+                </h:selectOneMenu>
+            </a:outputPanel>
+            &nbsp;&nbsp;&nbsp;
+            <h:inputText value=""/>
+            </s:decorate>
+            
+            
+            <s:decorate id="searchCreationDateDecoration" template="layout/display.xhtml">
+            
+                <ui:define name="label">Dates</ui:define>
+                <h:panelGrid columns="6">
+                <h:outputText value="Start:"/>
+                <rich:calendar id="startDate" value="#{workflowProcessList.startDate}"
+                    locale="#{locale}"
+                    popup="true"
+                    datePattern="dd/MM/yyyy"
+                    converter="#{dateTimeConverter}"
+                />
+                
+                <h:outputText value="End:"/>
+                <rich:calendar id="endDate" value="#{workflowProcessList.endDate}"
+                    locale="#{locale}"
+                    popup="true"
+                    datePattern="dd/MM/yyyy"
+                    converter="#{dateTimeConverter}"/>
+                </h:panelGrid>
+            </s:decorate>
+            
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/ProcessList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <h:form id="processList">
+    <rich:panel>
+        <f:facet name="header">Process Search Results</f:facet>
+    <div class="results" id="processList">
+
+    <h:outputText value="No process instances exists" 
+               rendered="#{empty workflowProcessList.resultList}"/>
+               
+    <h:outputText value="Found #{workflowProcessList.resultCount} entries."/>
+               
+    <rich:dataTable id="processList" 
+                var="process"
+              value="#{workflowProcessList.dataModel}" 
+           rendered="#{not empty workflowProcessList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="ID #{workflowProcessList.order=='id asc' ? messages.down : ( workflowProcessList.order=='id desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{workflowProcessList.order=='id asc' ? 'id desc' : 'id asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'Process' : from}.xhtml" value="#{process.id}" >
+                <f:param name="processId" value="#{process.id}"/>
+            </s:link>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Process Definition Name</f:facet>
+            <h:outputText value="#{process.processDefinition.name}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Process Definition Description</f:facet>
+            <h:outputText value="#{process.processDefinition.description}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Version</f:facet>
+            <h:outputText value="#{process.version}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Start Date</f:facet>
+            <h:outputText value="#{process.start}">
+            </h:outputText>
+        </h:column>
+        <h:column>
+            <f:facet name="header">End Date</f:facet>
+            <h:outputText value="#{process.end}">
+            </h:outputText>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+            <h:commandButton value="View" action="#{workflowProcessList.select}"/>
+            <!-- 
+            <s:link view="/admin/{empty from ? 'Process' : from}.xhtml" 
+                   value="Select" 
+                      id="process">
+                <f:param name="processId" 
+                        value="{process.id}"/>
+            </s:link>
+             -->
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <s:link view="/admin/ProcessList.xhtml" 
+            rendered="#{workflowProcessList.previousExists}" 
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+        
+        <s:link view="/admin/ProcessList.xhtml" 
+            rendered="#{workflowProcessList.previousExists}" 
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult" 
+                    value="#{workflowProcessList.previousFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/ProcessList.xhtml" 
+            rendered="#{workflowProcessList.nextExists}" 
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult" 
+                    value="#{workflowProcessList.nextFirstResult}"/>
+        </s:link>
+        
+        <s:link view="/admin/ProcessList.xhtml" 
+            rendered="#{workflowProcessList.nextExists}" 
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult" 
+                    value="#{workflowProcessList.lastFirstResult}"/>
+        </s:link>
+        
+    </div>
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/admin/AccountEdit.xhtml"
+                    id="create" 
+                 value="Create capability folder"
+                 rendered="false">
+            <f:param name="accountId"/>
+        </s:button>
+    </s:div>
+    </h:form>
+    
+</ui:define>
+
+</ui:composition>

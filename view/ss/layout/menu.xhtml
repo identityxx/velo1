@@ -1,0 +1,17 @@
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<rich:toolBar itemSeparator="line"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:s="http://jboss.com/products/seam/taglib"
+        xmlns:rich="http://richfaces.ajax4jsf.org/rich">
+        <h:form>
+            <s:button value="#{messages['ss.generic.label.topMenu.Homepage']}" view="/ss/Home.xhtml" propagation="none"/>
+            
+            <h:commandButton id="logout" value="#{messages['ss.generic.label.topMenu.Logout']}" action="#{selfServiceHomePageActions.logout}" rendered="true"/> 
+        </h:form>
+</rich:toolBar>

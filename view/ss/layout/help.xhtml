@@ -1,0 +1,19 @@
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<h:graphicImage xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                 xmlns:h="http://java.sun.com/jsf/html"
+                 xmlns:f="http://java.sun.com/jsf/core"
+                 xmlns:s="http://jboss.com/products/seam/taglib"
+                 xmlns:rich="http://richfaces.ajax4jsf.org/rich" 
+					url="/icons/help.png" id="bla">
+	
+	<rich:toolTip direction="top-right" mode="client" verticalOffset="5"
+		zorder="9000" styleClass="tooltip" style="width:240px;">
+		<span style="white-space: normal; width: 50px;">
+			#{helpText}
+		</span>
+	</rich:toolTip>
+</h:graphicImage>
