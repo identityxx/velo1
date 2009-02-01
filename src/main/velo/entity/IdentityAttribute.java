@@ -138,7 +138,8 @@ import velo.scripting.ScriptFactory;
     /**
      @return the identityAttributesGroup
      */
-    @ManyToOne(optional=false)
+    //@ManyToOne(optional=false)
+    @ManyToOne(optional=false,fetch=FetchType.LAZY)
     @JoinColumn(name="IDENTITY_ATTRIBUTES_GROUP_ID", nullable=true, unique=false)
     public IdentityAttributesGroup getIdentityAttributesGroup() {
         return identityAttributesGroup;
@@ -156,7 +157,10 @@ import velo.scripting.ScriptFactory;
      @return Returns the sources.
      */
     //@OneToMany(mappedBy = "identityAttribute", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE,CascadeType.REFRESH,CascadeType.REMOVE})
-    @OneToMany(mappedBy = "identityAttribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    
+    ///!!!!!!!!!!!!!!!#!!!!
+    //@OneToMany(mappedBy = "identityAttribute", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "identityAttribute", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     public Set<IdentityAttributeSource> getSources() {
         return sources;
     }
@@ -235,7 +239,7 @@ import velo.scripting.ScriptFactory;
 		this.manager = manager;
 	}
 
-	@Column(name="IDENTIFIER", nullable=false)
+	@Column(name="USER_IDENTIFIER", nullable=false)
 	public boolean isIdentifier() {
 		return identifier;
 	}

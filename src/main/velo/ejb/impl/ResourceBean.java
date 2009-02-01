@@ -30,6 +30,8 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.jboss.annotation.IgnoreDependency;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 import org.xml.sax.SAXException;
 
 import velo.actions.ActionManager;
@@ -73,6 +75,8 @@ import velo.storage.Attribute;
  */
 @EJB(name="resourceEjbRef", beanInterface=ResourceManagerLocal.class)
 @Stateless()
+@Name("resourceManager")
+@AutoCreate
 public class ResourceBean implements ResourceManagerLocal,
         ResourceManagerRemote {
     

@@ -888,12 +888,11 @@ public class Account extends AccountSkeletal {
 				throw new ObjectsConstructionException(
 						"Couldnt load account, ACCOUNT ID was not found....!");
 			} else {
-				this.setName((String) map.get(accId.getUniqueName()).toString()
-						.trim());
+				this.setName((String) map.get(accId.getUniqueName()).toString().trim());
 			}
 		} else {
 			throw new ObjectsConstructionException(
-					"Cannot load an account by MAP, couldnt find 'username' field which is a MUST");
+					"Cannot load an account by MAP, couldnt find '" + accId.getUniqueName() + "' field which is a MUST");
 		}
 
 		// Important - emulate that the account attributes were loaded

@@ -15,7 +15,7 @@
    
    <context-param>
       <param-name>org.richfaces.SKIN</param-name>
-      <param-value>classic</param-value>
+      <param-value>DEFAULT</param-value>
    </context-param>
 
    <!-- Suppress spurious stylesheets -->

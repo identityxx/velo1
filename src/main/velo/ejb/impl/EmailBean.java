@@ -159,6 +159,8 @@ public class EmailBean implements EmailManagerLocal {
 			throw new EmailNotificationException("Could not find Email Template with name '" + emailTemplateName + "'");
 		}
 		
+		et.setContentVars(varsMap);
+		
 		User user = userManager.findUser(userName);
 		
 		if (user == null) {

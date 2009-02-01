@@ -447,13 +447,14 @@
 					</div>
 				</h:form>
 			</rich:tab>
-			<rich:tab id="delegatorTab" label="Delegation">
+			<rich:tab id="delegatorTab" label="Delegation" rendered="false">
 			     <h:form id="delegatorForm">
                     <rich:panel>
                         <f:facet name="header">Delegator</f:facet>
 
                         <s:decorate id="delegatorDecoration" template="layout/edit.xhtml">
                             <ui:define name="label">Selected Delegator</ui:define>
+                            
                             <rich:inplaceSelect id="userName" value="#{userHome.instance.delegator}" required="false">
                         <s:convertEntity/>
                     </rich:inplaceSelect>

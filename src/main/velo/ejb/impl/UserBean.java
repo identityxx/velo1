@@ -38,6 +38,7 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.jboss.annotation.IgnoreDependency;
+import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 
 import velo.actions.ResourceAccountActionInterface;
@@ -100,6 +101,7 @@ import velo.storage.Attribute;
  */
 @Stateless()
 @Name("userManager")
+@AutoCreate
 public class UserBean implements UserManagerLocal, UserManagerRemote {
 	private final String table_users_to_capabilities = "VL_USERS_TO_CAPABILITIES";
 	private final String table_user_role = "FROM VL_USER_ROLE";

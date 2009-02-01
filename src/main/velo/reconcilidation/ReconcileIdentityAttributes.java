@@ -85,9 +85,19 @@ public class ReconcileIdentityAttributes extends Action {
             UserManagerLocal userManager = (UserManagerLocal) ic.lookup("velo/UserBean/local");
             IdentityAttributeManagerLocal identityAttributeManager = (IdentityAttributeManagerLocal) ic.lookup("velo/IdentityAttributeBean/local");
             
+            Stopwatch stopwatch = new Stopwatch();
             log.debug("Loading Users and Identity Attributes to synchronize, please wait...");
+            stopwatch.start();
             Collection<IdentityAttribute> identityAttributesToSync = identityAttributeManager.loadIdentityAttributesToSync();
+            
+            
             Collection<User> usersToSync = userManager.findUsersToSync();
+            for (User currUserToSync : usersToSync) {
+            	currUserToSync.getUserIdentityAttributes().size();
+            }
+            
+            stopwatch.stop();
+            log.debug("END: Successfully Loaded all users and Identity Attributes to synchronize: " + stopwatch); 
             
             
             log.info("Successfully loaded amount of '" + identityAttributesToSync.size() + "' Identity Attributes to sync, for each User in repository, Users loaded to be synced with amount '" + usersToSync.size() + "'");
@@ -126,8 +136,6 @@ public class ReconcileIdentityAttributes extends Action {
             log.debug("END of preparing ActiveData XML files for each relevant Resource");
             
 
-            Stopwatch stopwatch = new Stopwatch();
-            
             stopwatch.start();
             log.debug("START: Consturcting ActiveAccounts from ActiveData(XML Files) for all relevant Targets, this will take a while... ");
             HashMap<String,Map<String,Account>> accountsInTargets = new HashMap<String,Map<String,Account>>();
@@ -146,7 +154,6 @@ public class ReconcileIdentityAttributes extends Action {
                     return false;
                 }
             }
-            
             
             
             stopwatch.stop();
@@ -332,8 +339,8 @@ public class ReconcileIdentityAttributes extends Action {
                                             
                                             
                                             for (Map.Entry<String, Attribute> currAttr : foundActiveAccount.getTransientAttributes().entrySet()) {
-                                            	System.out.println("!!!!!!!!!!!!!!!!!!!!!!: '" + currAttr.getKey() +"', " + currAttr.getValue());
-                                            	System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + foundActiveAccount.getTransientAttributes().get("first_name"));
+//                                            	System.out.println("!!!!!!!!!!!!!!!!!!!!!!: '" + currAttr.getKey() +"', " + currAttr.getValue());
+//                                            	System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + foundActiveAccount.getTransientAttributes().get("first_name"));
                                             }
                                             
                                             if (currActiveAttribute == null) {

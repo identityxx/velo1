@@ -40,33 +40,20 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.log4j.Logger;
 import org.datacontract.schemas._2004._07.velo_wingw.VeloDataContainer;
-import org.hibernate.classic.Session;
-import org.hibernate.ejb.HibernateEntityManager;
-import org.jboss.seam.Component;
-import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.TransactionPropagationType;
-import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.bpm.Jbpm;
-import org.jboss.seam.bpm.ManagedJbpmContext;
-import org.jboss.seam.core.Contexts;
-import org.jboss.seam.persistence.FullTextHibernateSessionProxy;
 import org.jboss.ws.WSException;
 import org.jbpm.JbpmConfiguration;
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.persistence.db.DbPersistenceService;
 import org.openspml.v2.msg.XMLMarshaller;
 import org.openspml.v2.msg.spml.AddRequest;
 import org.openspml.v2.msg.spml.CapabilityData;
@@ -92,7 +79,6 @@ import org.tempuri.WindowsGatewayApi;
 
 import sun.misc.BASE64Decoder;
 import velo.action.ResourceOperation;
-import velo.actions.tools.ResourceOperationActionTools;
 import velo.adapters.Adapter;
 import velo.common.UniqueIdGenerator;
 import velo.contexts.OperationContext;
@@ -146,6 +132,8 @@ import velo.windowsGateway.VeloDataContainerProxy;
 
 //@Name("resourceOperationsBean")
 @Stateless()
+@Name("resourceOperationsManager")
+@AutoCreate
 public class ResourceOperationsBean implements ResourceOperationsManagerLocal,ResourceOperationsManagerRemote {
 	private static Logger log = Logger.getLogger(ResourceOperationsBean.class.getName());
 	

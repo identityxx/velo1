@@ -26,6 +26,7 @@ import javax.faces.model.SelectItem;
 
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.framework.EntityQuery;
+
 import velo.entity.User;
 import velo.validators.Generic;
 
@@ -177,7 +178,7 @@ public class UserList extends EntityQuery {
 	
 	
 	public List<User> userSearchByNameAutoComplete(Object suggest) {
-		System.out.println("!!!SUGGESTED: " + suggest);
+		getLog().debug("!!!Suggested: " + suggest);
 		
 		String pref = (String)suggest;
         //getUser().setName(pref);
@@ -187,7 +188,7 @@ public class UserList extends EntityQuery {
         
         List<User> users = getResultList();
         
-        System.out.println("!!RETURNED: " + users.size());
+        getLog().debug("!!Returned: " + users.size());
         
         return users;
     }
@@ -246,6 +247,7 @@ public class UserList extends EntityQuery {
 	
 	@PostConstruct
     public void initialize() {
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!: " + getEjbql());
     	setRestrictionExpressionStrings(getRestrictionStrings());
     	setEjbql(getEjbql());
     }

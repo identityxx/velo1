@@ -17,10 +17,7 @@
  */
 package velo.ejb.impl;
 
-import java.sql.SQLException;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
@@ -41,6 +38,7 @@ import velo.exceptions.OperationException;
 
 //@Stateless()
 @Name("workflowManager")
+@AutoCreate
 public class WorkflowBean {//implements WorkflowManagerLocal {
 	@Logger
 	private Log log;
@@ -54,14 +52,14 @@ public class WorkflowBean {//implements WorkflowManagerLocal {
 
     @Transactional(TransactionPropagationType.SUPPORTS)
     public void createJbpmSchema() throws Exception {
-    	System.out.println("!!!!!!!!!!!!!!!!STARTTTTTT: " + Transaction.instance().isActive());
+    	//System.out.println("!!!!!!!!!!!!!!!!STARTTTTTT: " + Transaction.instance().isActive());
     	Transaction.instance().commit();
-    	System.out.println("!!!!!!!AFER COMMIT!!!!!!!!!: " + Transaction.instance().isActive());
+    	//System.out.println("!!!!!!!AFER COMMIT!!!!!!!!!: " + Transaction.instance().isActive());
     	
     	JbpmConfiguration jbpmConfiguration = JbpmConfiguration.getInstance();
-    	System.out.println("!!!!!!!!!!!!!!!! after getting JBPM CONF: " + Transaction.instance().isActive());
+    	//System.out.println("!!!!!!!!!!!!!!!! after getting JBPM CONF: " + Transaction.instance().isActive());
     	jbpmConfiguration.createSchema();
-    	System.out.println("!!!!!!!!!!!!!!!! AFTER CREATING SCHEMA: " + Transaction.instance().isActive());
+    	//System.out.println("!!!!!!!!!!!!!!!! AFTER CREATING SCHEMA: " + Transaction.instance().isActive());
     	//jbpmConfiguration.createSchema();
     	//jbpmContext.getJbpmConfiguration().createSchema();
     	
@@ -77,6 +75,8 @@ public class WorkflowBean {//implements WorkflowManagerLocal {
 			log.trace("Deploying workflow process definition name #0",pd.getName());
 			jbpmContext.deployProcessDefinition(pd);
 			wfProcessDefEntity.setProcessDefEngineKey(String.valueOf(pd.getId()));
+			
+			jbpmContext.getSession().flush();
 		//}catch (JpdlException e) {
 		}catch (Exception e) {
 			throw new OperationException("Could not deploy process definition: " + e.getMessage());
@@ -120,12 +120,28 @@ public class WorkflowBean {//implements WorkflowManagerLocal {
 	public ProcessInstance getProcessInstance(Long id) {
 		System.out.println("!!!!!!!!!!");
 		JbpmContext context = Jbpm.instance().getJbpmConfiguration().createJbpmContext();
-		log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!: " + context);
+		//log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!: " + context);
+		/*
 		try {
 			log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!: " + context.getConnection().isClosed());
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
+		*/
+		
 		return context.getProcessInstance(id);
 	}
+	
+	
+	public void startJobExecuter()  throws Exception {
+		//does not work jbpm.getJbpmConfiguration().startJobExecutor();
+		System.out.println("!!!!!!!!!!!!!!!!STARTTTTTT: " + Transaction.instance().isActive());
+    	//System.out.println("!!!!!!!AFER COMMIT!!!!!!!!!: " + Transaction.instance().isActive());
+		Jbpm.instance().getJbpmConfiguration().startJobExecutor();
+	}
+	
+	public void endJobExecuter() {
+		jbpm.getJbpmConfiguration().getJobExecutor().stop();
+	}
+	
 }

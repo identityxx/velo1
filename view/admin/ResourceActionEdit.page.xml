@@ -17,9 +17,9 @@
    <!-- resourceId is a must, otherwise resourceHome.instance wont be available for the edit page -->
    <param name="resourceId" value="#{resourceHome.resourceId}"/>
    
-   <!-- doesnt work as resourceTypeOperation is entity and not ID, somehow have to set the right type -->
+   <!-- doesnt work as resourceTypeOperation is entity and not ID, somehow have to set the right type 
    <param name="resourceTypeOperation" value="#{resourceActionHome.instance.resourceTypeOperation}"/>
-   
+   -->
    
    <param name="actionDefinitionId" value="#{resourceActionHome.actionDefinitionId}"/>
 

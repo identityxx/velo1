@@ -10,9 +10,11 @@ import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.bpm.BeginTask;
 import org.jboss.seam.annotations.bpm.EndTask;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -112,12 +114,17 @@ public class ApprovalNodesManager {
 	
 	@EndTask(transition="rejected")
 	public String reject() {
-		facesMessages.addFromResourceBundle(FacesMessage.SEVERITY_INFO,"ss.workflow.task.message.successfulyRejectedTask",loggedUser.getFullName());
 		log.info("User '#0' is rejecting task ID '#1', of process ID: '#2'", loggedUser.getName(), taskInstance.getId(), processInstance.getId());
 		//return redirect();
 		//return null;
 		
+		if ( (wfActiveApprovalComment == null) || (wfActiveApprovalComment.length() < 1) ) {
+			facesMessages.addFromResourceBundle("mizrahi.ss.wf.message.info.CommentIsAMustWhenRejectingProcess");
+			return null;
+		}
+		
 		addComment(wfActiveApprovalComment);
+		facesMessages.addFromResourceBundle(FacesMessage.SEVERITY_INFO,"ss.workflow.task.message.successfulyRejectedTask",loggedUser.getFullName());
 		return "/ss/Home.xhtml";
 	}
 
@@ -134,8 +141,15 @@ public class ApprovalNodesManager {
 
 	
 	
-	
 	public void addComment(String comment) {
+		log.debug("Adding comment: '#0' to task ID '#1'", comment,taskInstance.getId());
+		
+		Comment c = new Comment(loggedUser.getName(),comment);
+		taskInstance.addComment(c);
+	}
+	
+	
+	public void addCommentOLD(String comment) {
 		if (log.isTraceEnabled()) {
 			dumpCurrentApprovalComments();
 		}
@@ -182,6 +196,10 @@ public class ApprovalNodesManager {
 		}
 		
 		log.trace("Finished dumping current approval comments in process ID '#0'",processInstance.getId());
+	}
+	
+	public boolean isWfActiveApprovalCommentNotEmpty() {
+		return ( (wfActiveApprovalComment != null) && (wfActiveApprovalComment.length() > 0) );
 	}
 	
 	/**

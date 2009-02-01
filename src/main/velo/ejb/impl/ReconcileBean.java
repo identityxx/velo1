@@ -22,12 +22,16 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.EJBs;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.seam.annotations.Transactional;
 
 import velo.common.EdmMessages;
 import velo.ejb.interfaces.AccountManagerLocal;
@@ -42,6 +46,7 @@ import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.BulkTask;
 import velo.entity.EventLog;
+import velo.entity.IdentityAttributesSyncTask;
 import velo.entity.ReconcilePolicy;
 import velo.entity.ReconcileUsersPolicy;
 import velo.entity.Resource;
@@ -211,15 +216,31 @@ public class ReconcileBean implements ReconcileManagerLocal,
     }
     
     
+    //in seconds
+    @TransactionTimeout(value=3600)
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@Transactional
     public void reconcileIdentityAttributes() throws ReconcileProcessException {
 		log.info("Requested a User Identity Attributes Reconcile process, constructing a task...");
+		
+		/*REPLACING WITH TASK
 		ReconcileIdentityAttributes ria = new ReconcileIdentityAttributes();
 		try {
 			ria.__execute__();
 		}catch (ActionFailureException e) {
 			throw new ReconcileProcessException(e.getMessage());
 		}
+		*/
 		
+		
+		IdentityAttributesSyncTask iast = IdentityAttributesSyncTask.factory();
+		em.persist(iast);
+		
+		
+		
+		
+		
+		//VERY OLD
 		/*BulkTask bulkTask = BulkTask.factory("User Identity Attributes Reconcile process");
 		bulkTask.setDescription("Reconcile Identity Attributes");
 

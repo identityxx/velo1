@@ -21,6 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
+import javax.persistence.EntityManager;
 
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
@@ -30,7 +31,9 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
 
 import velo.ejb.interfaces.ReconcileManagerLocal;
+import velo.entity.IdentityAttributesSyncTask;
 import velo.entity.Resource;
+import velo.entity.Task;
 import velo.exceptions.ReconcileProcessException;
 import velo.exceptions.ReconcileUsersException;
 import velo.exceptions.TaskCreationException;
@@ -53,6 +56,9 @@ public class ReconcileActionsBean implements ReconcileActions {
 
 	@In(value="#{resourceHome.instance}")
 	Resource resource;
+	
+	
+	@In EntityManager entityManager;
 
 	public void reconcileAllResources() {
 		//TODO: should be implemented.

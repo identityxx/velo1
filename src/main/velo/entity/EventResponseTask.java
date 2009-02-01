@@ -140,20 +140,20 @@ public class EventResponseTask extends Task implements Serializable {
 		ert.setDescription(eventRes.getDescription());
 		ert.setCreationDate(new Date());
 		ert.setEventResponse(eventRes);
-		log.debug("!!!!2");
+		//log.debug("!!!!2");
 		
 		if (eventRes.isPersistence()) {
 		try {
-			log.debug("!!!!3");
+			//log.debug("!!!!3");
 			XStream xstream = new XStream(new DomDriver());
-			log.debug("!!!!4");
+			//log.debug("!!!!4");
 			ert.setContext(xstream.toXML(context));
 		}catch (Exception e) {
 			log.error("Could not serialize context for event response '" + eventRes.getDescription() + "': " + e.getMessage());
 			throw new ObjectFactoryException(e);
 		}
 		}
-		log.debug("!!!!5");
+		//log.debug("!!!!5");
 		
 		if (eventRes.getExecutionTimeDifference() != null) {
 			Calendar c = Calendar.getInstance();
@@ -161,7 +161,7 @@ public class EventResponseTask extends Task implements Serializable {
 			ert.setExpectedExecutionDate(c.getTime());
 		}
 		
-		log.debug("!!!!6");
+		//log.debug("!!!!6");
 		return ert;
 	}
 	

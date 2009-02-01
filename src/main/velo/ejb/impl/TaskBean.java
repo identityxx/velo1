@@ -61,6 +61,7 @@ import javax.transaction.UserTransaction;
 
 import org.apache.log4j.Logger;
 import org.jboss.annotation.IgnoreDependency;
+import org.jboss.annotation.ejb.TransactionTimeout;
 //import org.jboss.tm.TransactionManagerFactory;
 import velo.common.SysConf;
 import velo.contexts.OperationContext;
@@ -74,6 +75,7 @@ import velo.ejb.interfaces.TaskManagerRemote;
 import velo.entity.BulkTask;
 import velo.entity.EventDefinition;
 import velo.entity.EventResponseTask;
+import velo.entity.GenericTask;
 import velo.entity.ResourceTask;
 import velo.entity.SpmlTask;
 import velo.entity.Task;
@@ -81,6 +83,7 @@ import velo.entity.TaskDefinition;
 import velo.entity.Task.TaskStatus;
 import velo.exceptions.CannotRequeueTaskException;
 import velo.exceptions.CollectionLoadingException;
+import velo.exceptions.ExecutionException;
 import velo.exceptions.NoResultFoundException;
 import velo.exceptions.OperationException;
 import velo.exceptions.ScriptInvocationException;
@@ -302,13 +305,15 @@ import velo.exceptions.ScriptInvocationException;
            }
         }
            
-    	System.out.println("!!!!!!!!!!!!!!!B1: " + em.getFlushMode());
+        /*
+    	//System.out.println("!!!!!!!!!!!!!!!B1: " + em.getFlushMode());
     	try {
-    		System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getStatus());
-    		System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getTransaction().getStatus());
+    		//System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getStatus());
+    		//System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getTransaction().getStatus());
     	}catch(SystemException e) {
     		e.printStackTrace();
     	}
+    	*/
     	
     	//currently only SPML tasks are supported
     	if (task instanceof SpmlTask) {
@@ -316,13 +321,13 @@ import velo.exceptions.ScriptInvocationException;
     		
     		try {
     			indicateTaskAsRunning(spmlTask);
-    			System.out.println("!!!!!!!!!!!!!!!BB2: " + em.getFlushMode());
-    	    	try {
-    	    		System.out.println("!!!!!!!!!!!!!!!BB2: " + tm.getStatus());
-    	    		System.out.println("!!!!!!!!!!!!!!!BB2: " + tm.getTransaction().getStatus());
-    	    	}catch(SystemException e) {
-    	    		e.printStackTrace();
-    	    	}
+    			//System.out.println("!!!!!!!!!!!!!!!BB2: " + em.getFlushMode());
+    	    	//try {
+    	    		//System.out.println("!!!!!!!!!!!!!!!BB2: " + tm.getStatus());
+    	    		//System.out.println("!!!!!!!!!!!!!!!BB2: " + tm.getTransaction().getStatus());
+    	    	//}catch(SystemException e) {
+    	    		//e.printStackTrace();
+    	    	//}
     			resourceOperationsManager.performSpmlTask(spmlTask);
     			indicateTaskExecutionSuccess(spmlTask);
     			
@@ -376,6 +381,19 @@ import velo.exceptions.ScriptInvocationException;
     			return true;
     		}
     		catch (OperationException e) {
+    			indicateTaskExecutionFailure(task, e.toString());
+    			return false;
+    		}
+    	}
+    	else if (task instanceof GenericTask) {
+    		log.debug("Task id '" + task.getTaskId() + "', is a generic type task, executing task.");
+    		indicateTaskAsRunning(task);
+    		GenericTask genTask = (GenericTask)task;
+    		try {
+    			genTask.execute();
+    			indicateTaskExecutionSuccess(genTask);
+    			return true;
+    		}catch(ExecutionException e) {
     			indicateTaskExecutionFailure(task, e.toString());
     			return false;
     		}
@@ -941,6 +959,8 @@ import velo.exceptions.ScriptInvocationException;
     //TODO:  Should move to an external bean - will be used by other task agents
     @Timeout
     @Deprecated
+    @TransactionTimeout(value=9600)
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void scanTasksForQueuing(Timer timer) {
         log.info("Task scanner timed out, remaining time until next execution is: '" + timer.getTimeRemaining() + "' ms.");
         

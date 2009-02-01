@@ -78,7 +78,6 @@ import velo.common.EdmMessages;
 		//@NamedQuery(name = "task.findAllTasksToQueue", query = "SELECT object(task) FROM Task AS task WHERE (task.status = 'WAITING' OR task.status = 'FAILURE') AND task.expectedExecutionDate < :currDate AND task.taskDefinition.failureRetries >= task.failureCounts AND task.locked = 0 AND task.deleted = 0"), 
 		@NamedQuery(name = "task.findAllTasksToQueue", query = "SELECT object(task) FROM Task AS task WHERE (task.status = 'PENDING' OR task.status = 'FAILURE') AND task.expectedExecutionDate < :currDate AND task.inProcess = 0 AND task.deleted = 0") 
 })
-
 public class Task extends BaseEntity implements Serializable {
 
 	public enum TaskStatus {
@@ -600,4 +599,16 @@ public class Task extends BaseEntity implements Serializable {
     public void setExecutionDate(Date d) {
     	
     }
+    
+    
+    public static Task factory(String description) {
+    	Task task = new SpmlTask();
+    	task.setCreationDate(new Date());
+    	task.setExpectedExecutionDate(new Date());
+    	task.setDescription(description);
+    	task.setStatus(TaskStatus.PENDING);
+    	
+    	return task;
+    }
+	
 }
