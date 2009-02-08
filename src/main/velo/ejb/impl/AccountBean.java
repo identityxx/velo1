@@ -1410,24 +1410,26 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		} catch (ActionFactoryException afe) {
 			String shortErrMsg = "Could not create account on Resource: "
 					+ ts.getDisplayName() + ", For user" + user.getName();
-			cum.addEventLog("ACCOUNT", "FAILURE", "WARNING", shortErrMsg,
-					shortErrMsg + ", failed with message: " + afe.getMessage());
+			/*cum.addEventLog("ACCOUNT", "FAILURE", "WARNING", shortErrMsg,
+					shortErrMsg + ", failed with message: " + afe.getMessage());*/
 			logger.warn(afe.getMessage());
 			// return false;
 			throw new TaskCreationException(afe.getMessage());
 		} catch (AccountIdGenerationException aige) {
 			String shortErrMsg = "Could not create account on Resource: "
 					+ ts.getDisplayName() + ", For user" + user.getName();
-			cum
+			
+			
+			/*cum
 					.addEventLog("ACCOUNT", "FAILURE", "WARNING", shortErrMsg,
 							shortErrMsg + ", failed with message: "
-									+ aige.getMessage());
+									+ aige.getMessage());*/
 			logger.warn(aige.getMessage());
-			cum.addEventLog("ACCOUNT", "FAILURE", "WARNING",
+			/*cum.addEventLog("ACCOUNT", "FAILURE", "WARNING",
 					"Could not create account on Resource: "
 							+ ts.getDisplayName() + ", For user"
 							+ user.getName() + ", failed with message: "
-							+ aige.getMessage(), null);
+							+ aige.getMessage(), null);*/
 			throw new TaskCreationException(aige.getMessage());
 		}
 		// TODO: Should not get this such an exception! find a better soltuion.
@@ -1575,8 +1577,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 						+ ", Action was failed with message: "
 						+ afe.getMessage();
 				// last place before view to log an event
-				cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,
-						detailedMessage);
+				//cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,detailedMessage);
 
 				return false;
 			}
@@ -1592,8 +1593,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			String detailedMessage = shortMessage
 					+ ", Action was failed with message: " + afe.getMessage();
 			// last place before view to log an event
-			cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,
-					detailedMessage);
+			//cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,detailedMessage);
 
 			return false;
 		}
@@ -1604,8 +1604,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 					.warn("An exception was occured while trying to determine the status of the account, failure message: "
 							+ e.getMessage());
 			// last place before view to log an event
-			cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMsg, shortMsg
-					+ ", failure message is: " + e.getMessage());
+			//cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMsg, shortMsg+ ", failure message is: " + e.getMessage());
 			return false;
 		}
 		// This is threw when the Adpater could not be factored
@@ -1655,8 +1654,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 						+ ", Action was failed with message: "
 						+ afe.getMessage();
 				// last place before view to log an event
-				cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,
-						detailedMessage);
+				//cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,detailedMessage);
 
 				return false;
 			}
@@ -1671,8 +1669,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			String detailedMessage = shortMessage
 					+ ", Action was failed with message: " + sle.getMessage();
 			// last place before view to log an event
-			cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,
-					detailedMessage);
+			//cum.addEventLog("Accounts", "FAILURE", "MEDIUM", shortMessage,detailedMessage);
 
 			return false;
 		}
@@ -1718,9 +1715,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 
 		if (!status) {
 			// If there was a failure, log the event to the EventLog
-			cum.addEventLog("Accounts", "FAILURE", "MEDIUM",
+			/*cum.addEventLog("Accounts", "FAILURE", "MEDIUM",
 					"Failed to prepare all 'Update Accounts' actions", ems
-							.toString());
+							.toString());*/
 
 			// //If there was a failure, throw a bulk action preparation
 			// exception failure with the logged messages.

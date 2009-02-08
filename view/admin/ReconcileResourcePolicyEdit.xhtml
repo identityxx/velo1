@@ -114,9 +114,12 @@
 					<h:selectBooleanCheckbox id="activateCorrelationRule" value="#{reconcileResourcePolicyHome.instance.activateCorrelationRule}"/>
 				</s:decorate>
 				
-				<s:decorate id="contextCorrelationRuleDecoration" template="layout/edit.xhtml" rendered="false">
-					<ui:define name="label">Context Creation Rule</ui:define>
-					<h:selectBooleanCheckbox id="activateCorrelationRulea" value="#{reconcileResourcePolicyHome.instance.activateCorrelationRule}"/>
+				<s:decorate id="correlatinRuleDecoration" template="layout/edit.xhtml" rendered="true">
+					<ui:define name="label">Correlation Rule</ui:define>
+					<h:selectOneMenu id="correlationRule" value="#{reconcileResourcePolicyHome.instance.reconcileResourceCorrelationRule}" rendered="#{reconcileResourcePolicyHome.instance.activateCorrelationRule}">
+                        <s:selectItems value="#{guiReconcileResourceCorrelationRules}" var="rrcr" label="#{rrcr.description}" noSelectionLabel="---select---" />
+                        <s:convertEntity/>
+                    </h:selectOneMenu>
 				</s:decorate>
 				
 				

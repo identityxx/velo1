@@ -5,150 +5,132 @@
  All rights reserved.
 -->
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:s="http://jboss.com/products/seam/taglib"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
-	xmlns:webuijsf="http://www.sun.com/webui/webuijsf"
-	xmlns:velo="http://open-identity.net/products/velo/taglib"
-	template="#{theme.template}">
-	<ui:define name="body">
-		<h:messages globalOnly="true" styleClass="message" rendered="false"/>
-		<rich:panel>
-			<h:panelGrid columns="2" columnClasses="gridContent" width="100%">
-				<rich:panel bodyClass="inpanelBody">
-					<f:facet name="header">#{messages['ss.home.message.RequestedByMe']}</f:facet>
-					<h:form>
-					<rich:dataTable id="requestedByMeRequests" var="r"
-						value="#{ssMyLastRequestedRequests}"
-						rendered="true">
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.Id']}" />
-							</f:facet>
-            				#{r.requestId}
-        				</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.Notes']}" />
-							</f:facet>
-            				#{r.notes}
-        				</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.requests.label.RequestedAt']}" />
-							</f:facet>
-							<h:outputText value="#{r.creationDate}">
-								<s:convertDateTime type="both" />
-							</h:outputText>
-						</h:column>
-						<!-- 
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.requests.label.RequestedAccess']}" />
-							</f:facet>
-							<h:outputText value="{r.role.description}"/>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.Status']}" />
-							</f:facet>
-            				{r.readableStatus}
-        				</h:column>
-        				 -->
-        				<h:column>
-            				<f:facet name="header">
-            					#{messages['ss.generic.label.Actions']}
-            				</f:facet>
-            				<h:commandButton styleClass="iteamGenericButton" action="#{wfProcessManager.endProcess}" value="#{messages['ss.button.generic.Cancel']}"/>
-        				</h:column>
-					</rich:dataTable>
-					</h:form>
-				</rich:panel>
-				<rich:panel bodyClass="inpanelBody">
-					<f:facet name="header">#{messages['ss.home.message.IssuesWaitingForMyApproval']}</f:facet>
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+    xmlns:webuijsf="http://www.sun.com/webui/webuijsf"
+    xmlns:velo="http://open-identity.net/products/velo/taglib"
+    template="layout/new.xhtml">
+    <ui:define name="body">
 
-					<rich:dataTable value="#{pooledTaskInstanceList}" var="jTask"
-						rendered="#{not empty pooledTaskInstanceList}">
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.Description']}" />
-							</f:facet>
-							<h:outputText value="#{jTask.description}" />
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.CreationDate']}" />
-							</f:facet>
-							<h:outputText
-								value="#{jTask.taskMgmtInstance.processInstance.start}">
-								<f:convertDateTime type="date" />
-							</h:outputText>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.requests.label.DueDate']}" />
-							</f:facet>
-							<h:outputText value="#{jTask.dueDate}" style="width: 100">
-								<!--<f:convertDateTime type="date" dateStyle="short" />-->
-								<s:convertDateTime pattern="MM/dd/yyyy - hh:mm"/>
-							</h:outputText>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.Actions']}" />
-							</f:facet>
-							<ui:include src="cust/review_approval_pooled_task_buttons.xhtml"/>
-							<!--<s:link action="{selfServiceAccessRequestActions.reviewWorkflowTask}" taskInstance="{jTask}" value="Review" view="/ss/ReviewWorkflowTask.xhtml"/>-->
-						</h:column>
-					</rich:dataTable>
-					
-					<rich:dataTable value="#{taskInstanceList}" var="jTask"
-						rendered="#{not empty taskInstanceList}">
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.Description']}" />
-							</f:facet>
-							<h:outputText value="#{jTask.description}" />
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.CreationDate']}" />
-							</f:facet>
-							<h:outputText
-								value="#{jTask.taskMgmtInstance.processInstance.start}">
-								<f:convertDateTime type="date" />
-							</h:outputText>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.requests.label.DueDate']}" />
-							</f:facet>
-							<h:outputText value="#{jTask.dueDate}" style="width: 100">
-								<f:convertDateTime type="date" dateStyle="short" />
-							</h:outputText>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{messages['ss.generic.label.Actions']}" />
-							</f:facet>
-							<!-- 
-							<s:link action="{selfServiceAccessRequestActions.reviewWorkflowTask}" taskInstance="{jTask}" value="#{messages['ss.generic.label.Review']}" view="/ss/ReviewWorkflowTask.xhtml"/>
-							-->
-							<ui:include src="cust/review_approval_task_buttons.xhtml"/>
-						</h:column>
-					</rich:dataTable>
-					
-				</rich:panel>
-				<h:panelGroup>
-					<rich:panel bodyClass="inpanelBody">
-						<f:facet name="header">#{messages['ss.home.label.MostCommonActions']}</f:facet>
-						<ui:include src="cust/main_menu_actions.xhtml"/>
-					</rich:panel>
-				</h:panelGroup>
-			</h:panelGrid>
-		</rich:panel>
+        <h:messages globalOnly="true" styleClass="message" rendered="false" />
+        <rich:panel styleClass="mainPanel">
+            <h:panelGrid columns="2" styleClass="homeMainPanelGrid"
+                columnClasses="homeMainColumnPanelGrid" width="100%">
+                <rich:panel bodyClass="inpanelBody">
+                    <f:facet name="header">#{messages['ss.home.message.RequestedByMe']}</f:facet>
+                    <h:form>
+                        <rich:dataTable width="40px;"
+                            value="#{loggedUserAllRequestedProcessList}" var="reqProc"
+                            rows="10" id="requestedByMeTable">
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{messages['ss.generic.label.Id']}" />
+                                </f:facet>
+                                <h:outputText value="#{reqProc.id}" />
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText
+                                        value="#{messages['ss.requests.label.RequestedAt']}" />
+                                </f:facet>
+                                <h:outputText value="#{reqProc.start}">
+                                    <s:convertDateTime pattern="MM/dd/yyyy" />
+                                </h:outputText>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText
+                                        value="#{messages['ss.requests.label.Finished?']}" />
+                                </f:facet>
+                                <h:outputText value="Yes" rendered="#{reqProc.end ne NULL}" />
+                                <h:outputText value="No" rendered="#{reqProc.end eq NULL}" />
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{messages['ss.generic.label.Requestee']}" />
+                                </f:facet>
+                                <h:outputText
+                                    value="#{reqProc.contextInstance.getVariable('requesteeFullName')}" />
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText
+                                        value="#{messages['ss.generic.label.ApprovalStatus']}" />
+                                </f:facet>
+                                <h:outputText value="#{reqProc.rootToken.node.name}" />
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{messages['ss.generic.label.Actions']}" />
+                                </f:facet>
+                                <h:commandButton styleClass="submit" value="Cancel"
+                                    action="#{selfServiceHomePageActions.jbpmCancelProcess(reqProc)}" />
+                            </rich:column>
+                        </rich:dataTable>
+                        <rich:datascroller id="requestedByMeScroller"
+                            for="requestedByMeTable" maxPages="20" />
+                    </h:form>
+                </rich:panel>
 
-	</ui:define>
+                <rich:panel bodyClass="inpanelBody">
+                    <f:facet name="header">#{messages['ss.home.message.IssuesWaitingForMyApproval']}</f:facet>
+                    <h:form>
+                        <rich:dataTable value="#{loggedUserTaskInstanceList}" var="jTask"
+                            rendered="#{not empty loggedUserTaskInstanceList}"
+                            id="tasksWaitingForMyApprovalTable">
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText
+                                        value="#{messages['ss.generic.label.Description']}" />
+                                </f:facet>
+                                <h:outputText value="#{jTask.description}" />
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText
+                                        value="#{messages['ss.generic.label.CreationDate']}" />
+                                </f:facet>
+                                <h:outputText
+                                    value="#{jTask.taskMgmtInstance.processInstance.start}">
+                                    <f:convertDateTime type="date" />
+                                </h:outputText>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{messages['ss.requests.label.DueDate']}" />
+                                </f:facet>
+                                <h:outputText value="#{jTask.dueDate}" style="width: 100">
+                                    <!--<f:convertDateTime type="date" dateStyle="short" />-->
+                                    <s:convertDateTime pattern="MM/dd/yyyy - hh:mm" />
+                                </h:outputText>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{messages['ss.generic.label.Actions']}" />
+                                </f:facet>
+                                <ui:include src="cust/review_approval_pooled_task_buttons.xhtml" />
+                            </h:column>
+                        </rich:dataTable>
+                        <rich:datascroller id="tasksWaitingForMyApprovalScroller"
+                            for="tasksWaitingForMyApprovalTable" maxPages="20" />
+                    </h:form>
+                </rich:panel>
+                <h:panelGroup>
+                    <rich:panel bodyClass="inpanelBody">
+                        <f:facet name="header">#{messages['ss.home.label.MostCommonActions']}</f:facet>
+                        <ui:include src="cust/main_menu_actions.xhtml" />
+                    </rich:panel>
+                </h:panelGroup>
+            </h:panelGrid>
+        </rich:panel>
+    </ui:define>
+    <ui:define name="rightBox1">
+            Welcome #{loggedUser.name}
+    </ui:define>
+    <ui:define name="rightBox2">
+        You have -x- requests to approve.
+    </ui:define>
 </ui:composition>

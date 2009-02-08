@@ -18,14 +18,21 @@
 package velo.entity;
 //@!@clean
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -92,6 +99,8 @@ import org.jboss.seam.annotations.Name;
         private boolean reconcileGroupMembership;
         
         private boolean autoCorrelateAccountIfMatchedToUser;
+        
+        private ReconcileResourceCorrelationRule reconcileResourceCorrelationRule;
         
         /**
          * Set an ID for the entity
@@ -403,4 +412,16 @@ import org.jboss.seam.annotations.Name;
 				boolean autoCorrelateAccountIfMatchedToUser) {
 			this.autoCorrelateAccountIfMatchedToUser = autoCorrelateAccountIfMatchedToUser;
 		}
+
+		@ManyToOne(optional=true)
+	    @JoinColumn(name="REC_RES_CORRELATION_RULE", nullable = true)
+		public ReconcileResourceCorrelationRule getReconcileResourceCorrelationRule() {
+			return reconcileResourceCorrelationRule;
+		}
+
+		public void setReconcileResourceCorrelationRule(
+				ReconcileResourceCorrelationRule reconcileResourceCorrelationRule) {
+			this.reconcileResourceCorrelationRule = reconcileResourceCorrelationRule;
+		}
+		
     }

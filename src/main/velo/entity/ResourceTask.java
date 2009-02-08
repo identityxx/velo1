@@ -55,7 +55,8 @@ public class ResourceTask extends Task {
 	/**
 	 * @return the resourceTypeOperation
 	 */
-	@ManyToOne(optional=false)
+	//optional=true otherwise column is created not nullable and required for GenericTask
+	@ManyToOne(optional=true)
 	@JoinColumn(name = "RESOURCE_TYPE_OPERATION_ID", nullable = true, unique = false)
 	public ResourceTypeOperation getResourceTypeOperation() {
 		return resourceTypeOperation;

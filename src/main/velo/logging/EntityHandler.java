@@ -24,8 +24,6 @@ import java.util.logging.LogRecord;
 import javax.naming.Context;
 import javax.persistence.EntityManager;
 
-import velo.entity.EventLog;
-
 /**
  *
  * @author Shakarchi Asaf
@@ -57,7 +55,7 @@ public class EntityHandler extends Handler {
             }
              */
             
-            EventLog el = new EventLog(record.getLoggerName(),record.getLevel().getName(),record.getMessage());
+//TODO:fix! changed module to ENUM            EventLog el = new EventLog(record.getLevel().getName(),record.getMessage());
             //getEntityManager().persist(el);
     }
     

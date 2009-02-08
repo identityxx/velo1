@@ -8,6 +8,7 @@ import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.log.Log;
+import org.jboss.seam.transaction.Transaction;
 
 import velo.ejb.impl.WorkflowBean;
 import velo.ejb.interfaces.RequestManagerLocal;
@@ -65,7 +66,10 @@ public class ObserveInitialization {
       if (isStartJobExecuterOnStartup) {
     	  log.debug("Start job executer on startup is -true-, starting job executer.");
     	  try {
+    		  //seems like Jboss does not start transaction automatically at this stage.
+    		  Transaction.instance().begin();
     		  workflowManager.startJobExecuter();
+    		  Transaction.instance().commit();
     	  }catch (Exception e) {
     		  log.error("Could not start workflow job executer due to: #0",e.getMessage());
     	  }

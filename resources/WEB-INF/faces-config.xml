@@ -67,6 +67,11 @@
         </converter-class>
     </converter>
     
+    <converter>
+        <converter-id>userNameToUserEntityConverter</converter-id>   
+        <converter-class>velo.jsf.converters.UserNameToUserEntityConverter</converter-class>
+    </converter>
+    
     
     <application>
       <message-bundle>messages</message-bundle>
@@ -84,7 +89,7 @@
 
 
     <validator>
-        <validator-id>UserAccountAssocicationValidator</validator-id>   
+        <validator-id>userAccountAssocicationValidator</validator-id>   
         <validator-class>velo.jsf.validators.UserAccountAssociationValidator</validator-class>
     </validator>
 

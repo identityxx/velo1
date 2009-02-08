@@ -18,12 +18,15 @@
 package velo.security;
 
 import static org.jboss.seam.ScopeType.SESSION;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+
 import jcifs.smb.NtlmPasswordAuthentication;
+
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
@@ -32,14 +35,20 @@ import org.jboss.seam.bpm.Actor;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
+import org.jboss.seam.security.Credentials;
 import org.jboss.seam.security.Identity;
+
 import velo.common.SysConf;
+import velo.ejb.interfaces.CommonUtilsManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.ApproversGroup;
 import velo.entity.Capability;
 import velo.entity.CapabilityFolder;
+import velo.entity.EventLogDataEntry;
+import velo.entity.EventLogEntry;
 import velo.entity.User;
-import velo.exceptions.NoResultFoundException;
+import velo.entity.EventLogEntry.EventLogLevel;
+import velo.entity.EventLogEntry.EventLogModule;
 import velo.exceptions.UserAuthenticationException;
 
 @Name("authenticator")
@@ -53,6 +62,9 @@ public class AuthenticatorBean implements Authenticator {
 
 	@In
 	Identity identity;
+	
+	@In
+	Credentials credentials;
 
 	@EJB
 	UserManagerLocal userManager;
@@ -68,6 +80,9 @@ public class AuthenticatorBean implements Authenticator {
 
 	@In(create=true)
 	public SysConf sysConfManager;
+	
+	@EJB
+	public CommonUtilsManagerLocal cum;
 	
 	private boolean isAuthenticated = false;
 	
@@ -89,7 +104,6 @@ public class AuthenticatorBean implements Authenticator {
 			String domainName = ntlm.getDomain();
 			
 			log.debug("Found username '#0' (domain: '#1') within JCIFS NTLM auth object...", username, domainName);
-			
 			
 			log.debug("Checking whether the found user name exist in repository or not...");
 			//find the user in the repository
@@ -118,12 +132,20 @@ public class AuthenticatorBean implements Authenticator {
 	
 	
 	public boolean authenticate() {
+		/*wtf is that?
 		if (isAuthenticated) {
 			return true;
 		}
+		*/
 		
-		String userName = Identity.instance().getUsername();
-		String password = Identity.instance().getPassword();
+		//String userName = Identity.instance().getUsername();
+		//String password = Identity.instance().getPassword();
+		String userName = credentials.getUsername();
+		String password = credentials.getPassword();
+		
+		
+		
+		
 
 		HttpServletRequest rr = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
@@ -136,6 +158,7 @@ public class AuthenticatorBean implements Authenticator {
 			boolean isAuthenticated;
 
 			try {
+				log.debug("Recieved user name '" + userName + "' from form.");
 				isAuthenticated = userManager.authenticate(userName, password, ip);
 				
 				if (isAuthenticated) {
@@ -205,6 +228,18 @@ public class AuthenticatorBean implements Authenticator {
 		}
 		
 		actor.getGroupActorIds().add("managers_approvers");
+		
+		
+		HttpServletRequest rr = (HttpServletRequest) FacesContext
+		.getCurrentInstance().getExternalContext().getRequest();
+		String ip = rr.getRemoteAddr();
+
+		//Audit the login
+		EventLogEntry eve = new EventLogEntry(EventLogModule.SECURITY, EventLogLevel.INFO,"User '" + loggedUser.getName() + "' has logged in.");
+		eve.addData("User", loggedUser.getName());
+		eve.addData("IP", ip);
+		
+		cum.addEventLogEntry(eve);
 	}
 
 	/*

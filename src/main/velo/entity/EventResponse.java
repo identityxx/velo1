@@ -52,7 +52,6 @@ public class EventResponse extends ActionRule implements Serializable {
     //transient, can be modified by integration rules
     private Date expectedExecutionDate;
     
-    
 
 	/**
      * @return the eventDefinition

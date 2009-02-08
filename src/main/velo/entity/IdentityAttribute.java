@@ -138,8 +138,8 @@ import velo.scripting.ScriptFactory;
     /**
      @return the identityAttributesGroup
      */
-    //@ManyToOne(optional=false)
-    @ManyToOne(optional=false,fetch=FetchType.LAZY)
+    @ManyToOne(optional=false)
+    //@ManyToOne(optional=false,fetch=FetchType.LAZY)
     @JoinColumn(name="IDENTITY_ATTRIBUTES_GROUP_ID", nullable=true, unique=false)
     public IdentityAttributesGroup getIdentityAttributesGroup() {
         return identityAttributesGroup;

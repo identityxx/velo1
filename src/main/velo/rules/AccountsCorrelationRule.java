@@ -27,7 +27,7 @@ import velo.exceptions.OperationException;
 
 /**
  * An abstract base class that represents an Account Correlation
- * (Inherited per Target-System)
+ * (Inherited per Resource)
  * 
  * @author Asaf Shakarchi
  */

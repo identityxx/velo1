@@ -348,6 +348,15 @@ public class Attribute extends BaseEntity implements Serializable {
 	}
 	
 	@Transient
+	public String getFirstValueAsString() {
+		if (getFirstValue() != null) {
+			return getFirstValue().getAsString();
+		}
+		
+		return null;
+	}
+	
+	@Transient
 	public boolean isHasValues() {
 		return getTransientValues().size()!=0;
 	}

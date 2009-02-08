@@ -19,22 +19,22 @@
 
         <s:decorate id="creationDateDecoration" template="layout/display.xhtml">
             <ui:define name="label">Creation Date</ui:define>
-            #{eventLogHome.instance.creationDate}
+            #{eventLogEntryHome.instance.creationDate}
         </s:decorate>
         
-        <s:decorate id="severityDecoration" template="layout/display.xhtml">
-            <ui:define name="label">Severity</ui:define>
-            #{eventLogHome.instance.severity}
+        <s:decorate id="levelDecoration" template="layout/display.xhtml">
+            <ui:define name="label">Level</ui:define>
+            #{eventLogEntryHome.instance.level}
         </s:decorate>
         
-        <s:decorate id="moduleNameDecoration" template="layout/display.xhtml">
-            <ui:define name="label">Module Name</ui:define>
-            #{eventLogHome.instance.moduleName}
+        <s:decorate id="moduleDecoration" template="layout/display.xhtml">
+            <ui:define name="label">Module</ui:define>
+            #{eventLogEntryHome.instance.module}
         </s:decorate>
         
         <s:decorate id="messageDecoration" template="layout/display.xhtml">
             <ui:define name="label">Message</ui:define>
-            #{eventLogHome.instance.message}
+            #{eventLogEntryHome.instance.message}
         </s:decorate>
         
         <div style="clear:both"/>
@@ -43,7 +43,7 @@
     
     <div class="actionButtons">      
 
-        <s:button view="/admin/#{empty eventLogFrom ? 'EventLogList' :eventLogFrom}.xhtml"
+        <s:button view="/admin/#{empty eventLogEntryFrom ? 'EventLogEntryList' :eventLogEntryFrom}.xhtml"
                     id="done"
                  value="Done"/>
                  

@@ -17,11 +17,13 @@
  */
 package velo.entity;
 
+import groovy.lang.GroovyObject;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 //@!@clean
 @MappedSuperclass
-public abstract class ActionRule extends ActionDefinition {
+public class ActionRule extends ActionDefinition {
 	private static final long serialVersionUID = 1L;
 	
 	private int sequence;
@@ -76,4 +78,11 @@ public abstract class ActionRule extends ActionDefinition {
     public boolean isActive() {
         return active;
     }
+    
+    
+    //just for not having this class abstract coz we need to initiate the generic gui rules
+    public void updateScriptedObject(GroovyObject scriptedObject) {
+    	//TODO: how to force overriden without having this abstract? maybe throw exception
+    }
+    
 }

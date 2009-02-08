@@ -99,7 +99,7 @@ public class RoleResourceAttributeAsRule extends RoleResourceAttribute {
 				log.trace("Ended method invocation");
 				
 				
-				log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + context.get("attribute"));
+				//log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + context.get("attribute"));
 				//all ok, get the value
 				return (ResourceAttribute)context.get("attribute");
 			} catch (FactoryException e) {

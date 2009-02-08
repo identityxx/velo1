@@ -118,7 +118,6 @@ public class WorkflowBean {//implements WorkflowManagerLocal {
 	
 	
 	public ProcessInstance getProcessInstance(Long id) {
-		System.out.println("!!!!!!!!!!");
 		JbpmContext context = Jbpm.instance().getJbpmConfiguration().createJbpmContext();
 		//log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!: " + context);
 		/*
@@ -134,10 +133,13 @@ public class WorkflowBean {//implements WorkflowManagerLocal {
 	
 	
 	public void startJobExecuter()  throws Exception {
-		//does not work jbpm.getJbpmConfiguration().startJobExecutor();
-		System.out.println("!!!!!!!!!!!!!!!!STARTTTTTT: " + Transaction.instance().isActive());
-    	//System.out.println("!!!!!!!AFER COMMIT!!!!!!!!!: " + Transaction.instance().isActive());
+		log.debug("Starting JBPM job executer now...");
 		Jbpm.instance().getJbpmConfiguration().startJobExecutor();
+		if (Jbpm.instance().getJbpmConfiguration().getJobExecutor().isStarted()) {
+			log.info("JBPM Job executer has successfully started.");
+		} else {
+			log.error("Could not start JBPM Job executer for unknown reason.");
+		}
 	}
 	
 	public void endJobExecuter() {

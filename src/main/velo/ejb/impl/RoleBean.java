@@ -2080,7 +2080,7 @@ UserRole currUserRoleToRemove = new UserRole();
         if (um.isRoleAssignedToUser(userRole.getUser(), userRole.getRole())) {
             String msg = "Couldn't assign UserRole of role name: '" + userRole.getRole().getName() + "', to user: '" + userRole.getUser().getName() + "' since the user already has this role!";
             //Log the message to the event log
-            cum.addEventLog("ROLES", "FAILURE", "WARNING", "Failed to assign role to user", msg);
+            //cum.addEventLog("ROLES", "FAILURE", "WARNING", "Failed to assign role to user", msg);
             log.warn(msg);
             throw new PersistEntityException(msg);
         }

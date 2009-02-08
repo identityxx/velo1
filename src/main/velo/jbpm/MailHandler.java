@@ -219,13 +219,14 @@ public class MailHandler implements ActionHandler  {
 			}
 		//handle an individual	
 		} else {
-			log.debug("Recipient is an individual, loading approver(user) entity from repository with name '" + actors + "'");
+			log.debug("Recipient is an individual, loading approver(user) entity from repository with name: '" + actors + "'");
 			UserManagerLocal userManager = (UserManagerLocal) initialContext.lookup("velo/UserBean/local");
 		
 			User user = userManager.findUser(actors);
 		
 			if (user == null) {
-				log.warn("Could not find actor(user) in repository for name: " + actors);
+				log.warn("Could not find actor(user) in repository for name: " + actors + ", aboring mail.");
+				return;
 			} else {
 				String emailAddr = user.getEmail();
 				if (emailAddr != null) {

@@ -249,7 +249,7 @@
 					<s:decorate id="userAccNameAssocDecoration#{acc.resource.resourceId}" template="layout/edit.xhtml">
 					<ui:define name="label">Account Name</ui:define>
 					<h:inputText required="false" value="#{acc.name}">
-						<velo:UserAccountAssocicationValidator user="#{userHome.instance}" account="#{acc}"/>
+						<velo:userAccountAssocicationValidator user="#{userHome.instance}" account="#{acc}"/>
 						<a:support event="onblur" reRender="userAccNameAssocDecoration#{acc.resource.resourceId}" bypassUpdates="true" />
 						 <f:validateLength minimum="2"/>
 					</h:inputText>
@@ -447,7 +447,7 @@
 					</div>
 				</h:form>
 			</rich:tab>
-			<rich:tab id="delegatorTab" label="Delegation" rendered="false">
+			<rich:tab id="delegatorTab" label="Delegation">
 			     <h:form id="delegatorForm">
                     <rich:panel>
                         <f:facet name="header">Delegator</f:facet>
@@ -455,15 +455,15 @@
                         <s:decorate id="delegatorDecoration" template="layout/edit.xhtml">
                             <ui:define name="label">Selected Delegator</ui:define>
                             
-                            <rich:inplaceSelect id="userName" value="#{userHome.instance.delegator}" required="false">
-                        <s:convertEntity/>
-                    </rich:inplaceSelect>
+                            <h:inputText id="userName" value="#{userHome.instance.delegator}" required="false">
+                                <velo:userNameToUserEntityConverter/>
+                            </h:inputText>
                     
                             
                             <rich:suggestionbox id="suggestionBoxId" for="userName" tokens=""
                                 rules="none"
                                 suggestionAction="#{userList.userSearchByNameAutoComplete}" var="u"
-                                fetchValue="#{u}" rows="0"
+                                fetchValue="#{u.name}" rows="0"
                                 first="0"
                                 minChars="1"
                                 shadowOpacity="1"
@@ -472,7 +472,7 @@
                                 shadowDepth="1"
                                 cellpadding="2">
                                 <h:column>
-                                    #{u}
+                                    #{u.name}
                                 </h:column>
                         </rich:suggestionbox>
                         </s:decorate>

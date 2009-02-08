@@ -279,9 +279,10 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		if (!processStatus) {
 			// Log a new EventLog with the failure
-			cum.addEventLog("UserManagement","FAILURE","HIGH",
+			/*cum.addEventLog("UserManagement","FAILURE","HIGH",
 				"One or more UserIdentityAttributes (or their attached accounts updates) were failed to get updated",
 				ems.toString());
+			*/
 			throw new ModifyAttributeFailureException("There was a failure while modifing one or more User Attributes, please see EventLog for details.");
 		}
 
@@ -1195,8 +1196,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 					+ uia.getIdentityAttribute().getUniqueName()
 					+ ", for user: " + uia.getUser().getName()
 					+ " was failed to get modified";
-			cum.addEventLog("UserManagement", "FAILURE", "HIGH",
-					messageSummary, ems.toString());
+			/*cum.addEventLog("UserManagement", "FAILURE", "HIGH",messageSummary, ems.toString());*/
 
 			throw new ModifyAttributeFailureException(
 					"There was a failure while modifying User Attribute, please see EventLog for details.");

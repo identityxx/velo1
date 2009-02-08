@@ -17,6 +17,8 @@
  */
 package velo.ejb.seam;
 
+import groovy.util.MapEntry;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -33,6 +35,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jbpm.JbpmContext;
+import org.jbpm.context.exe.variableinstance.StringInstance;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 
@@ -148,6 +151,8 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 		
 		return defMap;
 	}
+	
+	
 	
 	/*
 	public List<String> getProcessVarNamesForCurrentSelectedProcessDef() {

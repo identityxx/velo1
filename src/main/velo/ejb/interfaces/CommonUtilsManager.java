@@ -17,7 +17,9 @@
  */
 package velo.ejb.interfaces;
 
-import velo.entity.EventLog;
+import velo.entity.EventLogEntry;
+import velo.entity.EventLogEntry.EventLogLevel;
+import velo.entity.EventLogEntry.EventLogModule;
 
 /**
  * A CommonUtilsManager interface for all EJB exposed methods
@@ -26,9 +28,7 @@ import velo.entity.EventLog;
  */
 public interface CommonUtilsManager {
 	
-	@Deprecated
-	public void addEventLog(EventLog el);
+	public void addEventLogEntry(EventLogEntry ele);
 	
-	@Deprecated
-	public void addEventLog(String moduleName,String status,String severity,String summaryMessage, String detailedMessage);
+	public void addEventLogEntry(EventLogModule module,EventLogLevel level,String message);
 }

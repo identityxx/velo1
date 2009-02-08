@@ -19,7 +19,7 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
  * @see TaskInstanceList
  * @author Asaf Shakarchi
  */
-@Name("loggedUserTaskInstanceLista")
+@Name("loggedUserTaskInstanceList")
 @Scope(ScopeType.APPLICATION)
 @Install(precedence=BUILT_IN, dependencies="org.jboss.seam.bpm.jbpm")
 public class LoggedUserTaskInstanceList

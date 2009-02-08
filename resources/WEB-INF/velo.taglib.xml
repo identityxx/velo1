@@ -63,10 +63,17 @@
 	</function>
 	
 	<tag>
-		<tag-name>UserAccountAssocicationValidator</tag-name>
+		<tag-name>userAccountAssocicationValidator</tag-name>
 		<validator>
-			<validator-id>UserAccountAssocicationValidator</validator-id>
+			<validator-id>userAccountAssocicationValidator</validator-id>
 		</validator>
 	</tag>
+	
+	<tag>
+        <tag-name>userNameToUserEntityConverter</tag-name>
+        <converter>
+            <converter-id>userNameToUserEntityConverter</converter-id>
+        </converter>
+    </tag>
     
 </facelet-taglib>

@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -14,8 +15,11 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.Unwrap;
 import org.jboss.seam.bpm.Actor;
 import org.jboss.seam.bpm.ManagedJbpmContext;
+import org.jbpm.context.exe.variableinstance.StringInstance;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+
+import velo.entity.User;
 
 /**
  * Support for the pooled task list.
@@ -28,22 +32,26 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
 @Install(precedence=BUILT_IN, dependencies="org.jboss.seam.bpm.jbpm")
 public class LoggedUserAllRequestedProcessList
 {
+	@In
+	User loggedUser;
+	
    @Unwrap
    @Transactional
    public List<ProcessInstance> getLoggedUserAllRequestedProcessList()
    {
 	   if ( Actor.instance().getId() == null ) return null;
 
+	   List<ProcessInstance> piList = new ArrayList<ProcessInstance>();
+	   
 	   //ManagedJbpmContext.instance().getSession().createQuery("SELECT pi from ProcessInstance pi, IN(pi.)
-	      return ManagedJbpmContext.instance().getSession()
-	         .createCriteria(ProcessInstance.class)
-	         .add( Restrictions.eq("actorId", Actor.instance().getId()) )
-	         .add( Restrictions.eq("isOpen", true) )
-	         .add( Restrictions.ne("isSuspended", true) )
-	         .addOrder( Order.desc("id") )
-	         .setCacheable(true)
-	         .list();
-	      
+	   List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", loggedUser.getName()).list();
+	   
+	   for (StringInstance si : l) {
+		   piList.add(si.getProcessInstance());
+	   }
+	   
+	   
+	   return piList;
 	      
 	      /*
       Actor actor = Actor.instance();

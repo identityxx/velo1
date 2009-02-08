@@ -17,6 +17,7 @@
  */
 package velo.ejb.impl;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
@@ -25,7 +26,9 @@ import javax.persistence.PersistenceContext;
 
 import velo.ejb.interfaces.CommonUtilsManagerLocal;
 import velo.ejb.interfaces.CommonUtilsManagerRemote;
-import velo.entity.EventLog;
+import velo.entity.EventLogEntry;
+import velo.entity.EventLogEntry.EventLogLevel;
+import velo.entity.EventLogEntry.EventLogModule;
 
 /**
  A Stateless EJB bean for managing common general utils methods.
@@ -41,20 +44,21 @@ public class CommonUtilsBean implements CommonUtilsManagerLocal, CommonUtilsMana
      */
     @PersistenceContext public EntityManager em;
     
-    @Deprecated
-    public void addEventLog(EventLog el) {
-        logger.info("Persisting EventLog entity: " + el.toString());
-        em.persist(el);
+    public void addEventLogEntry(EventLogEntry ele) {
+        logger.info("Persisting EventLog entity: " + ele.toString());
+        em.persist(ele);
     }
     
-    @Deprecated
-    public void addEventLog(String moduleName, String status, String severity, String summaryMessage,
-        String detailedMessage) {
+    public void addEventLogEntry(EventLogModule module, EventLogLevel eventLogLevel, String message) {
         
-        // EventLog el = new EventLog(moduleName,status,severity,summaryMessage,detailedMessage);
-        EventLog el = new EventLog(moduleName, severity, summaryMessage);
+    	EventLogEntry ele = new EventLogEntry(module, eventLogLevel, message);
         
-        em.persist(el);
+        //TODO: THE SERVER IP/HOST
+        //el.setServer(server)
+        ele.setCreationDate(new Date());
+        //TODO: support by whom: el.setLoggedByUser();
+        
+        em.persist(ele);
     }
     
     /*

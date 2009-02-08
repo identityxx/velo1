@@ -45,7 +45,6 @@ import velo.ejb.interfaces.ResourceManagerLocal;
 import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.BulkTask;
-import velo.entity.EventLog;
 import velo.entity.IdentityAttributesSyncTask;
 import velo.entity.ReconcilePolicy;
 import velo.entity.ReconcileUsersPolicy;
@@ -487,8 +486,8 @@ public class ReconcileBean implements ReconcileManagerLocal,
 					+ resource.getDisplayName() + ", " + rae.getMessage();
 
 			// TODO Replace!
-			EventLog el = new EventLog("Reconcile", "FAILURE", detailedMessage);
-			cum.addEventLog(el);
+			//EventLog el = new EventLog("Reconcile", "FAILURE", detailedMessage);
+			//cum.addEventLog(el);
 
 			throw new ReconcileAccountsException(detailedMessage);
 		}

@@ -17,6 +17,8 @@
  */
 package velo.reconcilidation;
 
+import groovy.lang.GroovyObject;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +57,7 @@ public class ReconcileAccounts {
     
 	private ResourceReconcileSummary rrs;
     private static Logger log = Logger.getLogger(ReconcileAccounts.class.getName());
+    private static Logger logForCorelRule = Logger.getLogger("velo.scrpits.reconcile.correlationRule");
     
     /**
      * Create an AccountTreeMappedList to hold all accounts fetched from the resource,
@@ -211,9 +214,8 @@ public class ReconcileAccounts {
             AccountsCorrelationRule acr = null;
             boolean isActivateAccountCorrelationRule = resource.getReconcilePolicy().isActivateCorrelationRule();
             boolean isAutoCorrelateAccountIfMatchedToUser = resource.getReconcilePolicy().isAutoCorrelateAccountIfMatchedToUser();
-            isActivateAccountCorrelationRule = false;
             
-            /*TODO: add support for correlation rule
+            /*TODO: add support for correlation rule (OLD SHIT!)
             if (!isActivateAccountCorrelationRule) {
             	//debug
             	System.out.println("Not activating usage of correlation rule according to Reoncile Policy");
@@ -223,6 +225,24 @@ public class ReconcileAccounts {
             */
             
             try {
+            	GroovyObject go = null;
+            	
+            	//compile correlation rule before iteration
+            	if (isActivateAccountCorrelationRule) {
+            		if (resource.getReconcilePolicy().getReconcileResourceCorrelationRule() != null) {
+            			log.debug("Found reconcile correlation rule with description '" + resource.getReconcilePolicy().getReconcileResourceCorrelationRule().getDescription());
+            			
+            			//FACTORING RULE
+            			go = resource.getReconcilePolicy().getReconcileResourceCorrelationRule().getScriptedObject();
+            			go.setProperty("resource", resource);
+            			//TODO: Replace with generic API that is exposed to all scripts
+            			go.setProperty("userTools", userManager);
+            			
+            		} else {
+            			throw new ReconcileAccountsException("Correlation rule was activated but was not found, aboring action.");
+            		}
+            	}
+            	
                 for (Account currActiveLeftAccount : activeAccounts.values()) {
                 	log.trace("Found an active account named '" + currActiveLeftAccount.getName() + "' to be added, determining corresponding event...");
                     //Handle empty account names
@@ -236,32 +256,50 @@ public class ReconcileAccounts {
                     
                     User user = new User();
                     boolean matchedUserFound = false;
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!: " + isAutoCorrelateAccountIfMatchedToUser);
                     if (isActivateAccountCorrelationRule) {
                         // If needed, Execute the correlation rule, if the correlation rule return true then raise an UNASSIGNED event
+                    	go.setProperty("log", logForCorelRule);
+                    	go.setProperty("matchedUserName", new String());
+                    	go.setProperty("activeAccount", currActiveLeftAccount);
+
+                    	try {
+                    		Object[] args = {};
+                    		go.invokeMethod("run", args);
+                    	}catch(Exception e) {
+                    		log.error("Exception has occurd while trying to execute correlation rule for active account '" + currActiveLeftAccount.getName() + "': " + e.getMessage());
+                    		continue;
+                    	}
+                    	
                         //boolean matchedUserFound = acr.execute();
-                        String matchedUserName = new String();
-                        matchedUserFound = false;
-                        //user = new User();
-                        acr.setAccount(currActiveLeftAccount);
-                        matchedUserName = acr.correlate();
+
+                    	//this is just the name of the user that is returned from the correlation rule
+                    	//it doesn't mean the user was found on the repository.
+                        String matchedUserName = (String)go.getProperty("matchedUserName");
+                        log.trace("Matched user resulted from correlation rule for active account '" + currActiveLeftAccount.getName() + "' is: '" + matchedUserName + "'");
                         
-                        if ( matchedUserName == null){
-                            matchedUserFound = false;
-                        } else if (matchedUserName.length() < 1) {
+                        
+                        //matchedUserFound = false;
+                        //user = new User();
+                        ///acr.setAccount(currActiveLeftAccount);
+                        ///? matchedUserName = acr.correlate();
+                        
+                        //if null was returned from script or length<1 then flag user as not found
+                        if ( ( matchedUserName == null) || (matchedUserName.length() < 1) ) {
                             matchedUserFound = false;
                         } else {
-                            try {
-                                user = userManager.findUserByName(matchedUserName);
-                                matchedUserFound = true;
-                            } catch (NoResultFoundException nrfe) {
-                            	//warn
-                            	System.out.println("Correlation rule returned Username '" + matchedUserName + "' that matches account, but this user does not exist in repository!");
-                                matchedUserFound = false;
-                            }
+                           	//find the user, if not found, flag as matched user not found, otherwise flag true
+                        	user = userManager.findUser(matchedUserName);
+                                
+                        	if (user!=null) {
+                        		matchedUserFound = true;
+                        	} else {
+                        		log.warn("Correlation rule returned Username '" + matchedUserName + "' that matches account, but this user does not exist in repository!");
+                        		matchedUserFound = false;
+                        	}
                         }
                     } else if (isAutoCorrelateAccountIfMatchedToUser) {
                     	//auto correlate if user matched to account name
+
                     	//find user by the account name
                     	user = userManager.findUser(currActiveLeftAccount.getName());
                     	

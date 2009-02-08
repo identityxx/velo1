@@ -203,6 +203,13 @@
     <framework:entity-query name="guiRoleResourceAttributeRulesQuery" 
         ejbql="select RoleResourceAttributeRule from RoleResourceAttributeRule roleResourceAttributeRule"
         order="roleResourceAttributeRule.description asc"/>
+        
+    <factory name="guiReconcileResourceCorrelationRules"  value="#{guiReconcileResourceCorrelationRulesQuery.resultList}" />
+    <framework:entity-query name="guiReconcileResourceCorrelationRulesQuery" 
+        ejbql="select rrcr from ReconcileResourceCorrelationRule rrcr"
+        order="rrcr.description asc"/>
+    
+    
     
     
     <!-- 14-dec-08 CLEANED while moved to Seam 2.1
