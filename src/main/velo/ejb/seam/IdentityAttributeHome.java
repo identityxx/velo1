@@ -26,6 +26,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 
 import velo.entity.IdentityAttribute;
+import velo.entity.IdentityAttributeSource;
 
 @Name("identityAttributeHome")
 public class IdentityAttributeHome extends EntityHome<IdentityAttribute> {
@@ -65,7 +66,12 @@ public class IdentityAttributeHome extends EntityHome<IdentityAttribute> {
 	@End
 	public void updateInstanceSources() {
 		facesMessages.add("Sources updated.");
-		System.out.println("!!!: SOURCES: " + getInstance().getSources().size());
+		getLog().debug("Source amount for Identity Attribute #0 are #1: ",getInstance().getDisplayName(),getInstance().getSources().size());
 		entityManager.flush();
+	}
+	
+	public void removeResourceAttributeSource(IdentityAttributeSource ias) {
+		getInstance().getSources().remove(ias);
+		entityManager.remove(ias);
 	}
 }

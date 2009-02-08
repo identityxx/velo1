@@ -21,26 +21,26 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
-import velo.entity.EventLog;
+import velo.entity.EventLogEntry;
 
-@Name("eventLogHome")
-public class EventLogHome extends EntityHome<EventLog> {
+@Name("eventLogEntryHome")
+public class EventLogEntryHome extends EntityHome<EventLogEntry> {
 
 	@In
 	FacesMessages facesMessages;
 	
-	public void setEventLogId(Long id) {
+	public void setEventLogEntryId(Long id) {
 		setId(id);
 	}
 
-	public Long getEventLogId() {
+	public Long getEventLogEntryId() {
 		return (Long) getId();
 	}
 
 	@Override
-	protected EventLog createInstance() {
-		EventLog eventLog = new EventLog();
-		return eventLog;
+	protected EventLogEntry createInstance() {
+		EventLogEntry eventLogEntry = new EventLogEntry();
+		return eventLogEntry;
 	}
 
 	public void wire() {
@@ -50,7 +50,7 @@ public class EventLogHome extends EntityHome<EventLog> {
 		return true;
 	}
 
-	public EventLog getDefinedInstance() {
+	public EventLogEntry getDefinedInstance() {
 		return isIdDefined() ? getInstance() : null;
 	}
 

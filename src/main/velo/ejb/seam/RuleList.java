@@ -18,38 +18,62 @@
 package velo.ejb.seam;
 
 import java.util.Arrays;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.framework.EntityQuery;
 
-import velo.entity.EventLog;
+import velo.entity.ActionRule;
 
-@Name("eventLogList")
-public class EventLogList extends EntityQuery {
+@Name("ruleList")
+public class RuleList extends EntityQuery {
 
 	private static final String[] RESTRICTIONS = {
-			"lower(eventLog.moduleName) like concat(lower(#{eventLogList.eventLog.moduleName}),'%')",
-			"lower(eventLog.severity) like concat(lower(#{eventLogList.eventLog.severity}),'%')",};
+			"lower(rule.actionDefinitionId) = #{ruleList.rule.actionDefinitionId}"
+			};
 
-	private EventLog eventLog = new EventLog();
-	private static final String EJBQL = "select eventLog from EventLog eventLog";
+	private ActionRule rule = new ActionRule();
 	
 	
+	@Override
+	public String getEjbql() {
+		if (super.getEjbql() == null) {
+			return "select rule from ActionRule rule";
+		} else {
+			return super.getEjbql();
+		}
+	}
+	
+	@PostConstruct
+    public void initialize() {
+		setOrder("actionDefinitionId DESC");
+    	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
+    	setEjbql(getEjbql());
+    }
+	
+	
+	
+	
+	
+	/*
 	@Override
 	public Integer getMaxResults() {
 		return 25;
 	}
-
-	public EventLog getEventLog() {
-		return eventLog;
+	*/
+	
+	@Override
+	public Integer getMaxResults() {
+		if (super.getMaxResults() != null) {
+			return super.getMaxResults();
+		}
+		else {
+			return 25;
+		}
 	}
 
-	@PostConstruct
-    public void initialize() {
-    	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
-    	setEjbql(EJBQL);
-    }
+	public ActionRule getRule() {
+		return rule;
+	}
 }

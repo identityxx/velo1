@@ -20,6 +20,7 @@ package velo.ejb.seam.action;
 import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.faces.application.FacesMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -31,6 +32,7 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
 import org.jboss.seam.security.Identity;
+import org.jbpm.graph.exe.ProcessInstance;
 
 import velo.security.Authenticator;
 import velo.ejb.interfaces.AccountManagerLocal;
@@ -38,9 +40,8 @@ import velo.ejb.interfaces.UserManagerLocal;
 import velo.ejb.seam.SelfServiceMyRequestedRequestList;
 import velo.entity.User;
 
-@Stateful
 @Name("selfServiceHomePageActions")
-public class SelfServiceHomePageActionsBean implements SelfServiceHomePageActions {
+public class SelfServiceHomePageActionsBean {
 	
 	@In(value="#{identity.username}")
 	String loggedUserName;
@@ -60,15 +61,7 @@ public class SelfServiceHomePageActionsBean implements SelfServiceHomePageAction
 	@In(create=true)
 	Authenticator authenticator;
 	
-	@PersistenceContext
-    public EntityManager em;
-    
-	@EJB
-    public UserManagerLocal userManager;
-	
-	@EJB
-	public AccountManagerLocal accountManager;
-
+	/*
 	public SelfServiceMyRequestedRequestList getMyLastRequestedRequestsList() {
 		User loggedUser = (User)Contexts.getSessionContext().get("loggedUser");
 		selfServiceMyRequestedRequestList = new SelfServiceMyRequestedRequestList();
@@ -77,7 +70,14 @@ public class SelfServiceHomePageActionsBean implements SelfServiceHomePageAction
 		
 		return selfServiceMyRequestedRequestList; 
 	}
+	*/
 	
+	
+	public void jbpmCancelProcess(ProcessInstance pi) {
+		//cancel the process that is
+		facesMessages.addFromResourceBundle(FacesMessage.SEVERITY_INFO, "Successfully canceled process id #0", pi.getId());
+		pi.end();
+	}
 	
 	public String logout() {
 		identity.logout();
