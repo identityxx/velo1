@@ -23,7 +23,7 @@
                     <f:facet name="header">#{messages['ss.home.message.RequestedByMe']}</f:facet>
                     <h:form>
                         <rich:dataTable width="40px;"
-                            value="#{loggedUserAllRequestedProcessList}" var="reqProc"
+                            value="#{loggedUserAllRequestedProcessList.getLoggedUserRequestedProcessList(8)}" var="reqProc"
                             rows="10" id="requestedByMeTable">
                             <rich:column>
                                 <f:facet name="header">

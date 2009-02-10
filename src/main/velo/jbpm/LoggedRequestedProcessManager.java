@@ -2,6 +2,7 @@ package velo.jbpm;
 
 import static org.jboss.seam.annotations.Install.BUILT_IN;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.hibernate.criterion.Order;
@@ -27,15 +28,15 @@ import velo.entity.User;
  * @see LoggedUserTaskInstanceList
  * @author Asaf Shakarchi
  */
-@Name("loggedUserAllRequestedProcessList")
+@Name("loggedRequestedProcessManager")
 @Scope(ScopeType.APPLICATION)
 @Install(precedence=BUILT_IN, dependencies="org.jboss.seam.bpm.jbpm")
-public class LoggedUserAllRequestedProcessList
+public class LoggedRequestedProcessManager
 {
 	@In
 	User loggedUser;
 	
-   @Unwrap
+   //@Unwrap
    @Transactional
    public List<ProcessInstance> getLoggedUserAllRequestedProcessList()
    {
@@ -66,6 +67,29 @@ public class LoggedUserAllRequestedProcessList
       //return objs;
       return null;
       */
+   }
+   
+   
+   @Transactional
+   public List<ProcessInstance> getLoggedUserNotFinishedAndFinishedRequestedProcessList(Integer previousDays)
+   {
+	   if ( Actor.instance().getId() == null ) return null;
+
+	   List<ProcessInstance> piList = new ArrayList<ProcessInstance>();
+	   
+	   
+	   previousDays = previousDays * -1;
+	   Calendar c = Calendar.getInstance();
+	   c.add(Calendar.DAY_OF_YEAR, previousDays);
+	   
+	   List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND (vi.processInstance.end = null OR vi.processInstance.end >= :endDate) ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", loggedUser.getName()).setParameter("endDate", c.getTime()).list();
+	   
+	   for (StringInstance si : l) {
+		   piList.add(si.getProcessInstance());
+	   }
+	   
+	   
+	   return piList;
    }
    
    

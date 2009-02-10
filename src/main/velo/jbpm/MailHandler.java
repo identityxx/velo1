@@ -43,34 +43,65 @@ import velo.validators.Generic;
 
 public class MailHandler implements ActionHandler  {
 	private static Logger log = Logger.getLogger(MailHandler.class.getName());
-	String template;
-	String actors;
-	String to;
-	String subject;
-	String text;
-	ExecutionContext executionContext = null;
+	String template = null;
+	String actors = null;
+	String to = null;
+	String bcc = null;
+	String bccActors = null;
+	String subject = null;
+	String text = null;
 	String addresses;
-
+	ExecutionContext executionContext = null;
+	
+	
 	public MailHandler() {
-		
 	}
 	
-	public void execute(ExecutionContext executionContext) {
-	    this.executionContext = executionContext;
-	    send();
-	}
-
-	
-	public MailHandler(String template, String actors, String to, String subject, String text) {
+	public MailHandler(String template,String actors,String to,String subject,String text) {
+		System.out.println("!!!!!!!!!!!!!!!!!(2): " + actors);
 		this.template = template;
 		this.actors = actors;
 		this.to = to;
 		this.subject = subject;
 		this.text = text;
 	}
+	
+	public MailHandler(String template,String actors,String to,String bccActors,String bcc,String subject,String text) {
+		System.out.println("!!!!!!!!!!!!!!!!!(1): " + actors);
+		this.template = template;
+		this.actors = actors;
+		this.to = to;
+		this.bccActors = bccActors;
+		this.bcc = bcc;
+		this.subject = subject;
+		this.text = text;
+	}  
+	
+	public void execute(ExecutionContext executionContext) {
+	    this.executionContext = executionContext;
+	    
+	    if (log.isDebugEnabled()) {
+	    	log.debug("Printing variables of JBPM MailHandler");
+	    	log.debug("Template: " + template);
+	    	log.debug("Actors: " + actors);
+	    	log.debug("To: " + to);
+	    	log.debug("Subject: " +subject);
+	    	log.debug("Process ID: " + executionContext.getProcessInstance().getId());
+	    	log.debug("Process Vars: " + executionContext.getContextInstance().getVariables());
+	    }
+	    
+	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!LALALALAOLALALAL OBJECT:" + executionContext.getNode().hashCode());
+	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TOKENENENENE OBJECT:" + executionContext.getToken().getId());
+	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MAILHANDLER OBJECT:" + this);
+	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!EXE CNTX OBJ:" + executionContext);
+	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PROCESS INSTANCE OBJ:" + executionContext.getProcessInstance());
+	    send();
+	}
 
 	public void send() {
 		boolean isApproversGroup = false;
+		String resultedActor;
+		
 		
 		try {
 		log.debug("MailNode of a business process has just invoked.");
@@ -84,7 +115,6 @@ public class MailHandler implements ActionHandler  {
 			log.debug("The specified actors is: " + actors);
 		}
 		
-		
 		//HANDLE APPROVERS GROUP SUROUNDED WITH []
 		if ( (actors.startsWith("[")) && (actors.endsWith("]")) ) {
 			log.debug("Found a string surounded with '[]' meaning the actor is an approvers group, determining whether it is an expression or not.");
@@ -94,10 +124,14 @@ public class MailHandler implements ActionHandler  {
 				log.debug("ApproversGroup is an expression, evaluating expression now.");
 				String result = evaluate(agStr);
 				log.debug("Expression result is: '" + result + "' (overriding actors with the result)");
-				actors = result;
+				
+				
+				/////actors = result;
+				resultedActor = result;
 			} else {
 				log.debug("Approvers group is not expression and would be: '" + agStr + "'");
-				actors = agStr;
+				/////actors = agStr;
+				resultedActor = agStr;
 			}
 		//INDIVIDUAL
 		} else {
@@ -108,14 +142,17 @@ public class MailHandler implements ActionHandler  {
 				String result = evaluate(actors);
 				
 				log.debug("Expression evaluation result is '" + result + "', overriding 'actors' with result.");
-				actors = result;
+				//////actors = result;
+				resultedActor = result;
+				
 			//not an expression but single user
 			} else {
 				log.debug("The specified actor is NOT an expression(and is not an approvers group), evaluating as a context var...");
 				String result = (String)executionContext.getVariable(actors);
 				log.debug("Context var result for actors '" + actors + "' is: '" + result + "', overriding 'actors' with result.");
 				//get the real value as the specified value is the var name
-				actors = result;
+				//////actors = result;
+				resultedActor = result;
 			}
 		}
 		
@@ -123,9 +160,7 @@ public class MailHandler implements ActionHandler  {
 		
 		
 		
-		
-		
-		
+
 		
 		
 		
@@ -186,12 +221,12 @@ public class MailHandler implements ActionHandler  {
 		//if AG, then handle it, otherwise handle an individual approver
 		if (isApproversGroup) {
 			ApproversGroupManagerLocal approversGroupManager = (ApproversGroupManagerLocal) initialContext.lookup("velo/ApproversGroupBean/local");
-			ApproversGroup ag = approversGroupManager.findApproversGroup(actors);
+			ApproversGroup ag = approversGroupManager.findApproversGroup(resultedActor);
 		
 		
 			//make sure AG entity was found and there are associated approvers, otherwise abort.
 			if (ag == null) {
-				log.error("Could not find any approvers group for unique name: '" + actors + "', skipping sending mail process");
+				log.error("Could not find any approvers group for unique name: '" + resultedActor + "', skipping sending mail process");
 				return;
 			} else {
 				if (ag.getApprovers().size() > 0) {
@@ -219,13 +254,13 @@ public class MailHandler implements ActionHandler  {
 			}
 		//handle an individual	
 		} else {
-			log.debug("Recipient is an individual, loading approver(user) entity from repository with name: '" + actors + "'");
+			log.debug("Recipient is an individual, loading approver(user) entity from repository with name: '" + resultedActor + "'");
 			UserManagerLocal userManager = (UserManagerLocal) initialContext.lookup("velo/UserBean/local");
 		
-			User user = userManager.findUser(actors);
+			User user = userManager.findUser(resultedActor);
 		
 			if (user == null) {
-				log.warn("Could not find actor(user) in repository for name: " + actors + ", aboring mail.");
+				log.warn("Could not find actor(user) in repository for name: " + resultedActor + ", aboring mail.");
 				return;
 			} else {
 				String emailAddr = user.getEmail();
@@ -233,7 +268,7 @@ public class MailHandler implements ActionHandler  {
 					if (Generic.isEmailValid(emailAddr)) {
 						addEmailAddress(emailAddr);
 					} else {
-						log.warn("User '" + actors + "' was found in repository but has an INVALID email address: '" + emailAddr + "'");
+						log.warn("User '" + resultedActor + "' was found in repository but has an INVALID email address: '" + emailAddr + "'");
 					}
 				} else {
 					log.warn("Could not find email address of user: " + user.getName());

@@ -10,6 +10,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
                 template="layout/template.xhtml">
                        
 <ui:define name="body">
@@ -40,6 +41,26 @@
         <div style="clear:both"/>
         
     </rich:panel>
+    <rich:panel>
+        <f:facet name="header">Extra Information</f:facet>
+        <rich:dataTable id="extraInfoEventLogEntryTable" 
+            var="de"
+            value="#{velo:setAsList(eventLogEntryHome.instance.dataEntries)}" 
+            rendered="#{not empty eventLogEntryHome.instance.dataEntries}">
+            <h:column>
+                <f:facet name="header">
+                    Name
+                </f:facet>
+                #{de.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    Value
+                </f:facet>
+                #{de.value}
+            </h:column>
+        </rich:dataTable>
+    </rich:panel>   
     
     <div class="actionButtons">      
 
