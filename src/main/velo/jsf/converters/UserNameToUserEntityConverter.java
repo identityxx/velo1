@@ -65,10 +65,8 @@ public class UserNameToUserEntityConverter implements javax.faces.convert.Conver
 	@Transactional
 	public Object getAsObject(FacesContext facesContext, UIComponent cmp, String value) throws ConverterException
 	{
-		if (value == null)
-		{
-			return null;
-		}
+		if (value == null) {return null;}
+		if (value.length() < 1) {return null;}
 		
 		UserManagerLocal userManager = (UserManagerLocal)Component.getInstance("userManager");
 		User u = userManager.findUser(value);

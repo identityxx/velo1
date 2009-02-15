@@ -93,5 +93,9 @@
         <validator-class>velo.jsf.validators.UserAccountAssociationValidator</validator-class>
     </validator>
 
+    <validator>
+        <validator-id>dateTimeValidator</validator-id>   
+        <validator-class>velo.jsf.validators.DateTimeValidator</validator-class>
+    </validator>
     
 </faces-config>

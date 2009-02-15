@@ -115,7 +115,9 @@
 
     <h:outputText value="No Role exists" 
                rendered="#{empty roleList.resultList}"/>
-               
+    
+    <h:outputText value="Search has resulted '#{roleList.resultList.size()}' roles."/>
+    
     <rich:dataTable id="roleList" 
                 var="role"
               value="#{roleList.resultList}" 

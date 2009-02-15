@@ -84,7 +84,7 @@
 					
 						<s:decorate id="passwordDecoration" template="layout/edit.xhtml">
 							<ui:define name="label">Local Password</ui:define>
-							<h:inputSecret id="password" value="#{userHome.instance.password}" required="false">
+							<h:inputSecret id="password" value="#{userHome.instance.passwordConfirm}" required="false">
 								<!--wtf, ajax support change the value in DB!<a:support event="onblur" reRender="passwordDecoration" bypassUpdates="true" />-->
 								<!-- TODO: Add internal password policy as a JSF validator -->
 							</h:inputSecret>

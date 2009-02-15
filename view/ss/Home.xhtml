@@ -23,7 +23,7 @@
                     <f:facet name="header">#{messages['ss.home.message.RequestedByMe']}</f:facet>
                     <h:form>
                         <rich:dataTable width="40px;"
-                            value="#{loggedUserAllRequestedProcessList.getLoggedUserRequestedProcessList(8)}" var="reqProc"
+                            value="#{loggedRequestedProcessManager.getLoggedUserNotFinishedAndFinishedRequestedProcessList(7)}" var="reqProc"
                             rows="10" id="requestedByMeTable">
                             <rich:column>
                                 <f:facet name="header">
@@ -43,7 +43,7 @@
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText
-                                        value="#{messages['ss.requests.label.Finished?']}" />
+                                        value="#{messages['ss.requests.label.Completed?']}" />
                                 </f:facet>
                                 <h:outputText value="Yes" rendered="#{reqProc.end ne NULL}" />
                                 <h:outputText value="No" rendered="#{reqProc.end eq NULL}" />

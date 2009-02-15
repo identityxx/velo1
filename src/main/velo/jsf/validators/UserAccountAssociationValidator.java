@@ -40,8 +40,7 @@ import velo.entity.User;
 @Validator
 @BypassInterceptors
 public class UserAccountAssociationValidator implements javax.faces.validator.Validator,Serializable {
-	private static Logger log = Logger
-			.getLogger(UserAccountAssociationValidator.class.getName());
+	private static Logger log = Logger.getLogger(UserAccountAssociationValidator.class.getName());
 	private User user;
 	private Account account;
 	//private ValueExpression<EntityManager> entityManager;

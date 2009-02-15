@@ -76,7 +76,8 @@ public class SelfServiceHomePageActionsBean {
 	public void jbpmCancelProcess(ProcessInstance pi) {
 		//cancel the process that is
 		facesMessages.addFromResourceBundle(FacesMessage.SEVERITY_INFO, "Successfully canceled process id #0", pi.getId());
-		pi.end();
+		//pi.end();
+		pi.suspend();
 	}
 	
 	public String logout() {

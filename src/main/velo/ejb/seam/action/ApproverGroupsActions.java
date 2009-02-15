@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
@@ -12,6 +13,7 @@ import org.jboss.seam.log.Log;
 
 import velo.ejb.seam.ApproversGroupList;
 import velo.entity.ApproversGroup;
+import velo.entity.User;
 
 @Name("approverGroupsActions")
 public class ApproverGroupsActions {
@@ -40,5 +42,19 @@ public class ApproverGroupsActions {
 		
 		
 		return agListAsString;
+	}
+	
+	
+	public void bla() {
+		Query q = entityManager.createQuery("select user from User as user join user.userIdentityAttributes as uia left join uia.values as uiavalue WHERE (uia.identityAttribute.uniqueName = :iaName AND uiavalue.valueString = :iaValue) AND (uia.identityAttribute.uniqueName = :iaName1 AND uiavalue.valueString = :iaValue1)").setParameter("iaName", "FIRST_NAME").setParameter("iaValue", "Cow").setParameter("iaName1","LAST_NAME").setParameter("iaValue1","Moo");
+		List<User> users = q.getResultList();
+		
+		System.out.println(users.size());
+		
+		int i=0;
+		for (User currUser : users) {
+			i++;
+			System.out.println("["+i+"]: " + currUser.getName());
+		}
 	}
 }

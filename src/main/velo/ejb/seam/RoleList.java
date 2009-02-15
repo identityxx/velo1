@@ -51,7 +51,8 @@ public class RoleList extends EntityQuery {
 	
 	private HasPositionsAssociatedStatus hasPositionsAssociated;
 	
-	private final  String ejbQlBasicQuery  = "select role from Role role, IN(role.resources) resources";
+	//private final  String ejbQlBasicQuery  = "select role from Role role, IN(role.resources) resources";
+	private final  String ejbQlBasicQuery  = "SELECT DISTINCT role FROM Role role LEFT JOIN role.resources resources";
 	
 	private String ejbQlQueryString;
 	

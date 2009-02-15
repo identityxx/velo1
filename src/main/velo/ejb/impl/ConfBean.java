@@ -88,13 +88,13 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	public enum objectType {
 		RESOURCE_TYPE
 	}
-	
+
 	Map<String,ResourceGlobalOperation> loadedResourceGlobalOperations;
-	
-	
+
+
 	private Map<Class,String> entityUniqueKeyVars = new HashMap<Class,String>();
 	public Map<String,ResourceType> resourceTypes = new LinkedHashMap<String,ResourceType>();
-	
+
 	public final String keyDir = "keys";
 	public Set<Object> capabilities = new LinkedHashSet<Object>();
 	public Set<Object> capabilityFolders = new LinkedHashSet<Object>();
@@ -110,7 +110,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	public Set<Object> userContainers = new HashSet<Object>();
 	public Set<Object> resourceTypeAttributes = new HashSet<Object>();
 	public Set<Object> resourceGlobalOperations = new HashSet<Object>();
-	
+
 
 	/**
 	 * Injected entity manager
@@ -151,14 +151,103 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	 */
 	private static Logger logger = Logger.getLogger(ConfBean.class.getName());
 
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public void generateResourcePrincipalsEncryptionKey() throws OperationException {
+		String fileName = SysConf.getSysConf().getString(
+		"system.directory.system_conf")
+		+ "/"
+		+ keyDir
+		+ "/"
+		+ SysConf.getSysConf().getString(
+		"system.files.targets_principals_encryption_key");
+		
+		log.debug("Key file name to be generated: " + fileName);
+		String keyString = EncryptionUtils.generateKey();
+
+		File f = new File(fileName);
+		if (!f.isFile()) {
+			try {
+				f.createNewFile();
+				FileUtils.setContents(f, keyString);
+			} catch (IOException ex) {
+				throw new OperationException(
+						"Could not create key generation file for file name: '"
+						+ fileName + "', due to: " + ex);
+			}
+		} else {
+			throw new OperationException("Could not create key generation file for file name: '" + fileName + "', file already exists.");
+		}
+		
+		log.info("Successfully generated resource principals encryption key.");
+	}
+
+
+
+
+
+
+
+	/*
+	public void generateUsersLocalPasswordsEncryptionKey() throws OperationException {
+		String fileName = SysConf.getSysConf().getString(
+		"system.directory.system_conf")
+		+ "/"
+		+ keyDir
+		+ "/"
+		+ SysConf.getSysConf().getString(
+		"system.files.users_encryption_key");
+		
+		log.debug("Key file name to be generated: " + fileName);
+		String keyString = EncryptionUtils.generateKey();
+
+		File f = new File(fileName);
+		if (!f.isFile()) {
+			try {
+				f.createNewFile();
+				FileUtils.setContents(f, keyString);
+			} catch (IOException ex) {
+				throw new OperationException(
+						"Could not create key generation file for file name: '"
+						+ fileName + "', due to: " + ex);
+			}
+		} else {
+			throw new OperationException("Could not create key generation file for file name: '" + fileName + "', file already exists.");
+		}
+		
+		log.info("Successfully generated users local passwords encryption key.");
+	}
+	*/
+
+
+
+
+
+
+
+
+
+
 	public boolean isInitialDataImported() {
 		Query q = em.createNamedQuery("resourceType.findAll");
-		
+
 		return q.getResultList().size() > 0;
 	}
-	
-	
+
+
 	public void persistInitialtData() {
 		initInitialData();
 
@@ -195,51 +284,23 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		persistEntities(actionLanguages);
 		em.flush();
 	}
-	
+
 	public Map<String,ResourceGlobalOperation> getLoadedResourceGlobalOperations() {
 		if (loadedResourceGlobalOperations == null) {
 			List<ResourceGlobalOperation> list = em.createQuery("SELECT rgo FROM ResourceGlobalOperation rgo").getResultList();
-			
+
 			loadedResourceGlobalOperations = new HashMap<String,ResourceGlobalOperation>();
 			for (ResourceGlobalOperation rgo : list) {
 				loadedResourceGlobalOperations.put(rgo.getUniqueName(), rgo);
 			}
-			
+
 			return loadedResourceGlobalOperations;
 		} else {
 			return loadedResourceGlobalOperations;
 		}
 	}
 
-	
-	public void generateTargetsPrincipalsEncryptionKey()
-			throws OperationException {
-		String fileName = SysConf.getSysConf().getString(
-				"system.directory.system_conf")
-				+ "/"
-				+ keyDir
-				+ "/"
-				+ SysConf.getSysConf().getString(
-						"system.files.targets_principals_encryption_key");
-		String keyString = EncryptionUtils.generateKey();
 
-		File f = new File(fileName);
-
-		if (!f.isFile()) {
-			try {
-				f.createNewFile();
-				FileUtils.setContents(f, keyString);
-			} catch (IOException ex) {
-				throw new OperationException(
-						"Could not create key generation file for file name: '"
-								+ fileName + "', due to: " + ex);
-			}
-		}
-	}
-
-	public void generateUsersEncryptionKey() throws OperationException {
-
-	}
 
 	/*
 	 * public void syncCapabilities() { initInitialData(); /* for (Capability
@@ -264,8 +325,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	//existence
 	public void initInitialData() {
 		entityUniqueKeyVars.put(ResourceType.class, "uniqueName");
-		
-		
+
+
 		//ACCOUNTS & ACCESS
 		//GLOBAL LIST OF resource operation definitions (not related to any resource type or resource!)
 		ResourceGlobalOperation rodAddAccount = new ResourceGlobalOperation("ADD_ACCOUNT","Add Account","Add a new account",true);
@@ -286,83 +347,83 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		resourceGlobalOperations.add(rodDeleteGroupMembership);
 		ResourceGlobalOperation rodModifyAccount =  new ResourceGlobalOperation("MODIFY_ACCOUNT","Modify Account","Modify access and attributes of an existence account", false);
 		resourceGlobalOperations.add(rodModifyAccount);
-		
+
 		//RECONCILIATION
 		ResourceGlobalOperation rodResourceReconciliation = new ResourceGlobalOperation("RESOURCE_RECONCILIATION","Resource Reconciliation","A resource reconciliation process.", false);
 		resourceGlobalOperations.add(rodResourceReconciliation);
 		ResourceGlobalOperation rodResourceFetchActiveDataOffline = new ResourceGlobalOperation("RESOURCE_FETCH_ACTIVE_DATA_OFFLINE","Resource Fetch Active Data Offline", "Fetch Active Data from resource offline", false);
 		resourceGlobalOperations.add(rodResourceFetchActiveDataOffline);
-		
-		
-		
+
+
+
 		//PASSWORD OPERATIONS
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		capabilities.add(new Capability(new Long(1), "super_user",
-				"admin super user capability"));
+		"admin super user capability"));
 		capabilities.add(new Capability(new Long(2), "basic_auth",
-				"Basic authentication capability"));
+		"Basic authentication capability"));
 		capabilities.add(new Capability(new Long(3), "manage_users",
-				"Manage Users"));
+		"Manage Users"));
 		capabilities.add(new Capability(new Long(4), "modify_user_attributes",
-				"Manage User Attributes"));
+		"Manage User Attributes"));
 		capabilities.add(new Capability(new Long(5), "disable_users",
-				"Enable Users"));
+		"Enable Users"));
 		capabilities.add(new Capability(new Long(6), "delete_users",
-				"Delete Users"));
+		"Delete Users"));
 		capabilities.add(new Capability(new Long(7), "enable_accounts",
-				"Enable Accounts"));
+		"Enable Accounts"));
 		capabilities.add(new Capability(new Long(8), "disable_accounts",
-				"Disable Accounts"));
+		"Disable Accounts"));
 		capabilities.add(new Capability(new Long(9), "modify_user_roles",
-				"Modify User Roles"));
+		"Modify User Roles"));
 		capabilities.add(new Capability(new Long(12), "view_requests",
-				"View Requests"));
+		"View Requests"));
 		capabilities
-				.add(new Capability(new Long(13),
-						"assign_users_to_capabilities",
-						"Assign users to capabilities"));
+		.add(new Capability(new Long(13),
+				"assign_users_to_capabilities",
+		"Assign users to capabilities"));
 		capabilities.add(new Capability(new Long(15), "manage_resources",
-				"Manage Resources"));
+		"Manage Resources"));
 		capabilities.add(new Capability(new Long(18),
 				"manage_resource_attributes",
-				"Manage Resource Attributes"));
+		"Manage Resource Attributes"));
 		capabilities.add(new Capability(new Long(19),
 				"manage_identity_attributes", "Manage Identity Attributes"));
 		capabilities.add(new Capability(new Long(20),
 				"manage_identity_attribute_groups",
-				"Manage Identity Attribute Groups"));
+		"Manage Identity Attribute Groups"));
 		capabilities.add(new Capability(new Long(21), "manage_capabilities",
-				"Manage Capabilities"));
+		"Manage Capabilities"));
 		capabilities.add(new Capability(new Long(23),
 				"manage_resource_reconcile_policies", "Manage Resource Reconcile Policies"));
 		capabilities.add(new Capability(new Long(24), "manage_email_templates",
-				"Manage Email Templates"));
+		"Manage Email Templates"));
 		capabilities.add(new Capability(new Long(27), "manage_tasks",
-				"Manage Tasks"));
+		"Manage Tasks"));
 		capabilities.add(new Capability(new Long(30), "manage_bulk_tasks",
-				"Manage Bulk Tasks"));
+		"Manage Bulk Tasks"));
 		capabilities.add(new Capability(new Long(32),
 				"manage_event_responses", "Manage Event Responses"));
 		capabilities.add(new Capability(new Long(34), "requeue_tasks",
-				"Re-Queue Tasks"));
+		"Re-Queue Tasks"));
 		capabilities.add(new Capability(new Long(36), "manage_password_sync",
-				"Manage Password Synchronization Objects"));
+		"Manage Password Synchronization Objects"));
 		capabilities.add(new Capability(new Long(37), "approver", "Approver"));
 
 		// CAPABILITY FOLDERS
@@ -474,24 +535,24 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 				"RECONCILE_USER_IDENTITY_ATTRIBUTES",
 				"A task to reconcile User Identity Attributes", null, true,
 				"ASYNC", 0, false, 2, true));
-		*/
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		 */
+
+
+
+
+
+
+
+
+
 		// RESOURCE Types
 		ResourceType jdbcType = new ResourceType();
 		jdbcType.setUniqueName("JDBC");
 		jdbcType.setScripted(true);
 		jdbcType.setConfigurationTemplate("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resource-descriptor>\n	<!--Adapter configuration, any adapter has these configuration parameters-->\n	<adapter>\n		<className desc=\"Adapter Class Name\">velo.adapters.JdbcAdapter</className>\n		<maxActive desc=\"Max Active Workers\">4</maxActive>\n		<maxIdle desc=\"Max Idle Workers\">2</maxIdle>\n		<maxWait desc=\"Max Worker Waiting Time in ms\">1000</maxWait>\n		<minEvictableIdleTimeMillis desc=\"Minimum Evictable Idle time in MS\">30000</minEvictableIdleTimeMillis>\n	</adapter>\n	\n	<!-- Specific attributes relevant to the specified adapter-->\n	<specific>\n		<host desc=\"Host Name\"></host>\n		<port desc=\"Port\"></port>\n		<dbName desc=\"Database Name\"></dbName>\n		<driverName desc=\"Driver name\"></driverName>\n		<urlTemplate desc=\"Url Template\"></urlTemplate>\n		<query-timeout desc=\"Query timeout\">30</query-timeout>\n	</specific>\n</resource-descriptor>\n");
 		jdbcType.setResourceControllerClassName("velo.resource.operationControllers.JdbcSpmlResourceOperationController");
-		
-		
+
+
 		//Create ResourceOperationDefinitions for current resource type
 		//jdbc is open and supports all global actions
 		ResourceTypeOperation rtodAddAccount = new ResourceTypeOperation(rodAddAccount, jdbcType, false,true,false);
@@ -516,20 +577,20 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		jdbcType.getSupportedOperations().add(rtodModifyAccount);
 		jdbcType.getSupportedOperations().add(rtodResourceReconciliation);
 		jdbcType.getSupportedOperations().add(rtodResourceFetchActiveDataOffline);
-		
-		
+
+
 		// jdbcType.setConfFileTemplate(FileUtils.getContents(confFileTemplate)
 
-		
-		
-		
+
+
+
 		//REMOTE AD
 		ResourceType activeDirectoryType = new ResourceType();
 		activeDirectoryType.setUniqueName("Remote Active-Directory");
 		activeDirectoryType.setScripted(false);
 		activeDirectoryType.setConfigurationTemplate("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resource-descriptor>\n	<adapter>\n		<className desc=\"Adapter Class Name\" disabled=\"true\">velo.adapters.ActiveDirectoryAdapter</className>\n        <maxActive desc=\"Max Active Workers\">4</maxActive>\n        <maxIdle desc=\"Max Idle Workers\">2</maxIdle>\n        <maxWait desc=\"Max Worker Waiting Time in ms\">1000</maxWait>\n        <minEvictableIdleTimeMillis desc=\"Minimum Evictable Idle time in MS\">30000</minEvictableIdleTimeMillis>\n	</adapter>\n	\n	<!-- Specific attributes relevant to this target system descriptor type-->\n	<specific>\n		<host desc=\"Host Name\"></host>\n		<port desc=\"Port\">636</port>\n		<protocol desc=\"Protocol\">ssl</protocol>\n		<base-dn desc=\"Base DN (for all operations)\"></base-dn>\n		<groups-base-dn desc=\"Groups base DN (for searches/default creation path)\"></groups-base-dn>\n		<accounts-base-dn desc=\"Accounts Base DN (for sync porpuses)\"></accounts-base-dn>\n		<accounts-default-context-dn desc=\"Accounts default creation context\"></accounts-default-context-dn>\n		<ssl-key-store desc=\"SSL Key Store path\"></ssl-key-store>\n		<ssl-trust-store desc=\"SSL Trust store path\"></ssl-trust-store>\n		<ssl-key-store-password desc=\"SSL Keystore Password\"></ssl-key-store-password>\n		<authentication desc=\"Authentication scheme\">simple</authentication>\n	</specific>\n</resource-descriptor>\n");
 		activeDirectoryType.setResourceControllerClassName("velo.resource.operationControllers.ActiveDirecotryRemoteSpmlResourceOperationController");
-		
+
 		//Create ResourceOperationDefinitions for current resource type
 		//jdbc is open and supports all global actions
 		ResourceTypeOperation RADrtodAddAccount = new ResourceTypeOperation(rodAddAccount, activeDirectoryType, false,false,false);
@@ -554,20 +615,20 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		activeDirectoryType.getSupportedOperations().add(RADrtodModifyAccount);
 		activeDirectoryType.getSupportedOperations().add(RADresourceReconciliation);
 		activeDirectoryType.getSupportedOperations().add(RADresourceFetchActiveDataOffline);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		//REMOTE AD
 		ResourceType activeDirectoryDotNetType = new ResourceType();
 		activeDirectoryDotNetType.setUniqueName("NATIVE_ACTIVE_DIRECTORY");
@@ -576,7 +637,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		activeDirectoryDotNetType.setResourceControllerClassName("velo.wingw.WindowsGateway.controllers.NativeActiveDirectoryController");
 		activeDirectoryDotNetType.setGatewayRequired(true);
 		activeDirectoryDotNetType.setResourceControllerType(ResourceControllerType.SPML_GENERIC);
-		
+
 		//Create ResourceOperationDefinitions for current resource type
 		//jdbc is open and supports all global actions
 		ResourceTypeOperation NADrtodAddAccount = new ResourceTypeOperation(rodAddAccount, activeDirectoryDotNetType, false,false,false);
@@ -601,119 +662,119 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodModifyAccount);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADresourceReconciliation);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADresourceFetchActiveDataOffline);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		ResourceType httpClient = new ResourceType();
 		httpClient.setUniqueName("HTTP-Client");
-//JB		httpClient.setAdapterClassName("velo.adapters.GenericHttpClientAdapter");
+//		JB		httpClient.setAdapterClassName("velo.adapters.GenericHttpClientAdapter");
 		httpClient.setScripted(true);
 		httpClient.setConfigurationTemplate("<XML>");
 		httpClient.setResourceControllerClassName("velo.resource.operationControllers.HttpClientSpmlResourceOperationController");
-		
+
 		ResourceType genericScriptedTelnetType = new ResourceType();
 		genericScriptedTelnetType.setUniqueName("Generic Scripted Telnet");
-//JB		genericScriptedTelnetType.setAdapterClassName("velo.adapters.GenericTelnetAdapter");
+//		JB		genericScriptedTelnetType.setAdapterClassName("velo.adapters.GenericTelnetAdapter");
 		genericScriptedTelnetType.setConfigurationTemplate("<XML>");
 		genericScriptedTelnetType.setScripted(true);
 		genericScriptedTelnetType.setResourceControllerClassName("velo.resource.operationControllers.TelnetSpmlResourceOperationController");
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		resourceTypes.put(jdbcType.getUniqueName(),jdbcType);
 		resourceTypes.put(activeDirectoryType.getUniqueName(),activeDirectoryType);
 		resourceTypes.put(httpClient.getUniqueName(),httpClient);
 		resourceTypes.put(genericScriptedTelnetType.getUniqueName(),genericScriptedTelnetType);
 		resourceTypes.put(activeDirectoryDotNetType.getUniqueName(),activeDirectoryDotNetType);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		// Password Policies
 		PasswordPolicy ppDefault = new PasswordPolicy();
@@ -735,35 +796,35 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		edUserCreateSuccess.setUniqueName("USER_CREATION");
 		edUserCreateSuccess.setDisplayName("Successfully user creation event");
 		edUserCreateSuccess
-				.setDescription("An event that occures after a user was successfully created in the repository");
+		.setDescription("An event that occures after a user was successfully created in the repository");
 		eventDefinitions.add(edUserCreateSuccess);
 
 		EventDefinition edTaskStatusModification = new EventDefinition();
 		edTaskStatusModification.setUniqueName("TASK_FAILURE");
 		edTaskStatusModification.setDisplayName("Task Failure");
 		edTaskStatusModification
-				.setDescription("An event that is triggered when a task execution fails");
+		.setDescription("An event that is triggered when a task execution fails");
 		eventDefinitions.add(edTaskStatusModification);
 
 		EventDefinition edRequestStatusModification = new EventDefinition();
 		edRequestStatusModification
-				.setUniqueName("REQUEST_STATUS_MODIFICATION");
+		.setUniqueName("REQUEST_STATUS_MODIFICATION");
 		edRequestStatusModification
-				.setDisplayName("Request Status Modification");
+		.setDisplayName("Request Status Modification");
 		edRequestStatusModification
-				.setDescription("An event that occures when a status of a certain request successfully modified.");
+		.setDescription("An event that occures when a status of a certain request successfully modified.");
 		eventDefinitions.add(edRequestStatusModification);
-		
+
 		EventDefinition edResourceReconciliation = new EventDefinition();
 		edResourceReconciliation
-				.setUniqueName("RESOURCE_RECONCILIATION");
+		.setUniqueName("RESOURCE_RECONCILIATION");
 		edResourceReconciliation
-				.setDisplayName("Resource Reconciliation");
+		.setDisplayName("Resource Reconciliation");
 		edResourceReconciliation
-				.setDescription("An event that is triggered when a resoruce reconciliation process finishes");
+		.setDescription("An event that is triggered when a resoruce reconciliation process finishes");
 		eventDefinitions.add(edResourceReconciliation);
-		
-		
+
+
 
 		// IdentityAttribute Group
 		IdentityAttributesGroup iagGeneric = new IdentityAttributesGroup();
@@ -772,8 +833,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		iagGeneric.setName("Generic");
 		iagGeneric.setVisible(true);
 		identityAttributesGroups.add(iagGeneric);
-		
-		
+
+
 		// IDENTITY ATTRIBUTES
 		IdentityAttribute firstName = new IdentityAttribute();
 		//firstName.setIdentityAttributeId(new Long(1));
@@ -808,8 +869,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		lastName.setVisibleInRequest(true);
 		lastName.setVisibleInUserList(true);
 		lastName.setIdentityAttributesGroup(iagGeneric);
-		
-		
+
+
 		IdentityAttribute title = new IdentityAttribute();
 		//lastName.setIdentityAttributeId(new Long(1));
 		title.setDisplayName("Title");
@@ -826,8 +887,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		title.setVisibleInRequest(true);
 		title.setVisibleInUserList(false);
 		title.setIdentityAttributesGroup(iagGeneric);
-		
-		
+
+
 		IdentityAttribute emailAddressIA = new IdentityAttribute();
 		//lastName.setIdentityAttributeId(new Long(1));
 		emailAddressIA.setDisplayName("Email Address");
@@ -844,7 +905,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		emailAddressIA.setVisibleInRequest(true);
 		emailAddressIA.setVisibleInUserList(true);
 		emailAddressIA.setIdentityAttributesGroup(iagGeneric);
-		
+
 		IdentityAttribute departmentIA = new IdentityAttribute();
 		departmentIA.setDisplayName("Department");
 		departmentIA.setDataType(AttributeDataTypes.STRING);
@@ -860,8 +921,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		departmentIA.setVisibleInRequest(true);
 		departmentIA.setVisibleInUserList(true);
 		departmentIA.setIdentityAttributesGroup(iagGeneric);
-		
-		
+
+
 		IdentityAttribute mobileIA = new IdentityAttribute();
 		mobileIA.setDisplayName("Mobile");
 		mobileIA.setDataType(AttributeDataTypes.STRING);
@@ -877,8 +938,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		mobileIA.setVisibleInRequest(true);
 		mobileIA.setVisibleInUserList(true);
 		mobileIA.setIdentityAttributesGroup(iagGeneric);
-		
-		
+
+
 		IdentityAttribute companyIA = new IdentityAttribute();
 		companyIA.setDisplayName("Company");
 		companyIA.setDataType(AttributeDataTypes.STRING);
@@ -903,17 +964,17 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		identityAttributes.add(departmentIA);
 		identityAttributes.add(mobileIA);
 		identityAttributes.add(companyIA);
-		
-		
-		
+
+
+
 
 		Set<IdentityAttribute> allDefaultIdentityAttributes = new HashSet<IdentityAttribute>();
 		for (Object currObject : identityAttributes) {
 			IdentityAttribute currIA = (IdentityAttribute)currObject;
 			allDefaultIdentityAttributes.add(currIA);
 		}
-		
-		
+
+
 		// Associate IdentityAttributes to their group
 		iagGeneric.setIdentityAttributes(allDefaultIdentityAttributes);
 		identityAttributesGroups.add(iagGeneric);
@@ -923,17 +984,17 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		reconcilePolicy.setConfirmedAccountAttributeEventAction("NOTHING");
 		reconcilePolicy.setConfirmedAccountEventAction("NOTHING");
 		reconcilePolicy
-				.setDeleteGroupAfterReconcileProcessesNumberExceeded(true);
+		.setDeleteGroupAfterReconcileProcessesNumberExceeded(true);
 		reconcilePolicy
-				.setDeletedAccountEventAction("REMOVE_ACCOUNT_FROM_IDM_REPOSITORY");
+		.setDeletedAccountEventAction("REMOVE_ACCOUNT_FROM_IDM_REPOSITORY");
 		reconcilePolicy.setName("Default");
 		reconcilePolicy
-				.setReconcilesGroupKeepsBeingDeletedBeforeRemoveGroup(10);
+		.setReconcilesGroupKeepsBeingDeletedBeforeRemoveGroup(10);
 		reconcilePolicy
-				.setUnasignedAccountEventAction("CREATE_ACCOUNT_WITHOUT_ASSIGN_ACCOUNT_TO_MATCHED_USER");
+		.setUnasignedAccountEventAction("CREATE_ACCOUNT_WITHOUT_ASSIGN_ACCOUNT_TO_MATCHED_USER");
 		reconcilePolicy.setUnmatchedAccountAttributeEventAction("NOTHING");
 		reconcilePolicy
-				.setUnmatchedAccountEventAction("PERSIST_ACCOUNT_IN_IDM_REPOSITORY");
+		.setUnmatchedAccountEventAction("PERSIST_ACCOUNT_IN_IDM_REPOSITORY");
 		reconcileTargetPolicies.add(reconcilePolicy);
 
 		// Create an admin user
@@ -949,10 +1010,10 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		adminUser.getCapabilityFolders().add(adminCapabilityFolder);
 		users.add(adminUser);
 
-		
-		
-		
-		
+
+
+
+
 		// default action languages
 		ActionLanguage alGroovy = new ActionLanguage();
 		//alGroovy.setActionLanguageId(new Long(1));
@@ -965,10 +1026,10 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		alXml.setName("XML");
 		alXml.setDescription("A simple XML action");
 		actionLanguages.add(alXml);
-		
-		
-		
-		
+
+
+
+
 		//User Containers
 		UserContainer duc = new UserContainer();
 		duc.setCreationDate(new Date());
@@ -976,21 +1037,21 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		duc.setDescription("All users associated to this container by default.");
 		duc.setUniqueName("Default");
 		userContainers.add(duc);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		//--ACTIVE DIRECTORY DEFAULT ATTRIBUTES!
 		//resource type default shipped attributes
 		ResourceTypeAttribute attr1 = new ResourceTypeAttribute(
@@ -1003,8 +1064,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attr1.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(attr1);
 		resourceTypeAttributes.add(attr1);
-		
-		
+
+
 		//CN
 		ResourceTypeAttribute attr2 = new ResourceTypeAttribute(
 				"cn", "Common Name", "Common Name",
@@ -1015,7 +1076,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attr2.setIdentityAttribute(firstName);
 		attr2.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		resourceTypeAttributes.add(attr2);
-		
+
 		//mobile
 		ResourceTypeAttribute attrMobile = new ResourceTypeAttribute(
 				"mobile", "Mobile Number", "Mobile",
@@ -1024,11 +1085,11 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attrMobile.setResourceType(activeDirectoryDotNetType);
 		attrMobile.setIdentityAttribute(mobileIA);
 		attrMobile.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
-		
+
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(attrMobile);
 		resourceTypeAttributes.add(attrMobile);
-		
-		
+
+
 		//displayName
 		ResourceTypeAttribute attrDisplayName = new ResourceTypeAttribute(
 				"displayname", "Display Name", "Display Name",
@@ -1038,9 +1099,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attrDisplayName.setSourceType(SourceTypes.NONE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(attrDisplayName);
 		resourceTypeAttributes.add(attrDisplayName);
-		
-		
-		
+
+
+
 		//sn
 		ResourceTypeAttribute attrSN = new ResourceTypeAttribute(
 				"sn", "Surname", "Surname",
@@ -1051,9 +1112,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attrSN.setIdentityAttribute(lastName);
 		attrSN.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		resourceTypeAttributes.add(attrSN);
-		
-		
-		
+
+
+
 		//givenName
 		ResourceTypeAttribute attrGN = new ResourceTypeAttribute(
 				"givenname", "Given Name", "Given Name",
@@ -1063,8 +1124,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attrGN.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(attrGN);
 		resourceTypeAttributes.add(attrGN);
-		
-		
+
+
 		//description
 		ResourceTypeAttribute attrDescription = new ResourceTypeAttribute(
 				"description", "Description", "Description",
@@ -1073,8 +1134,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(attrDescription);
 		attrDescription.setSourceType(SourceTypes.NONE);
 		resourceTypeAttributes.add(attrDescription);
-		
-		
+
+
 		//title
 		ResourceTypeAttribute attrTitle = new ResourceTypeAttribute(
 				"title", "Title", "Title",
@@ -1084,8 +1145,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attrTitle.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(attrTitle);
 		resourceTypeAttributes.add(attrTitle);
-		
-		
+
+
 		//company
 		ResourceTypeAttribute ADCompanyAttr = new ResourceTypeAttribute(
 				"company", "Comapny", "Company",
@@ -1095,7 +1156,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ADCompanyAttr.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(ADCompanyAttr);
 		resourceTypeAttributes.add(ADCompanyAttr);
-		
+
 		//department
 		ResourceTypeAttribute ADDepartmentAttr = new ResourceTypeAttribute(
 				"department", "Department", "Department",
@@ -1105,7 +1166,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ADDepartmentAttr.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(ADDepartmentAttr);
 		resourceTypeAttributes.add(ADDepartmentAttr);
-		
+
 		//UPN
 		ResourceTypeAttribute ADUserPrincipalNameAttr = new ResourceTypeAttribute(
 				"userPrincipalName", "User Principal Name", "User Principal Name",
@@ -1114,8 +1175,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ADUserPrincipalNameAttr.setSourceType(SourceTypes.NONE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(ADUserPrincipalNameAttr);
 		resourceTypeAttributes.add(ADUserPrincipalNameAttr);
-		
-		
+
+
 		//ProxyAddresses
 		ResourceTypeAttribute ADProxyAddressesAttr = new ResourceTypeAttribute(
 				"proxyAddresses", "Proxy Addresses", "The Proxy Addresses of the mailbox",
@@ -1124,7 +1185,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ADProxyAddressesAttr.setSourceType(SourceTypes.NONE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(ADProxyAddressesAttr);
 		resourceTypeAttributes.add(ADProxyAddressesAttr);
-		
+
 		//homeMDB
 		ResourceTypeAttribute ADHomeMDBAttr = new ResourceTypeAttribute(
 				"homeMDB", "Home Mdb", "The Exchange HomeMDB that will store the mailbox",
@@ -1133,12 +1194,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ADHomeMDBAttr.setSourceType(SourceTypes.NONE);
 		activeDirectoryDotNetType.getResourceTypeAttributes().add(ADHomeMDBAttr);
 		resourceTypeAttributes.add(ADHomeMDBAttr);
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		//--NATIVE(DOT NET) ACTIVE DIRECTORY DEFAULT ATTRIBUTES!
 		//resource type default shipped attributes
 		ResourceTypeAttribute ADDNattr1 = new ResourceTypeAttribute(
@@ -1151,8 +1212,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ADDNattr1.setIdentityAttribute(firstName);
 		activeDirectoryType.getResourceTypeAttributes().add(ADDNattr1);
 		resourceTypeAttributes.add(ADDNattr1);
-		
-		
+
+
 		//CN
 		ResourceTypeAttribute ADDNattr2 = new ResourceTypeAttribute(
 				"cn", "Common Name", "Common Name",
@@ -1163,15 +1224,15 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ADDNattr2.setSourceType(SourceTypes.IDENTITY_ATTRIBUTE);
 		ADDNattr2.setIdentityAttribute(firstName);
 		resourceTypeAttributes.add(ADDNattr2);
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 	}
-	
-	
+
+
 	private void buildResourceTypes() {
 		ResourceType ldapV3RT = new ResourceType();
 		ldapV3RT.setUniqueName("GENERIC_LDAP_V3");
@@ -1179,8 +1240,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ldapV3RT.setConfigurationTemplate("<?xml version=\"1.0\" encoding=\"UTF-8\"?><resource-descriptor><adapter><className desc=\"Adapter Class Name\" disabled=\"true\">velo.adapters.ActiveDirectoryAdapter</className><maxActive desc=\"Max Active Workers\">4</maxActive><maxIdle desc=\"Max Idle Workers\">2</maxIdle><maxWait desc=\"Max Worker Waiting Time in ms\">1000</maxWait><minEvictableIdleTimeMillis desc=\"Minimum Evictable Idle time in MS\">30000</minEvictableIdleTimeMillis></adapter><specific><host desc=\"Host Name\"></host><port desc=\"Port\">636</port><protocol desc=\"The protocol used to connect to the directory (ssl/clear)\">ssl</protocol><ssl-key-store desc=\"SSL Key Store path\"></ssl-key-store><ssl-trust-store desc=\"SSL Trust store path\"></ssl-trust-store><ssl-key-store-password desc=\"SSL Keystore Password\"></ssl-key-store-password><group><group-dn desc=\"This value is used in addition to the base DN when searching and loading groups, an example is ou=Groups. If no value is supplied, the subtree search will start from the base DN.\"></group-dn><group-object-class desc=\"The LDAP user object class typeto use when loading groups.\">groupOfUniqueNames</group-object-class><group-object-filter desc=\"The filter to use when searching group objects.\">(objectclass=groupOfUniqueNames)</group-object-filter><group-unique-name-attribute desc=\"The attribute field to use when loading the group unique name.\">cn</group-unique-name-attribute><group-display-name-attribute desc=\"The attribute field to use when loading the group display name.\">cn</group-display-name-attribute><group-description-attribute desc=\"The attribute field to use when loading the group description\">description</group-description-attribute><group-members-attribute desc=\"The attribute field to use when loading the group members.\">uniqueMember</group-members-attribute></group><account><account-dn desc=\"This value is used in addition to the base DN when searching and loading accounts, an example is ou=Users. If no value is supplied, the subtree search will start from the base DN.\"></account-dn><account-object-class desc=\"The LDAP account object class type o use when loading principals.\">inetorgperson</account-object-class><account-object-filter desc=\"The filter to use when searching user objects.\">(objectclass=inetorgperson)</account-object-filter><account-default-creation-dn desc=\"The value is used in addition to the base DN, this is the default account creation container. a value must be supplied.\"></account-default-creation-dn></account></specific></resource-descriptor>");
 		ldapV3RT.setResourceControllerClassName("velo.resource.operationControllers.GenericLdapResourceController");
 		ldapV3RT.setResourceControllerType(ResourceControllerType.SPML_GENERIC);
-		
-		
+
+
 		//Create ResourceOperationDefinitions for current resource type
 		//jdbc is open and supports all global actions
 		ResourceTypeOperation ldapv3rtAddAccount = new ResourceTypeOperation(getLoadedResourceGlobalOperations().get("ADD_ACCOUNT"), ldapV3RT, false,true,false);
@@ -1205,8 +1266,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ldapV3RT.getSupportedOperations().add(ldapv3rtModifyAccount);
 		ldapV3RT.getSupportedOperations().add(ldapv3rtResourceReconciliation);
 		ldapV3RT.getSupportedOperations().add(ldapv3rtResourceFetchActiveDataOffline);
-		
-		
+
+
 		ResourceTypeAttribute ldapV3_DN = new ResourceTypeAttribute(
 				"DN", "Distinguished Name","The context of the user",
 				AttributeDataTypes.STRING, true, true, 1, 255, 1, 1);
@@ -1214,57 +1275,57 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ldapV3_DN.setAccountId(true);
 		ldapV3_DN.setResourceType(ldapV3RT);
 		ldapV3RT.getResourceTypeAttributes().add(ldapV3_DN);
-		
-		
+
+
 		resourceTypes.put(ldapV3RT.getUniqueName(),ldapV3RT);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	// SYNC OBJECTS
 	public void syncActionLanguages() throws OperationException {
@@ -1278,29 +1339,29 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 			throw new OperationException(e.toString());
 		}
 	}
-	
-	
-	
+
+
+
 	public void syncProductData(objectType objType) {
 		if (objType == objectType.RESOURCE_TYPE) {
 			//sync data
 		}
 	}
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// DEPENDENT ON RESOURCE TYPES !
 	@Deprecated
 	public void syncResourceTypeAttributes() throws OperationException {
@@ -1308,8 +1369,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		Set<Object> resourceTypeAttributes = new HashSet<Object>();
 
 		ResourceType adType = em.find(ResourceType.class, new Long(3));
-		
-		
+
+
 		// AD action languages
 		// sAMAccountName
 		ResourceTypeAttribute attr1 = new ResourceTypeAttribute(
@@ -1319,8 +1380,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		attr1.setAccountId(true);
 		attr1.setResourceType(adType);
 		resourceTypeAttributes.add(attr1);
-		
-		
+
+
 		//CN
 		ResourceTypeAttribute attr2 = new ResourceTypeAttribute(
 				"cn", "Common Name", "Common Name",
@@ -1328,7 +1389,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		//attr2.setResourceAttributeId(new Long(2));
 		attr2.setResourceType(adType);
 		resourceTypeAttributes.add(attr2);
-		
+
 
 		try {
 			mergeEntities(resourceTypeAttributes);
@@ -1344,19 +1405,19 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 	}
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	public void syncResourceTypes() {
 		initInitialData();
 		buildResourceTypes();
-		
+
 		for (ResourceType currRT : resourceTypes.values()) {
 			//try to load the entity from the DB
 			ResourceType loadedRT = resourceManager.findResourceType(currRT.getUniqueName());
-			
+
 			//if no RT was found in repository then persist it.
 			if (loadedRT == null) {
 				log.info("Persisting resource type: " + currRT.getUniqueName() + ", attrs attached amount: " + currRT.getResourceTypeAttributes().size());
@@ -1366,9 +1427,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	public void mergeEntities(Set<Object> entities) throws Exception {
 		log.debug("Syncing '" + entities.size() + "' entities...");
 		for (Object entity : entities) {
@@ -1390,14 +1451,14 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 
 	// HELPER
 	protected Long getIdAsLong(Object entity) throws Exception {
@@ -1418,7 +1479,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		} else {
 			throw new Exception(
 					"Could not find any method annotated as ID on Entity class: "
-							+ entity.getClass().getName());
+					+ entity.getClass().getName());
 		}
 	}
 
@@ -1428,7 +1489,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 	protected Method findIdMethod(Class clazz) {
 		for (Class currClazz = clazz; !currClazz.equals(Object.class); currClazz = currClazz
-				.getSuperclass()) {
+		.getSuperclass()) {
 			// Iterate over the fields and find the Id field
 			for (Method m : currClazz.getDeclaredMethods()) {
 				if (!(m.isAccessible()))
@@ -1440,30 +1501,30 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		}
 		return null;
 	}
-	
-	
-	
+
+
+
 	private void persistEntities(Collection entities) {
 		for (Object entity : entities) {
 			em.persist(entity);
 		}
-		
+
 		em.flush();
 	}
-	
-	
-	
+
+
+
 
 	public void syncResourceActionDefinitions() {
 		em.createNativeQuery("TRUNCATE VL_RESOURCE_OPERATION_DEF").executeUpdate();
-		
+
 		persistEntities(resourceGlobalOperations);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public void dumpDefaultMysqlAppData() {
 		Resource r = new Resource();
 		r.setActive(true);
@@ -1471,6 +1532,6 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		r.setDescription("Mysql Test App1");
 		r.setDisplayName("Mysql Test App1");
 	}
-	
-	
+
+
 }

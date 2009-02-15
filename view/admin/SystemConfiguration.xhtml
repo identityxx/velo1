@@ -16,6 +16,8 @@
 
 
 	<ui:define name="body">
+	   <rich:tabPanel switchType="ajax">
+	   <rich:tab id="sysConf" label="General Configuration">
 		<h:form id="xmlSysConfForm">
 		<velo:XMLManager id="mainXmlConf" filename="#{confActions.veloConfig.getString('system.directory.system_conf')}/conf/velo_config.xml" type="file" columns="3" footerClass="panelGridActionFooter"
 			headerClass="panelGridActionHeader" styleClass="panelGridActionStyle"
@@ -84,12 +86,19 @@
                 <f:facet name="header">Workflow Settings</f:facet>
                 <velo:XMLTagInputs for="xmlSysConfForm:mainXmlConf" columns="2" tagName="workflow.job_executer"/>
             </rich:panel>
-            
 		</velo:XMLManager>
 		<rich:spacer width="1" height="10"/>
-		
 		<h:commandButton id="updateSysConf" action="#{confActions.saveSysConf}" value="#{messages['global.buttons.update']}" styleClass="button" />
 	</h:form>
+	</rich:tab>
+	<rich:tab id="encryptionKeys" label="Encryption Keys">
+	   <h:form>
+	       <h:panelGrid columns="1">
+                <h:commandButton action="#{confActions.generateResourcePrincipalsEncryptionKey}" value="Enroll Resource Principals Encryption Key!"/>
+	       </h:panelGrid>
+       </h:form>
+	</rich:tab>
+	</rich:tabPanel>
 
 	</ui:define>
 </ui:composition>

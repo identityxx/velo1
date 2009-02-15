@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import org.jboss.annotation.IgnoreDependency;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.security.management.PasswordHash;
 
 import velo.actions.ResourceAccountActionInterface;
 import velo.common.EdmMessages;
@@ -591,8 +592,100 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 	
 	
-	
-	
+	public boolean authenticate(String username, String password, String ip) throws UserAuthenticationException {
+		log.debug("Authenticating user: '" + username + "', with password: '"+ "*******" + "', from IP: " + ip);
+
+		// Query database to see if user exists.
+		try {
+			User user = findUserByName(username);
+
+			if (user.isLocked()) {
+				String msg = "User named '" + username
+				+ "' is Locked, cannot login user from IP: '" + ip
+				+ "'";
+				// Log to DB
+				// edmLogger.warning(msg);
+				log.warn(msg);
+				throw new UserAuthenticationException(msg);
+			}
+
+			// Check whether user should get authenticated locally or not
+			if (user.isAuthenticatedViaLocalPassword()) {
+				log.debug("Authentication is being performed against internal repository...");
+				
+				
+				//PERFORM INTERNAL AUTHENTICATION
+				String saultedHash = PasswordHash.instance().generateSaltedHash(password, user.getName());
+				
+				if (user.getPassword().equals(saultedHash)) {
+					// Detemrine if a clean to user auth failures counter is
+					// required
+					if (user.getAuthFailureCounter() > 0) {
+						resetUserLockAndAuthFailureCounter(user);
+					}
+
+					String msg = "User '" + user.getName()+ "' successfully authenticated from IP '" + ip
+					+ "'";
+					// edmLogger.info();
+					log.info("msg");
+					return true;
+				} else {
+					userAuthFailure(user, ip);
+					return false;
+				}
+			} else {
+				// TODO: Support authentication via external target systems
+				//throw new UserAuthenticationException(
+				//		"Currently external user authentication is not supported!");
+
+
+
+				//authenticate via external resources
+				log.debug("Authentication will be performed against external resource...");
+				String resourceName = SysConf.getSysConf().getString("security.authentication.admin_interface.resource_name");
+				log.trace("External resource to authenticate through is: '" + resourceName + "'");
+				if (resourceName == null) {
+					throw new UserAuthenticationException("Resource to authenticate with in system configuration is null.");
+				}
+
+				Resource r = resourceManager.findResource(resourceName);
+
+				if (r == null) {
+					throw new UserAuthenticationException("Could not find resource name '" + resourceName + "' to authenticate with");
+				}
+
+				log.trace("Found resource in repository, authenticating!");
+
+
+				resourceOperationsManager.authenticate(r, username, password);
+
+				return true;
+
+				/*
+		ResourceOperationController roc = (ResourceOperationController)r.getResourceType().factoryResourceOperationsController();
+		roc.setResource(r);
+
+		try {
+			//return the authentication result
+			return roc.authenticate(user.getName(), password);
+		}
+		catch (AuthenticationFailureException e) {
+			log.info("Failed to authenticate user '" + user.getName() + "' against resource '" + resourceName + "': " + e.toString());
+			throw new UserAuthenticationException(e.toString());
+		}
+				 */
+			}
+		} catch (NoResultFoundException nrfe) {
+			String msg = "Could not authenticate user named: '" + username
+			+ "', user does not exist in repository!";
+			log.warn(msg);
+			// Log to DB
+			// edmLogger.warning(msg);
+			throw new UserAuthenticationException(msg);
+		}
+	}
+
+
 	
 	
 	
@@ -893,13 +986,13 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			pp.validate(newPassword, user.getName());
 			// PasswordValidationException
 			user.setPassword(newPassword);
-			user.encryptPassword();
+			//user.encryptPassword();
 			updateUser(user);
 		} catch (NoResultFoundException ex) {
 			throw new PasswordValidationException(ex);
-		} catch (EncryptionException ex) {
+		} /*catch (EncryptionException ex) {
 			throw new PasswordValidationException(ex);
-		}
+		}*/
 	}
 
 	@Deprecated
@@ -1474,96 +1567,6 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		em.flush();
 
 		return bt.getBulkTaskId();
-	}
-
-	@Deprecated
-	public boolean authenticate(String username, String password, String ip)
-			throws UserAuthenticationException {
-		log.debug("Authenticating user: '" + username + "', with password: '"+ "*******" + "', from IP: " + ip);
-
-		// Query database to see if user exists.
-		try {
-			User user = findUserByName(username);
-
-			if (user.isLocked()) {
-				String msg = "User named '" + username
-						+ "' is Locked, cannot login user from IP: '" + ip
-						+ "'";
-				// Log to DB
-				// edmLogger.warning(msg);
-				log.warn(msg);
-				throw new UserAuthenticationException(msg);
-			}
-
-			// Check whether user should get authenticated locally or not
-			if (user.isAuthenticatedViaLocalPassword()) {
-				log.debug("Authentication is being performed against internal repository...");
-				if (user.getPassword().equals(password)) {
-					// Detemrine if a clean to user auth failures counter is
-					// required
-					if (user.getAuthFailureCounter() > 0) {
-						resetUserLockAndAuthFailureCounter(user);
-					}
-
-					String msg = "User '" + user.getName()+ "' successfully authenticated from IP '" + ip
-							+ "'";
-					// edmLogger.info();
-					log.info("msg");
-					return true;
-				} else {
-					userAuthFailure(user, ip);
-					return false;
-				}
-			} else {
-				// TODO: Support authentication via external target systems
-				//throw new UserAuthenticationException(
-				//		"Currently external user authentication is not supported!");
-				
-				
-				
-				//authenticate via external resources
-				log.debug("Authentication will be performed against external resource...");
-				String resourceName = SysConf.getSysConf().getString("security.authentication.admin_interface.resource_name");
-				log.trace("External resource to authenticate through is: '" + resourceName + "'");
-				if (resourceName == null) {
-					throw new UserAuthenticationException("Resource to authenticate with in system configuration is null.");
-				}
-				
-				Resource r = resourceManager.findResource(resourceName);
-				
-				if (r == null) {
-					throw new UserAuthenticationException("Could not find resource name '" + resourceName + "' to authenticate with");
-				}
-				
-				log.trace("Found resource in repository, authenticating!");
-				
-				
-				resourceOperationsManager.authenticate(r, username, password);
-				
-				return true;
-				
-				/*
-				ResourceOperationController roc = (ResourceOperationController)r.getResourceType().factoryResourceOperationsController();
-				roc.setResource(r);
-				
-				try {
-					//return the authentication result
-					return roc.authenticate(user.getName(), password);
-				}
-				catch (AuthenticationFailureException e) {
-					log.info("Failed to authenticate user '" + user.getName() + "' against resource '" + resourceName + "': " + e.toString());
-					throw new UserAuthenticationException(e.toString());
-				}
-				*/
-			}
-		} catch (NoResultFoundException nrfe) {
-			String msg = "Could not authenticate user named: '" + username
-					+ "', user does not exist in repository!";
-			log.warn(msg);
-			// Log to DB
-			// edmLogger.warning(msg);
-			throw new UserAuthenticationException(msg);
-		}
 	}
 
 

@@ -25,6 +25,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 import org.jboss.seam.log.Log;
+import org.jboss.seam.security.management.PasswordHash;
 
 import velo.entity.User;
 
@@ -67,8 +68,12 @@ public class UserHome extends EntityHome<User> {
 		return super.getInstance();
 	}
 	
+	
+	//TODO: User is special and is created not only through GUI, should pass through the generic User creation method. 
 	public String persist() {
 		getInstance().setCreatedManually(true);
+		getInstance().setPassword(PasswordHash.instance().generateSaltedHash(getInstance().getPasswordConfirm(), getInstance().getName()));
+
 		return super.persist();
 	}
 	
@@ -78,10 +83,13 @@ public class UserHome extends EntityHome<User> {
 		log.trace("Accounts amount after refresh: #0",getInstance().getAccounts().size());
 	}
 	
-	/*
-	public void updateNow() {
-		log.info("!!!!PASSWORD IS #0",getInstance().getPassword());
+	//TODO: User is special and is updated not only through GUI, should pass through the generic User update method.
+	public String update() {
+		if ( (getInstance().getPasswordConfirm() != null) && (getInstance().getPasswordConfirm().length() > 0) ) {
+			log.debug("User password was modified, encrypting before merging...");
+			getInstance().setPassword(PasswordHash.instance().generateSaltedHash(getInstance().getPasswordConfirm(), getInstance().getName()));
+		}
+		
+		return super.update();
 	}
-	*/
-	
 }

@@ -63,8 +63,6 @@ import velo.exceptions.CollectionElementInsertionException;
 	
 	
 	
-	
-	
 	@NamedQuery(name = "rolesFolder.findAll", query = "SELECT object(rolesFolder) FROM RolesFolder rolesFolder"),
     @NamedQuery(name = "rolesFolder.findAllActive", query = "SELECT object(rolesFolder) FROM RolesFolder rolesFolder"),
     @NamedQuery(name = "rolesFolder.searchByString", query = "SELECT object(rolesFolder) from RolesFolder rolesFolder WHERE ( (UPPER(rolesFolder.uniqueName) like :searchString) OR (UPPER(rolesFolder.description) like :searchString) )")
@@ -263,6 +261,19 @@ public class RolesFolder extends ExtBasicEntity implements Serializable {
 	}
 	
 	
+	@Transient
+	public List<Role> getRolesExposedToSelfService() {
+		List<Role> roles = new ArrayList<Role>();
+		
+		for (Role currRole : getRoles()) {
+			if (currRole.isExposedToSelfService()) {
+				roles.add(currRole);
+			}
+		}
+		
+		
+		return roles;
+	}
 	
 	
 	

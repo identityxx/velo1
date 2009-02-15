@@ -34,7 +34,9 @@ import velo.validators.Generic;
 public class UserList extends EntityQuery {
 	
 	private static final String[] RESTRICTIONS = {
-			"lower(user.name) like concat(trim(lower(#{userList.userName})),'%')"
+			"lower(user.name) like concat(trim(lower(#{userList.userName})),'%')",
+			"uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')",
+			"uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')"
 	};
 
 	private User user = new User();
@@ -48,6 +50,9 @@ public class UserList extends EntityQuery {
 	public String getEjbql() {
 		setOrder("name");
 		
+		return "SELECT DISTINCT user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+		
+		/*
 		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (!Generic.isNotEmptyAndNotNull(getLastName())) ) {
 			return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
 		} else if ( (!Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
@@ -58,6 +63,10 @@ public class UserList extends EntityQuery {
 		else {
 			return "select user from User user";
 		}
+		*/
+		
+		
+		
 		
 		
 		/*

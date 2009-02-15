@@ -1213,6 +1213,7 @@ import velo.tools.FileUtils;
     }
 	
     
+    /*
     public void encryptPassword() throws EncryptionException {
         String fileName = SysConf.getSysConf().getString("system.directory.system_conf") + "/" + "keys" + "/" + SysConf.getSysConf().getString("system.files.users_encryption_key");
         try {
@@ -1236,6 +1237,7 @@ import velo.tools.FileUtils;
             throw new DecryptionException("Could not decrypt password due to: " + ex);
         }
     }
+    */
     
     @Transient
     public boolean isUserHasAccount(Resource resource) {

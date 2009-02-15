@@ -96,7 +96,7 @@ public class ConfCli extends CliUtil {
             //Generate targets principals encryption key
             if (commandName.equals("generateTargetsPrincipalsEncryptionKey")) {
                 try {
-                    confManager.generateTargetsPrincipalsEncryptionKey();
+                    confManager.generateResourcePrincipalsEncryptionKey();
                 } catch (OperationException oe) {
                     System.err.println("An operation exception has occured: " + oe);
                     System.exit(1);

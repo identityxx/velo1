@@ -26,6 +26,9 @@ public interface ConfActions {
 	public void saveSysConf();
 	public String importInitialData();
 	public Configuration getVeloConfig();
+	public void generateResourcePrincipalsEncryptionKey();
+	//public void generateUsersLocalPasswordsEncryptionKey();
+	
 	
 	public void destroy();
 	

@@ -31,17 +31,16 @@ public interface ConfManager {
     //public void syncTaskDefinitions();
 
 	
+	void generateResourcePrincipalsEncryptionKey() throws OperationException;
+	//public void generateUsersLocalPasswordsEncryptionKey() throws OperationException;
+	
+	
+	
+	
 	public void syncResourceTypes();
 	public boolean isInitialDataImported();
 	@Deprecated
     public void persistInitialtData();
-	@Deprecated
-    void generateTargetsPrincipalsEncryptionKey() throws OperationException;
-	@Deprecated
-    public void generateUsersEncryptionKey() throws OperationException;
-    
-    
-    
     
     
 	@Deprecated

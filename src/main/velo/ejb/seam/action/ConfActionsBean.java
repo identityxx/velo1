@@ -37,6 +37,7 @@ import org.quartz.Scheduler;
 
 import velo.common.SysConf;
 import velo.ejb.interfaces.ConfManagerLocal;
+import velo.exceptions.OperationException;
 
 @Stateful
 @Name("confActions")
@@ -87,6 +88,29 @@ public class ConfActionsBean implements ConfActions {
 		}
 	}
 
+	
+	
+	public void generateResourcePrincipalsEncryptionKey() {
+		try {
+			confManager.generateResourcePrincipalsEncryptionKey();
+			facesMessages.add(FacesMessage.SEVERITY_INFO, "Successfully enrolled resource principals encryption key");
+		}catch(OperationException e) {
+			facesMessages.add(FacesMessage.SEVERITY_ERROR, e.getMessage());
+		}
+	}
+	
+	/*Irrelevant as user passwords are hashed
+	public void generateUsersLocalPasswordsEncryptionKey() {
+		try {
+			confManager.generateUsersLocalPasswordsEncryptionKey();
+			facesMessages.add(FacesMessage.SEVERITY_INFO, "Successfully enrolled users local passwords encryption key");
+		}catch(OperationException e) {
+			facesMessages.add(FacesMessage.SEVERITY_ERROR, e.getMessage());
+		}
+	}
+	*/
+	
+	
 	public void test() {
 		try {
 			InitialContext ctx = new InitialContext();
