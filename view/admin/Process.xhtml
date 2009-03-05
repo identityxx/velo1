@@ -51,18 +51,16 @@
     <rich:panel>
         <f:facet name="header">Process Variables</f:facet>
         
-        <!-- 
-        <rich:dataTable value="{velo:setAsList(selectedProcessInstance.contextInstance.variables.entrySet)}" var="v">
+        <rich:dataTable value="#{velo:setAsList(selectedProcessInstance.contextInstance.variables.entrySet)}" var="v">
             <h:column>
                 <f:facet name="header">Var Name</f:facet>
-                {v.getKey()}
+                #{v.key}
             </h:column>
             <h:column>
                 <f:facet name="header">Var Value</f:facet>
-                {v.getValue()}
+                #{v.value}
             </h:column>
         </rich:dataTable>
-         -->
          
         <div style="clear:both"/>
     </rich:panel>

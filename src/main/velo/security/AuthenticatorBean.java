@@ -235,8 +235,9 @@ public class AuthenticatorBean implements Authenticator {
 		String ip = rr.getRemoteAddr();
 
 		//Audit the login
-		EventLogEntry eve = new EventLogEntry(EventLogModule.SECURITY, EventLogLevel.INFO,"User '" + loggedUser.getName() + "' has logged in.");
+		EventLogEntry eve = new EventLogEntry(EventLogModule.SECURITY,"SUCCESS_LOGIN",EventLogLevel.INFO,"User '" + loggedUser.getName() + "' has logged in.");
 		eve.addData("User", loggedUser.getName());
+		eve.addData("FullName", loggedUser.getFullName());
 		eve.addData("IP", ip);
 		
 		cum.addEventLogEntry(eve);

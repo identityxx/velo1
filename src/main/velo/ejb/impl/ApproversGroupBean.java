@@ -23,11 +23,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 
 import velo.ejb.interfaces.ApproversGroupManagerLocal;
 import velo.entity.ApproversGroup;
 
 @Stateless()
+@Name("approversGroupManager")
+@AutoCreate
 public class ApproversGroupBean implements ApproversGroupManagerLocal {
 	
 	private static Logger log = Logger.getLogger(ApproversGroupBean.class.getName());

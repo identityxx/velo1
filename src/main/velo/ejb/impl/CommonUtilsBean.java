@@ -49,9 +49,9 @@ public class CommonUtilsBean implements CommonUtilsManagerLocal, CommonUtilsMana
         em.persist(ele);
     }
     
-    public void addEventLogEntry(EventLogModule module, EventLogLevel eventLogLevel, String message) {
+    public void addEventLogEntry(EventLogModule module, String category, EventLogLevel eventLogLevel, String message) {
         
-    	EventLogEntry ele = new EventLogEntry(module, eventLogLevel, message);
+    	EventLogEntry ele = new EventLogEntry(module,category,eventLogLevel, message);
         
         //TODO: THE SERVER IP/HOST
         //el.setServer(server)

@@ -12,7 +12,9 @@
     <property name="transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
     <property name="transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
     <property name="cache.provider_class">org.hibernate.cache.HashtableCacheProvider</property>
+    
     <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+    <!--<property name="dialect">velo.jbpm.JbpmVeloOracleDialect</property>-->
      
     <!-- VELO: Property hibernate.hbm2ddl.auto is not compatible with CMT. Before exporting the generated schema, Hibernate turns on autocommit on the JDBC connection. Container-managed connections don't like that. Hence the schema has to be created either (a) by executing the schema creation script on the database or (b) through a call to JbpmConfiguration.createSchema() from a user transaction. -->
     <property name="hbm2ddl.auto">none</property>

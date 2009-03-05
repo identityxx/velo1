@@ -395,10 +395,18 @@
 
 						<s:decorate id="assignedCapabilityFoldersDecoration" template="layout/edit.xhtml">
 							<ui:define name="label">Assigned Capability Folders</ui:define>
-							<h:selectManyListbox id="assignedCapabilityFolders" size="5" value="#{userHome.instance.capabilityFolders}">
-								<s:selectItems value="#{guiCapabilityFolders}" var="cf" label="#{cf.description}" />
+							
+							<!--
+							<h:selectManyListbox id="assignedCapabilityFolders" size="5" value="{userHome.instance.capabilityFolders}">
+								<s:selectItems value="{guiCapabilityFolders}" var="cf" label="{cf.description}" />
 								<s:convertEntity entityClass="velo.entity.CapabilityFolder"/>
 							</h:selectManyListbox>
+							-->
+							
+							<rich:pickList id="assignedCapabilityFoldersDecoration" value="#{userHome.instance.capabilityFolders}" sourceListWidth="250px" targetListWidth="250px">
+                                <s:selectItems value="#{guiCapabilityFolders}" var="cf" label="#{cf.description}"/>
+                                <s:convertEntity entityClass="velo.entity.CapabilityFolder"/>
+                            </rich:pickList>
 						</s:decorate>
 
 						<div style="clear: both"></div>
@@ -408,10 +416,19 @@
 						<f:facet name="header">Assigned Capabilities</f:facet>
 						<s:decorate id="assignedCapabilitiesDecoration" template="layout/edit.xhtml">
 							<ui:define name="label">Assigned Capabilities</ui:define>
-							<h:selectManyListbox id="assignedCapabilities" size="5" value="#{userHome.instance.capabilities}">
-								<s:selectItems value="#{guiCapabilities}" var="cap" label="#{cap.description}" />
+							
+							<!--
+							<h:selectManyListbox id="assignedCapabilities" size="5" value="{userHome.instance.capabilities}">
+								<s:selectItems value="{guiCapabilities}" var="cap" label="{cap.description}" />
 								<s:convertEntity entityClass="velo.entity.Capability"/>
 							</h:selectManyListbox>
+							-->
+							
+							<rich:pickList id="assignedCapabilities" value="#{userHome.instance.capabilities}" 
+                                           sourceListWidth="250px" targetListWidth="250px"> 
+                                <s:selectItems value="#{guiCapabilities}" var="cap" label="#{cap.description}"/>
+                                <s:convertEntity entityClass="velo.entity.Capability"/>
+                            </rich:pickList>
 						</s:decorate>
 						
 						<div style="clear: both"></div>
@@ -431,10 +448,19 @@
 
 						<s:decorate id="assignedApproversGroupsDecoration" template="layout/edit.xhtml">
 							<ui:define name="label">Assigned Approvers Groups</ui:define>
-							<h:selectManyListbox id="assignedApproversGroups" size="5" value="#{userHome.instance.approversGroups}">
-								<s:selectItems value="#{guiApproversGroups}" var="ag" label="#{ag.displayName}" />
+							
+							<!--
+							<h:selectManyListbox id="assignedApproversGroups" size="5" value="{userHome.instance.approversGroups}">
+								<s:selectItems value="{guiApproversGroups}" var="ag" label="{ag.displayName}" />
 								<s:convertEntity entityClass="velo.entity.ApproversGroup"/>
 							</h:selectManyListbox>
+							-->
+							
+							<rich:pickList id="assignedApproversGroups" value="#{userHome.instance.approversGroups}"
+                                       sourceListWidth="250px" targetListWidth="250px">
+                                <s:selectItems value="#{guiApproversGroups}" var="ag" label="#{ag.displayName}"/>
+                                <s:convertEntity entityClass="velo.entity.ApproversGroup"/>
+                            </rich:pickList>
 						</s:decorate>
 
 						<div style="clear: both"></div>

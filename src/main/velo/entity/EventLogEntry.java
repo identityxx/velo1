@@ -62,12 +62,14 @@ public class EventLogEntry  implements Serializable {
     private static final long serialVersionUID = 1987302492306161413L;
     
     public enum EventLogModule {
-		SECURITY
+		SECURITY,WORKFLOW
 	}
     
+    /*//we cannot support hirarchial enums
     public enum EventLogTaskCategory {
     	LOGIN,LOGOUT,AUTH_FAILURE
     }
+    */
     
     public enum EventLogLevel {
     	DEBUG,INFO,WARN,ERROR,CRITICAL
@@ -96,6 +98,8 @@ public class EventLogEntry  implements Serializable {
     
     private String server;
     
+    private String category;
+    
     
     private Set<EventLogDataEntry> dataEntries = new HashSet<EventLogDataEntry>();
     
@@ -109,12 +113,14 @@ public class EventLogEntry  implements Serializable {
      * @param severity The sevirity of the event log
      * @param message The message of the event
      */
-    public EventLogEntry(EventLogModule module,EventLogLevel eventLogLevel, String message) {
+    public EventLogEntry(EventLogModule module,String category,EventLogLevel eventLogLevel, String message) {
         setModule(module);
         setMessage(message);
         setLevel(eventLogLevel);
         setCreationDate(new Date());
+        setCategory(category);
     }
+    
     
     /**
      * @param eventLogId The ID of the entity to set.
@@ -162,7 +168,9 @@ public class EventLogEntry  implements Serializable {
 		this.module = module;
 	}
 
-	@Column(name="LEVEL")
+	
+	//'LEVEL' IS RESERVED WORD IN ORACLE
+	@Column(name="EVENT_LEVEL")
     @Enumerated(EnumType.STRING)
     public EventLogLevel getLevel() {
 		return level;
@@ -200,6 +208,15 @@ public class EventLogEntry  implements Serializable {
 		this.server = server;
 	}
 	
+	@Column(name="CATEGORY")
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "eventLogEntry", fetch = FetchType.LAZY)
     @OrderBy("name")
 	public Set<EventLogDataEntry> getDataEntries() {

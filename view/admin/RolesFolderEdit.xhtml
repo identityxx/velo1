@@ -99,10 +99,18 @@
 					<f:facet name="header">Roles Associations</f:facet>
 					<s:decorate id="roleDecoration" template="layout/edit.xhtml">
 						<ui:define name="label">Assigned Roles</ui:define>
-						<h:selectManyListbox id="roles" size="5" value="#{rolesFolderHome.instance.roles}" required="false">
-							<s:selectItems value="#{guiRoles}" var="r" label="#{r.name}" />
+						
+						<!-- 
+						<h:selectManyListbox id="roles" size="5" value="{rolesFolderHome.instance.roles}" required="false">
+							<s:selectItems value="{guiRoles}" var="r" label="{r.name}" />
 							<s:convertEntity entityClass="velo.entity.Role"/>
 						</h:selectManyListbox>
+						-->
+						
+						<rich:pickList id="pickList" value="#{rolesFolderHome.instance.roles}"> 
+                            <s:selectItems id="roles" value="#{guiRoles}" var="r" label="#{r.name}"/>
+                            <s:convertEntity entityClass="velo.entity.Role"/>
+                        </rich:pickList>
 					</s:decorate>
 					
 					<div style="clear: both"/>

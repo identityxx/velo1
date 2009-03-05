@@ -58,7 +58,7 @@ public class MailHandler implements ActionHandler  {
 	}
 	
 	public MailHandler(String template,String actors,String to,String subject,String text) {
-		System.out.println("!!!!!!!!!!!!!!!!!(2): " + actors);
+		//System.out.println("!!!!!!!!!!!!!!!!!(2): " + actors);
 		this.template = template;
 		this.actors = actors;
 		this.to = to;
@@ -67,7 +67,7 @@ public class MailHandler implements ActionHandler  {
 	}
 	
 	public MailHandler(String template,String actors,String to,String bccActors,String bcc,String subject,String text) {
-		System.out.println("!!!!!!!!!!!!!!!!!(1): " + actors);
+		//System.out.println("!!!!!!!!!!!!!!!!!(1): " + actors);
 		this.template = template;
 		this.actors = actors;
 		this.to = to;
@@ -80,21 +80,28 @@ public class MailHandler implements ActionHandler  {
 	public void execute(ExecutionContext executionContext) {
 	    this.executionContext = executionContext;
 	    
-	    if (log.isDebugEnabled()) {
-	    	log.debug("Printing variables of JBPM MailHandler");
-	    	log.debug("Template: " + template);
-	    	log.debug("Actors: " + actors);
-	    	log.debug("To: " + to);
-	    	log.debug("Subject: " +subject);
-	    	log.debug("Process ID: " + executionContext.getProcessInstance().getId());
-	    	log.debug("Process Vars: " + executionContext.getContextInstance().getVariables());
+	    if (log.isTraceEnabled()) {
+	    	log.trace("Printing variables of JBPM MailHandler");
+	    	log.trace("Template: " + template);
+	    	log.trace("Actors: " + actors);
+	    	log.trace("To: " + to);
+	    	log.trace("Subject: " +subject);
+	    	log.trace("Process ID: " + executionContext.getProcessInstance().getId());
+	    	log.trace("Process Vars: " + executionContext.getContextInstance().getVariables());
 	    }
 	    
-	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!LALALALAOLALALAL OBJECT:" + executionContext.getNode().hashCode());
-	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TOKENENENENE OBJECT:" + executionContext.getToken().getId());
-	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MAILHANDLER OBJECT:" + this);
-	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!EXE CNTX OBJ:" + executionContext);
-	    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PROCESS INSTANCE OBJ:" + executionContext.getProcessInstance());
+	    //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!LALALALAOLALALAL OBJECT:" + executionContext.getNode().hashCode());
+	    //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TOKENENENENE OBJECT:" + executionContext.getToken().getId());
+	    //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MAILHANDLER OBJECT:" + this);
+	    //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!EXE CNTX OBJ:" + executionContext);
+	    //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PROCESS INSTANCE OBJ:" + executionContext.getProcessInstance());
+	    
+	    
+	    
+	    //cleanups! - seems like when creating processes within a loop one by another, the same mailhandler instance is used.
+	    //which resulted same class properties to be used, for saftey, lets clean up all class variables.
+	    cleanups();
+	    
 	    send();
 	}
 
@@ -313,9 +320,9 @@ public class MailHandler implements ActionHandler  {
 	
 	
 	
-	
-	
-	
+	public void cleanups() {
+		addresses = null;
+	}
 	
 	
 	

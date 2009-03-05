@@ -117,9 +117,7 @@
                 </s:link>
             </f:facet>
             
-            <s:link view="/admin/#{empty from ? 'Process' : from}.xhtml" value="#{process.id}" >
-                <f:param name="processId" value="#{process.id}"/>
-            </s:link>
+            <h:outputText value="#{process.id}"/>
         </h:column>
         <h:column>
             <f:facet name="header">Process Definition Name</f:facet>

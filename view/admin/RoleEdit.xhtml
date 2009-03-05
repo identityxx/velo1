@@ -97,10 +97,19 @@
 					<f:facet name="header">Resources Associations</f:facet>
 					<s:decorate id="resourceDecoration" template="layout/edit.xhtml">
 						<ui:define name="label">Assigned Resources</ui:define>
-						<h:selectManyListbox id="resources" size="5" value="#{roleHome.instance.resources}" required="false">
-							<s:selectItems value="#{guiResources}" var="ts" label="#{ts.displayName}" />
+						
+						<rich:pickList value="#{roleHome.instance.resources}"> 
+                            <s:selectItems value="#{{guiResources}}" var="res" label="#{res.displayName}"/>
+                            <s:convertEntity entityClass="velo.entity.Resource"/>
+                        </rich:pickList>
+                        
+						<!-- 
+						<h:selectManyListbox id="resources" size="5" value="{roleHome.instance.resources}" required="false">
+							<s:selectItems value="{guiResources}" var="ts" label="{ts.displayName}" />
 							<s:convertEntity entityClass="velo.entity.ResourceGroups"/>
 						</h:selectManyListbox>
+						 -->
+						 
 					</s:decorate>
 					
 					<div style="clear: both"/>
@@ -111,10 +120,18 @@
                     <f:facet name="header">Roles Folders</f:facet>
                     <s:decorate id="rolesFoldersDecoration" template="layout/edit.xhtml">
                         <ui:define name="label">Associated Roles Folders</ui:define>
+                        
+                        <!-- 
                         <h:selectManyListbox id="rfs" size="5" value="#{roleHome.instance.rolesFolders}" required="false">
                             <s:selectItems value="#{guiRolesFolders}" var="rf" label="#{rf.displayName}" />
                             <s:convertEntity entityClass="velo.entity.RolesFolder"/>
                         </h:selectManyListbox>
+                        -->
+                        
+                        <rich:pickList id="rfs" value="#{roleHome.instance.rolesFolders}"> 
+                            <s:selectItems id="roles" value="#{guiRolesFolders}" var="rf" label="#{rf.displayName}"/>
+                            <s:convertEntity entityClass="velo.entity.RolesFolder"/>
+                        </rich:pickList>
                     </s:decorate>
                     
                     <div style="clear: both"/>

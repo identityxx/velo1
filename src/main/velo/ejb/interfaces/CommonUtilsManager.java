@@ -30,5 +30,5 @@ public interface CommonUtilsManager {
 	
 	public void addEventLogEntry(EventLogEntry ele);
 	
-	public void addEventLogEntry(EventLogModule module,EventLogLevel level,String message);
+	public void addEventLogEntry(EventLogModule module, String category, EventLogLevel eventLogLevel, String message);
 }
