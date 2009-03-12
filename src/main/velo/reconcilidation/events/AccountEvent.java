@@ -215,9 +215,9 @@ public abstract class AccountEvent extends Event {
 	}
 	
 	
-	
-	public User factoryUser(String userName) {
-		return User.factoryUser(userName);
+	public User factoryUser(String userName) {	
+		//return User.factoryUser(userName);
+		return userManager.factoryUser(userName);
 	}
 	
 	

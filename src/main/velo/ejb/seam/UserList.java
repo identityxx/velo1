@@ -18,7 +18,6 @@
 package velo.ejb.seam;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -33,9 +32,14 @@ import velo.validators.Generic;
 @Name("userList")
 public class UserList extends EntityQuery {
 	
-	private static final String[] RESTRICTIONS = {
-			"lower(user.name) like concat(trim(lower(#{userList.userName})),'%')"
+	/*
+	private String[] RESTRICTIONS = {
+		"lower(user.name) like concat(trim(lower(#{userList.userName})),'%')"
 	};
+	*/
+	
+	private List<String> RESTRICTIONS = new ArrayList<String>();
+	
 	
 	//"uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')",
 	//"uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')"
@@ -51,126 +55,46 @@ public class UserList extends EntityQuery {
 	public String getEjbql() {
 		setOrder("name");
 		
-		return "select user from User user";
+		String query = null;
 		
-		//return "SELECT DISTINCT user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+		RESTRICTIONS.clear();
+		RESTRICTIONS.add("lower(user.name) like concat(trim(lower(#{userList.userName})),'%')");
 		
-		/*
+		
+		
 		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (!Generic.isNotEmptyAndNotNull(getLastName())) ) {
-			return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
+			query = "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
+			RESTRICTIONS.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
 		} else if ( (!Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
-			return "select user from User user, IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+			query = "select user from User user, IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+			RESTRICTIONS.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
 		} else if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
-			return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+			query = "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+			
+			
+			RESTRICTIONS.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
+			RESTRICTIONS.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
 		}
 		else {
-			return "select user from User user";
+			query = "select user from User user";
 		}
-		*/
+			
+		
+		setRestrictionExpressionStrings(RESTRICTIONS);
+		return query;
 		
 		
 		
 		
-		
+		//return "SELECT DISTINCT user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
 		/*
 		if (super.getEjbql() == null) {
-
-			
-			
 			//return "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
 		} else {
 			return super.getEjbql();
 		}
 		*/
 	}
-	
-	
-	public List<String> getRestrictionStrings() {
-		List<String> arr = Arrays.asList(RESTRICTIONS);
-		
-		ArrayList<String> a = new ArrayList<String>();
-		a.addAll(arr);
-		
-		//System.out.print("!!!!!!!!! IS FIRST NAME NULL? ");
-		if (Generic.isNotEmptyAndNotNull(getFirstName())) {
-			//System.out.println("!!!!!!!!! NO!!!! ");
-			a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
-		} else {
-			//System.out.println("!!!!!!!!! YES!!!! ");
-		}
-		
-		//System.out.print("!!!!!!!!! IS LAST NAME NULL? ");
-		if (Generic.isNotEmptyAndNotNull(getLastName())) {
-			//System.out.println("!!!!!!!!! NO!!!! ");
-			a.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
-		} else {
-			//System.out.println("!!!!!!!!! YES!!!! ");
-		}
-		/*
-		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) ) {
-			if (getFirstName().length() > 0) {
-				a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) = #{userList.firstName}");
-			}
-		}
-		*/
-		/*
-		return a; 
-		*/
-		
-		return a;
-	}
-	
-	
-	
-	@Override
-	public Integer getMaxResults() {
-		if (super.getMaxResults() != null) {
-			return super.getMaxResults();
-		}
-		else {
-			return 10;
-		}
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	
-	/*WHEN MOVED TO SEAM 2.1
-	@Override
-	public List<String> getRestrictions() {
-		List<String> arr = Arrays.asList(RESTRICTIONS);
-		
-		ArrayList<String> a = new ArrayList<String>();
-		a.addAll(arr);
-		
-		//System.out.print("!!!!!!!!! IS FIRST NAME NULL? ");
-		if (Generic.isNotEmptyAndNotNull(getFirstName())) {
-			//System.out.println("!!!!!!!!! NO!!!! ");
-			a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
-		} else {
-			//System.out.println("!!!!!!!!! YES!!!! ");
-		}
-		
-		//System.out.print("!!!!!!!!! IS LAST NAME NULL? ");
-		if (Generic.isNotEmptyAndNotNull(getLastName())) {
-			//System.out.println("!!!!!!!!! NO!!!! ");
-			a.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
-		} else {
-			//System.out.println("!!!!!!!!! YES!!!! ");
-		}
-		/*
-		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) ) {
-			if (getFirstName().length() > 0) {
-				a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) = #{userList.firstName}");
-			}
-		}
-		*/
-		/*
-		return a; 
-	}
-	*/
 	
 	
 	public List<SelectItem> userSearchByNameAutoCompleteForSelectItem(Object suggest) {
@@ -237,7 +161,124 @@ public class UserList extends EntityQuery {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+	
+	@Override
+	public Integer getMaxResults() {
+		if (super.getMaxResults() != null) {
+			return super.getMaxResults();
+		}
+		else {
+			return 10;
+		}
+	}
 
+	public User getUser() {
+		return user;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
+	public List<String> getRestrictionStrings() {
+		List<String> arr = Arrays.asList(RESTRICTIONS);
+		
+		ArrayList<String> a = new ArrayList<String>();
+		a.addAll(arr);
+		
+		//System.out.print("!!!!!!!!! IS FIRST NAME NULL? ");
+		if (Generic.isNotEmptyAndNotNull(getFirstName())) {
+			//System.out.println("!!!!!!!!! NO!!!! ");
+			a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
+		} else {
+			//System.out.println("!!!!!!!!! YES!!!! ");
+		}
+		
+		//System.out.print("!!!!!!!!! IS LAST NAME NULL? ");
+		if (Generic.isNotEmptyAndNotNull(getLastName())) {
+			//System.out.println("!!!!!!!!! NO!!!! ");
+			a.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
+		} else {
+			//System.out.println("!!!!!!!!! YES!!!! ");
+		}
+		/*
+		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) ) {
+			if (getFirstName().length() > 0) {
+				a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) = #{userList.firstName}");
+			}
+		}
+		*/
+		/*
+		return a; 
+		*/
+		
+	/*	return a;
+	}
+
+*/
+	
+	
+	
+	
+
+	
+	/*WHEN MOVED TO SEAM 2.1
+	@Override
+	public List<String> getRestrictions() {
+		List<String> arr = Arrays.asList(RESTRICTIONS);
+		
+		ArrayList<String> a = new ArrayList<String>();
+		a.addAll(arr);
+		
+		//System.out.print("!!!!!!!!! IS FIRST NAME NULL? ");
+		if (Generic.isNotEmptyAndNotNull(getFirstName())) {
+			//System.out.println("!!!!!!!!! NO!!!! ");
+			a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
+		} else {
+			//System.out.println("!!!!!!!!! YES!!!! ");
+		}
+		
+		//System.out.print("!!!!!!!!! IS LAST NAME NULL? ");
+		if (Generic.isNotEmptyAndNotNull(getLastName())) {
+			//System.out.println("!!!!!!!!! NO!!!! ");
+			a.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
+		} else {
+			//System.out.println("!!!!!!!!! YES!!!! ");
+		}
+		/*
+		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) ) {
+			if (getFirstName().length() > 0) {
+				a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) = #{userList.firstName}");
+			}
+		}
+		*/
+		/*
+		return a; 
+	}
+	*/
 	
 	
 	/*TEST
@@ -259,8 +300,9 @@ public class UserList extends EntityQuery {
 	
 	@PostConstruct
     public void initialize() {
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!: " + getEjbql());
-    	setRestrictionExpressionStrings(getRestrictionStrings());
-    	setEjbql(getEjbql());
+		//setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
+		
+    	//setRestrictionExpressionStrings(getRestrictionStrings());
+    	//setEjbql(getEjbql());
     }
 }

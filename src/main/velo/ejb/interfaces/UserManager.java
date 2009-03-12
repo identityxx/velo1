@@ -84,6 +84,8 @@ public interface UserManager {
 	 */
 	public boolean isUserExit(String userName);
 	
+	public User factoryUser(String userName);
+	
 	 /**
 	  * Load all users in the system
 	  * @return A collection of all user entities

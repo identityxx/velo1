@@ -35,6 +35,9 @@ public class UserHome extends EntityHome<User> {
 	@In
 	FacesMessages facesMessages;
 	
+	//@In
+	//UserManagerLocal userManager;
+	
 	@Logger
 	private Log log;
 	
@@ -51,6 +54,8 @@ public class UserHome extends EntityHome<User> {
 		User user = new User();
 		user.setCreationDate(new Date());
 		return user;
+		//System.out.println("!!!!!!!!!!!!: " + userManager);
+		//return userManager.factoryUser(null);
 	}
 
 	public void wire() {

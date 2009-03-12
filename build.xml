@@ -28,6 +28,7 @@
         <property name="javac.debug" value="true" />
         <property name="javac.deprecation" value="false" />
         <property name="debug" value="false" />
+        <property name="jibx-lib" value="${basedir}/${lib.dir}"/>
 	
 		<!--Properties for validating configuration files -->
 		<property name="validate.resources.dir" value="${basedir}/exploded-archives" />
@@ -43,6 +44,15 @@
                 <fileset refid="lib" />
         </path>
 
+	
+	<!-- JiBX binding compiler task definition -->
+	  <taskdef name="bind" classname="org.jibx.binding.ant.CompileTask">
+	    <classpath>
+	      <fileset dir="${jibx-lib}" includes="*.jar"/>
+	    </classpath>
+	  </taskdef>
+
+	
         <target name="init" description="Initialize the build">
                 <taskdef name="groovyc"
                         classname ="org.codehaus.groovy.ant.Groovyc"
@@ -124,6 +134,7 @@
                         <src path="${src.action.dir}" />
                 </javac>
         </target>
+	
 
         <target name="copyclasses" depends="init" 
                         description="Copy the classes that were compiled by eclipse"
@@ -225,7 +236,18 @@
                 </copy>
         </target>
         
-        <target name="archive" depends="jar,war,ear" 
+	
+	   <!--Added manually-->
+	    <target name="compile-jibx" depends="compile">
+	        <bind verbose="true" load="true" binding="${basedir}/resources/jibx-bindings/resource-reconcile-summary-binding.xml">
+	                    <classpath>
+	                          <pathelement location="${jibx-lib}/jibx-run.jar"/>
+	                          <pathelement path="${jar.dir}"/>
+	                        </classpath>
+	                </bind> 
+	    </target>
+	
+        <target name="archive" depends="compile-jibx,jar,war,ear" 
                         description="Package the archives">
                 <jar jarfile="${dist.dir}/${project.name}.jar" basedir="${jar.dir}"/>
                 <jar jarfile="${dist.dir}/${project.name}.war" basedir="${war.dir}"/>

@@ -15,5 +15,6 @@
    <param name="fromCreationDate" value="#{taskList.task.fromCreationDate}"/>
    <param name="toCreationDate" value="#{taskList.task.toCreationDate}"/>
    <param name="status" value="#{taskList.task.status}"/>
+   <param name="maxResults" value="#{taskList.maxResults}"/>
 
 </page>

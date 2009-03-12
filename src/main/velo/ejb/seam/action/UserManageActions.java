@@ -25,6 +25,7 @@ import javax.ejb.Local;
 import velo.ejb.interfaces.AccountManagerLocal;
 import velo.entity.Account;
 import velo.entity.IdentityAttributesGroup;
+import velo.entity.Resource;
 import velo.entity.Role;
 import velo.entity.UserIdentityAttribute;
 import velo.entity.UserRole;
@@ -63,10 +64,22 @@ public interface UserManageActions {
 
 	public void modifyManuallyAccountsAssociations();
 	
-	
+	public void removeAccountAssociationFromManagedUser(Account account);
 	
 	//for the special UserAccountAssociationValidator
 	public AccountManagerLocal getAccountManager();
+	public void associateAccountToManagedUser();
+	
+	
+	
+	
+	
+	
+	
+	public Resource getSelectedResourceForAccountToUserAssociation();
+	public void setSelectedResourceForAccountToUserAssociation(Resource selectedResourceForAccountToUserAssociation);
+	public Account getAccountForAccountToUserAssociation();
+	public void setAccountForAccountToUserAssociation(Account accountForAccountToUserAssociation);
 	
 	
 	public void destroy();

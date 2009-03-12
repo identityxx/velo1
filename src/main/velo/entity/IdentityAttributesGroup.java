@@ -193,7 +193,7 @@ import org.jboss.seam.annotations.Name;
             inverseJoinColumns=@JoinColumn(name="IDENTITY_ATTRIBUTE_ID")
             )
      */
-    @OneToMany(mappedBy = "identityAttributesGroup", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+    @OneToMany(mappedBy = "identityAttributesGroup", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @OrderBy("displayPriority ASC")
     public Set<IdentityAttribute> getIdentityAttributes() {
         return identityAttributes;

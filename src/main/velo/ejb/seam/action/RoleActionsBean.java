@@ -32,6 +32,7 @@ import org.jboss.seam.annotations.End;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.core.Conversation;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
 
@@ -87,10 +88,11 @@ public class RoleActionsBean implements RoleActions {
 	
 	Resource selectedResource;
 
-	
+	@In
+	Conversation conversation;
 	
 	//this method should be invoked! not 'modifyGroupsInRole' which is invoked by this method!
-	@End
+	//@End
 	public String performModifyGroupsInRole() {
 		//from previous calls (if cancel button was pressed as it's a link)
 		role.getAffectedUsers().clear();
@@ -104,9 +106,13 @@ public class RoleActionsBean implements RoleActions {
 			
 			return "/admin/RoleResourceGroupsModifyAffectedUsers.xhtml";
 		} else {
-			modifyGroupsInRole();
-			return "/admin/Role.xhtml";
+			//return "/admin/Role.xhtml";
+			
+			String ret = modifyGroupsInRole();
+			conversation.end();
+			return ret;
 		}
+		
 	}
 	
 	@End
@@ -176,6 +182,12 @@ public class RoleActionsBean implements RoleActions {
 	
 	
 	
+	
+	
+	
+	
+	//should end the nested conversation (but it doesnt work!)
+	//@End()
 	@End
 	public void modifyApproversGroupsInRole() {
 		log.info("Modifying approvers groups, associating #0 approvers groups, removing association of #1 approvers groups", role.getApproversGroupsToAssign(), role.getRoleApproversGroupsToDelete());
@@ -197,6 +209,7 @@ public class RoleActionsBean implements RoleActions {
 		
 		roleHome.getEntityManager().refresh(role);
 		
+		facesMessages.add("Successfully modified groups associations.");
 		log.info("Successfully modified approvers groups for role!");
 	}
 	

@@ -34,11 +34,11 @@ public class EventDefinitionList extends EntityQuery {
 			"lower(eventDefinition.eventDefinitionId) = #{eventDefinitionList.eventDefinition.eventDefinitionId}",
 			"lower(eventDefinition.uniqueName) like concat(lower(#{eventDefinitionList.eventDefinition.uniqueName}),'%')",
 			"lower(eventDefinition.displayName) like concat(lower(#{eventDefinitionList.eventDefinition.displayName}),'%')",
-			"lower(eventDefinition.description) like concat(lower(#{eventDefinitionList.eventDefinition.description}),'%')",};
+			"lower(eventDefinition.description) like concat(lower(#{eventDefinitionList.eventDefinition.description}),'%')"};
 
 	private EventDefinition eventDefinition = new EventDefinition();
 
-	private static final String EJBQL = "select ed from EventDefinition ed";
+	private static final String EJBQL = "select eventDefinition from EventDefinition eventDefinition";
 	
 	@Override
 	public Integer getMaxResults() {

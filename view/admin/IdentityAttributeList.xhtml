@@ -78,7 +78,11 @@
                     <f:param name="order" value="#{identityAttributeList.order=='identityAttributesGroup.name asc' ? 'identityAttributesGroup.name desc' : 'identityAttributesGroup.name asc'}"/>
                 </s:link>
             </f:facet>
-            #{identityAttribute.identityAttributesGroup.name}
+            
+            <s:link view="/admin/IdentityAttributesGroupList.xhtml" value="#{identityAttribute.identityAttributesGroup.name}">
+                <f:param name="identityAttributesGroupId" value="#{identityAttribute.identityAttributesGroup.identityAttributesGroupId}"/>
+            </s:link>
+                    
         </h:column>
         <h:column>
             <f:facet name="header">

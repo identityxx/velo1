@@ -117,12 +117,12 @@
 					            		</h:column>
 					            		<h:column>
             								<f:facet name="header">Expiration Date</f:facet>
-            								<h:inputText id="expirationDate" value="#{role.expirationDate}">
-                								<s:convertDateTime pattern="MM/dd/yyyy"/>
-                							</h:inputText>
-            								<s:selectDate for="expirationDate">
-												<h:graphicImage url="../img/dtpick.gif" style="margin-left:5px;cursor:pointer"/>
-											</s:selectDate>
+            								
+            								<rich:calendar id="expirationDate" value="#{role.expirationDate}"
+                                                locale="#{locale}"
+                                                popup="true"
+                                                datePattern="dd/MM/yyyy"
+                                                converter="#{dateTimeConverter}"/>
             							</h:column>
         								<h:column>
 	            							<f:facet name="header">Action</f:facet>

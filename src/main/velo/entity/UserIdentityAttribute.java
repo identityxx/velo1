@@ -133,6 +133,7 @@ import velo.exceptions.UnsupportedAttributeTypeException;
         this.identityAttribute = identityAttribute;
     }
     
+    
     /**
      * Get the IdentityAttribute entity that the UserIdentityAttribute entity is based on
      * @return The IdentityAttribute entity to get
@@ -158,7 +159,8 @@ import velo.exceptions.UnsupportedAttributeTypeException;
      * @return Returns the userIdentityAttributeValue.
      */
     //@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE, CascadeType.REMOVE}, mappedBy="userIdentityAttribute", fetch=FetchType.EAGER)
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy="userIdentityAttribute", fetch=FetchType.EAGER)
+    //12-03-09 - crap, changed from EAGER to LAZY, hopefully that is not going to do any harm
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy="userIdentityAttribute", fetch=FetchType.LAZY)
     public List<UserIdentityAttributeValue> getValues() {
         return values;
     }

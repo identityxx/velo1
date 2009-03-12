@@ -7,7 +7,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd">
     
-	<!--<begin-conversation join="true"/>-->
+   <!--<begin-conversation join="true"/>-->
    <action execute="#{userHome.wire}"/>
 
 	<!-- Ajax tab movement cause action execution per tab click!

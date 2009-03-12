@@ -20,7 +20,6 @@ package velo.ejb.seam.action;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -63,6 +62,7 @@ import velo.exceptions.ModifyAttributeFailureException;
 import velo.exceptions.NoResultFoundException;
 import velo.exceptions.ObjectFactoryException;
 import velo.exceptions.OperationException;
+import velo.exceptions.PersistEntityException;
 import velo.storage.UserIdentityAttributeTreeMappedList;
 
 @Scope(CONVERSATION)
@@ -120,14 +120,17 @@ public class UserManageActionsBean implements UserManageActions {
 	// attributes recieved from the view
 	UserIdentityAttributeTreeMappedList orgUserAttrs = new UserIdentityAttributeTreeMappedList();
 	
+	//???
 	private Set<Role> rolesToAddToUser;
-	
-	
-	private String rofl;
-	
 	
 	//manage acocunts associations manually
 	private List<Account> manuallyAccountsAssociations;
+	
+	
+	private Resource selectedResourceForAccountToUserAssociation;
+	private Account accountForAccountToUserAssociation;
+	
+	
 	
 	public void prepareCreateUser() {
 		if (userIdentityAttributesGroups == null) {
@@ -171,7 +174,15 @@ public class UserManageActionsBean implements UserManageActions {
 		userHome.getInstance().addJournalingEntry(UserJournalingActionType.CREATED, loggedUser, "User is created manually", "");
 		
 		if (!userManager.isUserExit(userHome.getInstance().getName())) {
-			return userHome.persist();
+			//USER PERSISTANCE ALWAYS GO THROUGH THE GENERIC METHOD
+			//return userHome.persist();
+			try {
+				userManager.persistUserEntity(userHome.getInstance());
+				return "persisted";
+			}catch(PersistEntityException e) {
+				facesMessages.add(FacesMessage.SEVERITY_ERROR,"Could not persist user name '#0' due to: #1", userHome.getInstance().getName(),e.getMessage());
+				return null;
+			}
 		} else {
 			facesMessages.add("User name '#0' already exist in repository!", userHome.getInstance().getName());
 			return null;
@@ -645,19 +656,24 @@ public class UserManageActionsBean implements UserManageActions {
 	}
 	
 	public void modifyManuallyAccountsAssociations() {
-		for (Account currDummyAcc : getManuallyAccountsAssociations()) {
+		List<Account> accs = getManuallyAccountsAssociations();
+		log.debug("Modfying manually accounts associations for user #0, amount of accounts to modify: #1", user.getName(), accs.size());
+		
+		for (Account currDummyAcc : accs) {
+			log.debug("Modifying account name '#0' on resource '#1'",currDummyAcc.getName(),currDummyAcc.getResource().getUniqueName());
 			
-					
 			//load the corresponding account from DB
 			//(if its a new account assoc then validator already checked the account is not associated to any user)
 			//(if the account is an old assoication, then nothing should occur, only a unneccessary update call
-			accountManager.setEntityManager(entityManager);
+//			accountManager.setEntityManager(entityManager);
+			
+			System.out.println("!!!!!!!!!!!!!!!!(1)");
 			Account loadedAccount = accountManager.findAccount(currDummyAcc.getName(), currDummyAcc.getResource().getUniqueName());
 			
 			//System.out.println("Loaded account : " + loadedAccount.toString() + ", named "+ loadedAccount.getName() );
-			
+			System.out.println("!!!!!!!!!!!!!!!!(2)");
 			Account accountAssocToUser = user.getAccountOnTarget(currDummyAcc.getResource().getUniqueName());
-			
+			System.out.println("!!!!!!!!!!!!!!!!(3)");
 			//if no account name was specified, then check whether the user had an account on the current iterated resource
 			//if so clean the assoication as it got cleaned.
 			
@@ -701,8 +717,49 @@ public class UserManageActionsBean implements UserManageActions {
 	}
 	
 	
+	public void removeAccountAssociationFromManagedUser(Account account) {
+		account.setUser(null);
+		userHome.getInstance().getAccounts().remove(account);
+		userHome.getEntityManager().merge(account);
+		userHome.update();
+	}
+	
+	public void associateAccountToManagedUser() {
+		log.debug("Associating account #0 related to resource #1 to managed user #2", getAccountForAccountToUserAssociation().getName(), getAccountForAccountToUserAssociation().getResource().getUniqueName(), userHome.getInstance().getName());
+		
+		//FIXME: Should be done via the converter already?
+		if (getAccountForAccountToUserAssociation().getUser() != null) {
+			facesMessages.add("Cannot perform association, account '#0' is already associated to another user ('#1')",getAccountForAccountToUserAssociation().getName(),getAccountForAccountToUserAssociation().getUser().getName());
+			return;
+		}
+		
+		Account managedAccount = userHome.getEntityManager().merge(getAccountForAccountToUserAssociation());
+		managedAccount.setUser(userHome.getInstance());
+		userHome.getInstance().getAccounts().add(getAccountForAccountToUserAssociation());
+	}
+
+
 	
 	
+	
+	public Resource getSelectedResourceForAccountToUserAssociation() {
+		return selectedResourceForAccountToUserAssociation;
+	}
+
+	public void setSelectedResourceForAccountToUserAssociation(
+			Resource selectedResourceForAccountToUserAssociation) {
+		this.selectedResourceForAccountToUserAssociation = selectedResourceForAccountToUserAssociation;
+	}
+	
+	public Account getAccountForAccountToUserAssociation() {
+		return accountForAccountToUserAssociation;
+	}
+
+	public void setAccountForAccountToUserAssociation(
+			Account accountForAccountToUserAssociation) {
+		this.accountForAccountToUserAssociation = accountForAccountToUserAssociation;
+	}
+
 	@Destroy
 	@Remove
 	public void destroy() {

@@ -20,12 +20,25 @@
         
             <s:decorate template="layout/display.xhtml">
                 <ui:define name="label">Module Name</ui:define>
-                <h:inputText id="module" value="#{eventLogEntryList.eventLogEntry.module}"/>
+                <h:selectOneMenu id="module" value="#{eventLogEntryList.eventLogEntry.module}">
+                    <s:selectItems value="#{eventLogEntryModules}" var="s" label="#{s}" noSelectionLabel="-all modules-"/>
+                    <s:convertEnum />
+                </h:selectOneMenu >
             </s:decorate>
-
+            
+            
             <s:decorate template="layout/display.xhtml">
                 <ui:define name="label">Level</ui:define>
-                <h:inputText id="level" value="#{eventLogEntryList.eventLogEntry.level}"/>
+                <h:selectOneMenu id="level" value="#{eventLogEntryList.eventLogEntry.level}">
+                    <s:selectItems value="#{eventLogEntryLevels}" var="s" label="#{s}" noSelectionLabel="-all levels-"/>
+                    <s:convertEnum />
+                </h:selectOneMenu >
+            </s:decorate>
+            
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Message</ui:define>
+                <h:inputText id="message" value="#{eventLogEntryList.eventLogEntry.message}"/>
             </s:decorate>
             
             <div style="clear: both"/>

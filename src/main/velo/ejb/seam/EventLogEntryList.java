@@ -21,17 +21,21 @@ import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.framework.EntityQuery;
 
 import velo.entity.EventLogEntry;
+import velo.entity.EventLogEntry.EventLogLevel;
+import velo.entity.EventLogEntry.EventLogModule;
 
 @Name("eventLogEntryList")
 public class EventLogEntryList extends EntityQuery {
 
 	private static final String[] RESTRICTIONS = {
-			"lower(eventLogEntry.module) like concat(lower(#{eventLogList.eventLogEntry.module}),'%')",
-			"lower(eventLogEntry.level) like concat(lower(#{eventLogList.eventLogEntry.level}),'%')",};
+			"eventLogEntry.module = #{eventLogEntryList.eventLogEntry.module}",
+			"lower(eventLogEntry.message) like concat('%',lower(#{eventLogEntryList.eventLogEntry.message}),'%')",
+			"eventLogEntry.level = #{eventLogEntryList.eventLogEntry.level}"};
 
 	private EventLogEntry eventLogEntry = new EventLogEntry();
 	private static final String EJBQL = "select eventLogEntry from EventLogEntry eventLogEntry";
@@ -51,4 +55,15 @@ public class EventLogEntryList extends EntityQuery {
     	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
     	setEjbql(EJBQL);
     }
+	
+	
+	@Factory("eventLogEntryModules")
+	public EventLogModule[] getEventLogEntryModules() {
+		return EventLogModule.values();
+	}
+	
+	@Factory("eventLogEntryLevels")
+	public EventLogLevel[] getEventLogEntryLevels() {
+		return EventLogLevel.values();
+	}
 }

@@ -40,6 +40,8 @@ import javax.persistence.Query;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 
 import velo.actions.ActionManager;
 import velo.actions.ResourceActionInterface;
@@ -89,6 +91,8 @@ A Stateless EJB bean for managing Roles
 @author Asaf Shakarchi
  */
 @Stateless
+@Name("roleManager")
+@AutoCreate
 public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
 
     private static Logger log = Logger.getLogger(RoleBean.class.getName());
@@ -289,6 +293,7 @@ public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
     - Perform roles modification for a certain user
      */
     //public BulkTask modifyRolesOfUserTasks(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user, boolean modifyEntities) throws OperationException {
+    @Deprecated
     public BulkTask modifyRolesOfUserTasksAA(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
     	return null;
     	

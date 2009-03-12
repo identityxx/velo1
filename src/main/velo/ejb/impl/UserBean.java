@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.codehaus.groovy.tools.shell.commands.ShowCommand;
 import org.jboss.annotation.IgnoreDependency;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
@@ -62,6 +63,7 @@ import velo.ejb.interfaces.UserManagerRemote;
 import velo.entity.Account;
 import velo.entity.BulkTask;
 import velo.entity.Capability;
+import velo.entity.CapabilityFolder;
 import velo.entity.CreateUserRequest;
 import velo.entity.EventDefinition;
 import velo.entity.IdentityAttribute;
@@ -94,6 +96,7 @@ import velo.request.Attributes;
 import velo.scripting.ScriptFactory;
 import velo.scripting.UserPluginIdTools;
 import velo.storage.Attribute;
+import velo.utils.Stopwatch;
 
 /**
  * A Stateless EJB bean for User management
@@ -368,15 +371,38 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	}
 	
 	
+    public User factoryUser(String userName) {
+        User user = new User();
+        if (userName != null) 
+        	user.setName(userName);
+        user.setDisabled(false);
+        user.setCreationDate(new Date());
+        
+        //before persisting the user, add the user to the default capability folder.
+		CapabilityFolder cf = findCapabilityFolder("STANDARD_USER");
+		
+		if (cf == null) {
+			log.error("Couldn't attach User to capability folder 'STANDARD_USER' as it does not exist.");
+		} else {
+			user.getCapabilityFolders().add(cf);
+		}
+        
+        return user;
+    }
+	
+    
+    //hopefully always invoked with an object that was created via "factoryUser"
 	public void persistUserEntity(User user) throws PersistEntityException {
 		try {
 			invokeCreateUserEvent(user);
 		} catch (ScriptInvocationException e) {
 			log.error(e.toString());
 		}
-		
 		//persist user anyway, events should not cause user persistancy to fail, this is too risky
+
+		//what for? should be done using User.factoryUser (always should go thorugh factory!!!)
 		user.setCreationDate(new Date());
+		
 		em.persist(user);
 	}
 	
@@ -533,8 +559,20 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		qa.setParameter("uiaVal2_Content", "Strator");
 		*/
 		
+		Stopwatch s = new Stopwatch();
+		s.start();
 		List<User> result = q.getResultList();
-		log.debug("The resulted users amount is '" + result.size());
+		log.debug("The resulted users amount is '" + result.size() + ", execution time: '" + s.asSeconds() + "' seconds.");
+		
+		if (log.isTraceEnabled()) {
+			log.trace("Retrieving full name from all fetched users...");
+			int ii=0;
+			for (User currUser : result) {
+				ii++;
+				log.trace("Full name of user: " + currUser.getFullName());
+			}
+		}
+		
 		return result;
 	}
 	
@@ -686,6 +724,50 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	}
 
 
+	
+	
+	
+	//TODO: Move to more suitable place.
+	public CapabilityFolder findCapabilityFolder(String uniqueName) {
+		
+		log.debug("Finding Capability Folder in repository with unique name '" + uniqueName + "'");
+
+		try {
+			Query q = em.createNamedQuery("capabilityFolder.findByUniqueName").setParameter("uniqueName", uniqueName);
+			return (CapabilityFolder) q.getSingleResult();
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.debug("Found Capability Folder did not result any capability folder for unique name '" + uniqueName + "', returning null.");
+			return null;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

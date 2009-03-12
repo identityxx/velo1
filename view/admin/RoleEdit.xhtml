@@ -99,7 +99,7 @@
 						<ui:define name="label">Assigned Resources</ui:define>
 						
 						<rich:pickList value="#{roleHome.instance.resources}"> 
-                            <s:selectItems value="#{{guiResources}}" var="res" label="#{res.displayName}"/>
+                            <s:selectItems value="#{guiResources}" var="res" label="#{res.displayName}"/>
                             <s:convertEntity entityClass="velo.entity.Resource"/>
                         </rich:pickList>
                         
@@ -148,9 +148,10 @@
 				rendered="#{roleHome.managed}" /> <h:commandButton
 				id="delete" value="Delete" action="#{roleHome.remove}"
 				rendered="#{roleHome.managed}" /> <s:button id="done"
-				value="Done" propagation="end" view="/admin/RolesFolder.xhtml"
-				rendered="#{roleHome.managed}" /> <s:button id="cancel"
-				value="Cancel" propagation="end"
+                value="Done" propagation="end" view="/admin/Role.xhtml"
+                rendered="#{roleHome.managed}" />
+                <s:button id="cancel"
+				value="Cancel" propagation="none"
 				view="/admin/#{empty roleFrom ? 'RoleList' : roleFrom}.xhtml"
 				rendered="#{!roleHome.managed}" /></div>
 		</h:form>

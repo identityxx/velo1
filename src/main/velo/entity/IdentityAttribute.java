@@ -212,7 +212,6 @@ import velo.scripting.ScriptFactory;
         this.userIdentityAttributes = userIdentityAttributes;
     }
     
-    
     /**
      @return the userIdentityAttributes
      */

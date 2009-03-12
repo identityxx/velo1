@@ -48,6 +48,7 @@ import javax.jms.QueueSession;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -60,6 +61,8 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.apache.log4j.Logger;
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.jboss.annotation.IgnoreDependency;
 import org.jboss.annotation.ejb.TransactionTimeout;
 //import org.jboss.tm.TransactionManagerFactory;
@@ -233,11 +236,21 @@ import velo.exceptions.ScriptInvocationException;
         */
     }
     
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public void indicateTaskAsRunning(Task task) {
+    	em.getTransaction().begin();
     	log.debug("Indicating task id '" + task.getTaskId() + "' as RUNNING...");
         task.setStatus(TaskStatus.RUNNING);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + em.getFlushMode());
         em.merge(task);
-        em.flush();
+        System.out.println("!!!!WAAAAAAAAAAAAAA: " + em.contains(task));
+        task.setStatus(TaskStatus.RUNNING);
+        Session s = (Session)em.getDelegate();
+        s.setFlushMode(org.hibernate.FlushMode.MANUAL);
+        //em.flush();
+        s.flush();
+        em.getTransaction().commit();
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + em.getFlushMode());
         log.debug("Merged and flushed task as RUNNING status.");
     }
     

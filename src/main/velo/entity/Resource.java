@@ -28,7 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -183,7 +182,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	}
 
 	@Column(name = "UNIQUE_NAME", nullable = false, unique = true)
-	@Length(min = 3, max = 50)
+//makes troubles with seam search	@Length(min = 3, max = 50)
 	@NotNull
 	// seam
 	public String getUniqueName() {
@@ -206,7 +205,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	 * @return The Resource Description
 	 */
 	@Column(name = "DESCRIPTION", nullable = true)
-	@Length(min = 5, max = 200)
+//makes troubles with seam search	@Length(min = 5, max = 200)
 	@NotNull
 	// seam
 	public String getDescription() {
@@ -229,7 +228,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	 * @return The displayName of the Resource as a string
 	 */
 	@Column(name = "DISPLAY_NAME", nullable = false, unique = true)
-	@Length(min = 3, max = 50)
+//makes troubles with seam search	@Length(min = 3, max = 50)
 	@NotNull
 	// seam
 	public String getDisplayName() {

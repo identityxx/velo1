@@ -7,17 +7,14 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd">
     
-	<begin-conversation nested="true"/>
-	
 	<action execute="#{roleHome.wire}"/>
 
 	<param name="roleFrom"/>
 	<param name="roleId" value="#{roleHome.roleId}"/>
-	
-	
+
+    <!--<begin-conversation nested="true"/>-->
 	<navigation from-action="#{roleActions.modifyApproversGroupsInRole}">
-       <end-conversation/>
+       <!--<end-conversation before-redirect="true"/>-->
        <redirect view-id="/admin/Role.xhtml"/>
 	</navigation>
-
 </page>

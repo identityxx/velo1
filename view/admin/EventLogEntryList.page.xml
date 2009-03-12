@@ -12,5 +12,6 @@
    <param name="from"/>
    <param name="module" value="#{eventLogEntryList.eventLogEntry.module}"/>
    <param name="level" value="#{eventLogEntryList.eventLogEntry.level}"/>
+   <param name="message" value="#{eventLogEntryList.eventLogEntry.message}"/>
 
 </page>

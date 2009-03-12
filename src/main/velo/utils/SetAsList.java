@@ -39,6 +39,9 @@ public class SetAsList {
 	}
 	
 	public static List asList(Collection c) {
+		if (c == null) {
+			return null;
+		}
 		return asList(c, c.size());
 	}
 	

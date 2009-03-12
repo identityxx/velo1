@@ -60,7 +60,10 @@
                     <f:param name="order" value="#{approversGroupList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}"/>
                 </s:link>
             </f:facet>
-            #{approversGroup.uniqueName}
+            
+            <s:link view="/admin/#{empty from ? 'ApproversGroup' : from}.xhtml" value="#{approversGroup.uniqueName}">
+                <f:param name="approversGroupId" value="#{approversGroup.approversGroupId}"/>
+            </s:link>
         </h:column>
         <h:column>
             <f:facet name="header">

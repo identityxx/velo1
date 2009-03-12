@@ -19,6 +19,8 @@ package velo.reconcilidation.events.reconcileUsers;
 
 import java.util.Map;
 
+import org.jboss.seam.annotations.Transactional;
+
 import velo.entity.ReconcileUsersPolicy;
 import velo.entity.User;
 import velo.reconcilidation.events.Event;
@@ -28,6 +30,7 @@ import velo.reconcilidation.events.Event;
  *
  *  @author Asaf Shakarchi
  */
+@Deprecated
 public abstract class UserEvent extends Event {
     
     /**
@@ -53,8 +56,11 @@ public abstract class UserEvent extends Event {
     }
     
     
+    //FUCKED UP, USER RECONCILIATION SHOULD NOT WORK ANYWAY RIGHT?
     public User factoryUser(String userName) {
-        User user = User.factoryUser(userName);
+    	//TODO:Very bad, should go through factory of userManager.factoryUser!
+        //User user = User.factoryUser(userName);
+    	User user = null;
         user.setCreatedByReconcile(true);
         
         return user;

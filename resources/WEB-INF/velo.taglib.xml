@@ -68,7 +68,7 @@
 			<validator-id>userAccountAssocicationValidator</validator-id>
 		</validator>
 	</tag>
-
+	
 
 	<tag>
 	   <tag-name>dateTimeValidator</tag-name>
@@ -81,6 +81,13 @@
         <tag-name>userNameToUserEntityConverter</tag-name>
         <converter>
             <converter-id>userNameToUserEntityConverter</converter-id>
+        </converter>
+    </tag>
+    
+    <tag>
+        <tag-name>accountNameToAccountEntityConverter</tag-name>
+        <converter>
+            <converter-id>accountNameToAccountEntityConverter</converter-id>
         </converter>
     </tag>
     

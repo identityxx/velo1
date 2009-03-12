@@ -33,8 +33,12 @@ import velo.entity.User;
 @Install(precedence=BUILT_IN, dependencies="org.jboss.seam.bpm.jbpm")
 public class LoggedRequestedProcessManager
 {
-	@In
-	User loggedUser;
+	//@In
+	//User loggedUser;
+	
+	
+	
+	
 	
    //@Unwrap
    @Transactional
@@ -45,7 +49,12 @@ public class LoggedRequestedProcessManager
 	   List<ProcessInstance> piList = new ArrayList<ProcessInstance>();
 	   
 	   //ManagedJbpmContext.instance().getSession().createQuery("SELECT pi from ProcessInstance pi, IN(pi.)
-	   List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND vi.processInstance.isSuspended=0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", loggedUser.getName()).list();
+	   
+	   //not allowed to do loggedUser for Application scope
+	   //List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND vi.processInstance.isSuspended=0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", loggedUser.getName()).list();
+	   List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND vi.processInstance.isSuspended=0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", Actor.instance().getId()).list();
+	   
+	   
 	   
 	   for (StringInstance si : l) {
 		   piList.add(si.getProcessInstance());
@@ -82,7 +91,10 @@ public class LoggedRequestedProcessManager
 	   Calendar c = Calendar.getInstance();
 	   c.add(Calendar.DAY_OF_YEAR, previousDays);
 	   
-	   List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND (vi.processInstance.end = null OR vi.processInstance.end >= :endDate) AND vi.processInstance.isSuspended = 0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", loggedUser.getName()).setParameter("endDate", c.getTime()).list();
+	   
+	   //not allowed to do loggedUser for Application scope
+	   //List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND (vi.processInstance.end = null OR vi.processInstance.end >= :endDate) AND vi.processInstance.isSuspended = 0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", loggedUser.getName()).setParameter("endDate", c.getTime()).list();
+	   List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND (vi.processInstance.end = null OR vi.processInstance.end >= :endDate) AND vi.processInstance.isSuspended = 0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", Actor.instance().getId()).setParameter("endDate", c.getTime()).list();
 	   
 	   for (StringInstance si : l) {
 		   piList.add(si.getProcessInstance());

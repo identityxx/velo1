@@ -1120,16 +1120,6 @@ import velo.tools.FileUtils;
     }
 	
 	
-    public static User factoryUser(String userName) {
-        User user = new User();
-        if (userName != null) 
-        	user.setName(userName);
-        user.setDisabled(false);
-        user.setCreationDate(new Date());
-        
-        return user;
-    }
-    
     
     //used by request/gui to factory a new user based on attributes
     public void load(Collection<UserIdentityAttribute> userIdentityAttributes, String userName) throws ObjectFactoryException {

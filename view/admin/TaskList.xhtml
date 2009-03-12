@@ -64,7 +64,7 @@
             <s:decorate template="layout/display.xhtml">
                 <ui:define name="label">Max Results</ui:define>
                 <rich:inputNumberSlider id="maxResults" value="#{taskList.maxResults}">
-					<f:validateLongRange minimum="0"/>
+					<f:validateLongRange minimum="1"/>
 				</rich:inputNumberSlider>
             </s:decorate>
 

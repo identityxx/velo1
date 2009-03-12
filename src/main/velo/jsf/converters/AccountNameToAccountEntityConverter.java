@@ -10,16 +10,18 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.faces.Converter;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.ui.AbstractEntityLoader;
 
-import velo.ejb.interfaces.UserManagerLocal;
+import velo.ejb.interfaces.AccountManagerLocal;
 import velo.ejb.seam.action.UserManageActions;
-import velo.entity.User;
+import velo.entity.Account;
+import velo.entity.Resource;
 
-@Name("userNameToUserEntityConverter")
+@Name("accountNameToAccountEntityConverter")
 @BypassInterceptors
 @Converter
-public class UserNameToUserEntityConverter implements javax.faces.convert.Converter {
+public class AccountNameToAccountEntityConverter implements javax.faces.convert.Converter {
+	private String resourceUniqueName;
+	
 	/*
 	private AbstractEntityLoader entityLoader;
 
@@ -51,12 +53,9 @@ public class UserNameToUserEntityConverter implements javax.faces.convert.Conver
 			return null;
 		}
 		
-		if (value instanceof User) 
-		{
-			User u = (User)value;
-			return u.getName();
+		if (value instanceof String) {
+			return value.toString();
 		}
-		
 		
 		return null;
 	}
@@ -67,25 +66,48 @@ public class UserNameToUserEntityConverter implements javax.faces.convert.Conver
 	{
 		if (value == null) {return null;}
 		if (value.length() < 1) {return null;}
+
+		//an ugly workaround to fetch the resource unique name from userManageActions as parameter binding to converters via facelets seems not be working
+		UserManageActions userManageActions =  (UserManageActions)Component.getInstance("userManageActions");
+		Resource res = userManageActions.getSelectedResourceForAccountToUserAssociation();
+		resourceUniqueName = res.getUniqueName();
 		
-		UserManagerLocal userManager = (UserManagerLocal)Component.getInstance("userManager");
-		User u = userManager.findUser(value);
+
+		AccountManagerLocal accountManager = (AccountManagerLocal)Component.getInstance("accountManager");
+		Account acc = accountManager.findAccount(value,resourceUniqueName);
 		
-		if (u == null) {
-			throw new ConverterException(createMessage(FacesMessage.SEVERITY_ERROR,"Could not find user name '" + value + "'"));
+		if (acc == null) {
+			throw new ConverterException(createMessage(FacesMessage.SEVERITY_ERROR,"Could not find account name '" + value + "' for resource '" + resourceUniqueName + "'"));
 		}
 		
 		//TODO: //Ugly...:/
-		u.getApproversGroups().size();
+		//u.getApproversGroups().size();
+		
+		
+		
+		
 		
 		//return getEntityLoader().get(value);
 		
 		//return value;
-		return u;
+		return acc;
 	}
 	
 	
 	private FacesMessage createMessage(FacesMessage.Severity severity, String msg) {
 		return new FacesMessage(severity,msg, null);
+	}
+
+
+	
+	
+	
+	public String getResourceUniqueName() {
+		return resourceUniqueName;
+	}
+
+
+	public void setResourceUniqueName(String resourceUniqueName) {
+		this.resourceUniqueName = resourceUniqueName;
 	}
 }

@@ -37,6 +37,8 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.jboss.annotation.IgnoreDependency;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 
 import velo.actions.ActionManager;
 import velo.actions.ResourceAccountActionInterface;
@@ -91,6 +93,8 @@ import velo.storage.Attribute;
 //	Required in order to check status of accounts
   @EJBs({ @EJB(name="resourceEjbRef",beanInterface=ResourceManagerLocal.class),  @EJB(name="adapterEjbRef",beanInterface=AdapterManagerLocal.class) })
 @Stateless()
+@Name("accountManager")
+@AutoCreate
 public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 	  private final String table_accounts_to_resource_group = "VL_ACCOUNTS_TP_RESOURCE_GRPS";
 	  

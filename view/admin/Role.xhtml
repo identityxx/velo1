@@ -261,15 +261,18 @@
 		
 		<s:button view="/admin/RoleEditTargetGroups.xhtml" 
 			id="editAssociatedAccessGroups" 
-			value="Edit Associated Access Groups" propagation="nest"/>
+			value="Edit Associated Access Groups" />
+			<!-- propagation="nest" -->
 			
 		<s:button view="/admin/RoleEditApproversGroups.xhtml" 
 			id="editAssociatedApproversGroups" 
-			value="Edit Associated Approvers Groups" propagation="nest"/>
+			value="Edit Associated Approvers Groups"/>
 		
 		<s:button view="/admin/RoleEditResourceAttributes.xhtml" 
 			id="editResourceAttributes" 
-			value="Edit Resource Attributes" propagation="nest"/>
+			value="Edit Resource Attributes"/>
+		
+		<!-- propagation="nest" -->
 			
 		<s:button action="#{roleActions.changeRoleStatus}" id="crs" 
 			value="#{roleHome.instance.disabled ? 'Enable role' : 'Disable role'}"/>	

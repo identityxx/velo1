@@ -1,0 +1,107 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:velo="http://open-identity.net/products/velo/taglib"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+
+	<ui:define name="body">
+
+		<rich:panel>
+			<f:facet name="header">Associated accounts to User #{userHome.instance.name}</f:facet>
+
+			<h:form id="managedUserAccountAssociationsForm" styleClass="edit">
+				<h:outputText value="No account associated to user."
+					rendered="#{empty userHome.instance.accounts}" />
+
+
+				<a:outputPanel id="accountsToUserPanel">
+					<rich:dataTable id="userAccountsList" var="account"
+						value="#{velo:setAsList(userHome.instance.accounts)}"
+						rendered="#{not empty userHome.instance.accounts}">
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="Account Name" />
+							</f:facet>
+                            #{account.name}
+                        </h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="Target System" />
+							</f:facet>
+                            #{account.resource.displayName}
+                        </h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="Actions" />
+							</f:facet>
+							<a:commandButton value="Remove Association"
+								action="#{userManageActions.removeAccountAssociationFromManagedUser(account)}"
+								reRender="accountsToUserPanel" />
+						</h:column>
+					</rich:dataTable>
+				</a:outputPanel>
+
+			</h:form>
+		</rich:panel>
+
+		<rich:spacer width="1" height="15" />
+		<rich:separator />
+		<rich:spacer width="1" height="15" />
+		<rich:panel>
+			<f:facet name="header">Associate new account to User</f:facet>
+
+
+			<h:form>
+				<s:decorate template="layout/edit.xhtml">
+					<ui:define name="label">Resource</ui:define>
+					<h:selectOneMenu id="resource"
+						value="#{userManageActions.selectedResourceForAccountToUserAssociation}"
+						required="true">
+						<s:selectItems value="#{guiResources}" var="res"
+							label="#{res.displayName}" noSelectionLabel="---select---" />
+						<a:support event="onchange" ajaxSingle="true"/>
+                        <s:convertEntity />
+                    </h:selectOneMenu>
+				</s:decorate>
+
+				<s:decorate template="layout/edit.xhtml">
+					<ui:define name="label">Account Name</ui:define>
+
+
+					<h:inputText required="true"
+						value="#{userManageActions.accountForAccountToUserAssociation}">
+						<velo:accountNameToAccountEntityConverter
+							resourceUniqueName="zzzz" />
+						<f:validateLength minimum="1" />
+					</h:inputText>
+				</s:decorate>
+
+				<s:decorate template="layout/display.xhtml">
+					<h:commandButton value="Associate" reRender="accountsToUserPanel"
+						action="#{userManageActions.associateAccountToManagedUser()}" />
+				</s:decorate>
+				<div style="clear: both"></div>
+
+			</h:form>
+		</rich:panel>
+
+
+		<s:button value="Back to User Management"
+			view="/admin/UserManage.xhtml">
+			<f:param name="userId" action="#{userManageActions.manageUser}"
+				value="#{userHome.instance.userId}" />
+		</s:button>
+	</ui:define>
+
+</ui:composition>
