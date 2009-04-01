@@ -42,13 +42,14 @@
             
             <s:decorate template="layout/display.xhtml">
                 <ui:define name="label">Status</ui:define>
-                <h:selectOneMenu id="status" value="#{workflowProcessList.status}">
-                    <f:selectItem itemValue="ALL" itemLabel="All"/>
-                    <f:selectItem itemValue="ACTIVE " itemLabel="Active"/>
+                <h:selectOneMenu id="status" value="#{workflowProcessList.status}"  disabled="true">
+                    <f:selectItem itemValue="" itemLabel="All"/>
+                    <f:selectItem itemValue="ACTIVE" itemLabel="Active"/>
                     <f:selectItem itemValue="FINISHED" itemLabel="Finished"/>
                 </h:selectOneMenu>
             </s:decorate>
             
+            <!-- 
             <s:decorate template="layout/display.xhtml">
             <ui:define name="label">Search by Variable</ui:define>
             <a:outputPanel id="processVarsPanel">
@@ -63,6 +64,7 @@
             &nbsp;&nbsp;&nbsp;
             <h:inputText value=""/>
             </s:decorate>
+             -->
             
             
             <s:decorate id="searchCreationDateDecoration" template="layout/display.xhtml">
@@ -74,7 +76,7 @@
                     locale="#{locale}"
                     popup="true"
                     datePattern="dd/MM/yyyy"
-                    converter="#{dateTimeConverter}"
+                    converter="#{seam.dateTimeConverter}"
                 />
                 
                 <h:outputText value="End:"/>
@@ -82,7 +84,8 @@
                     locale="#{locale}"
                     popup="true"
                     datePattern="dd/MM/yyyy"
-                    converter="#{dateTimeConverter}"/>
+                    converter="#{seam.dateTimeConverter}"
+                />
                 </h:panelGrid>
             </s:decorate>
             
@@ -100,7 +103,7 @@
         <f:facet name="header">Process Search Results</f:facet>
     <div class="results" id="processList">
 
-    <h:outputText value="No process instances exists" 
+    <h:outputText value="No process instances exists. " 
                rendered="#{empty workflowProcessList.resultList}"/>
                
     <h:outputText value="Found #{workflowProcessList.resultCount} entries."/>

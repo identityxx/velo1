@@ -91,4 +91,12 @@
         </converter>
     </tag>
     
+    
+    <tag>
+        <tag-name>dateTimeConverter</tag-name>
+            <converter>
+                <converter-id>dateTimeConverter</converter-id>
+            </converter>
+    </tag>
+    
 </facelet-taglib>

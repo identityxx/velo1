@@ -31,13 +31,16 @@ import java.util.TreeMap;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.codehaus.groovy.tools.shell.commands.ShowCommand;
 import org.jboss.annotation.IgnoreDependency;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
@@ -79,7 +82,6 @@ import velo.entity.UserIdentityAttribute;
 import velo.entity.UserRole;
 import velo.exceptions.ActionFailureException;
 import velo.exceptions.BulkActionsFactoryFailureException;
-import velo.exceptions.EncryptionException;
 import velo.exceptions.EntityAssociationException;
 import velo.exceptions.ModifyAttributeFailureException;
 import velo.exceptions.NoResultFoundException;
@@ -122,8 +124,11 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	/**
 	 * Injected entity manager
 	 */
-	@PersistenceContext
-	public EntityManager em;
+	//@PersistenceContext
+	public EntityManager entityManager;
+	
+	@PersistenceUnit
+	private EntityManagerFactory factory;
 
 	/**
 	 * Inject a local ResourceAttribute ejb
@@ -227,7 +232,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			+ "'");
 
 			// Merge the entity
-			em.merge(currUIA);
+			getEntityManager().merge(currUIA);
 
 			
 			/*Not yet supported
@@ -301,7 +306,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		name = name.toUpperCase();
 		
 		try {
-			Query q = em.createNamedQuery("user.findByName").setParameter("name",name);
+			Query q = getEntityManager().createNamedQuery("user.findByName").setParameter("name",name);
 			return (User) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
@@ -326,7 +331,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	public User findUserById(long userId) {
 		try {
-			User loadedUser = (User) em.find(User.class, userId);
+			User loadedUser = (User) getEntityManager().find(User.class, userId);
 
 			return loadedUser;
 		} catch (NoResultException e) {
@@ -339,7 +344,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	public boolean isUserExit(String userName) {
 		log.trace("Checking whether username: " + userName + " exist or not...");
-		Query q = em.createNamedQuery("user.isExistsByName").setParameter("userName", userName.toUpperCase());
+		Query q = getEntityManager().createNamedQuery("user.isExistsByName").setParameter("userName", userName.toUpperCase());
 		Long num = (Long) q.getSingleResult();
 
 		if (num == 0) {
@@ -364,7 +369,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	public Collection<User> findAllUsers() {
 		try {
-			return em.createNamedQuery("user.findAll").getResultList();
+			return getEntityManager().createNamedQuery("user.findAll").getResultList();
 		} catch (Exception e) {
 			throw new EJBException(e.getMessage());
 		}
@@ -403,11 +408,11 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		//what for? should be done using User.factoryUser (always should go thorugh factory!!!)
 		user.setCreationDate(new Date());
 		
-		em.persist(user);
+		getEntityManager().persist(user);
 	}
 	
 	public Long getCreatedUsersAmount(Date from, Date to) {
-		Query q = em.createQuery("select count(*) from User user where user.creationDate > :fromDate and user.creationDate < :toDate").setParameter("fromDate",from).setParameter("toDate",to);
+		Query q = getEntityManager().createQuery("select count(*) from User user where user.creationDate > :fromDate and user.creationDate < :toDate").setParameter("fromDate",from).setParameter("toDate",to);
 		
 		Long num = (Long) q.getSingleResult();
 		
@@ -423,7 +428,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		}
 		
 		user.getCapabilities().add(c);
-		em.merge(user);
+		getEntityManager().merge(user);
 	}
 	
 	
@@ -431,7 +436,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		log.debug("Finding Capability in repository with name '" + uniqueName + "'");
 
 		try {
-			Query q = em.createNamedQuery("capability.findByName").setParameter("name",uniqueName);
+			Query q = getEntityManager().createNamedQuery("capability.findByName").setParameter("name",uniqueName);
 			return (Capability) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
@@ -442,7 +447,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	
 	public List<User> findAllUsersAssignedToRole(Role role) {
-		return em.createNamedQuery("user.findAssignedToRole").setParameter("role", role).getResultList();
+		return getEntityManager().createNamedQuery("user.findAssignedToRole").setParameter("role", role).getResultList();
 	}
 	
 	
@@ -456,7 +461,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			+ " AND ( (UPPER(uiav.VALUE_STRING) like :uiaValue) )"; 
 		
 		try {
-			Query q = em.createNativeQuery(query, User.class).setParameter("identityAttributeUniqueName",identityAttributeUniqueName).setParameter("uiaValue", value.toUpperCase());
+			Query q = getEntityManager().createNativeQuery(query, User.class).setParameter("identityAttributeUniqueName",identityAttributeUniqueName).setParameter("uiaValue", value.toUpperCase());
 			return (User) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
@@ -469,9 +474,31 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		}
 	}
 	
+	
+	public List<User> findUsersByFullName(String fullName, int maxResults) {
+		Map<String,String> mapAttrs = new HashMap<String,String>();
+		
+		if ( (fullName == null) || (fullName.length() < 1) ) return null;
+		
+		fullName = fullName.trim();
+		if (!fullName.contains(" ")) {
+			mapAttrs.put("FIRST_NAME", fullName + "%");
+		} else {
+			String[] arr = fullName.split(" ");
+			mapAttrs.put("FIRST_NAME", arr[0] + "%");
+			mapAttrs.put("LAST_NAME", arr[1] + "%");
+		}
+		
+		return findUsers(mapAttrs,false,true,maxResults);
+	}
+	
+	public List<User> findUsers(Map<String,String> ias, boolean caseSensitive) {
+		return findUsers(ias, caseSensitive,false,0);
+	}
+	
 	//TODO: Support case-sensitive for values
 	//TODO: Support data types (currently only STRING is supported)
-	public List<User> findUsers(Map<String,String> ias, boolean caseSensitive) {
+	public List<User> findUsers(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
 		log.debug("Finding users based on Identity Attributes has started...");
 		log.debug("Amount of creteria Identity Attributes is '" + ias.size() + "'");
 		
@@ -514,14 +541,19 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			query.append(caseSensitive ? "" : "UPPER(");
 			query.append(uiaValVarName + ".valueString");
 			query.append(caseSensitive ? "" : ")");
-			query.append(" = " + iaValueContent + ")");
+			
+			if (wildCardSearch) {
+				query.append(" like " + iaValueContent + ")");
+			} else {
+				query.append(" = " + iaValueContent + ")");
+			}
 			
 			if (i < treeMap.size()) query.append(" AND ");
 		}
 		
 		query.append(" )");
 		
-		Query q = em.createQuery(query.toString());
+		Query q = getEntityManager().createQuery(query.toString());
 		i = 0;
 		for (Map.Entry<String,String> currEntry : treeMap.entrySet()) {
 			i++;
@@ -533,6 +565,11 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			
 			q.setParameter(iaContent, currEntry.getKey());
 			q.setParameter(iaValueContent, caseSensitive ? currEntry.getValue() : currEntry.getValue().toUpperCase());
+		}
+		
+		
+		if (maxResults != 0) {
+			q.setMaxResults(maxResults);
 		}
 		
 		log.debug("Generated query is: " + query.toString());
@@ -550,9 +587,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		}
 		*/
 		
-		//Query q = em.createQuery("select user FROM User user, IN(user.userIdentityAttributes) uia1, IN(uia1.values) uiaVal1, IN(user.userIdentityAttributes) uia2, IN(uia2.values) uiaVal2 WHERE ( (uia1.identityAttribute.uniqueName = 'FIRST_NAME' AND uiaVal1.valueString = 'Admini') AND (uia2.identityAttribute.uniqueName = 'LAST_NAME' AND uiaVal2.valueString = 'Strator') )");
+		//Query q = getEntityManager().createQuery("select user FROM User user, IN(user.userIdentityAttributes) uia1, IN(uia1.values) uiaVal1, IN(user.userIdentityAttributes) uia2, IN(uia2.values) uiaVal2 WHERE ( (uia1.identityAttribute.uniqueName = 'FIRST_NAME' AND uiaVal1.valueString = 'Admini') AND (uia2.identityAttribute.uniqueName = 'LAST_NAME' AND uiaVal2.valueString = 'Strator') )");
 		/*
-		Query qa = em.createQuery("select user FROM User user, IN(user.userIdentityAttributes) uia1, IN(uia1.values) uiaVal1, IN(user.userIdentityAttributes) uia2, IN(uia2.values) uiaVal2 WHERE ( (uia1.identityAttribute.uniqueName = :uia1_Content AND uiaVal1.valueString = :uiaVal1_Content) AND (uia2.identityAttribute.uniqueName = :uia2_Content AND uiaVal2.valueString = :uiaVal2_Content) )");
+		Query qa = getEntityManager().createQuery("select user FROM User user, IN(user.userIdentityAttributes) uia1, IN(uia1.values) uiaVal1, IN(user.userIdentityAttributes) uia2, IN(uia2.values) uiaVal2 WHERE ( (uia1.identityAttribute.uniqueName = :uia1_Content AND uiaVal1.valueString = :uiaVal1_Content) AND (uia2.identityAttribute.uniqueName = :uia2_Content AND uiaVal2.valueString = :uiaVal2_Content) )");
 		qa.setParameter("uia1_Content", "FIRST_NAME");
 		qa.setParameter("uiaVal1_Content", "Admini");
 		qa.setParameter("uia2_Content", "LAST_NAME");
@@ -562,7 +599,8 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		Stopwatch s = new Stopwatch();
 		s.start();
 		List<User> result = q.getResultList();
-		log.debug("The resulted users amount is '" + result.size() + ", execution time: '" + s.asSeconds() + "' seconds.");
+		s.stop();
+		log.debug("The resulted users amount is '" + result.size() + "', execution time: '" + s.asSeconds() + "' seconds.");
 		
 		if (log.isTraceEnabled()) {
 			log.trace("Retrieving full name from all fetched users...");
@@ -579,8 +617,8 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	//SEEK IN DIRECT ROLES / ROLES INHERITED FROM POSITIONS
 	public Map<String,User> findUsersAssignedToRole(String roleName) {
 		Map<String,User> map = new HashMap<String,User>();
-		List<User> usersWithDirectRole = em.createNamedQuery("user.findAssignedDirectlyToRole").setParameter("roleName", roleName).getResultList();
-		List<User> usersWithRolesInheritedFromPos = em.createNamedQuery("user.findAssignedToRoleByPositions").setParameter("roleName", roleName).getResultList();
+		List<User> usersWithDirectRole = getEntityManager().createNamedQuery("user.findAssignedDirectlyToRole").setParameter("roleName", roleName).getResultList();
+		List<User> usersWithRolesInheritedFromPos = getEntityManager().createNamedQuery("user.findAssignedToRoleByPositions").setParameter("roleName", roleName).getResultList();
 		
 		for (User currUser : usersWithDirectRole) {
 			if (!map.containsKey(currUser.getName())) {
@@ -624,7 +662,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	}
 	
 	public Collection<User> findUsersToSync() {
-		return em.createNamedQuery("user.findUsersToSync")
+		return getEntityManager().createNamedQuery("user.findUsersToSync")
 				.getResultList();
 	}
 
@@ -733,7 +771,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		log.debug("Finding Capability Folder in repository with unique name '" + uniqueName + "'");
 
 		try {
-			Query q = em.createNamedQuery("capabilityFolder.findByUniqueName").setParameter("uniqueName", uniqueName);
+			Query q = getEntityManager().createNamedQuery("capabilityFolder.findByUniqueName").setParameter("uniqueName", uniqueName);
 			return (CapabilityFolder) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
@@ -743,7 +781,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	}
 	
 	
-	
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 	
 	
 	
@@ -836,7 +876,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	// !dirty
 	@Deprecated
 	public User reloadUser(User user, boolean eagerly) {
-		User loadedUser = em.find(User.class, user.getUserId());
+		User loadedUser = getEntityManager().find(User.class, user.getUserId());
 
 		if (eagerly) {
 			touchUserReferences(loadedUser);
@@ -847,7 +887,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 	@Deprecated
 	public User loadFreshedUserById(long userId) {
-		User loadedUser = (User) em.createNamedQuery("findUserById")
+		User loadedUser = (User) getEntityManager().createNamedQuery("findUserById")
 				.setParameter("userId", userId).getSingleResult();
 
 		return loadedUser;
@@ -877,19 +917,19 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		log.trace("Seeking User in repository, executing query: " + query);
 
-		Query q = em.createNativeQuery(query, User.class).setParameter(
+		Query q = getEntityManager().createNativeQuery(query, User.class).setParameter(
 				"searchString1", str1).setParameter("searchString2", str2);
 
 		if (q.getResultList().size() > 0) {
 			return q.getResultList();
 		} else {
-			return em.createNamedQuery("user.searchUsersByString")
+			return getEntityManager().createNamedQuery("user.searchUsersByString")
 					.setParameter("searchString", searchString).getResultList();
 		}
 
 		// String query = "SELECT DISTINCT idm_user.* FROM IDM_USER idm_user
 		// where UPPER(idm_user.name) like #searchString";
-		// return em.createNativeQuery(query,
+		// return getEntityManager().createNativeQuery(query,
 		// User.class).setParameter("searchString",searchString.toUpperCase()).getResultList();
 	}
 
@@ -902,7 +942,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		for (IdentityAttribute ia : identityAttributes) {
 			// Load all UserIdentityAttributes for the specified IAs
-			Collection<UserIdentityAttribute> uias = em.createNamedQuery(
+			Collection<UserIdentityAttribute> uias = getEntityManager().createNamedQuery(
 					"uia.findByIdentityAttributes").setParameter(
 					"identityAttribute", ia).getResultList();
 			relevantUIAs.addAll(uias);
@@ -928,7 +968,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 	@Deprecated
 	public Collection<UserRole> findAllUserRolesForUser(User user) {
-		return em.createNamedQuery("userRole.findByUser").setHint(
+		return getEntityManager().createNamedQuery("userRole.findByUser").setHint(
 				"toplink.refresh", "true").setParameter("user", user)
 				.getResultList();
 	}
@@ -938,7 +978,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	public User loadUserByName(String userName, boolean eagerly)
 			throws NoResultFoundException {
 		try {
-			User loadedUser = (User) em.createNamedQuery("findUserByName")
+			User loadedUser = (User) getEntityManager().createNamedQuery("findUserByName")
 					.setParameter("userName", userName.toUpperCase())
 					.getSingleResult();
 
@@ -957,7 +997,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@Deprecated
 	public User findUserByName(String userName) throws NoResultFoundException {
 		try {
-			return (User) em.createNamedQuery("findUserByName").setParameter(
+			return (User) getEntityManager().createNamedQuery("findUserByName").setParameter(
 					"userName", userName.toUpperCase()).getSingleResult();
 		} catch (NoResultException e) {
 			throw new NoResultFoundException(
@@ -970,7 +1010,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@Deprecated
 	public void persistUserEntityPartOfReconcileUsers(User user) {
 		user.setCreationDate(new Date());
-		em.persist(user);
+		getEntityManager().persist(user);
 
 		/*
 		 * try { eventManager.createEventResponsesOfEventDefinition(ed,
@@ -990,7 +1030,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			List<Map<String, Object>> allUsersProps = new ArrayList<Map<String, Object>>();
 
 			for (User currUser : users) {
-				em.persist(currUser);
+				getEntityManager().persist(currUser);
 
 				Map<String, Object> properties = new HashMap<String, Object>();
 				properties.put("user", currUser);
@@ -1015,7 +1055,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@Deprecated
 	public void removeUser(User user) {
 		if (!user.isProtected()) {
-			em.remove(user);
+			getEntityManager().remove(user);
 		} else {
 			log.info("Cannot remove user named: '" + user.getName()
 					+ "', user is immune!");
@@ -1025,7 +1065,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@Deprecated
 	public void removeUser(long userId) {
 		try {
-			User user = em.find(User.class, userId);
+			User user = getEntityManager().find(User.class, userId);
 			removeUser(user);
 		} catch (Exception e) {
 			throw new EJBException(e.getMessage());
@@ -1041,7 +1081,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 	@Deprecated
 	public void updateUser(User user) {
-		em.merge(user);
+		getEntityManager().merge(user);
 	}
 
 	@Deprecated
@@ -1079,7 +1119,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 	@Deprecated
 	public void createUserIdentityAttribute(UserIdentityAttribute uia) {
-		em.persist(uia);
+		getEntityManager().persist(uia);
 	}
 
 	@Deprecated
@@ -1090,7 +1130,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		log.debug("Checking whether users for wildCard string: '"
 				+ searchPattern + "' exist or not!");
 
-		Query q = em.createNamedQuery("user.searchUsersByString").setParameter(
+		Query q = getEntityManager().createNamedQuery("user.searchUsersByString").setParameter(
 				"searchString", searchPattern);
 
 		return q.getResultList();
@@ -1099,7 +1139,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@Deprecated
 	public UserIdentityAttribute getUserIdentityAttribute(User user,
 			String attrName) throws NoUserIdentityAttributeFoundException {
-		Query q = em
+		Query q = getEntityManager()
 				.createQuery(
 						"SELECT object(uia) FROM UserIdentityAttribute AS uia, IdentityAttribute as ia WHERE (uia.identityAttribute = ia.identityAttributeId AND ia.name = :name AND uia.user = :user)")
 				.setParameter("name", attrName).setParameter("user", user);
@@ -1177,7 +1217,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	// TODO: Add it to the interface.
 	@Deprecated
 	public void persistUserIdentityAttributeEntity(UserIdentityAttribute uia) {
-		em.persist(uia);
+		getEntityManager().persist(uia);
 	}
 
 
@@ -1186,7 +1226,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		log.debug("Checking whether user: '" + user.getName()
 				+ "' has the role '" + role.getName() + "' assigned or not...");
 
-		Query q = em.createNamedQuery("userRole.findByRoleAndUser")
+		Query q = getEntityManager().createNamedQuery("userRole.findByRoleAndUser")
 				.setParameter("user", user).setParameter("role", role);
 
 		try {
@@ -1226,7 +1266,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		 * ts .getResourceId()) { return true; } }
 		 */
 
-		Long totalAccounts = (Long) em
+		Long totalAccounts = (Long) getEntityManager()
 				.createQuery(
 						"select count(account) from Account account where account.user = :user and account.resource = :resource")
 				.setParameter("user", user).setParameter("resource", ts)
@@ -1247,12 +1287,12 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	 * We have this already! public UserIdentityAttribute
 	 * getUserIdentityAttribute(User user, String attributeName) { Attribute
 	 * attr = new Attribute(); Query iaq =
-	 * em.createNamedQuery("findIdentityAttributeByName").setParameter("attributeName",
+	 * getEntityManager().createNamedQuery("findIdentityAttributeByName").setParameter("attributeName",
 	 * attributeName); IdentityAttribute ai =
 	 * (IdentityAttribute)iaq.getSingleResult();
 	 * 
 	 * Query uiaq =
-	 * em.createNamedQuery("findUserIdentityAttributeByName").setParameter("user",user).setParameter("identityAttribute",ai);
+	 * getEntityManager().createNamedQuery("findUserIdentityAttributeByName").setParameter("user",user).setParameter("identityAttribute",ai);
 	 * UserIdentityAttribute uia =
 	 * (UserIdentityAttribute)uiaq.getSingleResult();
 	 * 
@@ -1266,7 +1306,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 						+ ts.getDisplayName()
 						+ ", for user name: "
 						+ user.getName());
-		Query q = em.createNamedQuery("findAccountsForUserPerResource")
+		Query q = getEntityManager().createNamedQuery("findAccountsForUserPerResource")
 				.setParameter("user", user).setParameter("resource", ts);
 		return q.getResultList();
 	}
@@ -1291,7 +1331,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		// IdentityAttribute
 
 		// Merge the entity
-		em.merge(uia);
+		getEntityManager().merge(uia);
 
 		// 12/08/06
 		// There was a problem when more than one IdentityAttribute per user
@@ -1302,9 +1342,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		// re-modified the 1st attribute to its original value, dunno why
 		// anyway flushing the entity manager did not help.
 		// Synchronize the persistence context to the underlying database.
-		// em.flush();
+		// getEntityManager().flush();
 
-		UserIdentityAttribute loadedOne = em.find(UserIdentityAttribute.class,
+		UserIdentityAttribute loadedOne = getEntityManager().find(UserIdentityAttribute.class,
 				uia.getUserIdentityAttributeId());
 		// System.out.println("*********LOADED ONE !!!!!!!!!********: " +
 		// loadedOne.getName() + ", value: " + loadedOne.getValue());
@@ -1451,10 +1491,10 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		// TODO: Specify some other better places constants such as table names
 		// Remove MANY2MANY associations!
-		em.createNativeQuery(
+		getEntityManager().createNativeQuery(
 				"DELETE FROM " + table_users_to_capabilities + " where USER_ID = "
 						+ user.getUserId()).executeUpdate();
-		em
+		getEntityManager()
 				.createNativeQuery(
 						"DELETE " + table_user_role + " where USER_ID = "
 								+ user.getUserId()).executeUpdate();
@@ -1644,9 +1684,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			throws OperationException, PasswordValidationException {
 		BulkTask bt = accountsResetPasswordForPasswordPolicyContainerBulkTask(
 				user, ppc, accounts, password);
-		em.persist(bt);
+		getEntityManager().persist(bt);
 
-		em.flush();
+		getEntityManager().flush();
 
 		return bt.getBulkTaskId();
 	}
@@ -1798,7 +1838,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 			// Persist the user
 			//JB! persistUserEntity(newUser);
-			em.flush();
+			getEntityManager().flush();
 			log.info("Successfully persisted User named: '" + newUser.getName()
 					+ "' into the repository");
 
@@ -1965,14 +2005,14 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	public void updateUserIdentityAttributes(
 			Collection<UserIdentityAttribute> userIdentityAttributes) {
 		for (UserIdentityAttribute uia : userIdentityAttributes) {
-			em.merge(uia);
+			getEntityManager().merge(uia);
 		}
 	}
 
 	public void persistUserIdentityAttributes(
 			Collection<UserIdentityAttribute> userIdentityAttributes) {
 		for (UserIdentityAttribute uia : userIdentityAttributes) {
-			em.merge(uia);
+			getEntityManager().merge(uia);
 		}
 	}
 
@@ -2028,4 +2068,36 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		return user;
 	}
+	
+	
+	public EntityManager getEntityManager() {
+		boolean needFactory = false;
+		
+		if  ( (entityManager == null) ) {
+			needFactory = true;
+		} else {
+			//meaning its a Seam EM
+			if (!entityManager.getClass().getName().equals("org.jboss.ejb3.entity.TransactionScopedEntityManager")) {
+				//make sure its not closed, otherwise factory a new one as well
+				if(!entityManager.isOpen()) {
+					needFactory = true;
+				}
+			}
+		}
+		
+
+		if (needFactory) {
+			try {
+				entityManager = (EntityManager)(new InitialContext().lookup("java:/veloDataSourceEM"));
+			}catch(NamingException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		
+		
+		return entityManager;
+	}
+	
+	
 }

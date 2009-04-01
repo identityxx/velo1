@@ -82,7 +82,7 @@ public interface RoleManager {
 	
 	public BulkTask modifyDirectUserRoles(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user, Date tasksExpectedExecutionDate, boolean persistBulkTask) throws OperationException;
 	public BulkTask modifyDirectUserRoles(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException;
-	
+	public RolesFolder findRolesFolder(String uniqueName);
 	
 	
 	

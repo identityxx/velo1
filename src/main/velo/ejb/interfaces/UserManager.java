@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+
 import velo.entity.Account;
 import velo.entity.BulkTask;
 import velo.entity.Capability;
@@ -117,12 +119,13 @@ public interface UserManager {
 	
    public User findUser(String identityAttributeUniqueName, String value);
 	
-   
+   public List<User> findUsersByFullName(String fullName, int maxResults);
+   public List<User> findUsers(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults);
    public List<User> findUsers(Map<String,String> ias, boolean caseSensitive);
 	
    public Map<String,User> findUsersAssignedToRole(String roleName);
 	
-	
+   public void setEntityManager(EntityManager em);
 	
 	
 	

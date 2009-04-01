@@ -25,7 +25,7 @@
 
             <s:decorate template="layout/display.xhtml">
                 <ui:define name="label">Description</ui:define>
-                <h:inputText id="subject" value="#{capabilityList.capability.description}"/>
+                <h:inputText id="description" value="#{capabilityList.capability.description}"/>
             </s:decorate>
 
 
@@ -70,7 +70,7 @@
         <h:column>
             <f:facet name="header">
                 <s:link styleClass="columnHeader"
-                             value="Subject #{capabilityList.order=='description asc' ? messages.down : ( capabilityList.order=='description desc' ? messages.up : '' )}">
+                             value="Description #{capabilityList.order=='description asc' ? messages.down : ( capabilityList.order=='description desc' ? messages.up : '' )}">
                     <f:param name="order" value="#{capabilityList.order=='description asc' ? 'description desc' : 'description asc'}"/>
                 </s:link>
             </f:facet>

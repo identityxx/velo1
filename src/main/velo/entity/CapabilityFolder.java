@@ -116,7 +116,7 @@ public class CapabilityFolder extends BaseEntity implements Serializable {
      * @return Returns the name.
      */
     @Column(name="UNIQUE_NAME", nullable=false, unique=true)
-    @Length(min=3, max=40) @NotNull(message="Unique Name is a Must.") //seam
+    @NotNull(message="Unique Name is a Must.") //seam //fucks the searches @Length(min=3, max=40)
     public String getUniqueName() {
         return uniqueName;
     }
@@ -132,7 +132,7 @@ public class CapabilityFolder extends BaseEntity implements Serializable {
      * @return the displayName
      */
     @Column(name="DISPLAY_NAME", nullable=false)
-    @Length(min=3, max=40) @NotNull //seam
+//not good for searches    @Length(min=3, max=40) @NotNull //seam
     public String getDisplayName() {
         return displayName;
     }

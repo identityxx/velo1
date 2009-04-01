@@ -15,5 +15,9 @@
    <param name="description" value="#{roleList.role.description}"/>
    <param name="hasPositionsAssociated" value="#{roleList.hasPositionsAssociated}"/>
    <param name="resourceUniqueName" value="#{roleList.resourceUniqueName}"/>
+   <param name="info1" value="#{roleList.role.info1}"/>
+   <param name="info2" value="#{roleList.role.info2}"/>
+   <param name="info3" value="#{roleList.role.info3}"/>
+   
 
 </page>

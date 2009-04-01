@@ -48,6 +48,7 @@ import javax.jms.QueueSession;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -75,6 +76,7 @@ import velo.ejb.interfaces.ResourceManagerLocal;
 import velo.ejb.interfaces.ResourceOperationsManagerLocal;
 import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.TaskManagerRemote;
+import velo.ejb.interfaces.TaskStatusManager;
 import velo.entity.BulkTask;
 import velo.entity.EventDefinition;
 import velo.entity.EventResponseTask;
@@ -143,9 +145,17 @@ import velo.exceptions.ScriptInvocationException;
     @EJB
     AdapterManagerLocal adapterManager;
     
-    
     @Resource
     SessionContext ejbContext; 
+    
+    //@Resource
+    //private UserTransaction utx;
+    
+    
+    @EJB
+    TaskStatusManager taskStatusManager;
+    
+    
     
     private static Logger log = Logger.getLogger(TaskBean.class.getName());
     
@@ -236,9 +246,53 @@ import velo.exceptions.ScriptInvocationException;
         */
     }
     
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public void indicateTaskAsRunning(Task task) {
-    	em.getTransaction().begin();
+    	setTaskStatus(TaskStatus.RUNNING, task);
+    }
+    
+    
+    //TODO: Support events
+    //@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    public void setTaskStatus(TaskStatus newStatus, Task task) {
+    	taskStatusManager.changeStatus(newStatus, task);
+
+    	/*
+    	task.setStatus(newStatus);
+    	em.merge(task);
+    	
+    	UserTransaction transaction = ejbContext.getUserTransaction();
+    	try {
+    		transaction.begin();
+        	task.setStatus(newStatus);
+        	
+        	em.merge(task);
+        	
+        	transaction.commit();
+    	}catch (Exception e) {
+    		try {
+    	    	log.error("Transaction failed when updating stat. Try rolling back.", e);
+    	    	transaction.rollback();
+    	    	}
+    	    	catch (Exception exp) {
+    	    	log.error("Transaction failed roling back.", exp);
+    	    	}
+    	}
+    	*/
+    	
+
+    	
+    	
+    	
+    	
+    	
+    	
+    	/*
+      	// Save to database. Create manual transaction since the built in only works for 5 minutes.
+    	UserTransaction transaction = ejbContext.getUserTransaction();
+    	try {
+    	transaction.begin();
+    	
+//    	em.getTransaction().begin();
     	log.debug("Indicating task id '" + task.getTaskId() + "' as RUNNING...");
         task.setStatus(TaskStatus.RUNNING);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + em.getFlushMode());
@@ -249,19 +303,35 @@ import velo.exceptions.ScriptInvocationException;
         s.setFlushMode(org.hibernate.FlushMode.MANUAL);
         //em.flush();
         s.flush();
-        em.getTransaction().commit();
+//        em.getTransaction().commit();
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + em.getFlushMode());
         log.debug("Merged and flushed task as RUNNING status.");
-    }
-    
-    
-    //TODO: Support events
-    public void setTaskStatus(TaskStatus newStatus, Task task) {
-    	task.setStatus(newStatus);
     	
-    	em.merge(task);
     	
-    	em.flush();
+    	
+    	transaction.commit();
+    	}
+    	catch (Exception e) {
+    	try {
+    	log.error("Transaction failed when updating stat. Try rolling back.", e);
+    	transaction.rollback();
+    	}
+    	catch (Exception exp) {
+    	log.error("Transaction failed roling back.", exp);
+    	}
+    	} 
+    	*/
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
     	/*
         try {
             EventDefinition ed = eventManager.findEventDefinitionByUniqueName(eventTaskStatusModificationName);

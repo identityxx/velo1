@@ -102,6 +102,8 @@ import org.jboss.seam.annotations.Name;
         
         private ReconcileResourceCorrelationRule reconcileResourceCorrelationRule;
         
+        private boolean activateReconcileSummaries;
+        
         /**
          * Set an ID for the entity
          * @param reconcilePolicyId The ID of the entity
@@ -423,5 +425,17 @@ import org.jboss.seam.annotations.Name;
 				ReconcileResourceCorrelationRule reconcileResourceCorrelationRule) {
 			this.reconcileResourceCorrelationRule = reconcileResourceCorrelationRule;
 		}
+
+		@Column(name = "ACTIVATE_RECONCILE_SUMMARIES", nullable = false)
+		public boolean isActivateReconcileSummaries() {
+			return activateReconcileSummaries;
+		}
+
+		public void setActivateReconcileSummaries(boolean activateReconcileSummaries) {
+			this.activateReconcileSummaries = activateReconcileSummaries;
+		}
+		
+		
+		
 		
     }

@@ -494,10 +494,13 @@ public class ResourceBean implements ResourceManagerLocal,
     }
     
     
+    @Deprecated
     public ResourceTypeDescriptor factoryResourceTypeDescriptor(ResourceType tst) throws ResourceTypeDescriptorException {
         ResourceTypeDescriptorReader tstdr = new ResourceTypeDescriptorReader();
         
-        String descriptorFileName = SysConf.getResourceTypeDescriptorFileName(tst);
+//arr        String descriptorFileName = SysConf.getResourceTypeDescriptorFileName(tst);
+        String descriptorFileName = null;
+        
         /*String descriptorFileName = SysConf.getSysConf().getString("system.directory.target_system_type_conf_dir")
                 + "/"
                 + tst.getNameIdentifier().toLowerCase()

@@ -44,6 +44,22 @@
             <h:outputText value="#{roleHome.instance.exposedToSelfService}"/>
         </s:decorate>
         
+        <s:decorate id="info1" template="layout/display.xhtml">
+            <ui:define name="label">Information Attribute 1</ui:define>
+            <h:outputText value="#{roleHome.instance.info1}"/>
+        </s:decorate>
+        
+        <s:decorate id="info2" template="layout/display.xhtml">
+            <ui:define name="label">Information Attribute 2</ui:define>
+            <h:outputText value="#{roleHome.instance.info2}"/>
+        </s:decorate>
+        
+        <s:decorate id="info3" template="layout/display.xhtml">
+            <ui:define name="label">Information Attribute 3</ui:define>
+            <h:outputText value="#{roleHome.instance.info3}"/>
+        </s:decorate>
+        
+        
         <div style="clear:both"/>
 	</rich:panel>
 	

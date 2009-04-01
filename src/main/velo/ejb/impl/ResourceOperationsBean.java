@@ -1010,25 +1010,37 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		//TODO: reconcile group membership
 		
 		
-		wholeProcessWatch.stop();
-		rrs.times.executionDuration = wholeProcessWatch.asMS();
-		rrs.times.endTime = new Date();
-		
-		log.info("!!!!!!!!!!!!!!!!!!!: " + rrs.getAccountsAmountInResource());
-		log.info("!!!!!!!!!!!!!!!!!!!: " + rrs.getGroupsInsertedToRepository().size());
-		ResourceReconcileSummaryEntity rrse = new ResourceReconcileSummaryEntity(rrs);
-		rrse.update();
-		
-		em.persist(rrse);
-		//needed for the ID sent to event context
-		em.flush();
 		
 		
 		//trigger events
 		OperationContext context = new OperationContext();
+		
+		if (resource.getReconcilePolicy().isActivateReconcileSummaries()) {
+			log.debug("Reconcile summary was activated, creating reconcile summary.");
+			wholeProcessWatch.stop();
+			rrs.times.executionDuration = wholeProcessWatch.asMS();
+			rrs.times.endTime = new Date();
+		
+			log.info("Amount of accounts in summary: " + rrs.getAccountsAmountInResource());
+			log.info("Amount of groups in summary: " + rrs.getGroupsInsertedToRepository().size());
+			ResourceReconcileSummaryEntity rrse = new ResourceReconcileSummaryEntity(rrs);
+			rrse.update();
+		
+			context.addVar("objectId", rrse.getXmlObjectId());
+			em.persist(rrse);
+		} else {
+			log.debug("Reconcile summary was not activated, skipping generation of reconcile summary.");
+		}
+		//needed for the ID sent to event context
+		
+		
+		//make the TaskStatusBean stuck when commiting then new status (SUCCSS) (before utx.commit())
+		//em.flush();
+		
+		
 		context.addVar("resource", resource);
 		context.addVar("reconcileSummary", rrs);
-		context.addVar("objectId", rrse.getXmlObjectId());
+		
 		
 		EventDefinition ed = eventManager.find(resourceReconcilationEvent);
 

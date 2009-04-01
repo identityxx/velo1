@@ -13,14 +13,13 @@
                 template="layout/template.xhtml">
                        
 <ui:define name="body">
-    
     <h:form id="capabilityFolderSearch" styleClass="edit">
     
         <rich:simpleTogglePanel label="CapabilityFolder Search Parameters" switchType="ajax">
         
         	<s:decorate template="layout/display.xhtml">
                 <ui:define name="label">Unique Name</ui:define>
-                <h:inputText id="uniqueName" value="#{capabilityFolderList.capabilityFolder.displayName}"/>
+                <h:inputText id="uniqueName" value="#{capabilityFolderList.capabilityFolder.uniqueName}"/>
             </s:decorate>
             
             <s:decorate template="layout/display.xhtml">
@@ -76,7 +75,7 @@
         <h:column>
             <f:facet name="header">
                 <s:link styleClass="columnHeader"
-                             value="Subject #{capabilityFolderList.order=='description asc' ? messages.down : ( capabilityFolderList.order=='description desc' ? messages.up : '' )}">
+                             value="Description #{capabilityFolderList.order=='description asc' ? messages.down : ( capabilityFolderList.order=='description desc' ? messages.up : '' )}">
                     <f:param name="order" value="#{capabilityFolderList.order=='description asc' ? 'description desc' : 'description asc'}"/>
                 </s:link>
             </f:facet>

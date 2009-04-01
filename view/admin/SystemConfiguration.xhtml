@@ -19,7 +19,7 @@
 	   <rich:tabPanel switchType="ajax">
 	   <rich:tab id="sysConf" label="General Configuration">
 		<h:form id="xmlSysConfForm">
-		<velo:XMLManager id="mainXmlConf" filename="#{confActions.veloConfig.getString('system.directory.system_conf')}/conf/velo_config.xml" type="file" columns="3" footerClass="panelGridActionFooter"
+		<velo:XMLManager id="mainXmlConf" filename="#{sysConfManager.getVeloXMLConfFileName()}" type="file" columns="3" footerClass="panelGridActionFooter"
 			headerClass="panelGridActionHeader" styleClass="panelGridActionStyle"
 			columnClasses="subtitle,medium">
                         

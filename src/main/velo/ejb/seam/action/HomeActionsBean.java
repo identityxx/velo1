@@ -222,6 +222,7 @@ public class HomeActionsBean implements HomeActions {
     {
 		ResourceList rl = new ResourceList();
 		rl.getResource().setActive(true);
+		rl.initialize();
 		List<Resource> resources = rl.getResultList();
 		
 		//Retrieve a list of tasks from last day

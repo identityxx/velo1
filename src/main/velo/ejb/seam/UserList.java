@@ -53,7 +53,7 @@ public class UserList extends EntityQuery {
 
 	@Override
 	public String getEjbql() {
-		setOrder("name");
+		//setOrder("name");
 		
 		String query = null;
 		

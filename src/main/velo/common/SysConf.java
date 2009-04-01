@@ -42,13 +42,40 @@ import velo.entity.ResourceType;
 @Scope(SESSION)
 @Name("sysConfManager")
 public class SysConf {
-	private final static String VELO_SERVER_VERSION = "1.3beta-WR";
+	private final static String VELO_SERVER_VERSION = "1.3GA";
     private final static String veloINIConfFileName = "velo_config.ini";
     private final static String veloXMLConfFileName = "velo_config.xml";
+    private final static String VELO_CONF_DIR = "conf";
+    private final static String VELO_SYS_DIR = "velo_sys";
+    public final static String VELO_KEYS_DIR = "keys";
+    public final static String VELO_WORKSPACE_DIR = "velo_ws";
+    
+    
     //private static ConfigurationFactory factory;
     
     @In(required=false) @Out(scope = SESSION)
     private Configuration config;
+    
+    public static String getVeloXMLConfFileName() {
+    	return getVeloHomeDir() + "/" + VELO_SYS_DIR + "/" + VELO_CONF_DIR + "/" + veloXMLConfFileName;
+    }
+    
+    public static String getVeloINIConfFileName() {
+    	return getVeloHomeDir() + "/" + VELO_SYS_DIR + "/" + VELO_CONF_DIR + "/" + veloINIConfFileName;
+    }
+    
+    public static String getVeloHomeDir() {
+    	return System.getProperty("veloHomeDir");
+    }
+    
+    public static String getVeloSysConfDir() {
+    	return System.getProperty("veloHomeDir") + "/" + VELO_SYS_DIR;
+    }
+    
+    
+    public static String getVeloWorkspaceDir() {
+    	return System.getProperty("veloHomeDir") + "/" + VELO_WORKSPACE_DIR;
+    }
     
     /**
      * Returns a Configuration object for managing system configuration properties
@@ -59,8 +86,10 @@ public class SysConf {
         	System.out.println("(!)Factoring Global Configuration Object...");
             //URL iniConf = SysConf.class.getClassLoader().getResource(veloINIConfFileName);
             //URL xmlConf = SysConf.class.getClassLoader().getResource(veloXMLConfFileName);
-        	String xmlConfFile = System.getProperty("veloSysDir") + "/conf/" + veloXMLConfFileName;
-        	String iniConfFile = System.getProperty("veloSysDir") + "/conf/" + veloINIConfFileName;
+        	
+        	//String xmlConfFile = System.getProperty("veloSysDir") + "/conf/" + veloXMLConfFileName;
+        	//String iniConfFile = System.getProperty("veloSysDir") + "/conf/" + veloINIConfFileName;
+        	
             
             /*
             if ( (iniConf == null) || (xmlConf == null) ) {
@@ -83,6 +112,10 @@ public class SysConf {
             //config.addConfiguration(new PropertiesConfiguration("c:/temp/velo/velo_sys/conf/velo_config.ini"));
             //config.addConfiguration(new XMLConfiguration("c:/temp/velo/velo_sys/conf/velo_config.xml"));
             
+            String iniConfFile = getVeloINIConfFileName();
+            String xmlConfFile = getVeloXMLConfFileName();
+            	
+            	
             config.addConfiguration(new PropertiesConfiguration(iniConfFile));
             XMLConfiguration xmlConf = new XMLConfiguration(xmlConfFile);
             xmlConf.setDelimiterParsingDisabled(true);
@@ -115,6 +148,7 @@ public class SysConf {
         return SysConf.getSysConf().getString(propertyName);
     }
     
+    /*
     public static String getResourceTypeDescriptorFileName(ResourceType tst) {
     	String fileToSeek = getSysConf().getString("system.directory.system_conf") + "/conf/" + tst.getUniqueName().toLowerCase() + ".xml";
     	//URL u = SysConf.class.getClassLoader().getResource(fileToSeek);
@@ -122,6 +156,7 @@ public class SysConf {
     	//return u.getFile();
     	return fileToSeek;
     }
+    */
     
     /*tests!
     public static void main(String arg[]) {

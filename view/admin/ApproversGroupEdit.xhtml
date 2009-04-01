@@ -62,7 +62,7 @@
 
 			</rich:panel>
 			
-			<rich:panel>
+			<rich:panel rendered="#{approversGroupHome.managed}">
                 <f:facet name="header">Associated Approvers</f:facet>
                 <rich:dataTable id="assignedApprovers" 
                     var="approver"
@@ -72,10 +72,10 @@
                         <f:facet name="header">
                             <h:outputText value="Approver Name"/>
                         </f:facet>
-                        #{approver.name}
+                        #{approver.name} (#{approver.fullName})
                     </h:column>
                     <h:column>
-                        <h:commandButton value="Cancel" action="#{approverGroupsActions.removeUserFromGroup(approver)}"/>
+                        <h:commandButton value="Cancel" action="#{approverGroupsActions.removeUserFromGroup(approver)}" immediate="true"/>
                     </h:column>
                 </rich:dataTable>
                 
@@ -83,7 +83,7 @@
                 <s:decorate id="delegatorDecoration" template="layout/edit.xhtml">
                             <ui:define name="label">Selected Member (user name): </ui:define>
                             
-                            <h:inputText id="userName" value="#{approverGroupsActions.newMember}" required="false">
+                            <h:inputText id="userName" value="#{approverGroupsActions.newMember}" required="true">
                                 <velo:userNameToUserEntityConverter/>
                             </h:inputText>
                     

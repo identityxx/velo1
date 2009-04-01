@@ -194,6 +194,8 @@ import velo.tools.FileUtils;
     
     private List<User> delegatorOf;
     
+    private ApproversGroup requestDelegatorGroup;
+    
     private Set<UserRole> userRoles = new HashSet<UserRole>();
     
     private List<Position> positions = new ArrayList<Position>();
@@ -699,14 +701,15 @@ import velo.tools.FileUtils;
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	@ManyToOne
+	@JoinColumn(name = "REQUEST_DELEGATOR_GROUP_ID", nullable = true, unique = false)
+	public ApproversGroup getRequestDelegatorGroup() {
+		return requestDelegatorGroup;
+	}
+
+	public void setRequestDelegatorGroup(ApproversGroup requestDelegatorGroup) {
+		this.requestDelegatorGroup = requestDelegatorGroup;
+	}
 	
 	
 
@@ -1121,6 +1124,13 @@ import velo.tools.FileUtils;
 	
 	
     
+    
+    
+    
+    
+    
+    
+    
     //used by request/gui to factory a new user based on attributes
     public void load(Collection<UserIdentityAttribute> userIdentityAttributes, String userName) throws ObjectFactoryException {
     	log.debug("Factoring User entity based on the specified user identity attributes with attrs amount '" + userIdentityAttributes.size() + "'");
@@ -1140,7 +1150,8 @@ import velo.tools.FileUtils;
     		log.debug("The specified user name is null and plugin id is enabled!, determining user name via user plugin id");
     		//get the user name via the pluginID
     		GroovyScripting gs = new GroovyScripting();
-    		String pluginIdFileName = SysConf.getSysConf().getString("system.directory.user_workspace_dir") + "/" + SysConf.getSysConf().getString("system.directory.general_scripts") + "/" + SysConf.getSysConf().getString("system.files.user_plugin_id_script");
+    		
+    		String pluginIdFileName = SysConf.getVeloWorkspaceDir() + "/" + SysConf.getSysConf().getString("system.directory.general_scripts") + "/" + SysConf.getSysConf().getString("system.files.user_plugin_id_script");
     		log.debug("Seeking pluginID file with name '" + pluginIdFileName);
     		File f = new File(pluginIdFileName);
     		if (!f.exists()) {

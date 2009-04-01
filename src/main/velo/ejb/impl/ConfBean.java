@@ -40,6 +40,7 @@ import javax.persistence.Query;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.security.management.PasswordHash;
 
 import velo.common.SysConf;
 import velo.ejb.interfaces.CommonUtilsManagerLocal;
@@ -95,7 +96,6 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	private Map<Class,String> entityUniqueKeyVars = new HashMap<Class,String>();
 	public Map<String,ResourceType> resourceTypes = new LinkedHashMap<String,ResourceType>();
 
-	public final String keyDir = "keys";
 	public Set<Object> capabilities = new LinkedHashSet<Object>();
 	public Set<Object> capabilityFolders = new LinkedHashSet<Object>();
 	public Set<Object> identityAttributes = new LinkedHashSet<Object>();
@@ -170,10 +170,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		String fileName = SysConf.getSysConf().getString(
 		"system.directory.system_conf")
 		+ "/"
-		+ keyDir
+		+ SysConf.VELO_KEYS_DIR
 		+ "/"
 		+ SysConf.getSysConf().getString(
 		"system.files.targets_principals_encryption_key");
+		
+		
 		
 		log.debug("Key file name to be generated: " + fileName);
 		String keyString = EncryptionUtils.generateKey();
@@ -283,6 +285,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		em.flush();
 		persistEntities(actionLanguages);
 		em.flush();
+		
+		
+		//TODO: generate keys
 	}
 
 	public Map<String,ResourceGlobalOperation> getLoadedResourceGlobalOperations() {
@@ -432,12 +437,22 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		adminCapabilityFolder.setUniqueName("ADMINISTRATOR");
 		//adminCapabilityFolder.setCapabilityFolderId(new Long(1));
 		adminCapabilityFolder.setDisplayName("Administrator");
+		
+		CapabilityFolder standardUserCapabilityFolder = new CapabilityFolder();
+		standardUserCapabilityFolder.setDescription("Standard User Capabilities Folder, any new user will be assigned to this capability folder automatically.");
+		standardUserCapabilityFolder.setUniqueName("STANDARD_USER");
+		standardUserCapabilityFolder.setDisplayName("Standard User");
+		
+		//TODO: Add basic_auth/other caps to standarDUser Cap folder?
+		
+		
 		for (Object currCap : capabilities) {
 			Capability cap = (Capability)currCap;
 			adminCapabilityFolder.getCapabilities().add(cap);
 		}
 
 		capabilityFolders.add(adminCapabilityFolder);
+		capabilityFolders.add(standardUserCapabilityFolder);
 
 		/*
 		// TASK DEFINITIONS
@@ -629,7 +644,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 
 
-		//REMOTE AD
+		//NATIVE AD
 		ResourceType activeDirectoryDotNetType = new ResourceType();
 		activeDirectoryDotNetType.setUniqueName("NATIVE_ACTIVE_DIRECTORY");
 		activeDirectoryDotNetType.setScripted(false);
@@ -675,10 +690,90 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 
 
+		
+		
+		
+		
+		
+		
+		//ORACLE SERVER
+		ResourceType oracleServerType = new ResourceType();
+		oracleServerType.setUniqueName("Oracle Server");
+		oracleServerType.setScripted(false);
+		oracleServerType.setConfigurationTemplate("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resource-descriptor>\n<!--Adapter configuration, any adapter has these configuration parameters-->\n<adapter>\n<className desc=\"Adapter Class Name\">velo.adapters.JdbcAdapter</className>\n<maxActive desc=\"Max Active Workers\">4</maxActive>\n<maxIdle desc=\"Max Idle Workers\">2</maxIdle>\n<maxWait desc=\"Max Worker Waiting Time in ms\">1000</maxWait>\n<minEvictableIdleTimeMillis desc=\"Minimum Evictable Idle time in MS\">30000</minEvictableIdleTimeMillis>\n</adapter>\n<!-- Specific attributes relevant to the specified adapter-->\n<specific>\n<host desc=\"Host Name\"></host>\n<port desc=\"Port\"></port>\n<dbName desc=\"Database Name\"></dbName>\n<driverName desc=\"Driver name\">driver:oracle.jdbc.driver.OracleDriver</driverName>\n<urlTemplate desc=\"Url Template\">jdbc:oracle:thin:@%h:%p:%d</urlTemplate>\n<query-timeout desc=\"Query timeout\">30</query-timeout>\n</specific>\n</resource-descriptor>");
+		oracleServerType.setResourceControllerClassName("velo.resource.operationControllers.OracleServerSpmlController");
+		oracleServerType.setGatewayRequired(false);
+		oracleServerType.setResourceControllerType(ResourceControllerType.SPML_GENERIC);
+
+		//Create ResourceOperationDefinitions for current resource type
+		//oracle is open and supports all global actions
+		ResourceTypeOperation ORArtodAddAccount = new ResourceTypeOperation(rodAddAccount, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodDelAccount = new ResourceTypeOperation(rodDelAccount, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodSuspend = new ResourceTypeOperation(rodSuspendAccount, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodResume = new ResourceTypeOperation(rodResumeAccount, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodAddGroup = new ResourceTypeOperation(rodAddGroup, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodRemoveGroup = new ResourceTypeOperation(rodDeleteGroup, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodAddGroupMembership = new ResourceTypeOperation(rodAddGroupMembership, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodDelGroupMembership = new ResourceTypeOperation(rodDeleteGroupMembership, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodModifyAccount = new ResourceTypeOperation(rodModifyAccount, oracleServerType, false,false,false);
+		ResourceTypeOperation ORAresourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, oracleServerType, false,false,false);
+		ResourceTypeOperation ORAresourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, oracleServerType, false,false,false);
+		oracleServerType.getSupportedOperations().add(ORArtodAddAccount);
+		oracleServerType.getSupportedOperations().add(ORArtodDelAccount);
+		oracleServerType.getSupportedOperations().add(ORArtodSuspend);
+		oracleServerType.getSupportedOperations().add(ORArtodResume);
+		oracleServerType.getSupportedOperations().add(ORArtodAddGroup);
+		oracleServerType.getSupportedOperations().add(ORArtodRemoveGroup);
+		oracleServerType.getSupportedOperations().add(ORArtodAddGroupMembership);
+		oracleServerType.getSupportedOperations().add(ORArtodDelGroupMembership);
+		oracleServerType.getSupportedOperations().add(ORArtodModifyAccount);
+		oracleServerType.getSupportedOperations().add(ORAresourceReconciliation);
+		oracleServerType.getSupportedOperations().add(ORAresourceFetchActiveDataOffline);
+		
+		
+		
+		
+		
 
 
 
 
+		
+		
+		
+		//LDAP v3 SERVER
+		ResourceType ldapV3Type = new ResourceType();
+		ldapV3Type.setUniqueName("Generic LDAP");
+		ldapV3Type.setScripted(false);
+		ldapV3Type.setConfigurationTemplate("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resource-descriptor>\n<adapter>\n<className desc=\"Adapter Class Name\" disabled=\"true\">velo.adapters.ActiveDirectoryAdapter</className>\n<maxActive desc=\"Max Active Workers\">4</maxActive>\n<maxIdle desc=\"Max Idle Workers\">2</maxIdle>\n<maxWait desc=\"Max Worker Waiting Time in ms\">1000</maxWait>\n<minEvictableIdleTimeMillis desc=\"Minimum Evictable Idle time in MS\">30000</minEvictableIdleTimeMillis>\n</adapter>\n<specific>\n<host desc=\"Host Name\">\n</host>\n<port desc=\"Port\">636</port>\n<protocol desc=\"The protocol used to connect to the directory (ssl/clear)\">ssl</protocol>\n<ssl-key-store desc=\"SSL Key Store path\">\n</ssl-key-store>\n<ssl-trust-store desc=\"SSL Trust store path\">\n</ssl-trust-store>\n<ssl-key-store-password desc=\"SSL Keystore Password\">\n</ssl-key-store-password>\n<group>\n<group-dn desc=\"This value is used in addition to the base DN when searching and loading groups, an example is ou=Groups. If no value is supplied, the subtree search will start from the base DN.\">\n</group-dn>\n<group-object-class desc=\"The LDAP user object class typeto use when loading groups.\">groupOfUniqueNames</group-object-class>\n<group-object-filter desc=\"The filter to use when searching group objects.\">(objectclass=groupOfUniqueNames)</group-object-filter>\n<group-unique-name-attribute desc=\"The attribute field to use when loading the group unique name.\">cn</group-unique-name-attribute>\n<group-display-name-attribute desc=\"The attribute field to use when loading the group display name.\">cn</group-display-name-attribute>\n<group-description-attribute desc=\"The attribute field to use when loading the group description\">description</group-description-attribute>\n<group-members-attribute desc=\"The attribute field to use when loading the group members.\">uniqueMember</group-members-attribute>\n</group>\n<account>\n<account-dn desc=\"This value is used in addition to the base DN when searching and loading accounts, an example is ou=Users. If no value is supplied, the subtree search will start from the base DN.\">\n</account-dn>\n<account-object-class desc=\"The LDAP account object class type o use when loading principals.\">inetorgperson</account-object-class>\n<account-object-filter desc=\"The filter to use when searching user objects.\">(objectclass=inetorgperson)</account-object-filter>\n<account-default-creation-dn desc=\"The value is used in addition to the base DN, this is the default account creation container. a value must be supplied.\">\n</account-default-creation-dn>\n</account>\n</specific>\n</resource-descriptor>");
+		ldapV3Type.setResourceControllerClassName("velo.resource.operationControllers.GenericLdapResourceController");
+		ldapV3Type.setGatewayRequired(false);
+		ldapV3Type.setResourceControllerType(ResourceControllerType.SPML_GENERIC);
+
+		//Create ResourceOperationDefinitions for current resource type
+		//oracle is open and supports all global actions
+		ResourceTypeOperation ldapV3rtodAddAccount = new ResourceTypeOperation(rodAddAccount, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodDelAccount = new ResourceTypeOperation(rodDelAccount, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodSuspend = new ResourceTypeOperation(rodSuspendAccount, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodResume = new ResourceTypeOperation(rodResumeAccount, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodAddGroup = new ResourceTypeOperation(rodAddGroup, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodRemoveGroup = new ResourceTypeOperation(rodDeleteGroup, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodAddGroupMembership = new ResourceTypeOperation(rodAddGroupMembership, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodDelGroupMembership = new ResourceTypeOperation(rodDeleteGroupMembership, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodModifyAccount = new ResourceTypeOperation(rodModifyAccount, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3resourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3resourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, ldapV3Type, false,false,false);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodAddAccount);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodDelAccount);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodSuspend);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodResume);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodAddGroup);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodRemoveGroup);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodAddGroupMembership);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodDelGroupMembership);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodModifyAccount);
+		ldapV3Type.getSupportedOperations().add(ldapV3resourceReconciliation);
+		ldapV3Type.getSupportedOperations().add(ldapV3resourceFetchActiveDataOffline);
 
 
 
@@ -732,7 +827,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		resourceTypes.put(httpClient.getUniqueName(),httpClient);
 		resourceTypes.put(genericScriptedTelnetType.getUniqueName(),genericScriptedTelnetType);
 		resourceTypes.put(activeDirectoryDotNetType.getUniqueName(),activeDirectoryDotNetType);
-
+		resourceTypes.put(oracleServerType.getUniqueName(),oracleServerType);
+		resourceTypes.put(ldapV3Type.getUniqueName(),ldapV3Type);
+		
 
 
 
@@ -1005,7 +1102,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		adminUser.setProtected(true);
 		adminUser.setAuthenticatedViaLocalPassword(true);
 		adminUser.setName("admin");
-		adminUser.setPassword("admin");
+		adminUser.setPassword(PasswordHash.instance().generateSaltedHash("admin", adminUser.getName()));
 		// Admin CapFolder
 		adminUser.getCapabilityFolders().add(adminCapabilityFolder);
 		users.add(adminUser);

@@ -11,6 +11,9 @@ richfaces-api.jar
 jboss-seam-remoting.jar
 
 
+jboss-seam-ui.jar
+jcommon-1.0.15.jar
+
 
 ecs-1.4.2.jar
 ganymed-ssh2-build210.jar

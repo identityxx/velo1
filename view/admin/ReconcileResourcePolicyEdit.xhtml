@@ -29,6 +29,11 @@
 							bypassUpdates="true" />
 					</h:inputText>
 				</s:decorate>
+				<s:decorate id="activateReconcileSummariesDecoration" template="layout/edit.xhtml">
+                        <ui:define name="label">Activate Reconcile Summaries?</ui:define>
+                        <h:selectBooleanCheckbox id="activateReconcileSummaries" value="#{reconcileResourcePolicyHome.instance.activateReconcileSummaries}"/>
+                </s:decorate>
+                    
 				<div style="clear: both"/>
 				</rich:panel>
 				

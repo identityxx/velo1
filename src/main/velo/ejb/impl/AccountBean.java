@@ -313,6 +313,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			String resourceUniqueName, String userName) throws OperationException {
 		//try {
 			// Load account
+		logger.info("!!!!!!!!!!!!!!!!(1)");
 		boolean isResourceCaseSensitive = false;
 		Resource loadedResource = resourceManager.findResource(resourceUniqueName);
 		if (loadedResource == null) {
@@ -322,11 +323,11 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			 isResourceCaseSensitive = loadedResource.isCaseSensitive();
 			 logger.trace("The resource " + loadedResource.getDisplayName() + " is case sensitive - " + isResourceCaseSensitive);
 		}
-			
+		logger.info("!!!!!!!!!!!!!!!!(2)");
 			
 			Account loadedAccount = findAccount(accountName,resourceUniqueName, isResourceCaseSensitive );
 			
-			
+			logger.info("!!!!!!!!!!!!!!!!(3)");
 			if (loadedAccount == null) {
 				throw new OperationException(
 						"Could not find account name '"
@@ -346,10 +347,10 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 								+ "' since the specified account already assciated to user name '"
 								+ loadedAccount.getUser().getName() + "'");
 			}
-
+			logger.info("!!!!!!!!!!!!!!!!(4)");
 			// Load user
 			User loadedUser = userManager.findUser(userName);
-			
+			logger.info("!!!!!!!!!!!!!!!!(5)");
 			if (loadedUser == null) {
 				throw new OperationException("Could not associate account named '"
 						+ accountName + "', on Resource name '" + resourceUniqueName
@@ -357,6 +358,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 						+ "' since the account does not exist!");
 			}
 			
+			logger.info("!!!!!!!!!!!!!!!!(6)");
 			// Perform the assocaition!
 			loadedAccount.setUser(loadedUser);
 			// updateAccount(loadedAccount);
@@ -367,6 +369,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 					+ "', to User '" + userName
 					+ "' since more than one account exist on resource!");
 		}*/
+			
+			
+			logger.info("!!!!!!!!!!!!!!!!(7)");
 	}
 	
 	

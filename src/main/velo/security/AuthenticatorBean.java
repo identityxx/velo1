@@ -47,6 +47,7 @@ import velo.entity.CapabilityFolder;
 import velo.entity.EventLogDataEntry;
 import velo.entity.EventLogEntry;
 import velo.entity.User;
+import velo.entity.UserIdentityAttribute;
 import velo.entity.EventLogEntry.EventLogLevel;
 import velo.entity.EventLogEntry.EventLogModule;
 import velo.exceptions.UserAuthenticationException;
@@ -215,6 +216,14 @@ public class AuthenticatorBean implements Authenticator {
 		
 		//so these details will be accessilble later on
 		loggedUser.getUserIdentityAttributes().size();
+		for (UserIdentityAttribute uia : loggedUser.getUserIdentityAttributes()) {
+			uia.getValues().size();
+		}
+		loggedUser.getApproversGroups().size();
+		
+
+		
+		
 		
 		// JBPM
 		actor.setId(userName);

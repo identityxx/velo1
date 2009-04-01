@@ -77,6 +77,11 @@
         <converter-class>velo.jsf.converters.AccountNameToAccountEntityConverter</converter-class>
     </converter>
     
+    <converter>
+        <converter-id>dateTimeConverter</converter-id>
+        <converter-class>velo.jsf.converters.DateTimeConverter</converter-class>
+    </converter>
+    
     
     <application>
       <message-bundle>messages</message-bundle>

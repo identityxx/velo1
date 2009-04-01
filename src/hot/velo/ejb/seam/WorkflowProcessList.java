@@ -17,16 +17,14 @@
  */
 package velo.ejb.seam;
 
-import groovy.util.MapEntry;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.Query;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
@@ -35,7 +33,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jbpm.JbpmContext;
-import org.jbpm.context.exe.variableinstance.StringInstance;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 
@@ -55,12 +52,18 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 	private String processVarNamesForCurrentSelectedProcessDef;
 	private String processVarName;
 	
+	
+	private List<String> RESTRICTIONS = new ArrayList<String>();
+	
 	@Out(scope=ScopeType.CONVERSATION,required=false)
 	private ProcessInstance selectedProcessInstance;
 	
 	
+	private String statusForWhereCondition;
+	
 	//TODO: Search per variable.
 	
+	/*
 	private static final String[] RESTRICTIONS = {
 		"pi.id = #{workflowProcessList.processId}",
 		"pi.start >= #{workflowProcessList.startDate}",
@@ -68,6 +71,8 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 		"pi.isSuspended = #{workflowProcessList.suspended}",
 		"pi.processDefinition.name = #{workflowProcessList.processDefinitionName}",
 	};
+	*/
+	
 
 	private static final String EJBQL = "select pi from org.jbpm.graph.exe.ProcessInstance pi";
 
@@ -85,6 +90,8 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 		return 25;
 	}
 	
+
+/*could not make it work as it needs to be set in too early phase (@PostConstruct / constructor)
 	public List<String> getDyamicExpressions() {
 		List<String> strArr = new ArrayList<String>();
 		
@@ -98,13 +105,60 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 		
 		return strArr;
 	}
+*/	
+	
+	@Override
+	public String getEjbql() {
+		setOrder("id DESC");
+		
+		String query = EJBQL;
+		
+		//RESTRICTIONS.clear();
+		//RESTRICTIONS.add("lower(user.name) like concat(trim(lower(#{userList.userName})),'%')");
+		RESTRICTIONS = factoryDefaultRestrictions();
+		
+		
+		
+		if ( (status == null) || (status.equals("ALL")) ) {
+		} else if (status.equals("FINISHED")) {
+			statusForWhereCondition = "NOT NULL";
+			RESTRICTIONS.add("pi.end is #{workflowProcessList.statusForWhereCondition}");
+		} else if (status.equals("ACTIVE")) {
+			statusForWhereCondition = "NULL";
+			RESTRICTIONS.add("pi.end is #{workflowProcessList.statusForWhereCondition}");
+		}
+		
+		System.out.println("!!!!!!: RESTRICTIONS SIZE: " + RESTRICTIONS.size());
+		for (String currRes : RESTRICTIONS) {
+			System.out.println("Rest: " + currRes);
+		}
+		setRestrictionExpressionStrings(RESTRICTIONS);
+		
+		
+		System.out.println("QUERY IS:" + query);
+		return query;
+	}
+	
+	@Override
+	protected String getRenderedEjbql() {
+		String str = super.getRenderedEjbql();
+		System.out.println("!!!!!!!!!!!: " + str);
+		
+		return str;
+	}
+	
 
 	@PostConstruct
     public void initialize() {
-    	setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
+		//List l = getDyamicExpressions();
+		//l.addAll(Arrays.asList(RESTRICTIONS));
+		
+    	//setRestrictionExpressionStrings(Arrays.asList(RESTRICTIONS));
+		//setRestrictionExpressionStrings(l);
+		
     	//getRestrictionExpressionStrings().addAll(Arrays.asList(getDyamicExpressions()));
 
-    	setEjbql(EJBQL);
+    	//setEjbql(EJBQL);
     }
 	
 
@@ -271,6 +325,35 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 		return "/admin/Process.xhtml";
 		
 		//System.out.println("!!!!!!!!!!!!!!!!!!!!!!: " + getDataModelSelection().getId());
+	}
+	
+	
+	
+	
+	public String getStatusForWhereCondition() {
+		return statusForWhereCondition;
+	}
+
+
+	private List<String> factoryDefaultRestrictions() {
+		if (RESTRICTIONS != null) RESTRICTIONS.clear();
+		
+		RESTRICTIONS.add("pi.id = #{workflowProcessList.processId}");
+		RESTRICTIONS.add("pi.start >= #{workflowProcessList.startDate}");
+		RESTRICTIONS.add("pi.start <= #{workflowProcessList.endDate}");
+		RESTRICTIONS.add("pi.isSuspended = #{workflowProcessList.suspended}");
+		RESTRICTIONS.add("pi.processDefinition.name = #{workflowProcessList.processDefinitionName}");
+		
+		
+		return RESTRICTIONS;
+	}
+	
+	
+	
+	
+	public void moo() {
+		org.hibernate.Query q = getSession().createQuery("select pi from org.jbpm.graph.exe.ProcessInstance pi WHERE pi.end is not null");
+		System.out.println("SIZE!!!!!!!!!!!!: " + q.list().size());
 	}
 	
 }

@@ -118,6 +118,7 @@ public abstract class ResourceActionFactory extends ActionFactory {
 	 * @param resource The target-system to perform the action on
 	 * @return A full resource(file) name of the action
 	 */
+	@Deprecated
 	public String getResourceActionName(String actionPartialFileName, Resource resource) {
 		// Get a propercase of the short target system name
 		// String scriptName =

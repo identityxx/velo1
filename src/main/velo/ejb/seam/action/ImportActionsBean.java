@@ -193,11 +193,14 @@ public class ImportActionsBean implements ImportActions {
 	public String performImportAccountsToUsers() {
 		if (importAccountsToUsersList.size() > 0) {
 			for (ImportAccountToUser currAccountToUser : importAccountsToUsersList) {
+				log.trace("Associating Account name '#0', on resource '#1' to User '#2'", currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
 	            try {
 	                accountManager.associateAccountToUser(currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
 	            } catch (OperationException ex) {
 	                FacesMessages.instance().add(FacesMessage.SEVERITY_WARN, ex.getMessage());
 	            }
+				
+				
 	        }
 
 			importAccountsToUsersList.clear();

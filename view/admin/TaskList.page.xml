@@ -12,8 +12,8 @@
    <param name="from"/>
    <param name="taskId" value="#{taskList.task.taskId}"/>
    <param name="description" value="#{taskList.task.description}"/>
-   <param name="fromCreationDate" value="#{taskList.task.fromCreationDate}"/>
-   <param name="toCreationDate" value="#{taskList.task.toCreationDate}"/>
+   <param name="fromCreationDate" value="#{taskList.task.fromCreationDate}" converterId="dateTimeConverter"/>
+   <param name="toCreationDate" value="#{taskList.task.toCreationDate}" converterId="dateTimeConverter"/>
    <param name="status" value="#{taskList.task.status}"/>
    <param name="maxResults" value="#{taskList.maxResults}"/>
 

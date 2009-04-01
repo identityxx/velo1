@@ -296,7 +296,8 @@ public class PositionBean implements PositionManagerLocal, PositionManagerRemote
 	}
 	
 	public void reconcilePositions() throws OperationException {
-		String workspaceDir = SysConf.getSysConf().getString("system.directory.user_workspace_dir");
+		
+		String workspaceDir = SysConf.getVeloWorkspaceDir();
 		workspaceDir += "/data/positions/positions.xml";
 		
 		File f = new File(workspaceDir);

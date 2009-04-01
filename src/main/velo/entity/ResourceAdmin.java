@@ -124,7 +124,7 @@ public class ResourceAdmin extends BaseEntity implements Serializable {
     
     //Transients
     public void encryptPassword() throws EncryptionException {
-        String fileName = SysConf.getSysConf().getString("system.directory.system_conf") + "/" + "keys" + "/" + SysConf.getSysConf().getString("system.files.targets_principals_encryption_key");
+        String fileName = SysConf.getVeloSysConfDir() + "/" + SysConf.VELO_KEYS_DIR + "/" + SysConf.getSysConf().getString("system.files.targets_principals_encryption_key");
         try {
             String key = FileUtils.readLine(fileName);
             setPassword(EncryptionUtils.encrypt(getPassword(),key));
@@ -136,7 +136,7 @@ public class ResourceAdmin extends BaseEntity implements Serializable {
     
     @Transient
     public String getDecryptedPassword() throws DecryptionException {
-        String fileName = SysConf.getSysConf().getString("system.directory.system_conf") + "/" + "keys" + "/" + SysConf.getSysConf().getString("system.files.targets_principals_encryption_key");
+        String fileName = SysConf.getVeloSysConfDir() + "/" + SysConf.VELO_KEYS_DIR + "/" + SysConf.getSysConf().getString("system.files.targets_principals_encryption_key");
         
         try {
             String key = FileUtils.readLine(fileName);

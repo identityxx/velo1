@@ -1043,8 +1043,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 			sysConf = SysConf.getSysConf();
 		}
 
-		String scriptResourceName = sysConf
-				.getString("system.directory.user_workspace_dir")
+		String scriptResourceName = SysConf.getVeloWorkspaceDir()
 				+ "/"
 				+ sysConf.getString("system.directory.targets_files_dir")
 				+ "/"
@@ -1106,7 +1105,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	
 	@Transient
 	public String getResourceWorkspaceFolder() {
-		String wsFolder = SysConf.getSysConf().getString("system.directory.user_workspace_dir") + "/" +
+		String wsFolder = SysConf.getVeloWorkspaceDir() + "/" +
 		SysConf.getSysConf().getString("system.directory.targets_files_dir") + "/"
 		+ getUniqueName().toLowerCase();
 		

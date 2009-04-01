@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -59,7 +58,6 @@ import velo.exceptions.AttributeSetValueException;
 import velo.exceptions.EdentityException;
 import velo.exceptions.LoadingVirtualAccountAttributeException;
 import velo.exceptions.ObjectsConstructionException;
-import velo.exceptions.OperationException;
 import velo.exceptions.ScriptInvocationException;
 import velo.exceptions.ScriptLoadingException;
 

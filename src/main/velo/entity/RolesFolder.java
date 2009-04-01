@@ -58,6 +58,7 @@ import velo.exceptions.CollectionElementInsertionException;
 @Entity
 @NamedQueries({
 	@NamedQuery(name = "rolesFolder.findByType", query = "select rolesFolder from RolesFolder rolesFolder where rolesFolder.type = :type"),
+	@NamedQuery(name = "rolesFolder.findByUniqueName", query = "select rolesFolder from RolesFolder rolesFolder where rolesFolder.uniqueName = :uniqueName"),
 	
 	
 	

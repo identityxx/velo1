@@ -42,6 +42,9 @@ public class RoleList extends EntityQuery {
 	private static final String[] RESTRICTIONS = {
 			"lower(role.name) like concat(lower(#{roleList.role.name}),'%')",
 			"lower(role.description) like concat(lower(#{roleList.role.description}),'%')",
+			"lower(role.info1) like concat('%',lower(#{roleList.role.info1}),'%')",
+			"lower(role.info2) like concat('%',lower(#{roleList.role.info2}),'%')",
+			"lower(role.info3) like concat('%',lower(#{roleList.role.info3}),'%')",
 			"role.disabled = #{roleList.role.disabled}",
 			"lower(resources.uniqueName) like concat (lower( #{roleList.resourceUniqueName}),'%')"};
 			

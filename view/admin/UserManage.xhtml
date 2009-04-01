@@ -477,7 +477,7 @@
 			<rich:tab id="delegatorTab" label="Delegation">
 			     <h:form id="delegatorForm">
                     <rich:panel>
-                        <f:facet name="header">Delegator</f:facet>
+                        <f:facet name="header">Approval Delegator</f:facet>
 
                         <s:decorate id="delegatorDecoration" template="layout/edit.xhtml">
                             <ui:define name="label">Selected Delegator</ui:define>
@@ -502,6 +502,26 @@
                                     #{u.name}
                                 </h:column>
                         </rich:suggestionbox>
+                        </s:decorate>
+
+                        <div style="clear: both"></div>
+                    </rich:panel>
+                    
+                    
+                    <rich:spacer width="1" height="15"/><rich:separator /><rich:spacer width="1" height="15"/>
+                    
+                    
+                    <rich:panel>
+                        <f:facet name="header">Request Delegator Group</f:facet>
+
+                        <s:decorate id="RequestdelegatorGroupDecoration" template="layout/edit.xhtml">
+                            <ui:define name="label">Selected Group</ui:define>
+                            
+                            <h:selectOneMenu id="assignedRequestDelegatorGroup" value="#{userHome.instance.requestDelegatorGroup}" required="false">
+                                <s:selectItems value="#{guiApproversGroups}" var="ag" label="#{ag.displayName}" noSelectionLabel="---select---" />
+                                <s:convertEntity/>
+                            </h:selectOneMenu>
+                            
                         </s:decorate>
 
                         <div style="clear: both"></div>

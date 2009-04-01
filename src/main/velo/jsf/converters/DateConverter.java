@@ -23,7 +23,7 @@ import org.jboss.seam.annotations.Name;
 
 //a workaround for the 1 day subtract with GMT+1 (and as it seems +2 too)
 //from seam 2.1.x must name this as component and in facelets do converter="#{dateTimeConverter}" direct access to class does not work anymore
-@Name("dateTimeConverter")
+@Name("dateConverter")
 public class DateConverter extends DateTimeConverter {
     public static final String pattern = "dd/MM/yyyy";
 	    

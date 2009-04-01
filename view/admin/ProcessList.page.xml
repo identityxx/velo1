@@ -14,7 +14,7 @@
    <param name="processDefinition" value="#{workflowProcessList.processDefinitionName}"/>
    <param name="ended" value="#{workflowProcessList.ended}"/>
    <param name="suspended" value="#{workflowProcessList.suspended}"/>
-   <param name="startDate" value="#{workflowProcessList.startDate}"/>
-   <param name="endDate" value="#{workflowProcessList.endDate}"/>
+   <param name="startDate" value="#{workflowProcessList.startDate}" converterId="dateTimeConverter"/>
+   <param name="endDate" value="#{workflowProcessList.endDate}" converterId="dateTimeConverter"/>
    <param name="status" value="#{workflowProcessList.status}"/>
 </page>

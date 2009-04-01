@@ -66,6 +66,7 @@ public class ApproversGroup extends BaseEntity implements Serializable {
 	
 	private List<RoleApproversGroup> roleApproversGroups = new ArrayList<RoleApproversGroup>();
 	
+	private List<User> requestDelegatorOf;
 	
 	//transient, just for gui, just a wrapper for the entityApproversGroup assignment's level/desc
 	private Integer approvalLevel;
@@ -95,7 +96,7 @@ public class ApproversGroup extends BaseEntity implements Serializable {
 	 * @return the displayName
 	 */
 	@Column(name="DISPLAY_NAME", nullable=false, unique=true, length=50)
-    @Length(min=3, max=40) @NotNull
+    @NotNull //fucks the searches: @Length(min=3, max=40)
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -111,7 +112,7 @@ public class ApproversGroup extends BaseEntity implements Serializable {
 	 * @return the uniqueName
 	 */
 	@Column(name="UNIQUE_NAME", nullable=false, unique=true, length=50)
-    @Length(min=3, max=40) @NotNull
+    @NotNull //fucks the searches @Length(min=3, max=40)
 	public String getUniqueName() {
 		return uniqueName;
 	}
@@ -127,7 +128,7 @@ public class ApproversGroup extends BaseEntity implements Serializable {
 	 * @return the description
 	 */
 	@Column(name="DESCRIPTION", nullable=false, length=255)
-    @Length(min=1, max=255) @NotNull //seam
+    @NotNull //seam //fucks the searches @Length(min=1, max=255)
 	public String getDescription() {
 		return description;
 	}
@@ -187,6 +188,21 @@ public class ApproversGroup extends BaseEntity implements Serializable {
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	
+	
+	@OneToMany(mappedBy = "requestDelegatorGroup", fetch = FetchType.LAZY)
+	public List<User> getRequestDelegatorOf() {
+		return requestDelegatorOf;
+	}
+
+	public void setRequestDelegatorOf(List<User> requestDelegatorOf) {
+		this.requestDelegatorOf = requestDelegatorOf;
+	}
+	
+	
+	
+	
 
 	/**
 	 * @return the approvalLevel

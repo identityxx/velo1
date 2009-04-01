@@ -34,7 +34,8 @@ public class RolesFolderList extends EntityQuery {
 
 	private static final String[] RESTRICTIONS = {
 			"lower(rolesFolder.uniqueName) like concat(lower(#{rolesFolderList.rolesFolder.uniqueName}),'%')",
-			"lower(rolesFolder.description) like concat(lower(#{rolesFolderList.rolesFolder.description}),'%')",};
+			"lower(rolesFolder.displayName) like concat(lower(#{rolesFolderList.rolesFolder.displayName}),'%')",
+			"lower(rolesFolder.description) like concat('%',lower(#{rolesFolderList.rolesFolder.description}),'%')",};
 	
 	private String[] extraRestricions;
 	

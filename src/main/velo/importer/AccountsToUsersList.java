@@ -70,7 +70,7 @@ public class AccountsToUsersList extends ArrayList<ImportAccountToUser> {
         if (!accountNameTitle.toString().equalsIgnoreCase("ACCOUNT")) {
             throw new Exception("Column one in first row must equal to 'ACCOUNT' and represents the Account to associate");
         }
-        if (!targetNameTitle.toString().equalsIgnoreCase("TARGET-SYSTEM")) {
+        if (!targetNameTitle.toString().equalsIgnoreCase("RESOURCE_UNIQUE_NAME")) {
             throw new Exception("Column one in first row must equal to 'TARGET-SYSTEM' and represents the resource unique name the account is related to!");
         }
         

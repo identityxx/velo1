@@ -9,5 +9,4 @@
       
    <param name="capabilityFolderFrom"/>
    <param name="capabilityFolderId" value="#{capabilityFolderHome.capabilityFolderId}"/>
-
 </page>

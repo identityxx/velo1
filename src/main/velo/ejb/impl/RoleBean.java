@@ -1296,6 +1296,19 @@ UserRole currUserRoleToRemove = new UserRole();
     }
     
     
+    public RolesFolder findRolesFolder(String uniqueName) {
+    	log.debug("Finding RolesFolder in repository with  unique name '" + uniqueName + "'");
+
+		try {
+			Query q = em.createNamedQuery("rolesFolder.findByUniqueName").setParameter("uniqueName",uniqueName);
+			return (RolesFolder) q.getSingleResult();
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.debug("Could not find any RolesFolder with the specified unique name: '" + uniqueName + "', returning null.");
+			return null;
+		}
+    }
+    
     
     
     

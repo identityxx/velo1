@@ -108,7 +108,7 @@ public class Capability extends BaseEntity implements Serializable {
      * Get the name of the role
      * @return The name of the role
      */
-    @Length(min=3, max=40) @NotNull //seam
+//fucks the searches even though there's no 'validateAll' tag:(    @Length(min=3, max=40) @NotNull //seam
     @Column(name="NAME", nullable=false)
     public String getName() {
         return name;
