@@ -2,7 +2,6 @@ lib/src/**
 lib/test/**
 build-dev.properties
 build-prod.properties
-build.properties
 classes/**
 bootstrap/**
 dist/**
