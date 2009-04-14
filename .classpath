@@ -70,6 +70,6 @@
 	<classpathentry kind="lib" path="lib/xmlwriter-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/sqlbuilder-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jcifs-1.2.18.jar"/>
-	<classpathentry kind="lib" path="C:/data/apps/jbdevstudio/jboss-eap/jboss-as/client/jbossws-native-core.jar"/>
+	<classpathentry kind="lib" path="lib/jbossws-native-core.jar"/>
 	<classpathentry kind="output" path="test-build"/>
 </classpath>
