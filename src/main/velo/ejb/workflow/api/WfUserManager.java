@@ -207,6 +207,48 @@ public class WfUserManager {
 	}
 	
 	
+	// Returns the manager of the user 'userName' or his manager's delegator if exists
+	public User getManagerOrDelegatorForUser(String userName) {
+		
+		log.debug("Getting manager or delegator for the user #0", userName);
+		
+		User manager = getManagerForUser(userName);
+		
+		if (manager == null)
+			return null;
+		
+		if (manager.getDelegator() == null) {
+			log.debug("Manager was found with DN #0, delegator was not found", manager.getName());
+			return manager;
+		}
+		
+		log.debug("Manager's delegator was found with DN #0", manager.getDelegator().getName());
+		
+		return manager.getDelegator();
+		
+	}
+	
+	public User getManagerOrDelegatorForLevel(String userName, int level) {
+		
+		log.debug("Getting manager or delegator level #0 for the user #1", level, userName);
+		
+		User manager = getManagerForLevel(userName, level);
+		
+		if (manager == null)
+			return null;
+		
+		if (manager.getDelegator() == null) {
+			log.debug("Manager for level #0 was found with DN #1, delegator was not found", level, manager.getName());
+			return manager;
+		}
+		
+		log.debug("Manager's delegator for level #0 was found with DN #1", level, manager.getDelegator().getName());
+		
+		return manager.getDelegator();	
+		
+	}
+	
+	
 	
 	//FIXME: DUPLICATED FROM USERBEAN
 	public User findUser(String userName) {

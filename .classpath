@@ -49,7 +49,7 @@
 	<classpathentry kind="lib" path="lib/commons-email-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/groovy-all.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient.jar"/>
-	<classpathentry kind="lib" path="C:/data/apps/jbdevstudio/jboss-eap/jboss-as/client/jboss-annotations-ejb3.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Apps/jbdevstudio/jboss-eap/jboss-as/client/jboss-annotations-ejb3.jar"/>
 	<classpathentry kind="lib" path="lib/velowingwapi.jar"/>
 	<classpathentry kind="lib" path="lib/quartz.jar"/>
 	<classpathentry kind="lib" path="lib/ldap2_7_2.jar"/>
@@ -70,6 +70,6 @@
 	<classpathentry kind="lib" path="lib/xmlwriter-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/sqlbuilder-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jcifs-1.2.18.jar"/>
-	<classpathentry kind="lib" path="C:/data/apps/jbdevstudio/jboss-eap/jboss-as/client/jbossws-native-core.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/jbossws-native-core.jar"/>
 	<classpathentry kind="output" path="test-build"/>
 </classpath>
