@@ -17,8 +17,6 @@
  */
 package velo.exceptions;
 
-import velo.entity.EventDefinition;
-import velo.entity.EventResponse;
 
 /**
  * An exception that is trown if there was a failure with an Event Response
@@ -28,12 +26,8 @@ import velo.entity.EventResponse;
 public class EventResponseException extends EdmException{
     private static final long serialVersionUID = 1987305452306161213L;
     
-    /**
-     * Constructor of the exception
-     * @param msg A message that describes the exception
-     */
-    public EventResponseException(EventDefinition ed, EventResponse erd, String msg) {
-        super("Exception has occured while firing Event '" + ed.getDisplayName() + "', with response '" + erd.getDescription() + "', failure message: '" + msg);
+    public EventResponseException(String msg) {
+    	super(msg);
     }
     
     public EventResponseException(Throwable t) {

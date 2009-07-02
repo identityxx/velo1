@@ -130,6 +130,12 @@ public class Task extends BaseEntity implements Serializable {
 
     private Long workflowProcessId;
     
+    private String taskExecuterClassName;
+    
+    private Boolean async = true;
+    
+    
+    
     /**
      * @return Returns the taskId.
      */
@@ -347,13 +353,30 @@ public class Task extends BaseEntity implements Serializable {
 		this.workflowProcessId = workflowProcessId;
 	}
 	
+
+	@Column(name = "TASK_EXECUTER_CLASS_NAME")
+	//TODO: At some point should be not nullable
+	public String getTaskExecuterClassName() {
+		return taskExecuterClassName;
+	}
+
+	public void setTaskExecuterClassName(String taskExecuterClassName) {
+		this.taskExecuterClassName = taskExecuterClassName;
+	}
+	
+	@Transient
+	public Boolean getAsync() {
+		return async;
+	}
+
+	public void setAsync(Boolean async) {
+		this.async = async;
+	}
 	
 	
 	
 	
-	
-	
-	
+
 	//Transients/Helper
 	public void addLog(EdmMessage em) {
         addLog(em.getType().toString(), em.getSummary(), em.getDescription());

@@ -24,6 +24,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -82,6 +83,7 @@ public class ResourceTypeOperation extends BaseEntity {
 	 */
 	@ManyToOne(optional=false)
     @JoinColumn(name="RESOURCE_GLOBAL_OPER_ID", nullable=false, unique=false)
+    @OrderBy("uniqueName ASC")
 	public ResourceGlobalOperation getResourceGlobalOperation() {
 		return resourceGlobalOperation;
 	}
@@ -162,7 +164,15 @@ public class ResourceTypeOperation extends BaseEntity {
 	
 	
 	
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj != null && obj instanceof ResourceTypeOperation))
+			return false;
+		ResourceTypeOperation ent = (ResourceTypeOperation) obj;
+		if (this.getResourceTypeOperationId().equals(ent.getResourceTypeOperationId()))
+			return true;
+		return false;
+	}
 	
 	
 	

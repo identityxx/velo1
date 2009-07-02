@@ -42,6 +42,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "VL_REQUEST_ACCOUNT")
 @SequenceGenerator(name="RequestAccountIdSeq",sequenceName="REQUEST_ACCOUNT_ID_SEQ")
+@Deprecated
 public class RequestAccount extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1987302492306161413L;

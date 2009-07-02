@@ -32,7 +32,7 @@ import velo.entity.Account;
 public class AccountList extends EntityQuery {
 
 	private static final String[] RESTRICTIONS = {
-			"lower(account.name) like concat(lower(#{accountList.account.name}),'%')",
+			"lower(account.name) like lower(#{accountList.account.name})",
 			"account.resource.uniqueName = #{accountList.resourceUniqueName}"};
 
 	private Account account = new Account();

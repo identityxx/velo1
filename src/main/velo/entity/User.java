@@ -33,6 +33,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -112,6 +114,11 @@ import velo.tools.FileUtils;
 	private transient static Logger log = Logger.getLogger(User.class.getName());
 	private transient static Logger groovyLog = Logger.getLogger(GroovyObject.class.getName());
     private static final long serialVersionUID = 1987305459306161213L;
+    
+    public enum UserSourceTypes {
+    	GUI, RECONCILE
+    }
+
     
     /**
      * The unique ID of the user
@@ -204,7 +211,7 @@ import velo.tools.FileUtils;
     
     private List<Capability> capabilities = new ArrayList<Capability>();
     
-    private String sourceType;
+    private UserSourceTypes sourceType;
     
     private Resource sourceResource;
     
@@ -226,6 +233,17 @@ import velo.tools.FileUtils;
     
     private Date expirationDate;
     
+    
+    public User() {
+    	
+    }
+    
+    public User(String name, boolean disabled, boolean locked, UserSourceTypes sourceType) {
+    	setName(name);
+    	setDisabled(disabled);
+    	setLocked(locked);
+    	setSourceType(sourceType);
+    }
 
 	/**
      * Set the ID of the entity
@@ -580,11 +598,12 @@ import velo.tools.FileUtils;
     }
     
     @Column(name = "SOURCE_TYPE", nullable = true)
-    public String getSourceType() {
+    @Enumerated(EnumType.STRING)
+    public UserSourceTypes getSourceType() {
         return sourceType;
     }
     
-    public void setSourceType(String sourceType) {
+    public void setSourceType(UserSourceTypes sourceType) {
         this.sourceType = sourceType;
     }
     

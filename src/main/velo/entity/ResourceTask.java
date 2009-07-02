@@ -25,10 +25,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-@Entity
+//@Entity
 @MappedSuperclass
 public class ResourceTask extends Task {
 	private String resourceUniqueName;
+	private Resource resource;
 
 	// Holds a reference to the resource type operation
 	// required by the controller to determine all associated resource actions
@@ -71,13 +72,19 @@ public class ResourceTask extends Task {
 		this.resourceTypeOperation = resourceTypeOperation;
 	}
 	
+	@ManyToOne(optional=false)
+	@JoinColumn(name = "RESOURCE_ID", nullable = false)
+	public Resource getResource() {
+		return resource;
+	}
+
+	public void setResource(Resource resource) {
+		this.resource = resource;
+	}
 	
 	
 	
-	
-	
-	
-	
+
 	public static ResourceTask factory(String resourceUniqueName, ResourceTypeOperation resourceTypeOperation, String description) {
 		ResourceTask rTask = new ResourceTask();
 		rTask.setCreationDate(new Date());

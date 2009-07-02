@@ -96,9 +96,10 @@ public class AccountCli extends CliUtil {
             //Handle -DISABLE- action
             if (action.equals("disable")) {
                 System.out.println("Disabling account name: " + accountName);
-                try {
+
+/*                try {
                     Account account = am.findAccount(accountName, tsName);
-                    am.disableAccount(account, null, null,null);
+//                    am.disableAccount(account, null, null,null);
                 } catch (TaskCreationException tce) {
                     System.err.println("Could not DISABLE account name: '" + accountName + "', on Target System: '" + tsName + "', failure message is: " + tce.getMessage());
                     System.exit(1);
@@ -111,9 +112,10 @@ public class AccountCli extends CliUtil {
             //Handle -ENABLE- action
             if (action.equals("enable")) {
                 System.out.println("Enable account name: " + accountName);
-                try {
+
+/*                try {
                     Account account = am.findAccount(accountName, tsName);
-                    am.enableAccount(account,null,null);
+//                    am.enableAccount(account,null,null);
                 } catch (TaskCreationException tce) {
                     System.err.println("Could not ENABLE account name: '" + accountName + "', on Target System: '" + tsName + "', failure message is: " + tce.getMessage());
                     System.exit(1);
@@ -127,7 +129,7 @@ public class AccountCli extends CliUtil {
             if (action.equals("delete")) {
                 System.out.println("Enable account name: " + accountName);
                 //try {
-                    Account account = am.findAccount(accountName, tsName);
+//                    Account account = am.findAccount(accountName, tsName);
                     //am.deleteAccount(account,null,null,null);
                 ////jb!!!} /*catch (TaskCreationException tce) {
                     //System.err.println("Could not DELETE account name: '" + accountName + "', on Target System: '" + tsName + "', failure message is: " + tce.getMessage());

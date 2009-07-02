@@ -92,7 +92,7 @@ public class SyncDataXmlGenerator {
                                 for (Account currAccount : getAccounts()) {
                                 pxr.writeEntity("account").writeAttribute("name", currAccount.getName())
                                     .writeEntity("attributes");
-                                    for (Attribute currAttr : currAccount.getTransientAttributes().values()) {
+                                    for (Attribute currAttr : currAccount.getActiveAttributes().values()) {
                                     	if (currAttr.getFirstValue() == null) {
                                     		log.info("Could not find at least one value for attribute named '" + currAttr.getUniqueName() + "' for account named '" + currAccount.getName() + "', skipping xml attribute generation'");
                                     		//TODO: IS it ok? or should the attribute be dumped without values ?

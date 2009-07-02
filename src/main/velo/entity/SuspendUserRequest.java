@@ -17,10 +17,12 @@
  */
 package velo.entity;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 @Entity
+@DiscriminatorValue(value = "SUSPEND_USER_REQUEST")
 public class SuspendUserRequest extends Request {
     private final String REQUEST_TYPE = "Suspend User";
     

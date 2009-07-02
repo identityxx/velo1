@@ -19,6 +19,8 @@ package velo.entity;
 //@!@not
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,6 +38,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -46,8 +49,6 @@ import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.Name;
 
 import velo.exceptions.LoadGroupByMapException;
-import velo.exceptions.ObjectFactoryException;
-import velo.resource.operationControllers.JdbcSpmlResourceOperationController;
 
 /**
  * An entity that represents an resource Group within a Target System
@@ -60,23 +61,27 @@ import velo.resource.operationControllers.JdbcSpmlResourceOperationController;
 @Name("resourceGroup")
 // Seam name
 @NamedQueries( {
-		@NamedQuery(name = "resourceGroup.findAllByResource", query = "SELECT object(tsg) FROM ResourceGroup AS tsg WHERE tsg.resource = :resource"),
-		@NamedQuery(name = "resourceGroup.findById", query = "SELECT object(tsg) FROM ResourceGroup AS tsg WHERE tsg.resourceGroupId = :resourceGroupId"),
-		@NamedQuery(name = "resourceGroup.findByUniqueId", query = "SELECT object(tsg) FROM ResourceGroup AS tsg WHERE tsg.uniqueId = :uniqueId AND tsg.resource = :resource"),
-		@NamedQuery(name = "resourceGroup.findByDisplayName", query = "SELECT object(tsg) FROM ResourceGroup AS tsg WHERE tsg.displayName = :displayName"),
-		// With Description @NamedQuery(name =
-		// "resourceGroup.findByString",query = "SELECT object(tsg) FROM
-		// resourceGroup AS tsg WHERE ( ( (UPPER(tsg.displayName) like
-		// :searchString) OR ( UPPER(tsg.uniqueId) like :searchString ) OR (
-		// UPPER(tsg.description) like :searchString ) ) AND (tsg.managed = 1)
-		// AND (tsg.resource = :resource) )"),
-		@NamedQuery(name = "resourceGroup.findByString", query = "SELECT object(tsg) FROM ResourceGroup AS tsg WHERE ( ( (UPPER(tsg.displayName) like :searchString) OR ( UPPER(tsg.uniqueId) like :searchString ) ) AND (tsg.managed = 1) AND (tsg.resource = :resource) )"),
-		@NamedQuery(name = "resourceGroup.isGroupExistOnTarget", query = "SELECT count(tsg) FROM ResourceGroup AS tsg WHERE tsg.resource = :resource AND tsg.uniqueId = :uniqueId") })
-public class ResourceGroup extends BaseEntity implements Serializable, Cloneable {
+	@NamedQuery(name = "resourceGroup.isExistIgnoreCase", query = "SELECT count(rg) FROM ResourceGroup rg WHERE UPPER(rg.uniqueId) = :uniqueId AND rg.resource.uniqueName = :resourceUniqueName"),
+	@NamedQuery(name = "resourceGroup.isExistWithCase", query = "SELECT count(rg) FROM ResourceGroup rg WHERE rg.uniqueId = :uniqueId AND rg.resource.uniqueName = :resourceUniqueName"),
+	@NamedQuery(name = "resourceGroup.findByUniqueIdWithCase", query = "SELECT rg FROM ResourceGroup rg WHERE rg.uniqueId = :uniqueId AND rg.resource.uniqueName = :resourceUniqueName"),
+	@NamedQuery(name = "resourceGroup.findByUniqueIdIgnoreCase", query = "SELECT rg FROM ResourceGroup rg WHERE upper(rg.uniqueId) = upper(:uniqueId) AND rg.resource.uniqueName = :resourceUniqueName"),
+
+	
+
+	@NamedQuery(name = "resourceGroup.findByDisplayName", query = "SELECT object(tsg) FROM ResourceGroup AS tsg WHERE tsg.displayName = :displayName"),
+	// With Description @NamedQuery(name =
+	// "resourceGroup.findByString",query = "SELECT object(tsg) FROM
+	// resourceGroup AS tsg WHERE ( ( (UPPER(tsg.displayName) like
+	// :searchString) OR ( UPPER(tsg.uniqueId) like :searchString ) OR (
+	// UPPER(tsg.description) like :searchString ) ) AND (tsg.managed = 1)
+	// AND (tsg.resource = :resource) )"),
+	@NamedQuery(name = "resourceGroup.findByString", query = "SELECT object(tsg) FROM ResourceGroup AS tsg WHERE ( ( (UPPER(tsg.displayName) like :searchString) OR ( UPPER(tsg.uniqueId) like :searchString ) ) AND (tsg.managed = 1) AND (tsg.resource = :resource) )"),
+	@NamedQuery(name = "resourceGroup.isGroupExistOnTarget", query = "SELECT count(tsg) FROM ResourceGroup AS tsg WHERE tsg.resource = :resource AND tsg.uniqueId = :uniqueId") })
+	public class ResourceGroup extends BaseEntity implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1987305452306161213L;
 
 	private static Logger log = Logger.getLogger(ResourceGroup.class.getName());
-	
+
 	/**
 	 * ID of the entity
 	 */
@@ -107,19 +112,34 @@ public class ResourceGroup extends BaseEntity implements Serializable, Cloneable
 	 */
 	private Resource resource;
 
-	private Set<Account> members;
+	//private Set<Account> members;
+	private Set<ResourceGroupMember> members = new HashSet<ResourceGroupMember>();
 
-	private boolean isManaged = true;
+	private Boolean isManaged;
 
-	private boolean isDeletedInResource;
+	private Boolean isDeletedInResource;
 
 	private Date firstTimeGroupBeingDeletedInResource;
 
 	private int numberOfReconcilesGroupKeepsBeingDeletedInResource = 0;
-	
+
 	private Set<Role> roles;
 
 	
+	public ResourceGroup() {
+		setManaged(true);
+		setDeletedInResource(false);
+	}
+	
+	public ResourceGroup(String uniqueId, String displayName, String description, Resource resource) {
+		setUniqueId(uniqueId);
+		setDisplayName(displayName);
+		setDescription(description);
+		setResource(resource);
+		setManaged(true);
+		setDeletedInResource(false);
+	}
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO,generator="ResourceGroupIdSeq")
 	//@GeneratedValue
@@ -208,27 +228,41 @@ public class ResourceGroup extends BaseEntity implements Serializable, Cloneable
 		return resource;
 	}
 
+
+
+
+
+
 	/**
 	 * @param accounts
 	 *            The member accounts to set.
 	 */
-	public void setMembers(Set<Account> members) {
-		this.members = members;
+	//	public void setMembers(Set<Account> members) {
+	//		this.members = members;
+	//	}
+
+	//	/**
+	//	 * @return Returns the accounts that are member of this group.
+	//	 */
+	//	@ManyToMany(
+	//	// cascade={CascadeType.PERSIST, CascadeType.MERGE},
+	//
+	//	// cascade={CascadeType.PERSIST, CascadeType.MERGE},
+	//	fetch = FetchType.LAZY, targetEntity = velo.entity.Account.class)
+	//	@JoinTable(
+	//	// name="ACCOUNTS_TO_TARGET_SYSTEM_GROUP",
+	//	name = "VL_ACCOUNTS_TO_RESOURCE_GRPS", joinColumns = @JoinColumn(name = "GROUP_ID"), inverseJoinColumns = @JoinColumn(name = "ACCOUNT_ID"))
+	//	public Set<Account> getMembers() {
+	//		return members;
+	//	}
+
+	@OneToMany(mappedBy="primaryKey.resourceGroup")
+	public Set<ResourceGroupMember> getMembers() {
+		return members;
 	}
 
-	/**
-	 * @return Returns the accounts that are member of this group.
-	 */
-	@ManyToMany(
-	// cascade={CascadeType.PERSIST, CascadeType.MERGE},
-
-	// cascade={CascadeType.PERSIST, CascadeType.MERGE},
-	fetch = FetchType.LAZY, targetEntity = velo.entity.Account.class)
-	@JoinTable(
-	// name="ACCOUNTS_TO_TARGET_SYSTEM_GROUP",
-	name = "VL_ACCOUNTS_TO_RESOURCE_GRPS", joinColumns = @JoinColumn(name = "GROUP_ID"), inverseJoinColumns = @JoinColumn(name = "ACCOUNT_ID"))
-	public Set<Account> getMembers() {
-		return members;
+	public void setMembers(Set<ResourceGroupMember> members) {
+		this.members = members;
 	}
 
 	/**
@@ -301,15 +335,14 @@ public class ResourceGroup extends BaseEntity implements Serializable, Cloneable
 		return numberOfReconcilesGroupKeepsBeingDeletedInResource;
 	}
 
-	
-	
+
+
 	/**
 	 * Check whether an account is a member of the group
 	 * 
 	 * @param account
 	 *            The account name to check membership for
 	 * @return true/false upon member/not a member
-	 */
 	@Transient
 	public boolean isAccountMember(Account account) {
 		for (Account currMember : getMembers()) {
@@ -320,9 +353,10 @@ public class ResourceGroup extends BaseEntity implements Serializable, Cloneable
 
 		return false;
 	}
+	 */
 
-	
-	
+
+
 	/**
 	 * @return the roles
 	 */
@@ -339,80 +373,100 @@ public class ResourceGroup extends BaseEntity implements Serializable, Cloneable
 		this.roles = roles;
 	}
 
-	
-	
-	public static ResourceGroup factory(String uniqueId, String displayName, String description,Resource resource) throws ObjectFactoryException {
-		ResourceGroup rg = new ResourceGroup();
-		
-		if (displayName == null) {
-			throw new ObjectFactoryException("'displayName' is null and is a must!");
-		}
 
-		if (uniqueId == null) {
-			throw new ObjectFactoryException("'uniqueId' is null but is a a must!");
-		}
+
+	public static ResourceGroup factory(String uniqueId, String displayName, String description,Resource resource) {
+		ResourceGroup rg = new ResourceGroup();
 
 		rg.setDisplayName(displayName);
 		rg.setUniqueId(uniqueId);
 		rg.setDescription(description);
 		rg.setResource(resource);
-		
+		rg.setCreationDate(new Date());
+
 		return rg;
 	}
+
+
+	@Transient
+	public String getUniqueIdInRightCase() {
+		if (getResource().isCaseSensitive()) {
+			return getUniqueId();
+		} else {
+			return getUniqueId().toUpperCase();
+		}
+	}
+
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	@Deprecated
+	//mainly used by the JDBC adapter
 	public void load(Map map, Resource resource) throws LoadGroupByMapException {
 		try {
-			if (((String) map.get("DISPLAYNAME") == null)) {
+			if (((String) map.get("display_name") == null)) {
 				throw new LoadGroupByMapException(
-						"'displayName' is a must and does not exist in MAP!");
+				"'display_name' is a must and does not exist in MAP!");
 			}
 
-			if (((String) map.get("UNIQUEID").toString() == null)) {
+			if (((String) map.get("unique_id").toString() == null)) {
 				throw new LoadGroupByMapException(
-						"'uniqueId' is a must and does not exist in MAP!");
-			}
-			
-			if (map.containsKey("TYPE")) {
-				this.setType((String) map.get("TYPE"));
+				"'uniqueId' is a must and does not exist in MAP!");
 			}
 
-			this.setDisplayName((String) map.get("DISPLAYNAME"));
-			this.setUniqueId((String) map.get("UNIQUEID").toString());
-			this.setDescription((String) map.get("DESCRIPTION"));
+			if (map.containsKey("type")) {
+				this.setType((String) map.get("type"));
+			}
+
+			this.setDisplayName((String) map.get("display_name"));
+			this.setUniqueId((String) map.get("unique_id").toString());
+			this.setDescription((String) map.get("description"));
 			this.setResource(resource);
-			
+
 			log.trace("Loaded group: uniqueId '" + getUniqueId() + ", displayName: '" + getDisplayName() + "', type '" + getType() + "', description: '" + getDescription());
 		} catch (NullPointerException npe) {
 			throw new LoadGroupByMapException(npe);
 		}
 	}
 
+
+	//Compare by name, this is mainly used for reconcile import process as IDs do not exist in active groups imports
+	public boolean isMemberExistByName(Account account) {
+		for (ResourceGroupMember currRGM : getMembers()) {
+			if (currRGM.getAccount().getNameInRightCase().equals(account.getNameInRightCase())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 	
+	//mainly for group membership reconciliation
+	@Transient
+	public Map<String,ResourceGroupMember> getMembersAsMap() {
+		Map<String,ResourceGroupMember> map = new HashMap<String,ResourceGroupMember>();
+		for (ResourceGroupMember currMember : getMembers()) {
+			map.put(currMember.getAccount().getNameInRightCase(),currMember);
+		}
+		
+		return map;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
 	public ResourceGroup clone() {
 		try {
 			ResourceGroup clonedTSG = (ResourceGroup) super.clone();

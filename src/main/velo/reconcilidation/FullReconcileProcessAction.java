@@ -32,6 +32,7 @@ import velo.entity.Resource;
 import velo.exceptions.ReconcileAccountsException;
 import velo.exceptions.ReconcileGroupsException;
 
+@Deprecated
 public class FullReconcileProcessAction {
     private static final long serialVersionUID = 1987305452306161213L;
     private static Logger logger = Logger.getLogger(FullReconcileProcessAction.class.getName());

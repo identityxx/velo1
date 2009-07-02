@@ -54,4 +54,13 @@ public class TaskHome extends EntityHome<Task> {
 	public Task getDefinedInstance() {
 		return isIdDefined() ? getInstance() : null;
 	}
+	
+	public void refresh() {
+		if(isManaged()) { 
+			getEntityManager().refresh(getInstance());
+		} else {
+			setId(getInstance().getTaskId());
+			clearInstance();
+		}
+	}
 }

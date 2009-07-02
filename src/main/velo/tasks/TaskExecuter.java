@@ -18,7 +18,8 @@
 package velo.tasks;
 
 import velo.entity.Task;
+import velo.exceptions.TaskExecutionException;
 
 public interface TaskExecuter {
-	public boolean execute(Task task);
+	public void execute(Task task) throws TaskExecutionException;
 }

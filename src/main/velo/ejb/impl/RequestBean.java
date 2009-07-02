@@ -45,7 +45,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.jboss.seam.annotations.Name;
 
 import velo.common.SysConf;
 import velo.contexts.OperationContext;
@@ -63,7 +62,6 @@ import velo.entity.AccountsRequest;
 import velo.entity.BulkTask;
 import velo.entity.CreateUserRequest;
 import velo.entity.DeleteUserRequest;
-import velo.entity.EventDefinition;
 import velo.entity.IdentityAttribute;
 import velo.entity.ModifyUserRolesRequest;
 import velo.entity.Position;
@@ -213,8 +211,9 @@ public class RequestBean implements RequestManagerLocal, RequestManagerRemote {
 		
 		for (RequestAccount currReqAcct : areq.getAccounts()) {
 			log.trace("Checking whether account to '" + currReqAcct.getAccountOperation() + "' with name: "+ currReqAcct.getAccountName()+ ", of resource: " + currReqAcct.getResourceName() + "' exists in repository or not...");
-			
-			if (!accountManager.isAccountExists(currReqAcct.getAccountName(), currReqAcct.getResourceName())) {
+	
+			if (1==1) {
+//			if (!accountManager.isAccountExists(currReqAcct.getAccountName(), currReqAcct)) {
 				throw new RequestCreationException("Cannot create request, account named: '"
 					+ currReqAcct.getAccountName()
 					+ ", on resource: '"
@@ -1227,7 +1226,7 @@ public class RequestBean implements RequestManagerLocal, RequestManagerRemote {
 				CreateUserRequest createUserReq = (CreateUserRequest) request;
 
 				// CREATE A NEW USER.
-				User newUser = userManager.createUserFromRequest(createUserReq);
+//				User newUser = userManager.createUserFromRequest(createUserReq);
 
 				Set<String> roleNames = new HashSet<String>();
 				for (RequestRole currRR : createUserReq
@@ -1251,14 +1250,14 @@ public class RequestBean implements RequestManagerLocal, RequestManagerRemote {
 					log.debug("Adding '" + roles.size()
 							+ "' roles to user...");
 					//BulkTask bulkTask = roleManager.modifyRolesOfUserTasks(new HashSet<UserRole>(), roles, newUser, true);
-					BulkTask bulkTask = roleManager.modifyRolesOfUserTasks(new HashSet<Role>(), roles, newUser);
+//					BulkTask bulkTask = roleManager.modifyRolesOfUserTasks(new HashSet<Role>(), roles, newUser);
 					
 					
 					//PERSIST THE ENTITIES!@#$!@#$!@#$!@#$!@#$!@#$!@#$
 					
 					
-					bulkTask.setRequest(request);
-					request.getBulkTasks().add(bulkTask);
+//					bulkTask.setRequest(request);
+//					request.getBulkTasks().add(bulkTask);
 
 				} catch (LoadingObjectsException loe) {
 					indicateRequestProcessFailure(request, loe.getMessage());
@@ -1276,9 +1275,9 @@ public class RequestBean implements RequestManagerLocal, RequestManagerRemote {
 				DeleteUserRequest deleteUserReq = (DeleteUserRequest) request;
 				User loadedUser = userManager.findUserByName(deleteUserReq
 						.getUserName());
-				BulkTask bt = userManager.deleteUserBulkTask(loadedUser);
+//				BulkTask bt = userManager.deleteUserBulkTask(loadedUser);
 
-				request.getBulkTasks().add(bt);
+//				request.getBulkTasks().add(bt);
 
 			} catch (NoResultFoundException nrfe) {
 				indicateRequestProcessFailure(request, nrfe.getMessage());
@@ -1357,12 +1356,12 @@ public class RequestBean implements RequestManagerLocal, RequestManagerRemote {
 		
 		log.trace("Started method updateRequestStatus");
 		
-		EventDefinition ed = eventManager.find(eventRequestStatusModification);
+//		EventDefinition ed = eventManager.find(eventRequestStatusModification);
 		//make sure that the event was found, otherwise throw an exception
-		if (ed == null) {
-			log.error("Could not find event definition '" + eventRequestStatusModification + "', skipping event response invocations...");
-			return;
-		}
+//		if (ed == null) {
+//			log.error("Could not find event definition '" + eventRequestStatusModification + "', skipping event response invocations...");
+//			return;
+//		}
 		OperationContext context = new OperationContext();
 		
 		System.out.println ("The request is an instance of class " + request.getClass().toString());
@@ -1383,12 +1382,12 @@ public class RequestBean implements RequestManagerLocal, RequestManagerRemote {
 			context.addVar("request", r);
 		}	
 			
-		try {
-			eventManager.invokeEvent(ed, context);
-		}
-		catch(ScriptInvocationException sie){
-			log.error("The ScriptInvocationException has occured " + sie.getMessage());
-		}
+//		try {
+//			eventManager.invokeEvent(ed, context);
+//		}
+//		catch(ScriptInvocationException sie){
+//			log.error("The ScriptInvocationException has occured " + sie.getMessage());
+//		}
 		
 		em.merge(request);
 		

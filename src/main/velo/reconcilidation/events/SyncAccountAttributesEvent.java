@@ -24,9 +24,6 @@ import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import velo.actions.ActionManager;
-import velo.actions.ResourceAccountActionInterface;
 import velo.ejb.interfaces.IdentityAttributeManagerRemote;
 import velo.ejb.interfaces.ResourceAttributeManagerRemote;
 import velo.entity.Account;
@@ -82,14 +79,14 @@ public class SyncAccountAttributesEvent extends AccountAnalyzerEvent {
 			//(these are the attributes that we really want to synchronize, activeAccount might include 
 			//other attributes that were fetched during the query but might not be relevant since they were 
 			//not defined as resourceAttributes)
-			Collection<Attribute> attrs = getClaimedAccount().getTransientAttributes().values();
-			logger.fine("Syncing  *" + getClaimedAccount().getTransientAttributes().size() + "* attributes for resource: " + getClaimedAccount().getResource().getDisplayName());
+			Collection<Attribute> attrs = getClaimedAccount().getActiveAttributes().values();
+			logger.fine("Syncing  *" + getClaimedAccount().getActiveAttributes().size() + "* attributes for resource: " + getClaimedAccount().getResource().getDisplayName());
 			
 
 			//DEBUG: had a problem that there was no matching attributes in ActiveAccount, here's a dump of all attributes
 			logger.info("START of Dumping ActiveAccounts attributes list");
 			//try {
-				for (Attribute currAttr : getActiveAccount().getTransientAttributes().values()) {
+				for (Attribute currAttr : getActiveAccount().getActiveAttributes().values()) {
 					//JB!!! logger.info("ActiveAccount Attr name: " + currAttr.getUniqueName() + ", value: " + currAttr.getValueAsString());
 				}
 			/*}
@@ -105,7 +102,8 @@ public class SyncAccountAttributesEvent extends AccountAnalyzerEvent {
 				//System.out.println("Account attribute name: " + currAttr.getName() + ", value: " + currAttr.getValue());
 				try {
 					//Get from the ActiveAccount the current iterated attribute name fetched from the ClaimedAccount's attribute list
-					Attribute currCorrespondingActiveAccountAttr = getActiveAccount().getAccountAttribute(currClaimedAttr.getUniqueName());
+//					Attribute currCorrespondingActiveAccountAttr = getActiveAccount().getAccountAttribute(currClaimedAttr.getUniqueName());
+					Attribute currCorrespondingActiveAccountAttr = null;
 					
 					//JB!!! logger.fine("Found claimed account attribute name: " + currCorrespondingActiveAccountAttr.getUniqueName() + " in ActiveAccount, for account name: " + getClaimedAccount().getName() + "Claimed value: " + currClaimedAttr.getFirstValue().getValueAsString());
 					
@@ -117,7 +115,7 @@ public class SyncAccountAttributesEvent extends AccountAnalyzerEvent {
 						logger.fine("ActiveAttribute has no value...");
 					}
 					
-					if (currCorrespondingActiveAccountAttr.compareValues(currClaimedAttr)) {
+					if (currCorrespondingActiveAccountAttr.equalToAttribute(currClaimedAttr)) {
 						logger.fine("Values are equal for attribute name: " + currCorrespondingActiveAccountAttr.getUniqueName() + ", continuing...");
 					}
 					else {
@@ -126,6 +124,9 @@ public class SyncAccountAttributesEvent extends AccountAnalyzerEvent {
 						}
 						else if (rp.getUnmatchedAccountAttributeEventAction().equals("UPDATE_ATTRIBUTE_VALUE_ON_TARGET_SYSTEM") || rp.getUnmatchedAccountAttributeEventAction().equals("UPDATE_ATTRIBUTE_VALUE_ON_TARGET_SYSTEM_AND_IN_USER_ATTRIBUTES")) {
 							//JB!!! logger.info("Updating attribute value in target system for account name: " + getClaimedAccount().getName() + ", from value: " + currCorrespondingActiveAccountAttr.getFirstValue().getValueAsString() + ", to value: " + currClaimedAttr.getFirstValue().getValueAsString());
+
+
+/*FUCK!!!1.4
 							ActionManager am = new ActionManager();
 							try {
 								ResourceAccountActionInterface updateAccountAction = am.factoryUpdateAccountAction(getClaimedAccount());
@@ -137,12 +138,13 @@ public class SyncAccountAttributesEvent extends AccountAnalyzerEvent {
 							catch(ActionFailureException afe) {
 								logger.warning("A failure was occured while trying to update attribute name: " + currClaimedAttr.getUniqueName() + ", for account name: " + getClaimedAccount().getName() + ", failure message: " + afe.getMessage());
 							}
+							*/
 						}
 						
 						//If in policy it was decided to also update the attached 'user identity attributes' then lets check whether that target system attribute is connected to any user identity attributes
 						if (rp.getUnmatchedAccountAttributeEventAction().equals("UPDATE_ATTRIBUTE_VALUE_IN_TARGET_SYSTEM_AND_IN_USER_ATTRIBUTES")) {
 							//Get the resourceAttribute entity for the current iterated attribute name
-							ResourceAttribute ra = getClaimedAccount().getResource().findAttributeByName(currClaimedAttr.getUniqueName());
+							ResourceAttribute ra = getClaimedAccount().getResource().getResourceAttribute(currClaimedAttr.getUniqueName());
 							
 							//Get a collection of ALL IdentityAttributes that are attached to the current handled resourceAttribute
 							Collection<IdentityAttribute> iaList = iam.findIdentityAttributesAttachedToresourceAttribute(ra);
@@ -158,10 +160,11 @@ public class SyncAccountAttributesEvent extends AccountAnalyzerEvent {
 						}
 					}
 				}
-				catch (AttributeNotFound anf) {
+				//catch (AttributeNotFound anf) {
+				catch (Exception anf) {
 					logger.warning("Attribute in 'ActiveAccount' was not Found for the corresponding expected Attribute of the ClaimedAccount, while syncing account attributes, failed with details: " + anf.getMessage()
 							+ ", dumping *ActiveAccount* attributes: " 
-							+ getActiveAccount().getTransientAttributes()
+							+ getActiveAccount().getActiveAttributes()
 					);
 				}
 				

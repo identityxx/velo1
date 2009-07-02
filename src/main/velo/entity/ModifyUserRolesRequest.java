@@ -22,22 +22,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import velo.entity.RequestAccount.RequestAccountOperation;
 import velo.entity.RequestedPosition.RequestedPositionActionType;
 
 @Entity
 @DiscriminatorValue("MODIFY_USER_ROLES_REQUEST")
+@Deprecated
 public class ModifyUserRolesRequest extends Request {
     private final String REQUEST_TYPE = "MODIFY_USER_ROLES";
     private static final long serialVersionUID = 1L;
@@ -67,7 +61,8 @@ public class ModifyUserRolesRequest extends Request {
     }
     
     //TODO: THIS IS A PROBLEM, MUST BE EAGER, FOR ALL OF THE ROWS, OTHERWISE DATA WONT BE AVAILABLE FOR THE FEEDER
-    @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+//DAMN    @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    @Transient
     //public Set<RequestRoleModifyUserRolesRevoke> getRolesToRevoke() {
     public Set<RequestRole> getRolesToRevoke() {
         return rolesToRevoke;
@@ -78,7 +73,8 @@ public class ModifyUserRolesRequest extends Request {
         this.rolesToRevoke = rolesToRevoke;
     }
     
-    @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+  //DAMN    @OneToMany(mappedBy = "request", fetch = FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    @Transient
     //public Set<RequestRoleModifyUserRolesAssign> getRolesToAssign() {
     public Set<RequestRole> getRolesToAssign() {
         return rolesToAssign;
@@ -93,7 +89,8 @@ public class ModifyUserRolesRequest extends Request {
     /**
 	 * @return the requestedPositions
 	 */
-    @OneToMany(mappedBy="primaryKey.request", cascade={CascadeType.ALL})
+  //DAMN@OneToMany(mappedBy="primaryKey.request", cascade={CascadeType.ALL})
+    @Transient
 	public Set<RequestedPosition> getRequestedPositions() {
 		return requestedPositions;
 	}

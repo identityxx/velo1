@@ -83,16 +83,16 @@
 					</f:facet>
             		#{resourceAttribute.displayName}
         		</h:column>
-				<h:column>
-					<f:facet name="header">
-						<s:link styleClass="columnHeader"
-							value="Description #{resourceAttributeList.order=='description asc' ? messages.down : ( resourceAttributeList.order=='description desc' ? messages.up : '' )}">
-							<f:param name="order"
-								value="#{resourceAttributeList.order=='description asc' ? 'description desc' : 'description asc'}" />
-						</s:link>
-					</f:facet>
-            		#{resourceAttribute.description}
-        		</h:column>
+<!--				<h:column>-->
+<!--					<f:facet name="header">-->
+<!--						<s:link styleClass="columnHeader"-->
+<!--							value="Description #{resourceAttributeList.order=='description asc' ? messages.down : ( resourceAttributeList.order=='description desc' ? messages.up : '' )}">-->
+<!--							<f:param name="order"-->
+<!--								value="{resourceAttributeList.order=='description asc' ? 'description desc' : 'description asc'}" />-->
+<!--						</s:link>-->
+<!--					</f:facet>-->
+<!--            		{resourceAttribute.description}-->
+<!--        		</h:column>-->
         		<h:column>
 					<f:facet name="header">
 						<s:link styleClass="columnHeader"
@@ -128,6 +128,20 @@
 					</f:facet>
 					<h:outputText value="Yes" rendered="#{resourceAttribute.required}" />
 					<h:outputText value="No" rendered="#{!resourceAttribute.required}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Synced?" />
+					</f:facet>
+					<h:outputText value="Yes" rendered="#{resourceAttribute.synced}" />
+					<h:outputText value="No" rendered="#{!resourceAttribute.synced}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Persistence?" />
+					</f:facet>
+					<h:outputText value="Yes" rendered="#{resourceAttribute.persistence}" />
+					<h:outputText value="No" rendered="#{!resourceAttribute.persistence}" />
 				</h:column>
 				<h:column>
 					<f:facet name="header">action</f:facet>

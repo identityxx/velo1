@@ -25,6 +25,7 @@ import velo.entity.Request;
  *
  * @author Asaf Shakarchi
  */
+@Deprecated
 public abstract class RequestEventResponse extends GenericEventResponse {
     public Request request;
 }

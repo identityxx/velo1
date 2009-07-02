@@ -17,6 +17,7 @@
  */
 package velo.ejb.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -31,6 +32,8 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 
 import velo.common.EdmMessages;
@@ -47,18 +50,21 @@ import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.BulkTask;
 import velo.entity.IdentityAttributesSyncTask;
 import velo.entity.ReconcilePolicy;
+import velo.entity.ReconcileProcessSummary;
 import velo.entity.ReconcileUsersPolicy;
 import velo.entity.Resource;
+import velo.entity.ResourceReconcileTask;
 import velo.entity.ResourceTask;
 import velo.entity.ResourceTypeOperation;
 import velo.entity.Task;
 import velo.entity.TaskDefinition;
-import velo.exceptions.ActionFailureException;
+import velo.exceptions.OperationException;
 import velo.exceptions.ReconcileAccountsException;
 import velo.exceptions.ReconcileGroupsException;
 import velo.exceptions.ReconcileProcessException;
 import velo.exceptions.ReconcileUsersException;
 import velo.exceptions.TaskCreationException;
+import velo.exceptions.TaskExecutionException;
 import velo.reconcilidation.ReconcileAccounts;
 import velo.reconcilidation.ReconcileGroups;
 import velo.reconcilidation.ReconcileIdentityAttributes;
@@ -81,6 +87,8 @@ import velo.reconcilidation.ReconcileUsers;
 		@EJB(name = "resourceEjbRef", beanInterface = ResourceManagerLocal.class) })
 
 		@Stateless()
+@Name("reconcileManager")
+@AutoCreate
 public class ReconcileBean implements ReconcileManagerLocal,
 		ReconcileManagerRemote {
 
@@ -94,7 +102,7 @@ public class ReconcileBean implements ReconcileManagerLocal,
 	 * Inject A local ResourceManager EJB
 	 */
 	@EJB
-	public ResourceManagerLocal tsm;
+	public ResourceManagerLocal resourceManager;
 
 	@EJB
 	public ResourceAttributeManagerLocal tsam;
@@ -107,6 +115,9 @@ public class ReconcileBean implements ReconcileManagerLocal,
 
 	@EJB
 	public UserManagerLocal userm;
+	
+	@EJB
+	public TaskManagerLocal taskManager;
 
 	/**
 	 * Inject A local CommonUtilsManager EJB
@@ -119,9 +130,200 @@ public class ReconcileBean implements ReconcileManagerLocal,
 
 	@EJB
 	public IdentityAttributeManagerLocal iam;
+	
 
 	private static Logger log = Logger.getLogger(ReconcileBean.class.getName());
 
+	
+	public ReconcilePolicy findReconcilePolicy(String name) {
+    	log.debug("Finding Reconcile Policy in repository with  name '" + name + "'");
+
+		try {
+			Query q = em.createNamedQuery("reconcilePolicy.findByName").setParameter("name",name);
+			return (ReconcilePolicy) q.getSingleResult();
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.debug("Could not find any Reconcile Policy for name '" + name + "', returning null.");
+			return null;
+		}
+    }
+	
+	public void reconcileAllIdentities(String resourceUniqueName, boolean async) throws OperationException {
+		log.debug("Reconciling all identities has requested.");
+		
+		Resource resource = resourceManager.findResource(resourceUniqueName);
+		if (resource == null) {
+			throw new OperationException("Could not find resource with unique name '" + resourceUniqueName + "'");
+		}
+		
+		
+		//TODO: Remove this when offline fetch will be supported
+		resource.setAutoFetch(true);
+		
+		ResourceReconcileTask task = ResourceReconcileTask.factoryReconcileAllIdentitiesTask(resource);
+		task.setAsync(async);
+		
+		try {
+			taskManager.executeTask(task);
+		} catch (TaskExecutionException e) {
+			throw new OperationException(e);
+		}
+	}
+	
+	
+	public void reconcileIdentitiesIncrementally(String resourceUniqueName, boolean async) throws OperationException {
+		log.debug("Reconciling identities incrementally process has requested.");
+		
+		Resource resource = resourceManager.findResource(resourceUniqueName);
+		if (resource == null) {
+			throw new OperationException("Could not find resource with unique name '" + resourceUniqueName + "'");
+		}
+		
+		//TODO: Remove this when offline fetch will be supported
+		resource.setAutoFetch(true);
+		
+
+		
+		String operationUniqueName = "RESOURCE_IDENTITIES_RECONCILIATION_INCREMENTAL";
+		ResourceTypeOperation rto = resource.getResourceType().findResourceTypeOperation(operationUniqueName);
+		if (rto == null) {
+			throw new OperationException("Resource Reconciliation operation is not supported(or does not exist) by resouce '" + resource.getDisplayName() + "'");
+		}
+		
+		
+		ResourceReconcileTask task = ResourceReconcileTask.factoryReconcileIdentitiesIncrementally(resource, rto);
+		task.setAsync(async);
+		
+		try {
+			taskManager.executeTask(task);
+		} catch (TaskExecutionException e) {
+			throw new OperationException(e);
+		}
+	}
+	
+	public void reconcileIdentitiesFull(String resourceUniqueName, boolean async) throws OperationException {
+		log.debug("Reconciling identities FULL process has requested.");
+		
+		Resource resource = resourceManager.findResource(resourceUniqueName);
+		if (resource == null) {
+			throw new OperationException("Could not find resource with unique name '" + resourceUniqueName + "'");
+		}
+		
+		//TODO: Remove this when offline fetch will be supported
+		resource.setAutoFetch(true);
+		
+
+		
+		String operationUniqueName = "RESOURCE_IDENTITIES_RECONCILIATION_FULL";
+		ResourceTypeOperation rto = resource.getResourceType().findResourceTypeOperation(operationUniqueName);
+		if (rto == null) {
+			throw new OperationException("Resource Reconciliation operation is not supported(or does not exist) by resouce '" + resource.getDisplayName() + "'");
+		}
+		
+		
+		ResourceReconcileTask task = ResourceReconcileTask.factoryReconcileIdentitiesFull(resource, rto);
+		task.setAsync(async);
+		
+		try {
+			taskManager.executeTask(task);
+		} catch (TaskExecutionException e) {
+			throw new OperationException(e);
+		}
+	}
+	
+	public void reconcileGroupsFull(String resourceUniqueName, boolean async) throws OperationException {
+		log.debug("Reconciling groups FULL process has requested.");
+		
+		Resource resource = resourceManager.findResource(resourceUniqueName);
+		if (resource == null) {
+			throw new OperationException("Could not find resource with unique name '" + resourceUniqueName + "'");
+		}
+		
+		//TODO: Remove this when offline fetch will be supported
+		resource.setAutoFetch(true);
+		
+		String operationUniqueName = "RESOURCE_GROUPS_RECONCILIATION_FULL";
+		ResourceTypeOperation rto = resource.getResourceType().findResourceTypeOperation(operationUniqueName);
+		if (rto == null) {
+			throw new OperationException("Resource Reconciliation operation is not supported(or does not exist) by resouce '" + resource.getDisplayName() + "'");
+		}
+		
+		ResourceReconcileTask task = ResourceReconcileTask.factoryReconcileGroupsFull(resource, rto);
+		task.setAsync(async);
+		
+		try {
+			taskManager.executeTask(task);
+		} catch (TaskExecutionException e) {
+			throw new OperationException(e);
+		}
+	}
+	
+	
+	public void reconcileGroupMembershipFull(String resourceUniqueName, boolean async) throws OperationException {
+		log.debug("Reconciling group membership FULL process has requested.");
+		
+		Resource resource = resourceManager.findResource(resourceUniqueName);
+		if (resource == null) {
+			throw new OperationException("Could not find resource with unique name '" + resourceUniqueName + "'");
+		}
+		
+		//TODO: Remove this when offline fetch will be supported
+		resource.setAutoFetch(true);
+		
+		String operationUniqueName = "RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_FULL";
+		ResourceTypeOperation rto = resource.getResourceType().findResourceTypeOperation(operationUniqueName);
+		if (rto == null) {
+			throw new OperationException("Resource Reconciliation operation is not supported(or does not exist) by resouce '" + resource.getDisplayName() + "'");
+		}
+		
+		ResourceReconcileTask task = ResourceReconcileTask.factoryReconcileGroupMembershipFull(resource, rto);
+		task.setAsync(async);
+		
+		try {
+			taskManager.executeTask(task);
+		} catch (TaskExecutionException e) {
+			throw new OperationException(e);
+		}
+	}
+	
+	
+	public void persistReconcileProcessSummary(ReconcileProcessSummary reconcileProcessSummary) {
+		em.persist(reconcileProcessSummary);
+	}
+	
+	public int deleteAllReconcileProcessSummaries(Date untilDate) {
+		//return em.createNamedQuery("reconcileProcessSummary.deleteUntil").setParameter("untilDate", untilDate).executeUpdate();
+		List<ReconcileProcessSummary> list = em.createNamedQuery("reconcileProcessSummary.selectUntil").setParameter("untilDate", untilDate).getResultList();
+		int amount = list.size();
+		
+		for (ReconcileProcessSummary currRPS : list) {
+			em.remove(currRPS);
+		}
+		
+		return amount;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public BulkTask createReconcileResourceBulkTask(Resource resource, boolean fetchActiveData) throws TaskCreationException {
 		try {
 			log.info("Requested a reconcile process for target: "+ resource.getDisplayName());
@@ -294,6 +496,13 @@ public class ReconcileBean implements ReconcileManagerLocal,
 	
 	
 	
+    
+    
+    
+    
+    
+    
+    
 	
 	
 	

@@ -36,6 +36,7 @@ import velo.utils.Stopwatch;
  *
  * @author Shakarchi Asaf
  */
+@Deprecated
 public class ActiveAccountsConstructor {
     private static Logger log = Logger.getLogger(ActiveAccountsConstructor.class.getName());
     
@@ -59,7 +60,7 @@ public class ActiveAccountsConstructor {
             	currAA.setResource(resource);
                 
                 if (log.isTraceEnabled()) {
-                	for (Attribute currAttr : currAA.getTransientAttributes().values()) {
+                	for (Attribute currAttr : currAA.getActiveAttributes().values()) {
                			log.trace(currAttr.getDisplayable());
                 	}
                 }

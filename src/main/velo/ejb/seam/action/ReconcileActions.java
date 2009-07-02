@@ -22,14 +22,23 @@ import javax.ejb.Local;
 @Local
 public interface ReconcileActions {
 
+	public void resourceReconcileIncrementally();
+	public void resourceReconcileFull();
+	public void reconcileIdentityAttributes();
+	public void resourceReconcileGroupsFull();
+	public void resourceReconcileGroupMembershipFull();
+	
+	
 	public void reconcileAllResources();
 	public void reconcileResource();
 	public void reconcileUsers();
-	public void reconcileIdentityAttributes();
+	
 	
 	
 	public boolean isFetchActiveData();
 	public void setFetchActiveData(boolean fetchActiveData);
+	public boolean isExecuteProcessAsync();
+	public void setExecuteProcessAsync(boolean executeProcessAsync);
 	
 	public void destroy();
 	//add additional interface methods here

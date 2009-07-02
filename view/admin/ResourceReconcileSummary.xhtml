@@ -7,6 +7,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:s="http://jboss.com/products/seam/taglib"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:rich="http://richfaces.ajax4jsf.org/rich"
@@ -16,19 +17,24 @@
     
     <rich:panel>
         <f:facet name="header">General Details</f:facet>
-		<s:decorate id="description" template="layout/display.xhtml">
-            <ui:define name="label">Description</ui:define>
-            #{resourceReconcileSummaryHome.instance.data.description}
+		<s:decorate id="processType" template="layout/display.xhtml">
+            <ui:define name="label">Process Type</ui:define>
+            #{resourceReconcileSummaryHome.instance.processType}
         </s:decorate>
         
-        <s:decorate id="accountsAmountInResource" template="layout/display.xhtml">
-            <ui:define name="label">Accounts amount in resource</ui:define>
-            #{resourceReconcileSummaryHome.instance.data.accountsAmountInResource}
+        <s:decorate id="successfullyFinished" template="layout/display.xhtml">
+            <ui:define name="label">Successfully Finished?</ui:define>
+            #{resourceReconcileSummaryHome.instance.successfullyFinished}
         </s:decorate>
         
-        <s:decorate id="groupsAmountInResource" template="layout/display.xhtml">
-            <ui:define name="label">Groups amount in resource</ui:define>
-            #{resourceReconcileSummaryHome.instance.data.groupsAmountInResource}
+        <s:decorate id="eventsAmount" template="layout/display.xhtml">
+            <ui:define name="label">Events Amount</ui:define>
+            #{resourceReconcileSummaryHome.instance.events.size()}
+        </s:decorate>
+        
+        <s:decorate id="logsAmount" template="layout/display.xhtml">
+            <ui:define name="label">Logs Amount</ui:define>
+            #{resourceReconcileSummaryHome.instance.logs.size()}
         </s:decorate>
         
         <div style="clear:both"/>
@@ -38,98 +44,93 @@
         <f:facet name="header">Timing Details</f:facet>
 		<s:decorate id="startTime" template="layout/display.xhtml">
             <ui:define name="label">Start Time</ui:define>
-            #{resourceReconcileSummaryHome.instance.data.times.startTime}
+            <h:outputText value="#{resourceReconcileSummaryHome.instance.startDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
         </s:decorate>
         
         <s:decorate id="endTime" template="layout/display.xhtml">
             <ui:define name="label">End Time</ui:define>
-            #{resourceReconcileSummaryHome.instance.data.times.endTime}
+            <h:outputText value="#{resourceReconcileSummaryHome.instance.endDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
         </s:decorate>
         
         <s:decorate id="executionDuration" template="layout/display.xhtml">
             <ui:define name="label">Execution Duration</ui:define>
-            #{resourceReconcileSummaryHome.instance.data.times.executionDuration} ms
+            TODO
         </s:decorate>
         
-        
         <div style="clear:both"/>
     </rich:panel>
     
     
     <rich:panel>
-        <f:facet name="header">Accounts inserted into repository</f:facet>
+        <f:facet name="header">Events</f:facet>
         
-        <rich:dataTable id="accountsInsertedToRepositoryList" 
-			var="arfr"
-			value="#{resourceReconcileSummaryHome.instance.data.accountsInsertedToRepository}" 
-			rendered="#{not empty resourceReconcileSummaryHome.instance.data.accountsInsertedToRepository}">
+        <rich:dataTable id="eventList" 
+			var="event"
+			value="#{velo:setAsList(resourceReconcileSummaryHome.instance.events)}" 
+			rendered="#{not empty resourceReconcileSummaryHome.instance.events}">
         	<h:column>
             	<f:facet name="header">
-            	Account Name
+            	Event
             	</f:facet>
-            	#{arfr.name}
+            	#{event.event}
+        	</h:column>
+        	<h:column>
+            	<f:facet name="header">
+            	Severity
+            	</f:facet>
+            	#{event.severity}
+        	</h:column>
+        	<h:column>
+            	<f:facet name="header">
+            	Entity Type
+            	</f:facet>
+            	#{event.entityType}
+        	</h:column>
+        	<h:column>
+            	<f:facet name="header">
+            	Entity Name
+            	</f:facet>
+            	#{event.entityName}
         	</h:column>
         </rich:dataTable>
         
         <div style="clear:both"/>
     </rich:panel>
-    
     <rich:panel>
-        <f:facet name="header">Accounts removed from repository</f:facet>
-        <rich:dataTable id="accountsRemovedFromRepositoryList" 
-			var="arfr"
-			value="#{resourceReconcileSummaryHome.instance.data.accountsRemovedFromRepository}" 
-			rendered="#{not empty resourceReconcileSummaryHome.instance.data.accountsRemovedFromRepository}">
-        	<h:column>
+        <f:facet name="header">Logs</f:facet>
+        
+        <rich:dataTable id="logList" 
+			var="log"
+			value="#{velo:setAsList(resourceReconcileSummaryHome.instance.logs)}" 
+			rendered="#{not empty resourceReconcileSummaryHome.instance.logs}">
+			<h:column>
             	<f:facet name="header">
-            	Account Name
+            	Creation Date
             	</f:facet>
-            	#{arfr.name}
+				<h:outputText value="#{log.creationDate}">
+            		<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            	</h:outputText>
         	</h:column>
-        </rich:dataTable>
-        
-        
-        <div style="clear:both"/>
-    </rich:panel>
-    
-    
-    <rich:panel>
-        <f:facet name="header">Groups inserted into repository</f:facet>
-        
-        <rich:dataTable id="groupsInsertedToRepositoryList" 
-			var="grfr"
-			value="#{resourceReconcileSummaryHome.instance.data.groupsInsertedToRepository}" 
-			rendered="#{not empty resourceReconcileSummaryHome.instance.data.groupsInsertedToRepository}">
         	<h:column>
             	<f:facet name="header">
-            	Group Name
+            	Level
             	</f:facet>
-            	#{grfr.name}
+            	#{log.level}
+        	</h:column>
+        	<h:column>
+            	<f:facet name="header">
+            	Message
+            	</f:facet>
+            	#{log.message}
         	</h:column>
         </rich:dataTable>
         
         <div style="clear:both"/>
     </rich:panel>
-    
-    
-    <rich:panel>
-        <f:facet name="header">Groups removed from repository</f:facet>
-        <rich:dataTable id="groupsRemovedFromRepositoryList" 
-			var="grfr"
-			value="#{resourceReconcileSummaryHome.instance.data.groupsRemovedFromRepository}" 
-			rendered="#{not empty resourceReconcileSummaryHome.instance.data.groupsRemovedFromRepository}">
-        	<h:column>
-            	<f:facet name="header">
-            	Group Name
-            	</f:facet>
-            	#{grfr.name}
-        	</h:column>
-        </rich:dataTable>
-        
-        
-        <div style="clear:both"/>
-    </rich:panel>
-    
     
     <div class="actionButtons">      
 

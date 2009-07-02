@@ -35,6 +35,8 @@ import org.openspml.v2.msg.spmlsuspend.SuspendRequest;
 
 import velo.action.ResourceOperation;
 import velo.adapters.JdbcAdapter;
+import velo.collections.Accounts;
+import velo.collections.ResourceGroups;
 import velo.contexts.OperationContext;
 import velo.entity.Account;
 import velo.entity.Resource;
@@ -64,10 +66,12 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 		super(resource);
 	}
 	
+	@Override
 	public void init(OperationContext context) {
 		context.addVar("queryManager", new Query());
 	}
 	
+	@Override
 	public void performOperation(SpmlTask spmlTask, ResourceOperation ro, SuspendRequest request) throws OperationException {
 		//Invoke the action itself...
 		//TODO: Perform!
@@ -92,7 +96,7 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 		log.debug("Sucessfully ended invocation of ResourceOperation...");
 	}
 	
-	
+	@Override
 	public void performOperation(SpmlTask spmlTask, ResourceOperation ro, ResumeRequest request) throws OperationException {
 		//Invoke the action itself...
 		//TODO: Perform!
@@ -118,7 +122,7 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 	
 	
 	
-	
+	@Override
 	public void performOperation(SpmlTask spmlTask, ResourceOperation ro, DeleteRequest request) throws OperationException {
 		//Invoke the action itself...
 		Query queryManager = (Query)ro.getContext().get("queryManager");
@@ -140,7 +144,7 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 		log.debug("Sucessfully ended invocation of ResourceOperation...");
 	}
 
-	
+	@Override
 	public void performOperation(SpmlTask spmlTask, ResourceOperation ro, AddRequest request) throws OperationException {
 		//Invoke the action itself...
 		Query queryManager = (Query)ro.getContext().get("queryManager");
@@ -175,7 +179,7 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 	
 	
 	
-	
+	@Override
 	public void performOperationAddGroupMembership(SpmlTask spmlTask, ResourceOperation ro, Request request, List<ResourceGroup> groupsToAdd) throws OperationException {
 		log.debug("Getting a query per group membership to assign...");
 		
@@ -224,7 +228,7 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 		log.debug("Sucessfully ended invocation of ResourceOperation...");
 	}
 	
-	
+	@Override
 	public void performOperationRemoveGroupMembership(SpmlTask spmlTask, ResourceOperation ro, Request request, List<ResourceGroup> groupsToRemove) throws OperationException {
 		log.debug("Getting a query per group membership to remove...");
 		
@@ -275,12 +279,191 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 	
 	
 	
+	
+	
+	
+	//get all identities
+	@Deprecated
+	public Accounts listAllIdentities(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		log.debug("Listing all identities for resource '" + getResource().getDisplayName() + "'");
+		Query accountsQueryManager = (Query)ro.getContext().get("queryManager");
+		if (accountsQueryManager.getQueries().size() != 1) {
+			throw new OperationException("Could not list all identities, was exepcting one query only in 'queryManager', got '" + accountsQueryManager.getQueries().size() + "'");
+		}
+		
+		Accounts accounts = new Accounts();
+		try {
+			getAdapter().runQuery(accountsQueryManager);
+			List accountsQueryResult = (List)getAdapter().getResult();
+			log.debug("Returned from adapter identities with amount '" + accountsQueryResult.size() + "'");
+			
+			for (int i = 0; i < accountsQueryResult.size(); i++) {
+				//Convert a map per object
+				Map currUser = (Map) accountsQueryResult.get(i);
+		            
+		        log.trace("Current user map: " + currUser);
+		        //wont work, accounts.addAccount(currUser, getResource());
+			}
+			
+			log.debug("Successfully imported from query amount of accounts '" + accounts.size() + "'");
+
+			return accounts;
+		}catch(AdapterException e) {
+			throw new OperationException(e.toString());
+		}
+	}
+	
+	
+	public Accounts listIdentitiesIncrementally(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		log.debug("Listing identities incrementally for resource '" + getResource().getDisplayName() + "'");
+		Query accountsQueryManager = (Query)ro.getContext().get("queryManager");
+		if (accountsQueryManager.getQueries().size() != 1) {
+			throw new OperationException("Could not list all identities, was exepcting one query only in 'queryManager', got '" + accountsQueryManager.getQueries().size() + "'");
+		}
+		
+		return importIdentitiesByQuery(accountsQueryManager);
+	}
+	
+	@Override
+	public Accounts listIdentitiesFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		log.debug("Listing identities incrementally for resource '" + getResource().getDisplayName() + "'");
+		
+		Query accountsQueryManager = (Query)ro.getContext().get("queryManager");
+		if (accountsQueryManager.getQueries().size() != 1) {
+			throw new OperationException("Could not list all identities, was exepcting one query only in 'queryManager', recieved '" + accountsQueryManager.getQueries().size() + "'");
+		}
+		
+		return importIdentitiesByQuery(accountsQueryManager);
+	}
+	
+	
+	@Override
+	public ResourceGroups listGroupsFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		log.debug("Listing all groups for resource '" + getResource().getDisplayName() + "'");
+		Query groupsQueryManager = (Query)ro.getContext().get("queryManager");
+		if (groupsQueryManager.getQueries().size() != 1) {
+			throw new OperationException("Could not list all groups, was exepcting one query only in 'queryManager', recieved '" + groupsQueryManager.getQueries().size() + "'");
+		}
+		
+		return importGroupsByQuery(groupsQueryManager);
+	}
+	
+	@Override
+	public ResourceGroups listGroupMembershipFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		log.debug("Listing all groups with members for resource '" + getResource().getDisplayName() + "'");
+		Query queryManager = (Query)ro.getContext().get("queryManager");
+		if (queryManager.getQueries().size() != 1) {
+			throw new OperationException("Could not list all group membership, was exepcting one query only in 'queryManager', recieved '" + queryManager.getQueries().size() + "'");
+		}
+		
+		return importGroupMembersByQuery(queryManager);
+	}
+	
+	
+	
+	
+	private ResourceGroups importGroupsByQuery(Query queryManager) throws OperationException {
+		ResourceGroups groups = new ResourceGroups();
+		try {
+			getAdapter().runQuery(queryManager);
+			List groupsQueryResult = (List)getAdapter().getResult();
+			log.debug("Returned from adapter groups with amount '" + groupsQueryResult.size() + "'");
+			
+			for (int i = 0; i < groupsQueryResult.size(); i++) {
+				//Convert a map per object
+				Map currGroup = (Map) groupsQueryResult.get(i);
+
+		        log.trace("Current group map: " + currGroup);
+		        try {
+					groups.addGroup(currGroup, getResource());
+				} catch (LoadGroupByMapException e) {
+					throw new OperationException(e);
+				}
+			}
+			
+			log.debug("Successfully imported from query amount of groups '" + groups.size() + "'");
+
+			return groups;
+		}catch(AdapterException e) {
+			throw new OperationException(e.toString());
+		}
+	}
+	
+	
+	private ResourceGroups importGroupMembersByQuery(Query queryManager) throws OperationException {
+		ResourceGroups groups = new ResourceGroups();
+		
+		try {
+			getAdapter().runQuery(queryManager);
+			List groupsQueryResult = (List)getAdapter().getResult();
+			log.debug("Returned from adapter groups with amount '" + groupsQueryResult.size() + "'");
+			
+			for (int i = 0; i < groupsQueryResult.size(); i++) {
+				//Convert a map per object
+				Map currGroup = (Map) groupsQueryResult.get(i);
+
+		        log.trace("Current group map: " + currGroup);
+		        try {
+					groups.addGroupMembership(currGroup, getResource());
+				} catch (LoadGroupByMapException e) {
+					throw new OperationException(e);
+				}
+			}
+			
+			log.debug("Successfully imported from query amount of groups with members '" + groups.size() + "'");
+
+			return groups;
+		}catch(AdapterException e) {
+			throw new OperationException(e.toString());
+		}
+	}
+	
+	
+	private Accounts importIdentitiesByQuery(Query queryManager) throws OperationException {
+		Accounts accounts = new Accounts();
+		try {
+			getAdapter().runQuery(queryManager);
+			List accountsQueryResult = (List)getAdapter().getResult();
+			log.debug("Returned from adapter identities with amount '" + accountsQueryResult.size() + "'");
+			
+			for (int i = 0; i < accountsQueryResult.size(); i++) {
+				//Convert a map per object
+				Map currUser = (Map) accountsQueryResult.get(i);
+				
+				log.trace("Current user map: " + currUser);
+				
+				try {
+					//Factory an account
+					Account acc = new Account(null,getResource());
+					acc.loadActiveAttributesByMap(currUser);
+					acc.initFullAccountByLoadedActiveAttributes();
+					
+					accounts.add(acc);
+				} catch (ObjectsConstructionException e) {
+					throw new OperationException(e);
+				}
+			}
+			
+			log.debug("Successfully imported from query amount of accounts '" + accounts.size() + "'");
+
+			return accounts;
+		}catch(AdapterException e) {
+			throw new OperationException(e.toString());
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	
 	
 	
 	
-	
+	@Deprecated
 	public void resourceFetchActiveDataOffline(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
 		//expecting a query to be in context
 		//String accountsQuery = (String)ro.getContext().get("accountsQuery");
@@ -335,7 +518,7 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
 	
 	
 	
-	
+	@Deprecated
 	private boolean createFetchActiveDataOfflineFile(List accountsQueryResult, List groupsQueryResult, Resource resource) throws IOException {
 		List<Account> activeAccounts = new ArrayList<Account>();
 	    List<ResourceGroup> activeGroups = new ArrayList<ResourceGroup>();
@@ -353,7 +536,9 @@ public class JdbcSpmlResourceOperationController extends GroupMembershipSpmlReso
             
             account.setResource(resource);
             try {
-                account.loadAccountByMap(currUser);
+            	//WONT WORK, WE REPLACED THIS CRAP WITH NEW METHODS
+                //account.loadAccountByMap(currUser);
+            	account.loadActiveAttributesByMap(currUser);
                 activeAccounts.add(account);
             } catch (ObjectsConstructionException e) {
                 //logger.error("Couldnt load account by map, with message: " + e.getMessage());

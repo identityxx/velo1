@@ -105,7 +105,7 @@ public class SyncTargetGenerator {
 			
 			currAccountElement.addElement(currAccountAttributesElement);
 			
-			for (Attribute currAttr : currAccount.getTransientAttributes().values()) {
+			for (Attribute currAttr : currAccount.getActiveAttributes().values()) {
 				XML currAccountAttributeElement = new XML("attribute");
 				currAccountAttributeElement.setAttributeFilter(cf);
 				

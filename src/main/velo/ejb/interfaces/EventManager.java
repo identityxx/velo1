@@ -17,15 +17,10 @@
  */
 package velo.ejb.interfaces;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import velo.contexts.OperationContext;
-import velo.entity.EventDefinition;
-import velo.entity.EventResponseTask;
-import velo.exceptions.EventResponseException;
-import velo.exceptions.ScriptInvocationException;
+import velo.entity.ReconcileEvent;
+import velo.entity.ReconcilePolicy;
+import velo.exceptions.EventExecutionException;
 
 /**
  * An Event Manager interface for all EJB exposed methods
@@ -33,20 +28,40 @@ import velo.exceptions.ScriptInvocationException;
  * @author Asaf Shakarchi
  */
 public interface EventManager {
-    
-
+	public void raiseSystemEvent(String eventUniqueName, OperationContext context) throws EventExecutionException;
+	public void raiseReconcileEvent(ReconcileEvent event, ReconcilePolicy rp, OperationContext context) throws EventExecutionException;
+	//VERY VERY NOT EFFCIENT
+	public void raiseReconcileEvent(String eventUniqueName, ReconcilePolicy rp, OperationContext context) throws EventExecutionException;
+	public ReconcileEvent findReconcileEvent(String uniqueName);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
     /**
      * Find an EventDefinition by unique name
      * @param uniqueName The unique name of the event definition to find
      * @return A loaded EventDefinition entity
      */
-    public EventDefinition find(String uniqueName);
+    //public EventDefinition find(String uniqueName);
 
     
 	//public void invokeEventDefinitionResponses(EventDefinition eventDef, OperationContext context) throws ScriptInvocationException;
-    public void invokeEvent(EventDefinition eventDef, OperationContext context) throws ScriptInvocationException;
+    //public void invokeEvent(EventDefinition eventDef, OperationContext context) throws ScriptInvocationException;
     
-    public void invokeEventResponseTask(EventResponseTask eventResponseTask, OperationContext context) throws ScriptInvocationException;
+    //public void invokeEventResponseTask(EventResponseTask eventResponseTask, OperationContext context) throws ScriptInvocationException;
     
     
     
@@ -156,9 +171,9 @@ public interface EventManager {
     //@Deprecated
     //public BulkTask createEventResponsesOfEventDefinitionBulkTask(EventDefinition ed, List<Map<String,Object>>responsesProperties) throws EventResponseException;
     
-    @Deprecated
-    public void createEventResponsesOfEventDefinition(EventDefinition ed, Map<String,Object>responseProperties) throws EventResponseException;
+    //@Deprecated
+    //public void createEventResponsesOfEventDefinition(EventDefinition ed, Map<String,Object>responseProperties) throws EventResponseException;
 
-    @Deprecated
-    public void createEventResponsesOfEventDefinition(EventDefinition ed, List<Map<String,Object>> responsesProperties) throws EventResponseException;
+    //@Deprecated
+    //public void createEventResponsesOfEventDefinition(EventDefinition ed, List<Map<String,Object>> responsesProperties) throws EventResponseException;
 }

@@ -1,0 +1,84 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="reconcileAuditPolicySearch" styleClass="edit">
+
+			<rich:simpleTogglePanel label="Reconcile Audit Policy Search Parameters"
+				switchType="ajax">
+
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Name</ui:define>
+					<h:inputText id="name"
+						value="#{reconcileAuditPolicyList.reconcileAuditPolicy.name}" />
+				</s:decorate>
+
+                <div style="clear: both"/>
+			</rich:simpleTogglePanel>
+
+			<div class="actionButtons"><h:commandButton id="search"
+				value="Search" action="/admin/ReconcileAuditPolicyList.xhtml" /></div>
+
+		</h:form>
+
+
+		<rich:panel>
+			<f:facet name="header">Reconcile Audit Policy Search Results</f:facet>
+			
+			<div class="results" id="reconcileAuditPolicyList"><h:outputText
+				value="No reconcile audit policy exists"
+				rendered="#{empty reconcileAuditPolicyList.resultList}" /> <rich:dataTable
+				id="reconcileAuditPolicyList" var="rap"
+				value="#{reconcileAuditPolicyList.resultList}"
+				rendered="#{not empty reconcileAuditPolicyList.resultList}">
+				<h:column>
+					<f:facet name="header">
+						<s:link styleClass="columnHeader"
+							value="Name #{reconcileAuditPolicyList.order=='name asc' ? messages.down : ( reconcileAuditPolicyList.order=='name desc' ? messages.up : '' )}">
+							<f:param name="order"
+								value="#{reconcileAuditPolicyList.order=='name asc' ? 'name desc' : 'name asc'}" />
+						</s:link>
+					</f:facet>
+					<s:link view="/admin/ReconcileAuditPolicy.xhtml" value="#{rap.name}">
+						<f:param name="reconcileAuditPolicyId" value="#{rap.reconcileAuditPolicyId}" />
+					</s:link>
+        		</h:column>
+				<h:column>
+					<f:facet name="header">action</f:facet>
+					<s:link view="/admin/#{empty from ? 'ReconcileAuditPolicy' : from}.xhtml" value="Select">
+						<f:param name="reconcileAuditPolicyId" value="#{rap.reconcileAuditPolicyId}" />
+					</s:link>
+				</h:column>
+			</rich:dataTable></div>
+		</rich:panel>
+
+		<div class="tableControl">
+			<ui:include src="/admin/incl/pagingPanel.xhtml">
+				<ui:param name="currentPage" value="/admin/ReconcileAuditPolicyList.xhtml" />
+				<ui:param name="iteratedList" value="#{reconcileAuditPolicyList}" />
+			</ui:include>
+		</div>
+
+		<s:div styleClass="actionButtons" rendered="#{empty from}">
+			<s:button view="/admin/ReconcileAuditPolicyEdit.xhtml" id="create"
+				value="Create Reconcile Audit Policy">
+				<f:param name="reconcilePolicyId" />
+			</s:button>
+		</s:div>
+
+	</ui:define>
+
+</ui:composition>
+

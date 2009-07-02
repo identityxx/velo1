@@ -17,11 +17,11 @@
  */
 package velo.actions.tools;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import velo.actions.readyActions.ReadyActionAPI;
 import velo.ejb.interfaces.AccountManagerRemote;
+import velo.entity.Resource;
 
 
 //EXPOSED IN ACTION SCRIPTS FOR ATTRIBUTE RULES
@@ -29,33 +29,39 @@ public class ResourceAttributeActionRuleTools {
 	AccountManagerRemote accountManager;
 	
 	public boolean isAccountExists(String accountName, String resourceUniqueName, boolean checkInAuditedAccount) throws NamingException {
-		boolean exist = getAccountManager().isAccountExists(accountName, resourceUniqueName);
+		Resource r = ReadyActionAPI.getInstance().getResourceManager().findResource(resourceUniqueName);
+		
+		if (r== null) {
+			throw new NamingException("Resource with unique name '" + resourceUniqueName + "'was not found");
+		}
+		
+		boolean exist = ReadyActionAPI.getInstance().getAccountManager().isAccountExists(accountName, r);
 		
 		if (exist) {
 			return true;
 		}
 		
 		if (checkInAuditedAccount) {
-			return getAccountManager().isAuditedAccountExists(accountName, resourceUniqueName);
+			return ReadyActionAPI.getInstance().getAccountManager().isAuditedAccountExists(accountName, resourceUniqueName);
 		} else {
 			return exist;
 		}
 	}
 	
 	
-	public AccountManagerRemote getAccountManager() throws NamingException {
-		try {
-			if (accountManager == null) {
-				Context ic = new InitialContext();
-				accountManager = (AccountManagerRemote) ic.lookup("velo/AccountBean/remote");
-				
-				return accountManager;
-			}
-			else {
-				return accountManager;
-			}
-		} catch (NamingException e) {
-			throw e;
-		}
-	}
+//	public AccountManagerRemote getAccountManager() throws NamingException {
+//		try {
+//			if (accountManager == null) {
+//				Context ic = new InitialContext();
+//				accountManager = (AccountManagerRemote) ic.lookup("velo/AccountBean/remote");
+//				
+//				return accountManager;
+//			}
+//			else {
+//				return accountManager;
+//			}
+//		} catch (NamingException e) {
+//			throw e;
+//		}
+//	}
 }

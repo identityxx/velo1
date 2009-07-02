@@ -9,4 +9,6 @@
       </rule>
    </navigation>
 
+
+	<action execute="#{authenticator.ssoRedirect}"/>
 </page>

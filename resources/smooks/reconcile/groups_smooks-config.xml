@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
+xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">
+
+    <!--
+    Create an "velo.collections.Accounts" bean instance when we visit the start of the <identities> element.
+    Assign the new bean instance to the beanId of "order".
+    Wire in the "accounts" beans.
+    -->
+    <jb:bindings beanId="reconGroups" class="velo.collections.ResourceGroups" createOnElement="groups">
+        <jb:value property="resourceUniqueName" data="identities/@resource_unique_id" />
+        <jb:value property="fetchType" data="identities/@fetch_type" />
+        <jb:value property="creationDate" decoder="Date" data="identities/@creation_date">
+			<jb:decodeParam name="format">MM/dd/yyyy HH:mm:ss</jb:decodeParam>
+		</jb:value>
+		
+		<jb:wiring property="" beanIdRef="group"/>
+    </jb:bindings>
+    
+
+    <!--
+    Create a "velo.entity.Group" entity instance when we visit the start of the <group> element.
+    -->
+    <jb:bindings beanId="group" class="velo.entity.ResourceGroup" createOnElement="group">
+    	<jb:value property="uniqueId" data="group/@unique_id" />
+    	<jb:value property="type" data="group/@type" />
+    	<jb:value property="displayName" data="group/@display_name" />
+    	<jb:value property="description" data="group/@description" />
+    </jb:bindings>
+    
+</smooks-resource-list>

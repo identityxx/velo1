@@ -31,9 +31,8 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
 
 import velo.ejb.interfaces.ReconcileManagerLocal;
-import velo.entity.IdentityAttributesSyncTask;
 import velo.entity.Resource;
-import velo.entity.Task;
+import velo.exceptions.OperationException;
 import velo.exceptions.ReconcileProcessException;
 import velo.exceptions.ReconcileUsersException;
 import velo.exceptions.TaskCreationException;
@@ -51,8 +50,10 @@ public class ReconcileActionsBean implements ReconcileActions {
 	@EJB
 	public ReconcileManagerLocal reconcileManager;
 	
+	@Deprecated
 	private boolean fetchActiveData = true;
 	
+	private boolean executeProcessAsync = true;
 
 	@In(value="#{resourceHome.instance}")
 	Resource resource;
@@ -60,6 +61,84 @@ public class ReconcileActionsBean implements ReconcileActions {
 	
 	@In EntityManager entityManager;
 
+	public void resourceReconcileFull() {
+		try {
+			reconcileManager.reconcileIdentitiesFull(resource.getUniqueName(),isExecuteProcessAsync());
+			
+			if(isExecuteProcessAsync()) {
+				facesMessages.add("Created a task to fully reconcile resource #0.",resource.getDisplayName());
+			} else {
+				facesMessages.add("Succesfully fully reconciled resource #0", resource.getDisplayName());
+			}
+		} catch (OperationException e) {
+			facesMessages.add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+		}
+	}
+	
+	public void resourceReconcileIncrementally() {
+		try {
+			reconcileManager.reconcileIdentitiesIncrementally(resource.getUniqueName(),isExecuteProcessAsync());
+			
+			if(isExecuteProcessAsync()) {
+				facesMessages.add("Created a task to reconcile resource #0 incrementally.",resource.getDisplayName());
+			} else {
+				facesMessages.add("Succesfully reconciled resource #0 incrementally", resource.getDisplayName());
+			}
+		} catch (OperationException e) {
+			facesMessages.add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+		}
+	}
+	
+	
+	
+	public void resourceReconcileGroupsFull() {
+		try {
+			reconcileManager.reconcileGroupsFull(resource.getUniqueName(),isExecuteProcessAsync());
+			
+			if(isExecuteProcessAsync()) {
+				facesMessages.add("Created a task to fully reconcile resource #0's groups.",resource.getDisplayName());
+			} else {
+				facesMessages.add("Succesfully fully reconciled resource #0's groups",resource.getDisplayName());
+			}
+		} catch (OperationException e) {
+			facesMessages.add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+		}
+	}
+	
+	public void resourceReconcileGroupMembershipFull() {
+		try {
+			reconcileManager.reconcileGroupMembershipFull(resource.getUniqueName(),isExecuteProcessAsync());
+			
+			if(isExecuteProcessAsync()) {
+				facesMessages.add("Created a task to fully reconcile resource #0's group membership.",resource.getDisplayName());
+			} else {
+				facesMessages.add("Succesfully fully reconciled resource #0's group membership",resource.getDisplayName());
+			}
+		} catch (OperationException e) {
+			facesMessages.add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Deprecated
 	public void reconcileAllResources() {
 		//TODO: should be implemented.
 		//implement your business logic here
@@ -68,6 +147,7 @@ public class ReconcileActionsBean implements ReconcileActions {
 		facesMessages.add(msg);
 	}
 
+	@Deprecated
 	public void reconcileResource() {
         try {
             if (fetchActiveData) {
@@ -90,7 +170,7 @@ public class ReconcileActionsBean implements ReconcileActions {
 	}
 	
 	
-	
+	@Deprecated
 	public void reconcileUsers() {
 		try {
 			reconcileManager.reconcileUsers(true);
@@ -99,6 +179,8 @@ public class ReconcileActionsBean implements ReconcileActions {
 			facesMessages.add(rue.getMessage());
 		}
 	}
+	
+	
 	
 	public void reconcileIdentityAttributes() {
 		try {
@@ -113,6 +195,7 @@ public class ReconcileActionsBean implements ReconcileActions {
 	/**
 	 * @return the fetchActiveData
 	 */
+	@Deprecated
 	public boolean isFetchActiveData() {
 		return fetchActiveData;
 	}
@@ -120,11 +203,20 @@ public class ReconcileActionsBean implements ReconcileActions {
 	/**
 	 * @param fetchActiveData the fetchActiveData to set
 	 */
+	@Deprecated
 	public void setFetchActiveData(boolean fetchActiveData) {
 		this.fetchActiveData = fetchActiveData;
 	}
 
 	
+	public boolean isExecuteProcessAsync() {
+		return executeProcessAsync;
+	}
+
+	public void setExecuteProcessAsync(boolean executeProcessAsync) {
+		this.executeProcessAsync = executeProcessAsync;
+	}
+
 	@Destroy
 	@Remove
 	public void destroy() {

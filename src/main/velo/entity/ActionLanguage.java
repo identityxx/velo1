@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -41,6 +43,9 @@ import org.jboss.seam.annotations.Name;
 @Table(name = "VL_ACTION_LANGUAGE")
 @SequenceGenerator(name="ActionLanguageIdSeq",sequenceName="ACTION_LANGUAGE_ID_SEQ")
 @Entity
+@NamedQueries( {
+	@NamedQuery(name = "actionLanguage.findByName", query = "SELECT al FROM ActionLanguage al WHERE al.name = :name")
+})
 public class ActionLanguage extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1987302492306161423L;
@@ -49,7 +54,14 @@ public class ActionLanguage extends BaseEntity implements Serializable {
 	private String name;
 	private String description;
 	
-
+	public ActionLanguage(String name, String description) {
+		setName(name);
+		setDescription(description);
+	}
+	
+	public ActionLanguage() {
+		
+	}
 	/**
 	 * @param actionLanguageId
 	 *            the actionLanguageId to set

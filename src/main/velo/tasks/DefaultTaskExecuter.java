@@ -18,21 +18,23 @@
 package velo.tasks;
 
 import velo.entity.Task;
+import velo.exceptions.TaskExecutionException;
 
 public class DefaultTaskExecuter extends BasicTaskExecuter {
 	
-	public boolean execute(Task task) {
-		boolean status = executeActionInTask(task);
+	public void execute(Task task) throws TaskExecutionException {
+//		boolean status = executeActionInTask(task);
+		boolean status = true;
 		
 		if (status) {
 			//28-01-07 -> Commented out, handled by taskManager.executeActionInTask
 			//tm.indicateTaskExecutionSuccess(task);
-			return true;
+//			return true;
 		}
 		else {
 			//28-01-07 -> Commented out, handled by taskManager.executeActionInTask
 			//tm.indicateTaskExecutionFailure(task);
-			return false;
+//			return false;
 		}
 	}
 }

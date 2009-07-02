@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 @Entity
 //@PrimaryKeyJoinColumn(name="REQUEST_ID")
 @DiscriminatorValue("DELETE_USER_REQUEST")
+@Deprecated
 public class DeleteUserRequest extends Request {
     private final String REQUEST_TYPE = "Delete User";
     

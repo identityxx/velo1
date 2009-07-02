@@ -23,6 +23,7 @@ package velo.entity;
  */
 //@Entity
 //@DiscriminatorValue("CREATE_USER")
+@Deprecated
 public class RequestRoleCreateUser extends RequestRole {
     private static final long serialVersionUID = 1987302492306161429L;
     //private Request request;

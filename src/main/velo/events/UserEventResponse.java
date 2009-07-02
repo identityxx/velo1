@@ -26,6 +26,7 @@ import velo.entity.User;
  * 
  * @author Asaf Shakarchi
  */
+@Deprecated
 public abstract class UserEventResponse extends GenericEventResponse {
 	
 	public User user;

@@ -18,7 +18,6 @@
 package velo.entity;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -29,11 +28,11 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 @Entity
 @DiscriminatorValue("CREATE_USER_REQUEST")
+@Deprecated
 public class CreateUserRequest extends Request {
     private final String REQUEST_TYPE = "CREATE_USER";
     
@@ -87,7 +86,8 @@ public class CreateUserRequest extends Request {
     /**
      * @return the rolesNames
      */
-    @OneToMany(mappedBy = "request", fetch = FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+//DAMN    @OneToMany(mappedBy = "request", fetch = FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    @Transient
     //public Set<RequestRoleCreateUser> getRequestRoles() {
     public Set<RequestRole> getRequestRoles() {
         return requestRoles;

@@ -72,12 +72,11 @@
 				
 				<s:decorate id="dataTypeDecoration" template="layout/edit.xhtml">
 					<ui:define name="label">Data Type</ui:define>
-					<h:selectOneMenu id="dataType" value="#{resourceAttributeHome.instance.dataType}" required="true">
-						<f:selectItem itemValue="STRING" itemLabel="String" />
-						<f:selectItem itemValue="NUMERIC" itemLabel="Numeric" />
-						<f:selectItem itemValue="BOOLEAN" itemLabel="Boolean" />
-						<a:support event="onblur" reRender="dataTypeDecoration" bypassUpdates="true" />
-            		</h:selectOneMenu>
+					<h:selectOneMenu id="dataTypes" value="#{resourceAttributeHome.instance.dataType}" required="true">
+                		<s:selectItems value="#{resourceAttributeDataTypes}" var="s" label="#{s}" noSelectionLabel="-select type-"/>
+						<s:convertEnum />
+					</h:selectOneMenu >
+					
 				</s:decorate>
 				
 				<s:decorate id="minValuesDecoration" template="layout/edit.xhtml">
@@ -158,6 +157,11 @@
 				<s:decorate id="synced" template="layout/edit.xhtml">
 					<ui:define name="label">Synchronized?</ui:define>
 					<h:selectBooleanCheckbox id="synced" value="#{resourceAttributeHome.instance.synced}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="persistenceDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Persistence?</ui:define>
+					<h:selectBooleanCheckbox id="persistence" value="#{resourceAttributeHome.instance.persistence}"></h:selectBooleanCheckbox>
 				</s:decorate>
 				
 				<div style="clear: both"></div>

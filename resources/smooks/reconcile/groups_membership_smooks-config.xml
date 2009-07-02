@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
+xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">
+
+    <!--
+    Create an "velo.collections.Accounts" bean instance when we visit the start of the <identities> element.
+    Assign the new bean instance to the beanId of "order".
+    Wire in the "accounts" beans.
+    -->
+    <jb:bindings beanId="reconGroupsMembership" class="velo.collections.ResourceGroups" createOnElement="groups_membership">
+        <jb:value property="resourceUniqueName" data="groups_membership/@resource_unique_id" />
+        <jb:value property="fetchType" data="groups_membership/@fetch_type" />
+        <jb:value property="creationDate" decoder="Date" data="groups_membership/@creation_date">
+			<jb:decodeParam name="format">MM/dd/yyyy HH:mm:ss</jb:decodeParam>
+		</jb:value>
+		
+		<jb:wiring property="" beanIdRef="group"/>
+    </jb:bindings>
+    
+
+    <!--
+    Create a "velo.entity.Group" entity instance when we visit the start of the <group> element.
+    -->
+    <jb:bindings beanId="group" class="velo.entity.ResourceGroup" createOnElement="group">
+    	<jb:value property="uniqueId" data="group/@unique_id" />
+    	<jb:value property="type" data="group/@type" />
+    	
+    	<jb:wiring property="members" beanIdRef="member"/>
+    </jb:bindings>
+    
+    <jb:bindings beanId="member" class="java.util.HashSet" createOnElement="member">
+<!--		<jb:value property="" data="member/@identifier" />-->
+    </jb:bindings>
+    
+    <g:groovy executeOnElement="member">
+             <g:script>
+                 <!--
+                 //Get the attributes map
+                 Set members = getBean("member");
+                 
+                 
+                 velo.entity.Account acc = Account.factory((String)map.get(accountNameFieldName), resource);
+				velo.entity.ResourceGroup group = getByUniqueId((String)(map.get(groupUniqueIdFieldName)));
+                 
+                 
+                 //Get the current detail
+                 //velo.entity.Attribute attr = getBean("attribute");
+                 //attr.setUniqueName(element.getAttribute("unique_name"));
+                 //attrs.put(attr.getUniqueName(),attr);
+                 println("!!!!" + members);
+                 
+                 //List detail = getBean("detail");
+				//details.put(element.getAttribute("unique_name"), detail);
+				
+                 -->
+             </g:script>
+         </g:groovy> 
+    
+    
+</smooks-resource-list>

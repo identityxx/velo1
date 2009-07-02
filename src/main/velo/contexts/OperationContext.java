@@ -103,6 +103,9 @@ public class OperationContext {
 		return str+=")";
 	}
 	
+	public void clear() {
+		getVars().clear();
+	}
 	
 	//Acessors for easy work
 	public void log(String log) {

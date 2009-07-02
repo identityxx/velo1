@@ -1,0 +1,111 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="systemEventSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="System Event Search Parameters" switchType="ajax">
+        
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Unique Name</ui:define>
+                <h:inputText id="uniqueName" value="#{systemEventList.event.uniqueName}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Display Name</ui:define>
+                <h:inputText id="displayName" value="#{systemEventList.event.displayName}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Description</ui:define>
+                <h:inputText id="description" value="#{systemEventList.event.description}"/>
+            </s:decorate>
+
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/SystemEventList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <rich:panel>
+        <f:facet name="header">System Event Search Results</f:facet>
+    <div class="results" id="systemEventList">
+
+    <h:outputText value="No system event exists" rendered="#{empty systemEventList.resultList}"/>
+
+    <rich:dataTable id="systemEventList" 
+                var="event"
+              value="#{systemEventList.resultList}" 
+           rendered="#{not empty systemEventList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Display Name #{systemEventList.order=='displayName asc' ? messages.down : ( systemEventList.order=='displayName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{systemEventList.order=='displayName asc' ? 'displayName desc' : 'displayName asc'}"/>
+                </s:link>
+            </f:facet>
+            #{event.displayName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Unique Name #{systemEventList.order=='uniqueName asc' ? messages.down : ( systemEventList.order=='uniqueName desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{systemEventList.order=='uniqueName asc' ? 'uniqueName desc' : 'uniqueName asc'}"/>
+                </s:link>
+            </f:facet>
+            #{event.uniqueName}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Description #{systemEventList.order=='description asc' ? messages.down : ( systemEventList.order=='description desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{systemEventList.order=='description asc' ? 'description desc' : 'description asc'}"/>
+                </s:link>
+            </f:facet>
+            #{event.description}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/admin/#{empty from ? 'SystemEvent' : from}.xhtml" 
+                   value="Select" 
+                      id="systemEvent">
+                <f:param name="eventId" value="#{event.eventId}"/>
+            </s:link>
+            <!-- 
+            <h:outputText value="&#160;|&#160;"/>
+            <s:link view="/admin/{empty from ? 'SystemEventResponseList' : from}.xhtml" value="Responses">
+				<f:param name="eventId" value="{systemEvent.eventId}" />
+			</s:link>
+			 -->
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+		<ui:include src="/admin/incl/pagingPanel.xhtml">
+			<ui:param name="currentPage" value="/admin/SystemEventList.xhtml" />
+			<ui:param name="iteratedList" value="#{systemEventList}" />
+		</ui:include>
+    </div>
+    
+</ui:define>
+
+</ui:composition>
+

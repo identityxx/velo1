@@ -90,7 +90,7 @@ public class UserCli extends CliUtil {
 					
 					System.out.println("Size of accounts to disable: " + user.getAccounts().size());
 					System.out.println("Disabling...");
-					try {
+/*					try {
 						userm.disableUser(user);
 						System.out.println("Successfully disabled all accounts of user name: " + user.getName());
 					}
@@ -98,7 +98,7 @@ public class UserCli extends CliUtil {
 						System.err.println(oe.getMessage());
 						System.out.println("Failed to perform DISABLE process for one or more accounts of User name: " + user.getName() + ", detailed failure message: " + oe.getMessage());
 					}
-					
+*/					
 					System.out.println("Ended Disable User process...");
 				}
 				

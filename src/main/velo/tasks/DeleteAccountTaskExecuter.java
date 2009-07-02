@@ -20,8 +20,6 @@ package velo.tasks;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import velo.actions.ActionInterface;
-import velo.actions.ResourceAccountActionInterface;
 import velo.ejb.interfaces.AccountManagerRemote;
 import velo.entity.Account;
 import velo.entity.Task;
@@ -40,6 +38,7 @@ public class DeleteAccountTaskExecuter extends DefaultTaskExecuter {
 		}
 	}
 	
+	/*
 	public boolean execute(Task task) {
 		ActionInterface action = getActionFromTask(task);
 		if (super.execute(task)) {
@@ -62,5 +61,5 @@ public class DeleteAccountTaskExecuter extends DefaultTaskExecuter {
 		else {
 			return false;
 		}
-	}
+	}*/
 }

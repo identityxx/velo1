@@ -7,9 +7,8 @@ import javax.persistence.Entity;
 
 import org.apache.log4j.Logger;
 
-import velo.entity.Task.TaskStatus;
-import velo.exceptions.ActionFailureException;
 import velo.exceptions.ExecutionException;
+import velo.exceptions.action.ActionExecutionException;
 import velo.reconcilidation.ReconcileIdentityAttributes;
 
 @Entity
@@ -21,8 +20,8 @@ public class IdentityAttributesSyncTask extends GenericTask {
 		log.info("Executing User Identity Attributes Reconcile process...");
 		ReconcileIdentityAttributes ria = new ReconcileIdentityAttributes();
 		try {
-			ria.__execute__();
-		}catch (ActionFailureException e) {
+			ria._execute();
+		}catch (ActionExecutionException e) {
 			throw new ExecutionException(e.getMessage());
 		}
 	}

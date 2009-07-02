@@ -156,7 +156,7 @@ public class AddGroupMembershipTools extends ResourceActionTools {
      * @return an ResourceAttribute object
      */
     public ResourceAttribute getTargetAttribute(String uniqueName) throws NoResultFoundException {
-        ResourceAttribute ra = getResource().findAttributeByName(uniqueName);
+        ResourceAttribute ra = getResource().getResourceAttribute(uniqueName);
         	
         if (ra == null) {
         	throw new NoResultFoundException("No result was found for Attribute name: " + uniqueName + "' on resource '" + getResource().getDisplayName());
@@ -171,7 +171,8 @@ public class AddGroupMembershipTools extends ResourceActionTools {
         try {
             Context ic = new InitialContext();
             AccountManagerRemote am = (AccountManagerRemote) ic.lookup(AccountManagerRemote.class.getName());
-            return am.findAccount(accountName, resourceName);
+            //return am.findAccount(accountName, resourceName);
+            return null;
         } catch(NamingException ne) {
             ne.printStackTrace();
             //TODO: Naming exception has occured, should be handled correctly!

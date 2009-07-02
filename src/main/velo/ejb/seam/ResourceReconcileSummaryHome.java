@@ -22,26 +22,26 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 
-import velo.entity.ResourceReconcileSummaryEntity;
+import velo.entity.ReconcileProcessSummary;
 
 @Name("resourceReconcileSummaryHome")
-public class ResourceReconcileSummaryHome extends EntityHome<ResourceReconcileSummaryEntity> {
+public class ResourceReconcileSummaryHome extends EntityHome<ReconcileProcessSummary> {
 
 	@In
 	FacesMessages facesMessages;
 
-	public void setResourceReconcileSummaryId(Long id) {
+	public void setProcessSummaryId(Long id) {
 		setId(id);
 	}
 
-	public Long getResourceReconcileSummaryId() {
+	public Long getProcessSummaryId() {
 		return (Long) getId();
 	}
 
 	@Override
-	protected ResourceReconcileSummaryEntity createInstance() {
-		ResourceReconcileSummaryEntity resourceReconcileSummaryEntity = new ResourceReconcileSummaryEntity();
-		return resourceReconcileSummaryEntity;
+	protected ReconcileProcessSummary createInstance() {
+		ReconcileProcessSummary entity = new ReconcileProcessSummary();
+		return entity;
 	}
 
 	public void wire() {
@@ -52,7 +52,7 @@ public class ResourceReconcileSummaryHome extends EntityHome<ResourceReconcileSu
 	}
 	
 
-	public ResourceReconcileSummaryEntity getDefinedInstance() {
+	public ReconcileProcessSummary getDefinedInstance() {
 		return isIdDefined() ? getInstance() : null;
 	}
 }

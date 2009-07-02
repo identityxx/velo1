@@ -34,6 +34,7 @@ import velo.entity.RequestAccount.RequestAccountOperation;
 
 @Entity
 @DiscriminatorValue(value = "ACCOUNTS_REQUEST")
+@Deprecated
 public class AccountsRequest extends Request {
 
     private final String REQUEST_TYPE = "Accounts Request";
@@ -77,8 +78,9 @@ public class AccountsRequest extends Request {
     /**
 	 * @return the accounts
 	 */
-    @OneToMany(mappedBy = "request", fetch = FetchType.EAGER, cascade={CascadeType.ALL})
-    @OrderBy("accountName DESC")
+//DAMN    @OneToMany(mappedBy = "request", fetch = FetchType.EAGER, cascade={CascadeType.ALL})
+  //DAMN    @OrderBy("accountName DESC")
+    @Transient
 	public Set<RequestAccount> getAccounts() {
 		return accounts;
 	}

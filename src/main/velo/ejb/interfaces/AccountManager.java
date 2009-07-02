@@ -20,10 +20,7 @@ package velo.ejb.interfaces;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
-
-import velo.actions.ResourceAccountActionInterface;
 import velo.converters.AccountAttributeConverterInterface;
 import velo.entity.Account;
 import velo.entity.AuditedAccount;
@@ -74,8 +71,11 @@ public interface AccountManager {
 	
 	
 	public void persistAccount(String accountName, String resourceName, String userName);
+	public void persistAccount(Account accountToPersist);
+	public void updateAccount(Account account);
 	
-    public boolean isAccountExists(String accountName,String uniqueResourceName);
+    //public boolean isAccountExists(String accountName,String uniqueResourceName);
+	public boolean isAccountExists(String accountName,Resource resource);
 
     public boolean isAuditedAccountExists(String accountName,String uniqueResourceName);
     
@@ -85,9 +85,10 @@ public interface AccountManager {
      * @param resourceUniqueName The name of the resource the account is related to
      * @return an Account entity, or null if account was not found / multiple accounts found for resource(not supported yet)
      */
+    public Account findAccount(String accountName, Resource resource);
     public Account findAccount(String accountName, String resourceUniqueName);
     
-    public Account findAccountEagerly(String accountName, String resourceUniqueName);
+    public Account findAccountEagerly(String accountName, Resource resource);
 	
     
     //used by the importer
@@ -239,8 +240,8 @@ public interface AccountManager {
      * <br><b>Note: This action will NOT create an account on the resource</b>
      * @param account An account entity to remove
      */
-	@Deprecated
-    public void createAccount(Account account);
+	//@Deprecated
+    //public void createAccount(Account account);
     
     
     /**
@@ -291,8 +292,8 @@ public interface AccountManager {
      * @return The created task entity.
      * @throws TaskCreationException An exception if there was a failure while trying to create the task.
      */
-	@Deprecated
-    public Task createAccountTask(User user, Resource ts, BulkTask bulkTask,StringBuffer outputGeneratedAccountId) throws TaskCreationException;
+	//@Deprecated
+    //public Task createAccountTask(User user, Resource ts, BulkTask bulkTask,StringBuffer outputGeneratedAccountId) throws TaskCreationException;
     
     /**
      * Create an account for a certain User and resource
@@ -303,8 +304,8 @@ public interface AccountManager {
      * @return The task ID of the created task
      * @throws TaskCreationException An exception if there was a failure while trying to create the task.
      */
-	@Deprecated
-    public Long createAccount(User user, Resource ts, BulkTask bulkTask,StringBuffer outputGeneratedAccountId) throws TaskCreationException;
+	//@Deprecated
+    //public Long createAccount(User user, Resource ts, BulkTask bulkTask,StringBuffer outputGeneratedAccountId) throws TaskCreationException;
     
     /**
      * Disable an account
@@ -314,8 +315,8 @@ public interface AccountManager {
      * @param requester The requester of the task
      * @return The task ID of the created task
      */
-	@Deprecated
-    public Long disableAccount(Account account, BulkTask bulkTask, Request request, User requester) throws TaskCreationException;
+	//@Deprecated
+    //public Long disableAccount(Account account, BulkTask bulkTask, Request request, User requester) throws TaskCreationException;
     
     
     /**
@@ -326,11 +327,11 @@ public interface AccountManager {
      * @return
      * @throws TaskCreationException
      */
-	@Deprecated
-    public Task disableAccountTask(Account account, BulkTask bulkTask, Request request, User requester) throws TaskCreationException;
+	//@Deprecated
+    //public Task disableAccountTask(Account account, BulkTask bulkTask, Request request, User requester) throws TaskCreationException;
     
-	@Deprecated
-    public void disableAccounts(Set<Account> accounts, Request request, User requester) throws OperationException;
+	//@Deprecated
+    //public void disableAccounts(Set<Account> accounts, Request request, User requester) throws OperationException;
     
     /**
      * Create a task to enable an account
@@ -339,14 +340,14 @@ public interface AccountManager {
      * @param request The request entity to attach the task to
      * @return true/false upon success/failure of action execution
      */
-	@Deprecated
-    public Task enableAccountTask(Account account, BulkTask bulkTask, Request request) throws TaskCreationException;
+	//@Deprecated
+    //public Task enableAccountTask(Account account, BulkTask bulkTask, Request request) throws TaskCreationException;
     
-	@Deprecated
-    public Long enableAccount(Account account, BulkTask bulkTask, Request request) throws TaskCreationException;
+	//@Deprecated
+    //public Long enableAccount(Account account, BulkTask bulkTask, Request request) throws TaskCreationException;
     
-	@Deprecated
-    public void enableAccounts(Set<Account> accounts, Request request, User requester) throws OperationException;
+	//@Deprecated
+    //public void enableAccounts(Set<Account> accounts, Request request, User requester) throws OperationException;
     
     /**
      * Create a task to reset password for an account
@@ -354,8 +355,8 @@ public interface AccountManager {
      * @return true/false upon success/failure of action execution
      * @throws PasswordValidationException
      */
-	@Deprecated
-    public Task accountResetPasswordTask(Account account, String password) throws TaskCreationException, PasswordValidationException;
+	//@Deprecated
+    //public Task accountResetPasswordTask(Account account, String password) throws TaskCreationException, PasswordValidationException;
     
     /**
      * Perform an account reset password
@@ -365,16 +366,16 @@ public interface AccountManager {
      * @throws TaskCreationException
      * @throws
      */
-	@Deprecated
-    public Long accountResetPassword(Account account, String password) throws TaskCreationException, PasswordValidationException;
+	//@Deprecated
+    //public Long accountResetPassword(Account account, String password) throws TaskCreationException, PasswordValidationException;
     
     /**
      * Update an account
      * @param account The Account to perform the action on
      * @return true/false upon success/failure of action execution
      */
-	@Deprecated
-    public boolean updateAccount(Account account);
+	//@Deprecated
+    //public boolean updateAccount(Account account);
     
     /**
      * Authenticate an account
@@ -382,8 +383,8 @@ public interface AccountManager {
      * @param password The password to authenticate
      * @return true/false upon success/failure of action execution
      */
-	@Deprecated
-    public boolean authAccount(Account account, String password);
+	//@Deprecated
+    //public boolean authAccount(Account account, String password);
     
     /**
      * Check account status of a certain account
@@ -392,8 +393,8 @@ public interface AccountManager {
      * 			(Must be a StringBuffer since String does not pass by reference)
      * @return true/false upon success/failure of action execution
      */
-	@Deprecated
-    public boolean accountStatus(Account account, StringBuffer statusString);
+	//@Deprecated
+    //public boolean accountStatus(Account account, StringBuffer statusString);
     
     /**
      * Update accounts status for the specified Collection of accounts
@@ -401,20 +402,20 @@ public interface AccountManager {
      * @return true/false upon success/failure of actions execution
      * 			(will return false even if -one- account update fails)
      */
-	@Deprecated
-    public boolean updateAccountsStatus(Collection<Account> accountList);
+	//@Deprecated
+    //public boolean updateAccountsStatus(Collection<Account> accountList);
     
-	@Deprecated
-    public Task addGroupMembershipTask(ResourceGroup tsg,String accountId,BulkTask bt) throws TaskCreationException;
+	//@Deprecated
+    //public Task addGroupMembershipTask(ResourceGroup tsg,String accountId,BulkTask bt) throws TaskCreationException;
 	
-	@Deprecated
-    public Long addGroupMembership(ResourceGroup tsg,String accountId,BulkTask bt) throws TaskCreationException;
+//	@Deprecated
+  //  public Long addGroupMembership(ResourceGroup tsg,String accountId,BulkTask bt) throws TaskCreationException;
     
-	@Deprecated
-    public Task removeGroupMembershipTask(ResourceGroup tsg,Account account,BulkTask bt) throws TaskCreationException;
+	//@Deprecated
+    //public Task removeGroupMembershipTask(ResourceGroup tsg,Account account,BulkTask bt) throws TaskCreationException;
 	
-	@Deprecated
-    public Long removeGroupMembership(ResourceGroup tsg,Account account,BulkTask bt) throws TaskCreationException;
+	//@Deprecated
+    //public Long removeGroupMembership(ResourceGroup tsg,Account account,BulkTask bt) throws TaskCreationException;
     
     
     //BULK ACCOUNT ACTIONS FACTORY
@@ -425,12 +426,13 @@ public interface AccountManager {
      * @return A list of updated accounts
      * @throws BulkActionsFactoryFailureException Threw if there was a failure to factory one or more of the update actions
      */
-	@Deprecated
+	/*@Deprecated
     public Collection<ResourceAccountActionInterface> getUpdateActions(
             Collection<Account> accountList) throws BulkActionsFactoryFailureException;
-    
-	@Deprecated
-    public Account loadAccountAttributes(Account account,HashMap<String,Attribute> attrs) throws OperationException;
+    */
+	
+	//@Deprecated
+    //public Account loadAccountAttributes(Account account,HashMap<String,Attribute> attrs) throws OperationException;
     
     //Seam methods
     

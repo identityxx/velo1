@@ -17,13 +17,8 @@
  */
 package velo.ejb.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -36,15 +31,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.IgnoreDependency;
+import org.jboss.ejb3.annotation.IgnoreDependency;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
+import org.jfree.util.Log;
 
-import velo.actions.ActionManager;
-import velo.actions.ResourceAccountActionInterface;
-import velo.actions.factory.DisableAccountActionFactory;
-import velo.actions.factory.EnableAccountActionFactory;
-import velo.common.EdmMessages;
 import velo.common.SysConf;
 import velo.converters.AccountAttributeConverterInterface;
 import velo.ejb.interfaces.AccountManagerLocal;
@@ -57,31 +48,20 @@ import velo.ejb.interfaces.ResourceManagerLocal;
 import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.Account;
+import velo.entity.AccountAttribute;
 import velo.entity.AuditedAccount;
-import velo.entity.BulkTask;
-import velo.entity.Request;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceAttributeBase;
-import velo.entity.ResourceGroup;
-import velo.entity.Task;
-import velo.entity.TaskDefinition;
 import velo.entity.User;
 import velo.entity.UserIdentityAttribute;
-import velo.exceptions.AccountIdGenerationException;
-import velo.exceptions.ActionFactoryException;
-import velo.exceptions.ActionFailureException;
-import velo.exceptions.BulkActionsFactoryFailureException;
 import velo.exceptions.ConverterProcessFailure;
 import velo.exceptions.LoadingVirtualAccountAttributeException;
-import velo.exceptions.NoResultFoundException;
 import velo.exceptions.NoUserIdentityAttributeFoundException;
 import velo.exceptions.NoUserIdentityAttributeValueException;
 import velo.exceptions.ObjectFactoryException;
 import velo.exceptions.OperationException;
-import velo.exceptions.PasswordValidationException;
 import velo.exceptions.ScriptLoadingException;
-import velo.exceptions.TaskCreationException;
 import velo.patterns.FactoryAccountAttributeConverter;
 import velo.storage.Attribute;
 
@@ -107,7 +87,8 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 	/**
 	 * Inject the User Bean
 	 */
-	@IgnoreDependency 
+	@org.jboss.annotation.IgnoreDependency
+	@IgnoreDependency
 	@EJB
 	UserManagerLocal userManager;
 
@@ -189,11 +170,17 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		Resource foundResource = resourceManager.findResource(resourceUniqueName);
 
 		Account acc = Account.factory(accountName, foundResource);
+
 		
-		//TODO: What if the user was not found?
-		User foundUser = userManager.findUser(userName);
+		if (userName != null) {
+			User foundUser = userManager.findUser(userName);
+			if (foundUser == null) {
+				Log.warn("Could not find user name '" + userName + "' when persisting account name '" + accountName + "', on resource '" + resourceUniqueName + "', skipping user association.");
+			} else {
+				acc.setUser(foundUser);
+			}
+		}
 		
-		acc.setUser(foundUser);
 		
 		//em.persist(acc);
 		persistAccount(acc);
@@ -203,7 +190,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		logger.debug("Persisting account '" + account.getName() + "', of resource '" + account.getResource().getDisplayName() + "'");
 		
 		//make sure account does not exist already in repository
-		if (isAccountExists(account.getName(), account.getResource().getUniqueName())) {
+		if (isAccountExists(account.getName(), account.getResource())) {
 			logger.warn("Won't persist, account with name '" + account.getName() + "' on resource '" + account.getResource().getDisplayName() + "' already exists in repository!");
 			return;
 		}
@@ -222,18 +209,29 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		logger.debug("Successfully persisted account!");
 	}
 	
+	public void updateAccount(Account account) {
+		em.merge(account);
+	}
+	
 	
 	//used by resourceAttributeActionTools
-	public boolean isAccountExists(String accountName,String uniqueResourceName) {
+	//public boolean isAccountExists(String accountName,String uniqueResourceName) {
+	public boolean isAccountExists(String accountName,Resource resource) {
 		logger.debug("Checking whether account name: '" + accountName
-				+ "' On resource with unique Name: '" + uniqueResourceName
+				+ "' On resource name: '" + resource.getDisplayName()
 				+ "' exist or not...");
+
 		
-		// TODO Only set upper case when targets are none-case sensitive!
-		Query q = em.createNamedQuery(
-				"account.isAccountExistOnResourceByResourceUniqueName").setParameter("accountName",
-				accountName.toUpperCase()).setParameter("resourceUniqueName",
-				uniqueResourceName);
+		Query q = null;
+		if (resource.isCaseSensitive()) {
+			 q = em.createNamedQuery(
+				"account.isExistWithCase").setParameter("accountName",
+						accountName).setParameter("resourceUniqueName",resource.getUniqueName());
+		} else {
+			q = em.createNamedQuery(
+			"account.isExistIgnoreCase").setParameter("accountName",
+					accountName.toUpperCase()).setParameter("resourceUniqueName",resource.getUniqueName());
+		}
 
 		
 		Long num = (Long) q.getSingleResult();
@@ -244,6 +242,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			return true;
 		}
 	}
+	
 	
 	public boolean isAuditedAccountExists(String accountName,String uniqueResourceName) {
 		logger.debug("Checking whether audited account name: '" + accountName
@@ -267,31 +266,56 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 	}
 	
 	
+	//NOTE: Should never be used in processes such as reconcile as it loads the resource every invocation
 	public Account findAccount(String accountName, String resourceUniqueName) {
+		Resource resource = resourceManager.findResource(resourceUniqueName);
+		if (resource == null) {
+			return null;
+		}
+		
+		return findAccount(accountName, resource);
+	}
+	
+	
+	public Account findAccount(String accountName, Resource resource) {
 		try {
-			logger.debug("Finding Account in repository for name '" + accountName + "', in resource name '" + resourceUniqueName + "'");
-			Query q = em.createNamedQuery("account.findByName").setParameter("accountName", accountName).setParameter("resourceUniqueName", resourceUniqueName);
+			logger.debug("Finding Account in repository for name '" + accountName + "', in resource name '" + resource.getDisplayName() + "'");
+			Query q = null;
+			
+			if (resource.isCaseSensitive()) {
+				q = em.createNamedQuery("account.findByNameWithCase").setParameter("accountName", accountName).setParameter("resourceUniqueName", resource.getUniqueName());
+			} else {
+				q = em.createNamedQuery("account.findByNameIgnoreCase").setParameter("accountName", accountName.toUpperCase()).setParameter("resourceUniqueName", resource.getUniqueName());
+			}
+			
 			return (Account) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
-			logger.info("FindAccount did not result any account name '" + accountName + "' on resource name '" + resourceUniqueName + "', returning null.");
+			logger.info("FindAccount did not result any account name '" + accountName + "' on resource name '" + resource.getDisplayName() + "', returning null.");
 			return null;
 		} catch (NonUniqueResultException nure) {
-			logger.warn("FindAccount found multiple accounts with name '" + accountName + "' on resource name '" + resourceUniqueName + "', returning null.");
+			logger.warn("FindAccount found multiple accounts with name '" + accountName + "' on resource name '" + resource.getDisplayName() + "', returning null.");
 			return null;
 		}
 	}
 	
 	//just a proxy with eager support (used for tests like creating tasks tests)
-	public Account findAccountEagerly(String accountName, String resourceUniqueName) {
-		Account acc = findAccount(accountName,resourceUniqueName);
+	public Account findAccountEagerly(String accountName, Resource resource) {
+		Account acc = findAccount(accountName,resource);
 		
 		if (acc == null) return null;
 		
 		acc.getResource().getAttributes().size();
+		acc.getAccountAttributes().size();
+		
+		for (AccountAttribute currAA : acc.getAccountAttributes()) {
+			currAA.getValues().size();
+		}
+		
 		return acc;
 	}
 	
+	/*
 	public Account findAccount(String accountName, String resourceUniqueName, boolean isResourceCaseSensitive){
 		String namedQuery = (isResourceCaseSensitive ? "account.findByName" : "account.findByNameCaseNonSensitive");
 		try {
@@ -307,8 +331,10 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			return null;
 		}
 	}
+	*/
 	
 	
+	//TODO: Clean the ugly debugs
 	public void associateAccountToUser(String accountName,
 			String resourceUniqueName, String userName) throws OperationException {
 		//try {
@@ -325,7 +351,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		}
 		logger.info("!!!!!!!!!!!!!!!!(2)");
 			
-			Account loadedAccount = findAccount(accountName,resourceUniqueName, isResourceCaseSensitive );
+			Account loadedAccount = findAccount(accountName,loadedResource);
 			
 			logger.info("!!!!!!!!!!!!!!!!(3)");
 			if (loadedAccount == null) {
@@ -696,9 +722,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 				.debug("-END- of loading virtual attributes process for account name: '"
 						+ account.getName()
 						+ "', loaded attributes with amount: '"
-						+ account.getTransientAttributes().size() + "'");
+						+ account.getAttributes().size() + "'");
 		// Indicated that the account attributes were loaded
-		loadedAccount.setTransientAttributesLoaded(true);
+		loadedAccount.setActiveAttributesLoaded(true);
 
 		return loadedAccount;
 	}
@@ -1011,6 +1037,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 	 * ########### ACCOUNT ACTIONS ##########
 	 */
 
+	/*
 	@Deprecated
 	public Task disableAccountTask(Account account, BulkTask bulkTask,
 			Request request, User requester) throws TaskCreationException {
@@ -1091,7 +1118,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			throw new TaskCreationException(afe.getMessage());
 		}
 	}
+	*/
 
+	/*
 	@Deprecated
 	public Long disableAccount(Account account, BulkTask bulkTask,
 			Request request, User requester) throws TaskCreationException {
@@ -1105,7 +1134,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 				+ "'");
 		return task.getTaskId();
 	}
+	*/
 	
+	/*
 	@Deprecated
 	public void disableAccounts(Set<Account> accounts, Request request, User requester) throws OperationException {
 		BulkTask bt = BulkTask.factory("Disable Accounts");
@@ -1119,9 +1150,10 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		
 		em.persist(bt);
 	}
+	*/
 
 	
-
+/*
 	@Deprecated
 	public Task enableAccountTask(Account account, BulkTask bulkTask,
 			Request request) throws TaskCreationException {
@@ -1214,7 +1246,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 				+ "'");
 		return task.getTaskId();
 	}
+	*/
 	
+	/*
 	@Deprecated
 	public void enableAccounts(Set<Account> accounts, Request request, User requester) throws OperationException {
 		BulkTask bt = BulkTask.factory("Enable Accounts");
@@ -1229,7 +1263,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		
 		em.persist(bt);
 	}
+	*/
 	
+	/*
 	@Deprecated
 	public Task accountResetPasswordTask(Account account, String password)
 			throws TaskCreationException, PasswordValidationException {
@@ -1303,8 +1339,10 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		 * logger.warn(afe.getMessage()); throw new
 		 * TaskCreationException(afe.getMessage()); }
 		 */
-	}
+	//}
 
+  
+	/*
 	@Deprecated
 	public Long accountResetPassword(Account account, String password)
 			throws TaskCreationException, PasswordValidationException {
@@ -1316,7 +1354,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 
 		return task.getTaskId();
 	}
+	*/
 
+	/*
 	@Deprecated
 	public Task createAccountTask(User user, Resource ts,
 			BulkTask bulkTask, StringBuffer outputGeneratedAccountId)
@@ -1421,9 +1461,10 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 					+ ts.getDisplayName() + ", For user" + user.getName();
 			/*cum.addEventLog("ACCOUNT", "FAILURE", "WARNING", shortErrMsg,
 					shortErrMsg + ", failed with message: " + afe.getMessage());*/
-			logger.warn(afe.getMessage());
+	
+		//	logger.warn(afe.getMessage());
 			// return false;
-			throw new TaskCreationException(afe.getMessage());
+			/*throw new TaskCreationException(afe.getMessage());
 		} catch (AccountIdGenerationException aige) {
 			String shortErrMsg = "Could not create account on Resource: "
 					+ ts.getDisplayName() + ", For user" + user.getName();
@@ -1433,14 +1474,14 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 					.addEventLog("ACCOUNT", "FAILURE", "WARNING", shortErrMsg,
 							shortErrMsg + ", failed with message: "
 									+ aige.getMessage());*/
-			logger.warn(aige.getMessage());
+			//logger.warn(aige.getMessage());
 			/*cum.addEventLog("ACCOUNT", "FAILURE", "WARNING",
 					"Could not create account on Resource: "
 							+ ts.getDisplayName() + ", For user"
 							+ user.getName() + ", failed with message: "
 							+ aige.getMessage(), null);*/
-			throw new TaskCreationException(aige.getMessage());
-		}
+			//throw new TaskCreationException(aige.getMessage());
+		//}
 		// TODO: Should not get this such an exception! find a better soltuion.
 		/*JBcatch (ScriptLoadingException sle) {
 			logger.warn(sle.getMessage());
@@ -1450,12 +1491,14 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 							+ user.getName() + ", failed with message: "
 							+ sle.getMessage(), null);
 			throw new TaskCreationException(sle.getMessage());
-		}*/ catch (NoResultFoundException nrfe) {
+		}*/ /*catch (NoResultFoundException nrfe) {
 			throw new TaskCreationException(nrfe.getMessage());
 		}
-	}
+	}*/
 
-	@Deprecated
+
+  /*
+  @Deprecated
 	public Long createAccount(User user, Resource ts, BulkTask bulkTask,
 			StringBuffer outputGeneratedAccountId) throws TaskCreationException {
 		Task task = createAccountTask(user, ts, bulkTask,
@@ -1523,15 +1566,16 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		} /*JBcatch (ScriptLoadingException sle) {
 			logger.warn(sle.getMessage());
 			return false;
-		}*/ catch (ClassCastException cce) {
+		}*/ /*catch (ClassCastException cce) {
 			logger.warn(cce.getMessage());
 			return false;
 		} catch (ActionFactoryException afe) {
 			logger.warn(afe.getMessage());
 			return false;
 		}
-	}
+	}*/
 
+  /*
 	@Deprecated
 	public boolean accountStatus(Account account, StringBuffer statusString) {
 		logger
@@ -1631,8 +1675,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		 * 
 		 * return false; }
 		 */
-	}
+	//}
 
+	/*
 	@Deprecated
 	public boolean authAccount(Account account, String password) {
 		logger
@@ -1683,7 +1728,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			return false;
 		}
 	}
+	*/
 
+	/*
 	// BULK ACCOUNT ACTIONS FACTORY
 	@Deprecated
 	public Collection<ResourceAccountActionInterface> getUpdateActions(
@@ -1730,12 +1777,14 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 
 			// //If there was a failure, throw a bulk action preparation
 			// exception failure with the logged messages.
-			throw new BulkActionsFactoryFailureException(ems.toString());
+			/*throw new BulkActionsFactoryFailureException(ems.toString());
 		}
 
 		return actions;
-	}
+	}*/
 
+	
+	/*
 	@Deprecated
 	public boolean updateAccountsStatus(Collection<Account> accountList) {
 		boolean funcStatus = true;
@@ -1830,8 +1879,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			logger.warn(cce.getMessage());
 			throw new TaskCreationException(cce.getMessage());*/
 		//}
-	}
+	//}
 
+	/*
 	@Deprecated
 	public Long addGroupMembership(ResourceGroup tsg, String accountId,
 			BulkTask bulkTask) throws TaskCreationException {
@@ -1911,11 +1961,11 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 				task.setScript(am
 						.getRemoveGroupMembershipActionScriptContent(tsg
 								.getResource()));*/
-			}
+			//}
 
 			// If is a part of a bulk, then set the bulktask entity into the
 			// task
-			if (bt != null) {
+			/*if (bt != null) {
 				task.setBulkTask(bt);
 			}
 
@@ -1931,8 +1981,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			logger.warn(cce.getMessage());
 			throw new TaskCreationException(cce.getMessage());
 		}*/
-	}
+	//}
 
+	/*
 	@Deprecated
 	public Long removeGroupMembership(ResourceGroup tsg, Account account,
 			BulkTask bt) throws TaskCreationException {
@@ -1946,7 +1997,9 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 
 		return task.getTaskId();
 	}
-
+*/
+	
+	/*
 	@Deprecated
 	public Account loadAccountAttributes(Account account,
 			HashMap<String, Attribute> attrs) throws OperationException {
@@ -2001,8 +2054,8 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			/*
 			 * catch (NoResultFoundException nrfe) { }
 			 */
-		}
-
+		//}
+/*
 		if (!accountIdWasFound) {
 			throw new OperationException("Could not find account ID on the whole attribute collection, returning null!");
 			//return null;
@@ -2011,6 +2064,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 			return account;
 		}
 	}
+	*/
 
 	// SEAM METHODS
 	/*
@@ -2018,4 +2072,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 	 * 
 	 * public void setAccountId(String accountId) { this.accountId = accountId; }
 	 */
-}
+
+	
+	
+  }

@@ -8,6 +8,7 @@
   <session-factory name="java:/jbpmHibernateSessionFactory">
 
     <property name="show_sql">false</property>
+<!--    <property name="connection.datasource">java:/DefaultDS</property>-->
     <property name="connection.datasource">java:/veloDatasource</property>
     <property name="transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
     <property name="transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>

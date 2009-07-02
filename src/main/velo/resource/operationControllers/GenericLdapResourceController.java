@@ -37,6 +37,8 @@ import org.openspml.v2.msg.spmlsuspend.SuspendRequest;
 
 import velo.action.ResourceOperation;
 import velo.adapters.EdmGenericLdap;
+import velo.collections.Accounts;
+import velo.collections.ResourceGroups;
 import velo.contexts.OperationContext;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceGroup;
@@ -52,6 +54,10 @@ public class GenericLdapResourceController extends GroupMembershipSpmlResourceOp
 	EdmGenericLdap adapter;
 
 	public GenericLdapResourceController() {
+	}
+	
+	public Accounts listAllIdentities(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
 	}
 
 	public void init(OperationContext context) {
@@ -237,10 +243,36 @@ public class GenericLdapResourceController extends GroupMembershipSpmlResourceOp
 		log.debug("Getting a query per group membership to remove...");
 	}
 	
+	@Deprecated
 	public void resourceFetchActiveDataOffline(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
 		throw new OperationException("This operation is currently not supported for this resource type!");
 	}
 	
+	
+	
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesIncrementally(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
+
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupsFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupMembershipFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
 	
 	
 

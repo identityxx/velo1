@@ -126,6 +126,31 @@ public interface UserManager {
    public Map<String,User> findUsersAssignedToRole(String roleName);
 	
    public void setEntityManager(EntityManager em);
+
+   /**
+    * Authenticate a user by password
+    * Algorithm:
+    *  - Iterate through the 'Authentication list' of the target systems
+    *  - By priority, per target system, factory its corresponding auth action and authenticate
+    *  - If returned true, register the user via JAAS, otherwise, indicate a failure
+    *
+	 * @param username The username to authenticate
+	 * @param password The password to authenticate
+        * @param ip The Ip address of the client which is trying to authenticate
+	 * @return true/false upon success/failure of authentication process
+	 */
+	public boolean authenticate(String username, String password, String ip) throws UserAuthenticationException;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -318,9 +343,8 @@ public interface UserManager {
      * @param uia The userIdentityAttribute to modify
 	 * @param newAttribute The new attribute with the values to modify
      */
-	@Deprecated
-	public void modifyUserAttribute(UserIdentityAttribute uia,
-			Attribute newAttribute) throws ModifyAttributeFailureException;
+	//@Deprecated
+	//public void modifyUserAttribute(UserIdentityAttribute uia,Attribute newAttribute) throws ModifyAttributeFailureException;
 
 	/**
 	 * Modify user attribute by another Attribute
@@ -332,8 +356,8 @@ public interface UserManager {
 	 *
 	 * @param uia The userIdentityAttribute to modify
 	 */
-	@Deprecated
-	public void modifyUserAttribute(UserIdentityAttribute uia) throws ModifyAttributeFailureException;
+	//@Deprecated
+	//public void modifyUserAttribute(UserIdentityAttribute uia) throws ModifyAttributeFailureException;
 
 
 
@@ -343,8 +367,8 @@ public interface UserManager {
 	 * @return A bulkTask object
 	 * @throws OperationException
 	 */
-	@Deprecated
-	public BulkTask disableUserBulkTask(User user) throws OperationException;
+	//@Deprecated
+	//public BulkTask disableUserBulkTask(User user) throws OperationException;
 
 	/**
 	 * Disable a user
@@ -353,8 +377,8 @@ public interface UserManager {
 	 * @return The BulkTask ID of the created bulk task
 	 * @throws OperationException threw if there was a problem to perform the operation
 	 */
-	@Deprecated
-	public Long disableUser(User user) throws OperationException;
+	//@Deprecated
+	//public Long disableUser(User user) throws OperationException;
 
 
 	/**
@@ -363,8 +387,8 @@ public interface UserManager {
 	 * @return A bulkTask object
 	 * @throws OperationException
 	 */
-	@Deprecated
-	public BulkTask enableUserBulkTask(User user) throws OperationException;
+	//@Deprecated
+	//public BulkTask enableUserBulkTask(User user) throws OperationException;
 
 	/**
 	 * Enable a user
@@ -373,8 +397,8 @@ public interface UserManager {
 	 * @return The BulkTask ID of the created bulk task
 	 * @throws OperationException threw if there was a problem to perform the operation
 	 */
-	@Deprecated
-	public Long enableUser(User user) throws OperationException;
+	//@Deprecated
+	//public Long enableUser(User user) throws OperationException;
 
 
 	/**
@@ -383,8 +407,8 @@ public interface UserManager {
 	 * @return A bulkTask object
 	 * @throws OperationException
 	 */
-	@Deprecated
-	public BulkTask deleteUserBulkTask(User user) throws OperationException;
+	//@Deprecated
+	//public BulkTask deleteUserBulkTask(User user) throws OperationException;
 
 	/**
 	 * Delete a user and all of its associated accounts
@@ -392,8 +416,8 @@ public interface UserManager {
 	 * @return The BulkTask ID of the generated bulk task
 	 * @throws OperationException thew if there was a problem to perform the opreation
 	 */
-	@Deprecated
-	public Long deleteUser(User user) throws OperationException;
+	//@Deprecated
+	//public Long deleteUser(User user) throws OperationException;
 
 	/**
 	 * Reset password for the specified user
@@ -402,8 +426,8 @@ public interface UserManager {
 	 * @param password The password to reset
 	 * @return true/false upon success/failure
 	 */
-	@Deprecated
-	public Long userAccountsResetPassword(User user, String password) throws OperationException, PasswordValidationException ;
+	//@Deprecated
+	//public Long userAccountsResetPassword(User user, String password) throws OperationException, PasswordValidationException ;
 
 
 	/**
@@ -413,31 +437,16 @@ public interface UserManager {
 	 * @throws OperationException
 	 * @throws PasswordValidationException
 	 */
-	@Deprecated
-	public BulkTask userAccountsResetPasswordBulkTask(User user, String password) throws OperationException, PasswordValidationException;
+	//@Deprecated
+	//public BulkTask userAccountsResetPasswordBulkTask(User user, String password) throws OperationException, PasswordValidationException;
 
 	
-	@Deprecated
-	public BulkTask accountsResetPasswordForPasswordPolicyContainerBulkTask(User user, PasswordPolicyContainer ppc,List<Account> accounts, String password) throws OperationException, PasswordValidationException;
+	//@Deprecated
+	//public BulkTask accountsResetPasswordForPasswordPolicyContainerBulkTask(User user, PasswordPolicyContainer ppc,List<Account> accounts, String password) throws OperationException, PasswordValidationException;
 
-	@Deprecated
-	public Long accountsResetPasswordForPasswordPolicyContainer(User user, PasswordPolicyContainer ppc,List<Account> accounts, String password) throws OperationException, PasswordValidationException;
+	//@Deprecated
+	//public Long accountsResetPasswordForPasswordPolicyContainer(User user, PasswordPolicyContainer ppc,List<Account> accounts, String password) throws OperationException, PasswordValidationException;
 
-
-	/**
-     * Authenticate a user by password
-     * Algorithm:
-     *  - Iterate through the 'Authentication list' of the target systems
-     *  - By priority, per target system, factory its corresponding auth action and authenticate
-     *  - If returned true, register the user via JAAS, otherwise, indicate a failure
-     *
-	 * @param username The username to authenticate
-	 * @param password The password to authenticate
-         * @param ip The Ip address of the client which is trying to authenticate
-	 * @return true/false upon success/failure of authentication process
-	 */
-	@Deprecated
-	public boolean authenticate(String username, String password, String ip) throws UserAuthenticationException;
 
 
 	//REMOVED, MOVED TO ACCOUNT ENTITY
@@ -459,23 +468,23 @@ public interface UserManager {
 	 * @param positionsToRemove
 	 * @param positionsToAdd
 	 */
-	@Deprecated
-	public void modifyUserPositions(User user, Set<Position> positionsToRemove, Set<Position> positionsToAdd);
+	//@Deprecated
+	//public void modifyUserPositions(User user, Set<Position> positionsToRemove, Set<Position> positionsToAdd);
 
-	@Deprecated
-	public User createUserFromRequest(CreateUserRequest request) throws OperationException;
+	//@Deprecated
+	//public User createUserFromRequest(CreateUserRequest request) throws OperationException;
 
 
-	@Deprecated
-	public Collection<PasswordPolicyContainer> loadAccountsInPasswordPolicyContainers(Collection<PasswordPolicyContainer> passwordPolicyContainers, User user);
+	//@Deprecated
+	//public Collection<PasswordPolicyContainer> loadAccountsInPasswordPolicyContainers(Collection<PasswordPolicyContainer> passwordPolicyContainers, User user);
         
-	@Deprecated
-        public void associateUserToRole(String userName, String roleName, boolean isInherited) throws OperationException;
+	//@Deprecated
+      //  public void associateUserToRole(String userName, String roleName, boolean isInherited) throws OperationException;
         
-	@Deprecated
-        public void updateUserIdentityAttributes(Collection<UserIdentityAttribute> userIdentityAttributes);
+	//@Deprecated
+        //public void updateUserIdentityAttributes(Collection<UserIdentityAttribute> userIdentityAttributes);
         
-	@Deprecated
-        public void persistUserIdentityAttributes(Collection<UserIdentityAttribute> userIdentityAttributes);
+	//@Deprecated
+        //public void persistUserIdentityAttributes(Collection<UserIdentityAttribute> userIdentityAttributes);
 }
 

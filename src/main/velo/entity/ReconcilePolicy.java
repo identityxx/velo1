@@ -35,10 +35,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.jboss.seam.annotations.Name;
+
 
 /**
  * A class that represents a Reconcilidation policy and rules
@@ -52,8 +54,10 @@ import org.jboss.seam.annotations.Name;
 @Entity
 @SequenceGenerator(name="ReconcilePolicyIdSeq",sequenceName="RECONCILE_POLICY_ID_SEQ")
 @NamedQueries( {
+	@NamedQuery(name = "reconcilePolicy.findByName", query = "SELECT rp FROM ReconcilePolicy rp WHERE rp.name = :name"),	
+	
+	
     @NamedQuery(name = "findAllReconcilePolicy", query = "select object(o) from ReconcilePolicy o"),
-    @NamedQuery(name = "reconcilePolicy.findByName", query = "SELECT object(reconcilePolicy) FROM ReconcilePolicy reconcilePolicy WHERE reconcilePolicy.name = :reconcilePolicyName"),
     @NamedQuery(name = "reconcilePolicy.findAll", query = "SELECT object(reconcilePolicy) FROM ReconcilePolicy reconcilePolicy"),
     @NamedQuery(name = "reconcilePolicy.searchReconcilePoliciesByString", query = "SELECT object(reconcilePolicy) from ReconcilePolicy reconcilePolicy WHERE reconcilePolicy.name like :searchString") })
     public class ReconcilePolicy extends BaseEntity implements Serializable {
@@ -69,40 +73,68 @@ import org.jboss.seam.annotations.Name;
         
         private String name;
         
+        private Set<ReconcileEventResponse> eventResponses = new HashSet<ReconcileEventResponse>();
+        
+        private ReconcileAuditPolicy reconcileAuditPolicy;
+
+        
+        
+        private boolean isDeleteGroupAfterReconcileProcessesNumberExceeded;
+        private int reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup = 10;
+        private boolean activateReconcileSummaries;
+        private SequencedAction correlationRule;
+        private SequencedAction confirmationRule;
+        private boolean reCorrelateOrphanIdentities;
+
+        
         //private ConfirmedAccountEventOptions confirmedAccountEventAction;
         //private DeletedAccountEventOptions deletedAccountEventAction;
         //private UnasignedAccountEventOptions unasignedAccountEventAction;
         //private UnmatchedAccountEventOptions unmatchedAccountEventAction;
         
-        private String confirmedAccountEventAction;
         
-        private String deletedAccountEventAction;
         
-        private String unasignedAccountEventAction;
         
-        private String unmatchedAccountEventAction;
         
-        private String confirmedAccountAttributeEventAction;
         
-        private String unmatchedAccountAttributeEventAction;
         
-        private boolean isDeleteGroupAfterReconcileProcessesNumberExceeded;
         
-        private int reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup = 0;
         
-        private boolean isActivateCorrelationRule;
+        
+        
         
         private boolean reconcileAccounts;
-        
         private boolean reconcileGroups;
-        
         private boolean reconcileGroupMembership;
+                        
         
+        
+        
+        
+        
+        
+        
+        
+        //DEPRECATED
+        private String confirmedAccountEventAction;
+        private String deletedAccountEventAction;
+        private String unasignedAccountEventAction;
+        private String unmatchedAccountEventAction;
+        private String confirmedAccountAttributeEventAction;
+        private String unmatchedAccountAttributeEventAction;
         private boolean autoCorrelateAccountIfMatchedToUser;
+        private boolean isActivateCorrelationRule;
         
-        private ReconcileResourceCorrelationRule reconcileResourceCorrelationRule;
         
-        private boolean activateReconcileSummaries;
+        
+        
+        
+        public ReconcilePolicy() {};
+        
+        public ReconcilePolicy(String name) {
+        	setName(name);
+        };
+        
         
         /**
          * Set an ID for the entity
@@ -134,7 +166,6 @@ import org.jboss.seam.annotations.Name;
         @Column(name = "NAME", nullable = false)
         @Length(min = 3, max = 40)
         @NotNull
-        //seam
         public String getName() {
             return name;
         }
@@ -146,6 +177,155 @@ import org.jboss.seam.annotations.Name;
         public void setName(String name) {
             this.name = name;
         }
+        
+        @OneToMany(mappedBy = "reconcilePolicy", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
+        public Set<ReconcileEventResponse> getEventResponses() {
+			return eventResponses;
+		}
+
+		public void setEventResponses(Set<ReconcileEventResponse> eventResponses) {
+			this.eventResponses = eventResponses;
+		}
+
+		@ManyToOne(optional = false, cascade = {CascadeType.PERSIST})
+		@JoinColumn(name = "RECONCILE_AUDIT_POLICY_ID")
+		public ReconcileAuditPolicy getReconcileAuditPolicy() {
+			return reconcileAuditPolicy;
+		}
+
+		public void setReconcileAuditPolicy(ReconcileAuditPolicy reconcileAuditPolicy) {
+			this.reconcileAuditPolicy = reconcileAuditPolicy;
+		}
+
+		@ManyToOne(optional=true)
+	    @JoinColumn(name="CORRELATION_RULE_ACTION_ID", nullable = true)
+		public SequencedAction getCorrelationRule() {
+			return correlationRule;
+		}
+
+		public void setCorrelationRule(
+				SequencedAction correlationRule) {
+			this.correlationRule = correlationRule;
+		}
+		
+		
+		@ManyToOne(optional=true)
+	    @JoinColumn(name="CONFIRMATION_RULE_ACTION_ID", nullable = true)
+		public SequencedAction getConfirmationRule() {
+			return confirmationRule;
+		}
+
+		public void setConfirmationRule(SequencedAction confirmationRule) {
+			this.confirmationRule = confirmationRule;
+		}
+
+		@Column(name = "ACTIVATE_RECONCILE_SUMMARIES", nullable = false)
+		public boolean isActivateReconcileSummaries() {
+			return activateReconcileSummaries;
+		}
+
+		public void setActivateReconcileSummaries(boolean activateReconcileSummaries) {
+			this.activateReconcileSummaries = activateReconcileSummaries;
+		}
+        
+		@Column(name = "RECORRELATE_ORPHAN_IDENTITIES", nullable = false)
+		public boolean isReCorrelateOrphanIdentities() {
+			return reCorrelateOrphanIdentities;
+		}
+
+		public void setReCorrelateOrphanIdentities(boolean reCorrelateOrphanIdentities) {
+			this.reCorrelateOrphanIdentities = reCorrelateOrphanIdentities;
+		}
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+		
+		
+		@Transient
+		public Set<ReconcileEventResponse> getEventResponses(String eventName) {
+			Set<ReconcileEventResponse> list = new HashSet<ReconcileEventResponse>();
+			
+			for (ReconcileEventResponse currRER : getEventResponses()) {
+				if (currRER.getEvent().getUniqueName().equals(eventName)) {
+					list.add(currRER);
+				}
+			}
+			
+			
+			return list;
+		}
+		
+		
+		
+		
+		@Override
+        public boolean equals(Object obj) {
+            if (!(obj != null && obj instanceof ReconcilePolicy))
+                return false;
+            ReconcilePolicy ent = (ReconcilePolicy) obj;
+            if (this.reconcilePolicyId.equals(ent.reconcilePolicyId))
+                return true;
+            return false;
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+        
         
         /*
          public void setConfirmedAccountEventAction(ConfirmedAccountEventOptions confirmedAccountEventAction) {
@@ -170,8 +350,8 @@ import org.jboss.seam.annotations.Name;
          * Get the 'Confirmed Account Event' action
          * @return Get the action string
          */
-        @Column(name = "CONFIRMED_ACCT_EVENT_ACTION", nullable = false)
-        @NotNull
+        @Column(name = "CONFIRMED_ACCT_EVENT_ACTION", nullable = true)
+        //@NotNull
         //@Enumerated(EnumType.STRING)
         public String getConfirmedAccountEventAction() {
             return confirmedAccountEventAction;
@@ -189,8 +369,8 @@ import org.jboss.seam.annotations.Name;
          * Get the 'Deleted Account Event' action string
          * @return The action String
          */
-        @Column(name = "DELETED_ACCT_EVENT_ACTION", nullable = false)
-        @NotNull
+        @Column(name = "DELETED_ACCT_EVENT_ACTION", nullable = true)
+        //@NotNull
         //@Enumerated(EnumType.STRING)
         public String getDeletedAccountEventAction() {
             return deletedAccountEventAction;
@@ -220,8 +400,8 @@ import org.jboss.seam.annotations.Name;
          * Set the 'Unasigned Account Event' action string
          * @return The action string
          */
-        @Column(name = "UNASIGNED_ACCT_EVENT_ACTION", nullable = false)
-        @NotNull
+        @Column(name = "UNASIGNED_ACCT_EVENT_ACTION", nullable = true)
+        //@NotNull
         //@Enumerated(EnumType.STRING)
         public String getUnasignedAccountEventAction() {
             return unasignedAccountEventAction;
@@ -251,8 +431,8 @@ import org.jboss.seam.annotations.Name;
          * Set the 'Unmatched Account Event' action string
          * @return The action string
          */
-        @Column(name = "UNMATCHED_ACCT_EVENT_ACTION", nullable = false)
-        @NotNull
+        @Column(name = "UNMATCHED_ACCT_EVENT_ACTION", nullable = true)
+        //@NotNull
         //@Enumerated(EnumType.STRING)
         public String getUnmatchedAccountEventAction() {
             return unmatchedAccountEventAction;
@@ -273,8 +453,8 @@ import org.jboss.seam.annotations.Name;
          * @return The action string
          */
         //@Column(name = "CONFIRMED_ACCOUNT_ATTRIBUTE_EVENT_ACTION", nullable = false)
-        @Column(name = "CONFIRMED_ACCT_ATTR_EVENT", nullable = false)
-        @NotNull
+        @Column(name = "CONFIRMED_ACCT_ATTR_EVENT", nullable = true)
+        //@NotNull
         public String getConfirmedAccountAttributeEventAction() {
             return confirmedAccountAttributeEventAction;
         }
@@ -293,8 +473,8 @@ import org.jboss.seam.annotations.Name;
          * @return Returns the unmatchedAccountAttributeEventAction action string.
          */
         //@Column(name = "UNMATCHED_ACCOUNT_ATTRIBUTE_EVENT_ACTION", nullable = false)
-        @Column(name = "UNMATCHED_ACCT_ATTR_EVENT", nullable = false)
-        @NotNull
+        @Column(name = "UNMATCHED_ACCT_ATTR_EVENT", nullable = true)
+        //@NotNull
         public String getUnmatchedAccountAttributeEventAction() {
             return unmatchedAccountAttributeEventAction;
         }
@@ -350,15 +530,6 @@ import org.jboss.seam.annotations.Name;
             return isActivateCorrelationRule;
         }
         
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj != null && obj instanceof ReconcilePolicy))
-                return false;
-            ReconcilePolicy ent = (ReconcilePolicy) obj;
-            if (this.reconcilePolicyId.equals(ent.reconcilePolicyId))
-                return true;
-            return false;
-        }
 
 		/**
 		 * @return the reconcileAccounts
@@ -414,28 +585,5 @@ import org.jboss.seam.annotations.Name;
 				boolean autoCorrelateAccountIfMatchedToUser) {
 			this.autoCorrelateAccountIfMatchedToUser = autoCorrelateAccountIfMatchedToUser;
 		}
-
-		@ManyToOne(optional=true)
-	    @JoinColumn(name="REC_RES_CORRELATION_RULE", nullable = true)
-		public ReconcileResourceCorrelationRule getReconcileResourceCorrelationRule() {
-			return reconcileResourceCorrelationRule;
-		}
-
-		public void setReconcileResourceCorrelationRule(
-				ReconcileResourceCorrelationRule reconcileResourceCorrelationRule) {
-			this.reconcileResourceCorrelationRule = reconcileResourceCorrelationRule;
-		}
-
-		@Column(name = "ACTIVATE_RECONCILE_SUMMARIES", nullable = false)
-		public boolean isActivateReconcileSummaries() {
-			return activateReconcileSummaries;
-		}
-
-		public void setActivateReconcileSummaries(boolean activateReconcileSummaries) {
-			this.activateReconcileSummaries = activateReconcileSummaries;
-		}
-		
-		
-		
 		
     }

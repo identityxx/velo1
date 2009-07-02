@@ -30,6 +30,7 @@ import org.jboss.seam.framework.EntityHome;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceTypeAttribute;
+import velo.entity.Attribute.AttributeDataTypes;
 import velo.entity.ResourceAttributeBase.SourceTypes;
 
 @Name("resourceAttributeHome")
@@ -134,4 +135,9 @@ public class ResourceAttributeHome extends EntityHome<ResourceAttribute> {
 	public SourceTypes[] getSourceTypes() {
 		return SourceTypes.values();
 	}
+	
+	@Factory("resourceAttributeDataTypes")
+	public AttributeDataTypes[] getResourceattributeDataTypes() {
+		return AttributeDataTypes.values();
+	}	
 }

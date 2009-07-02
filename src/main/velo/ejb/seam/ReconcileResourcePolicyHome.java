@@ -22,6 +22,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 
+import velo.entity.ReconcileEventResponse;
 import velo.entity.ReconcilePolicy;
 
 @Name("reconcileResourcePolicyHome")
@@ -29,6 +30,9 @@ public class ReconcileResourcePolicyHome extends EntityHome<ReconcilePolicy> {
 
 	@In
 	FacesMessages facesMessages;
+	
+	@In(required=false)
+	ReconcileEventResponseHome reconcileEventResponseHome;  
 	
 	public void setReconcilePolicyId(Long id) {
 		setId(id);
@@ -53,5 +57,12 @@ public class ReconcileResourcePolicyHome extends EntityHome<ReconcilePolicy> {
 
 	public ReconcilePolicy getDefinedInstance() {
 		return isIdDefined() ? getInstance() : null;
+	}
+	
+	public void removeResponse(ReconcileEventResponse reconcileEventResponse) {
+		reconcileEventResponse.getEvent().getEventResponses().remove(reconcileEventResponse);
+		getInstance().getEventResponses().remove(reconcileEventResponse);
+		
+		getEntityManager().remove(reconcileEventResponse);
 	}
 }

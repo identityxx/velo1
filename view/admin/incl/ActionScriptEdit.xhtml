@@ -1,0 +1,76 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich">
+
+		<!--<h:form id="actionScriptEdit" styleClass="edit">-->
+				<f:facet name="header">Action Script</f:facet>
+				
+				<s:decorate id="titleDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Script Title</ui:define>
+					<h:inputText id="title" required="true" size="80" value="#{script.title}"/>
+				</s:decorate>
+				
+				<s:decorate id="activeDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Active?</ui:define>
+					<h:selectBooleanCheckbox value="#{script.active}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="showStopperDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Show Stopper?</ui:define>
+					<h:selectBooleanCheckbox value="#{script.showStopper}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="languageDecoration"
+					template="../layout/edit.xhtml">
+					<ui:define name="label">Action Language</ui:define>
+					<h:selectOneMenu id="language"
+						value="#{script.actionLanguage}" required="true">
+						<s:selectItems value="#{guiActionLanguages}" var="lang"
+							label="#{lang.name}" />
+						<s:convertEntity />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="phaseDecoration"
+					template="../layout/edit.xhtml">
+					<ui:define name="label">Operation Phase to Invoke Action</ui:define>
+					<h:selectOneMenu id="phase"
+						value="#{script.invokePhase}" required="true">
+						<s:selectItems value="#{actionScriptInvokePhases}" var="r"
+							label="#{r}" />
+						<s:convertEnum />
+					</h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="sequenceDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Sequence</ui:define>
+					<h:inputText id="sequence" required="true" size="2" maxlength="2"
+						value="#{script.sequence}">
+						<a:support event="onblur" reRender="sequenceDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				<s:decorate id="contentDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Action Content</ui:define>
+					<h:inputTextarea id="content" required="true" cols="100" rows="30"
+						value="#{script.content}">
+					</h:inputTextarea>
+				</s:decorate>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+<!--		</h:form>-->
+
+</ui:composition>

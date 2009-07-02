@@ -1,0 +1,44 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich">
+
+	<rich:dataTable var="rer"
+		value="#{velo:setAsList(reconcileResourcePolicyHome.instance.getEventResponses(event_response_name))}">
+		<h:column>
+			<f:facet name="header">Name</f:facet>
+					#{rer.name}
+				</h:column>
+		<h:column>
+			<f:facet name="header">Active?</f:facet>
+					#{rer.active}
+				</h:column>
+		<h:column>
+			<f:facet name="header">Show Stopper?</f:facet>
+					#{rer.showStopper}
+				</h:column>
+		<h:column>
+			<f:facet name="header">Sequence</f:facet>
+					#{rer.sequence}
+				</h:column>
+		<h:column>
+			<f:facet name="header">Type</f:facet>
+					#{rer.action.displayableActionType}
+				</h:column>
+		<h:column>
+			<f:facet name="header">Actions</f:facet>
+			<h:commandButton value="Delete"
+				action="#{reconcileResourcePolicyHome.removeResponse(rer)}" />
+		</h:column>
+	</rich:dataTable>
+
+</ui:composition>

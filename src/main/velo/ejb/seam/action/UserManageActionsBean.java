@@ -466,6 +466,8 @@ public class UserManageActionsBean implements UserManageActions {
         //return "/admin/UserList.xhtml";
 	}
 	
+	
+	/*
 	public void disableUser() {
 		try {
 			userManager.disableUser(user);
@@ -491,6 +493,7 @@ public class UserManageActionsBean implements UserManageActions {
 							+ user.getName() + "': " + oe.toString());
 		}
 	}
+	
 
 	public void refreshUserAccounts() {
 		if (!accountManager.updateAccountsStatus(user.getAccounts())) {
@@ -502,6 +505,7 @@ public class UserManageActionsBean implements UserManageActions {
 			facesMessages.add("Successfully refreshed accounts status");
 		}
 	}
+	*/
 	
 	//@End
 	public String performUserRolesModifications() {

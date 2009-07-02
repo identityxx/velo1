@@ -26,6 +26,7 @@ import velo.entity.TaskDefinition;
 import velo.exceptions.CannotRequeueTaskException;
 import velo.exceptions.CollectionLoadingException;
 import velo.exceptions.OperationException;
+import velo.exceptions.TaskExecutionException;
 
 /**
  * A TaskManager interface for all EJB exposed methods
@@ -62,7 +63,12 @@ public interface TaskManager {
     public void indicateTaskExecutionFailure(Task task, String errorMsg);
 	
 	
-    public boolean executeTask(Task task);
+    public void executeTask(Task task) throws TaskExecutionException;
+    public void resetRunningTask(Task task);
+    public void executeTaskViaTaskExecuter(Task task) throws TaskExecutionException;
+    //not really needed, crap
+    //public boolean executeTaskViaQueue(Task task);
+    public boolean executeTaskViaQueue(Task task) throws TaskExecutionException;
 	
     public Task findTaskById(Long taskId);
 	
@@ -81,7 +87,10 @@ public interface TaskManager {
      */
     public void reQueueTask(Task task) throws CannotRequeueTaskException;
 
-	
+    public void executeTaskAsync(Task task) throws TaskExecutionException;
+    
+    
+    
 	
 	
 	

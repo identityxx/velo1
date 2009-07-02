@@ -32,6 +32,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -50,13 +52,14 @@ import javax.persistence.Transient;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.jboss.seam.annotations.Name;
 import org.openspml.v2.profiles.dsml.DSMLAttr;
 import org.openspml.v2.profiles.dsml.DSMLValue;
 
+import velo.action.ResourceOperation;
 import velo.common.SysConf;
+import velo.contexts.OperationContext;
 import velo.entity.ResourceAction.InvokePhases;
 import velo.exceptions.AttributeSetValueException;
 import velo.exceptions.ResourceDescriptorException;
@@ -106,7 +109,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	// private String hostName;
 	//private String confFileName;
 
-	private Set<ResourceAdmin> resourceAdmins;
+	private Set<ResourceAdmin> resourceAdmins = new HashSet<ResourceAdmin>();
 
 	// private Set<Account> accounts = new HashSet<Account>();
 	private Set<Account> accounts;
@@ -116,6 +119,8 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	private Set<ResourceGroup> groups;
 
 	private Set<ResourceAttribute> resourceAttributes = new LinkedHashSet<ResourceAttribute>();
+	
+	private Set<ReconcileProcessSummary> ReconcileProcessSummaries;
 
 	private ReconcilePolicy reconcilePolicy;
 
@@ -152,6 +157,9 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	private ApproversGroup approversGroupOwner;
 	
 	private List<User> users;
+	
+	private boolean autoFetch;
+	
 	
 	
 	/**
@@ -419,6 +427,18 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	public Set<ResourceAttribute> getResourceAttributes() {
 		return resourceAttributes;
 	}
+	
+	
+	@OneToMany(mappedBy = "resource", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+	@OrderBy("startDate DESC")
+	public Set<ReconcileProcessSummary> getReconcileProcessSummaries() {
+		return ReconcileProcessSummaries;
+	}
+
+	public void setReconcileProcessSummaries(
+			Set<ReconcileProcessSummary> reconcileProcessSummaries) {
+		ReconcileProcessSummaries = reconcileProcessSummaries;
+	}
 
 	/**
 	 * Set the ReconcilePolicy entity for the Resource
@@ -648,13 +668,24 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	public void setUsers(List<User> users) {
 		this.users = users;
 	}
+	
+	@Column(name = "AUTO_FETCH", nullable = false)
+	public boolean isAutoFetch() {
+		return autoFetch;
+	}
+
+	public void setAutoFetch(boolean autoFetch) {
+		this.autoFetch = autoFetch;
+	}
+	
+	
+	
+	
+	
+	
 
 	
-	
-	
-	
-	
-	
+
 	//helper/transients
 	@Transient
 	public ResourceAttributeSet<ResourceAttribute> getAttributes() {
@@ -729,10 +760,28 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 		return list;
 	}
 	
-	public ResourceAttribute findAttributeByName(String uniqueName) {
+	public ResourceAttribute getResourceAttribute(String uniqueName) {
+		if (isCaseSensitive()) {
+			return findAttributeByName(uniqueName, false);
+		} else {
+			return findAttributeByName(uniqueName, true);
+		}
+	}
+	
+	private ResourceAttribute getResourceAttributeIgnoreCase(String uniqueName) {
+		return findAttributeByName(uniqueName, true);
+	}
+	
+	public ResourceAttribute findAttributeByName(String uniqueName, boolean ignoreCase) {
 		for (ResourceAttribute currRA : getAttributes()) {
-			if (currRA.getUniqueName().equals(uniqueName)) {
-				return currRA;
+			if (ignoreCase) {
+				if (currRA.getUniqueName().toUpperCase().equals(uniqueName.toUpperCase())) {
+					return currRA;
+				}
+			} else {
+				if (currRA.getUniqueName().equals(uniqueName)) {
+					return currRA;
+				}
 			}
 		}
 		
@@ -781,7 +830,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	public Set<ResourceAction> getPrePhaseActions(ResourceTypeOperation resourceTypeOperation) {
 		Set<ResourceAction> actions = new HashSet<ResourceAction>();
 		for (ResourceAction currRA : getResourceActions()) {
-			if ( (currRA.getInvokePhase().equals(InvokePhases.PRE)) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
+			if ( (currRA.getInvokePhase() == InvokePhases.PRE) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
 				actions.add(currRA);
 			}
 		}
@@ -794,7 +843,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	public Set<ResourceAction> getCreationPhaseActions(ResourceTypeOperation resourceTypeOperation) {
 		Set<ResourceAction> actions = new HashSet<ResourceAction>();
 		for (ResourceAction currRA : getResourceActions()) {
-			if ( (currRA.getInvokePhase().equals(InvokePhases.CREATION)) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
+			if ( (currRA.getInvokePhase() == InvokePhases.CREATION) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
 				actions.add(currRA);
 			}
 		}
@@ -807,7 +856,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	public Set<ResourceAction> getValidatePhaseActions(ResourceTypeOperation resourceTypeOperation) {
 		Set<ResourceAction> actions = new HashSet<ResourceAction>();
 		for (ResourceAction currRA : getResourceActions()) {
-			if ( (currRA.getInvokePhase().equals(InvokePhases.VALIDATE)) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
+			if ( (currRA.getInvokePhase() == InvokePhases.VALIDATE) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
 				actions.add(currRA);
 			}
 		}
@@ -820,7 +869,7 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	public Set<ResourceAction> getPostPhaseActions(ResourceTypeOperation resourceTypeOperation) {
 		Set<ResourceAction> actions = new HashSet<ResourceAction>();
 		for (ResourceAction currRA : getResourceActions()) {
-			if ( (currRA.getInvokePhase().equals(InvokePhases.POST)) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
+			if ( (currRA.getInvokePhase() == InvokePhases.POST) && currRA.getResourceTypeOperation().equals(resourceTypeOperation)) {
 				actions.add(currRA);
 			}
 		}
@@ -948,10 +997,10 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	
 	
 	
-	public void clearTransientAttributeValues() {
-		log.debug("Clearning attributes's transient values of resource '" + getDisplayName() + "'");
+	public void clearActiveAttributeValues() {
+		log.debug("Clearning attributes's active values of resource '" + getDisplayName() + "'");
 		for (ResourceAttribute currAttr : getAttributes()) {
-			currAttr.getTransientValues().clear();
+			currAttr.getValues().clear();
 		}
 	}
 	
@@ -967,17 +1016,57 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	
 	
 	
+	public ResourceOperation factoryResourceOperation(OperationContext context, ResourceTypeOperation resourceTypeOperation) {
+		//return ResourceOperation.Factory(resource, context, resourceTypeOperation);
+		ResourceOperation ro = new ResourceOperation(this,context);
+		
+		ro.setCreationPhaseResourceActions(this.getCreationPhaseActions(resourceTypeOperation));
+		ro.setValidateResourceActions(this.getValidatePhaseActions(resourceTypeOperation));
+		ro.setPreResourceActions(this.getPrePhaseActions(resourceTypeOperation));
+		ro.setPostResourceActions(this.getPostPhaseActions(resourceTypeOperation));
+		ro.setResourceTypeOperation(resourceTypeOperation);
+		
+		return ro;
+	}
 	
 	
+	/**
+	 * Creates a map of accounts, the key is the account name in the right case.
+	 * @return
+	 */
+	@Transient
+	public Map<String,Account> getAccountsAsMap() {
+		Map<String,Account> map = new HashMap<String,Account>();
+		for (Account currAccount : getAccounts()) {
+			map.put(currAccount.getNameInRightCase(),currAccount);
+		}
+		
+		return map;
+	}
 	
 	
+	@Transient
+	public Map<String,ResourceGroup> getGroupsAsMap() {
+		Map<String,ResourceGroup> map = new HashMap<String,ResourceGroup>();
+		for (ResourceGroup currRG : getGroups()) {
+			map.put(currRG.getUniqueIdInRightCase(),currRG);
+		}
+		
+		return map;
+	}
 	
-	
-	
-	
-	
-	
-	
+
+	//not the best idea to use this as there might be a lot of groups
+	@Transient
+	public ResourceGroup findGroup(String uniqueId) {
+		for (ResourceGroup currRG : getGroups()) {
+			if (currRG.getUniqueId().equals(uniqueId)) {
+				return currRG;
+			}
+		}
+		
+		return null;
+	}
 	
 	
 	

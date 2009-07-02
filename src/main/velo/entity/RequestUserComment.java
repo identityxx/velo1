@@ -32,6 +32,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="VL_REQUEST_USER_COMMENT")
 @SequenceGenerator(name="RequestUserCommentIdSeq",sequenceName="REQUEST_USER_COMMENT_ID_SEQ")
+@Deprecated
 public class RequestUserComment extends EntityUserComment {
 	
     private static final long serialVersionUID = 1987302492306161413L;

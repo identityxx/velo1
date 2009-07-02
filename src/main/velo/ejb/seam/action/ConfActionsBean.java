@@ -88,6 +88,11 @@ public class ConfActionsBean implements ConfActions {
 		}
 	}
 
+	public String importTestData() {
+		confManager.persistTestData();
+		facesMessages.add("Successfully imported test data!");
+		return "/admin/Home.xhtml";
+	}
 	
 	
 	public void generateResourcePrincipalsEncryptionKey() {
@@ -109,6 +114,42 @@ public class ConfActionsBean implements ConfActions {
 		}
 	}
 	*/
+	
+	
+	
+	
+	
+	
+	
+	
+	//individual imports
+	public void importReconcileEvents() {
+		confManager.importReconcileEvents();
+		facesMessages.add("Successfully imported reconcile events!");
+	}
+	
+	public void importSystemEvents() {
+		confManager.importSystemEvents();
+		facesMessages.add("Successfully imported system events!");
+	}
+	
+	public void importReadyActions() {
+		confManager.importReadyActions();
+		facesMessages.add("Successfully imported ready actions!");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	public void test() {

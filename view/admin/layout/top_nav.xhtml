@@ -103,6 +103,10 @@
                     <rich:menuItem id="reconcilidation_policies" submitMode="server" value="Reconcile Policies" action="/admin/ReconcileResourcePolicyList.xhtml" rendered="#{s:hasRole('manage_resource_reconcile_policies')}">
                         <s:conversationPropagation type="none" />
                     </rich:menuItem>
+                    <rich:menuSeparator/>
+                    <rich:menuItem id="reconcilidation_audit_policies" submitMode="server" value="Reconcile Audit Policies" action="/admin/ReconcileAuditPolicyList.xhtml">
+                        <s:conversationPropagation type="none" />
+                    </rich:menuItem>
                 </rich:menuGroup>
                 
                 <rich:menuGroup value="Users Reconciliation">
@@ -162,9 +166,11 @@
             </rich:dropDownMenu>
             
             <rich:dropDownMenu id="root_misc" value="Misc">
-                <rich:menuItem id="misc_event_definition_list" submitMode="server" value="Event Definitions" action="/eventDefinitionList.xhtml" rendered="#{s:hasRole('manage_event_definitions')}" disabled="true">
-                    <s:conversationPropagation type="none" />
-                </rich:menuItem>
+            	<rich:menuGroup value="Actions">
+                    <rich:menuItem id="misc_scripted_action_list" submitMode="server" value="Scripted Action List" action="/admin/ScriptedActionList.xhtml">
+                        <s:conversationPropagation type="none" />
+                    </rich:menuItem>
+                </rich:menuGroup>
                 <rich:menuSeparator/>
                 <rich:menuGroup value="Imports">
                     <rich:menuItem id="import_accounts_to_users_assoications" submitMode="server" value="Accounts To Users Associations" action="/admin/ImportAccountsToUsersAssociationsPre.xhtml" disabled="false">
@@ -184,7 +190,7 @@
                     </rich:menuItem>
                     </rich:menuGroup>
                 <rich:menuSeparator/>
-                <rich:menuItem id="event_list" submitMode="server" value="Events" action="/admin/EventDefinitionList.xhtml">
+                <rich:menuItem id="event_list" submitMode="server" value="System Events" action="/admin/SystemEventList.xhtml">
                     <s:conversationPropagation type="none" />
                 </rich:menuItem>
                 <rich:menuSeparator/>
