@@ -117,7 +117,22 @@
                 		<s:convertEntity/>
             		</h:selectOneMenu>
 				</s:decorate>
+			
+				<s:decorate id="daysToRevokeDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">
+						<ui:include src="layout/help.xhtml">
+                    		<ui:param name="helpText" value="Number of days before an account will become disabled after a user revoke process." />
+                		</ui:include>
+						Number of days until revoke
+					</ui:define>
+					<h:inputText id="daysToRevoke" required="true" size="4" maxlength="4"
+						value="#{resourceHome.instance.daysToRevokeAccount}">
+						<a:support event="onblur" reRender="daysToRevokeDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
 				
+								
 				<s:decorate id="tasksQueueDecoration" template="layout/edit.xhtml">
 					<ui:define name="label">Gateway</ui:define>
 					<h:selectOneMenu id="tasksQueue" value="#{resourceHome.instance.gateway}" required="false">

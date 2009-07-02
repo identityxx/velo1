@@ -17,7 +17,11 @@
  */
 package velo.jbpm;
 
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -26,10 +30,13 @@ import javax.naming.NamingException;
 import org.apache.commons.mail.EmailException;
 import org.apache.log4j.Logger;
 import org.jbpm.graph.def.ActionHandler;
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ExecutionContext;
+import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.jpdl.el.VariableResolver;
 import org.jbpm.jpdl.el.impl.JbpmExpressionEvaluator;
 import org.jbpm.jpdl.el.impl.JbpmVariableResolver;
+import org.jbpm.taskmgmt.exe.TaskInstance;
 
 import velo.ejb.interfaces.ApproversGroupManagerLocal;
 import velo.ejb.interfaces.EmailManagerLocal;
@@ -193,6 +200,10 @@ public class MailHandler implements ActionHandler  {
 		et.addContentVar("processVars", executionContext.getContextInstance().getVariables());
 		//add the process to the context
 		et.addContentVar("process", executionContext.getProcessInstance());
+		
+		JbpmCommentsUtils jbpmCommentsUtils = new JbpmCommentsUtils();
+		
+		et.addContentVar("processCommentsHtml", jbpmCommentsUtils.getProcessCommentsAsHtml(executionContext.getProcessInstance()));
 		//the current node
 		et.addContentVar("node", executionContext.getNode());
 		et.addContentVar("currentTime",new Date());
@@ -228,7 +239,9 @@ public class MailHandler implements ActionHandler  {
 		//if AG, then handle it, otherwise handle an individual approver
 		if (isApproversGroup) {
 			ApproversGroupManagerLocal approversGroupManager = (ApproversGroupManagerLocal) initialContext.lookup("velo/ApproversGroupBean/local");
-			ApproversGroup ag = approversGroupManager.findApproversGroup(resultedActor);
+			//Not sure why, even though it's a local interface the session get closed and a lazy loading exception occurs
+			//thus, loading entity eagerly.
+			ApproversGroup ag = approversGroupManager.findApproversGroupEagerly(resultedActor);
 		
 		
 			//make sure AG entity was found and there are associated approvers, otherwise abort.
@@ -344,4 +357,5 @@ public class MailHandler implements ActionHandler  {
 	private boolean isExpression(String str) {
 		return ( (str.startsWith("#{")) && (str.endsWith("}")) );
 	}
+
 }
