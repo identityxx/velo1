@@ -42,3 +42,10 @@ commons-lang.jar
 jfreechart.jar
 xstream-1.2.jar
 commons-lang.jar
+
+
+milyn-smooks-core-1.1.2.jar
+milyn-smooks-scripting-1.1.2.jar
+milyn-commons-1.1.2.jar
+milyn-smooks-javabean-1.1.2.jar
+freemarker-2.3.9.jar

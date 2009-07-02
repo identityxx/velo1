@@ -181,7 +181,7 @@ public class ReconcileDataImportManager {
 			Smooks smooks = null;
 			try {
 				//smooks = new Smooks("velo/reconciliation/utils/identities_smooks-config.xml");
-				smooks = new Smooks("smooks/reconcile/identities_smooks-config.xml");
+				smooks = new Smooks("META-INF/smooks/reconcile/identities_smooks-config.xml");
 			} catch (SAXException e) {
 				throw new DataTransformException(e.getMessage());
 			}
@@ -334,7 +334,7 @@ public class ReconcileDataImportManager {
 
 			Smooks smooks = null;
 			try {
-				smooks = new Smooks("velo/reconciliation/utils/groups_smooks-config.xml");
+				smooks = new Smooks("META-INF/smooks/reconcile/groups_smooks-config.xml");
 			} catch (SAXException e) {
 				throw new DataTransformException(e.getMessage());
 			}

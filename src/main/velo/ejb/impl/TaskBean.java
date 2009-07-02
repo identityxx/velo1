@@ -52,11 +52,11 @@ import javax.persistence.Query;
 import javax.transaction.TransactionManager;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.IgnoreDependency;
-import org.jboss.annotation.ejb.TransactionTimeout;
 import org.jboss.ejb3.annotation.IgnoreDependency;
+import org.jboss.annotation.ejb.TransactionTimeout;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
+
 import velo.common.SysConf;
 import velo.contexts.OperationContext;
 import velo.ejb.interfaces.AdapterManagerLocal;

@@ -29,16 +29,31 @@ xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">
     <jb:bindings beanId="account" class="velo.entity.Account" createOnElement="identity">
     	<jb:value property="name" data="identity/@identifier" />
     	
-    	<jb:wiring property="transientAttributes" beanIdRef="attributes"/>
+    	<jb:wiring property="activeAttributes" beanIdRef="attributes"/>
     </jb:bindings>
     
     
+<!--    <g:groovy executeOnElement="identity">-->
+<!--             <g:script>-->
+<!--                 -->
+<!--                 //Get the attributes map-->
+<!--                 velo.entity.Resource resource = getBean("resource");-->
+<!--				println("!!!!!" + this);-->
+<!--                 -->
+<!--             </g:script>-->
+<!--         </g:groovy> -->
+    
+    
+    
+<!--    <jb:bindings beanId="attributes" class="java.util.HashMap" createOnElement="attributes">-->
     <jb:bindings beanId="attributes" class="java.util.HashMap" createOnElement="attributes">
 <!--		<jb:wiring beanIdRef="attribute"/>-->
     </jb:bindings>
     
+<!--     <jb:bindings beanId="attribute" class="velo.entity.Attribute" createOnElement="attribute">	-->
      <jb:bindings beanId="attribute" class="velo.entity.Attribute" createOnElement="attribute">	
-		<!-- It's impossible to add into the map a dynamic name, thus using groovy script below-->
+		<!-- It's impossible to add into the map a dynamic name, thus using groovy script below
+-->
 		<jb:wiring property="values" beanIdRef="values"/>
      </jb:bindings>
      
