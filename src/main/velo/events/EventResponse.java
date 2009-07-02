@@ -17,8 +17,6 @@
  */
 package velo.events;
 
-import java.util.Collection;
-
 import velo.actions.Action;
 import velo.exceptions.InitException;
 
@@ -27,9 +25,9 @@ import velo.exceptions.InitException;
  *
  * @author Asaf Shakarchi
  */
+@Deprecated
 public abstract class EventResponse extends Action {
     private boolean persistenceModified = false;
-    
     private boolean persistence;
     
     public EventResponse() {
@@ -40,11 +38,6 @@ public abstract class EventResponse extends Action {
         
     }
 
-    //TODO: Implement this as default in Action, it is very annoying, not all actions have results.
-    public Collection getActionResult() {
-        return null;
-    }
-    
     public boolean isPersistence() {
         return persistence;
     }

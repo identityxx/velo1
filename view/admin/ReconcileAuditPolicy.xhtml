@@ -1,0 +1,118 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Reconcile Audit Policy</f:facet>
+
+        <s:decorate id="id" template="layout/display.xhtml">
+            <ui:define name="label">ID</ui:define>
+            #{reconcileAuditPolicyHome.instance.reconcileAuditPolicyId}
+        </s:decorate>
+
+        <s:decorate id="name" template="layout/display.xhtml">
+            <ui:define name="label">Name</ui:define>
+            #{reconcileAuditPolicyHome.instance.name}
+        </s:decorate>
+
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    <br/>
+    
+    <rich:panel>
+    	<h:form>
+    	<rich:panel>
+        	<f:facet name="header">Identity Events</f:facet>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Identity Confirmed Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditIdentityConfirmedEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Identity Unassigned Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditIdentityUnassignedEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Identity Unmatched Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditIdentityUnmatchedEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Identity Removed Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditIdentityRemovedEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Identity Modified Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditIdentityModifiedEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Identity Attribute Modified Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditIdentityAttributeModifiedEvent}
+        	</s:decorate>
+        	
+        	<div style="clear:both"/>
+    	</rich:panel>
+    	<br/>
+    	
+    	<rich:panel>
+        	<f:facet name="header">Groups Events</f:facet>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Group Created Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditGroupCreatedEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Group Modified Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditGroupModifiedEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Group Removed Event</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditGroupRemovedEvent}
+        	</s:decorate>
+        	
+        	<div style="clear:both"/>
+    	</rich:panel>
+    	<br/>
+    	
+    	<rich:panel>
+        	<f:facet name="header">Group Membership Events</f:facet>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Group Membership Association</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditGroupMembershipAssocEvent}
+        	</s:decorate>
+        	<s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Group Membership Dessociation</ui:define>
+            	#{reconcileAuditPolicyHome.instance.auditGroupMembershipDessocEvent}
+        	</s:decorate>
+        	<div style="clear:both"/>
+		</rich:panel>
+		<br/>
+		
+		</h:form>
+    	
+    </rich:panel>
+    <div class="actionButtons">      
+
+        <s:button view="/admin/ReconcileAuditPolicyEdit.xhtml" 
+                    id="edit" 
+                 value="Edit"/>
+
+        <s:button view="/admin/#{empty reconcileAuditPolicyFrom ? 'ReconcileAuditPolicyList' : reconcileAuditPolicyFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+    </div>
+
+</ui:define>
+
+</ui:composition>

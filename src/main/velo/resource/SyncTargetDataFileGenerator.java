@@ -84,7 +84,7 @@ public class SyncTargetDataFileGenerator {
         for (Account currAccount : getAccounts()) {
             out.write("<account name='" + currAccount.getName() + "'>\r\n\t\t");
             out.write("<attributes>\r\n\t\t\t");
-            for (Attribute currAttr : currAccount.getTransientAttributes().values()) {
+            for (Attribute currAttr : currAccount.getActiveAttributes().values()) {
                 out.write("<attribute name='" + currAttr.getUniqueName() + "'>\r\n\t\t\t\t");
                 out.write("<values>\r\n\t\t\t\t\t");
                 //might throw a NPE if no values were found

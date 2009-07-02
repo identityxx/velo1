@@ -45,10 +45,11 @@
 					template="layout/edit.xhtml">
 					<ui:define name="label">Controller Type</ui:define>
 					<h:selectOneMenu id="controllerType" value="#{resourceTypeHome.instance.resourceControllerType}" required="true">
-                		<s:selectItems value="#{resourceTypeControllerTypes}" var="ct" label="#{ct}" noSelectionLabel="-resource type-"/>
+                		<s:selectItems value="#{resourceTypeControllerTypes}" var="ct" label="#{ct}" noSelectionLabel="-select type-"/>
 						<s:convertEnum />
 					</h:selectOneMenu >
 				</s:decorate>
+				
 				
 				<s:decorate id="gatewayRequired" template="layout/edit.xhtml">
 					<ui:define name="label">Gateway Required?</ui:define>

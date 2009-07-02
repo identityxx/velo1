@@ -51,6 +51,7 @@ import org.jboss.seam.annotations.Name;
 		@NamedQuery(name = "reconcileUsersPolicy.findAll", query = "SELECT object(reconcileUsersPolicy) FROM ReconcileUsersPolicy reconcileUsersPolicy"),
 		@NamedQuery(name = "reconcileUsersPolicy.findAllActive", query = "SELECT object(reconcileUsersPolicy) FROM ReconcileUsersPolicy reconcileUsersPolicy WHERE reconcileUsersPolicy.active = 1 ORDER BY reconcileUsersPolicy.priority ASC"),
 		@NamedQuery(name = "reconcileUsersPolicy.searchReconcileUsersPoliciesByString", query = "SELECT object(reconcileUsersPolicy) from ReconcileUsersPolicy reconcileUsersPolicy WHERE reconcileUsersPolicy.uniqueName like :searchString") })
+@Deprecated
 public class ReconcileUsersPolicy extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1987305492306161223L;

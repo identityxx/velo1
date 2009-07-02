@@ -20,19 +20,20 @@ package velo.ejb.interfaces;
 import java.util.Collection;
 import java.util.List;
 
-import velo.actions.ResourceActionInterface;
 import velo.adapters.ResourceAdapter;
+import velo.ejb.utils.PageControl;
+import velo.entity.ReconcileProcessSummary;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceType;
 import velo.entity.User;
+import velo.entity.ReconcileProcessSummary.ReconcileProcesses;
 import velo.exceptions.AccountIdGenerationException;
 import velo.exceptions.DeleteObjectViolation;
 import velo.exceptions.FactoryException;
 import velo.exceptions.NoResultFoundException;
 import velo.exceptions.ResourceDescriptorException;
 import velo.exceptions.ResourceTypeDescriptorException;
-import velo.exceptions.ScriptLoadingException;
 import velo.resource.resourceDescriptor.ResourceDescriptor;
 import velo.resource.resourceTypeDescriptor.ResourceTypeDescriptor;
 import velo.rules.AccountsCorrelationRule;
@@ -43,13 +44,16 @@ import velo.rules.AccountsCorrelationRule;
  @author Asaf Shakarchi
  */
 public interface ResourceManager {
-    
+	public List<Resource> findResources(Resource criteria, String[] optionalData, PageControl pc) throws Exception;
+	
 	/**
      * Find a target system by name
      * @param resourceName The name of the target system to find
      * @return A Resource entity or null if non existence
      */
 	public Resource findResource(String uniqueName);
+	
+	public Resource findResourceEagerly(String uniqueName);
 	
 	public ResourceType findResourceType(String uniqueName);
 	
@@ -58,15 +62,14 @@ public interface ResourceManager {
     @return A Collection of Resource entities
     */
    public List<ResourceAttribute> findAllActiveResourceAttributesToSync();
+
+   public ReconcileProcessSummary findLatestReconcileProcessSummary(ReconcileProcesses processType);
+	
+   public ReconcileProcessSummary findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses processType);
 	
 	
-	
-	
-	
-	
-	
-	
-	
+   
+   
 	
 	
 	
@@ -219,9 +222,9 @@ public interface ResourceManager {
      @throws ScriptLoadingException
      @deprecated
      */
-    public ResourceActionInterface factoryActionScriptByActionName(
+/*    public ResourceActionInterface factoryActionScriptByActionName(
         Resource resource, String actionName)
-        throws ScriptLoadingException;
+        throws ScriptLoadingException;*/
     
     /**
      Factory an account correlation rule for the specified Resource

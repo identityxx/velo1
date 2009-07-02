@@ -37,7 +37,10 @@ import org.openspml.v2.profiles.dsml.DSMLAttr;
 import org.openspml.v2.profiles.dsml.DSMLValue;
 
 import velo.action.ResourceOperation;
+import velo.collections.Accounts;
+import velo.collections.ResourceGroups;
 import velo.entity.Resource;
+import velo.entity.ResourceTask;
 import velo.entity.SpmlTask;
 import velo.exceptions.OperationException;
 
@@ -82,6 +85,30 @@ public abstract class SpmlResourceOperationController extends ResourceOperationC
 	public abstract void performOperation(SpmlTask spmlTask, ResourceOperation ro, DeleteRequest deleteRequest) throws OperationException;
 	public abstract void performOperation(SpmlTask spmlTask, ResourceOperation ro, AddRequest addRequest) throws OperationException;
 	public abstract void performOperation(SpmlTask spmlTask, ResourceOperation ro, ModifyRequest request) throws OperationException;
+	
+	
+	
+	
+	//Lists
+	//public abstract Accounts listAllIdentities(ResourceOperation ro, ResourceTask resourceTask) throws OperationException;
+	public abstract Accounts listIdentitiesFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException;
+	public abstract Accounts listIdentitiesIncrementally(ResourceOperation ro, ResourceTask resourceTask) throws OperationException;
+	public abstract ResourceGroups listGroupsFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException;
+	public abstract ResourceGroups listGroupMembershipFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

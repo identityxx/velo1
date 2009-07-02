@@ -51,6 +51,7 @@ import velo.utils.Stopwatch;
  * A class that represents a ReconcileAccounts process for a certain
  * resource
  */
+@Deprecated
 public class ReconcileAccounts {
     
 	private ResourceReconcileSummary rrs;
@@ -227,11 +228,11 @@ public class ReconcileAccounts {
             	
             	//compile correlation rule before iteration
             	if (isActivateAccountCorrelationRule) {
-            		if (resource.getReconcilePolicy().getReconcileResourceCorrelationRule() != null) {
-            			log.debug("Found reconcile correlation rule with description '" + resource.getReconcilePolicy().getReconcileResourceCorrelationRule().getDescription());
+            		if (resource.getReconcilePolicy().getCorrelationRule() != null) {
+            			log.debug("Found reconcile correlation rule with description '" + resource.getReconcilePolicy().getCorrelationRule().getDescription());
             			
             			//FACTORING RULE
-            			go = resource.getReconcilePolicy().getReconcileResourceCorrelationRule().getScriptedObject();
+//            			go = resource.getReconcilePolicy().getCorrelationRule().getScriptedObject();
             			go.setProperty("resource", resource);
             			//TODO: Replace with generic API that is exposed to all scripts
             			go.setProperty("userTools", userManager);

@@ -19,35 +19,28 @@ package velo.ejb.impl;
 
 import groovy.lang.GroovyObject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
 import org.apache.log4j.Logger;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 
 import velo.contexts.OperationContext;
 import velo.ejb.interfaces.EventManagerLocal;
 import velo.ejb.interfaces.EventManagerRemote;
 import velo.ejb.interfaces.TaskManagerLocal;
-import velo.entity.EventDefinition;
 import velo.entity.EventResponse;
-import velo.entity.EventResponseTask;
+import velo.entity.ReconcileEvent;
+import velo.entity.ReconcilePolicy;
+import velo.entity.SystemEvent;
+import velo.exceptions.EventExecutionException;
 import velo.exceptions.EventResponseException;
-import velo.exceptions.FactoryException;
-import velo.exceptions.ObjectFactoryException;
 import velo.exceptions.ScriptInvocationException;
-import velo.scripting.GenericTools;
-import velo.scripting.ScriptingManager;
+import velo.exceptions.action.ActionExecutionException;
 
 /**
  * A Stateless EJB bean for managing Events
@@ -55,10 +48,9 @@ import velo.scripting.ScriptingManager;
  * @author Asaf Shakarchi
  */
 @Stateless()
+@Name("eventManager")
+@AutoCreate
 public class EventBean implements EventManagerLocal, EventManagerRemote {
-	/**
-	 * Injected entity manager
-	 */
 	@PersistenceContext
 	public EntityManager em;
 
@@ -72,121 +64,256 @@ public class EventBean implements EventManagerLocal, EventManagerRemote {
 
 	
 	
-	public void invokeEvent(EventDefinition eventDef, OperationContext context) throws ScriptInvocationException {
-		log.info("Invoking event definition '" + eventDef.getDisplayName() + "'");
-		Set<EventResponseTask> ertList = factorEventResponseTasks(eventDef,context);
-		Set<EventResponseTask> ertListToInvoke = new HashSet<EventResponseTask>();
-
-		log.debug("Iterating over event response tasks to invoke, determining whether to invoke/persist tasks");
-		for (EventResponseTask currERT : ertList) {
-			if (currERT.getEventResponse().isPersistence()) {
-				log.trace("event response task '" + currERT.getEventResponse().getDescription() + "' is flagged as persistence, persisting task");
-				taskManager.persistTask(currERT);
-			} else {
-				log.trace("event response task '" + currERT.getEventResponse().getDescription() + "' was not flagged as persistence, invoking task immediately.");
-				ertListToInvoke.add(currERT);
-			}
-		}
+	
+	public void raiseSystemEvent() {
 		
-		
-		if (ertListToInvoke.size() > 0) {
-			for (EventResponseTask currERT : ertListToInvoke) {
-				invokeEventResponseTask(currERT, context);
-			}
-		}
 	}
 	
-	private Set<EventResponseTask> factorEventResponseTasks(EventDefinition eventDef, OperationContext context) {
-		log.debug("Factoring active event responses tasks with amount '" + eventDef.getActiveEventResponses().size() + "'");
-		log.debug("!!!!!!!!!!!!1Factoring active event responses tasks with amount '" + eventDef.getActiveEventResponses().size() + "'");
-		Set<EventResponseTask> ertList = new HashSet<EventResponseTask>();
-		for (EventResponse currER : eventDef.getActiveEventResponses()) {
-			try {
-				ertList.add(EventResponseTask.factory(currER, context));
-			} catch (ObjectFactoryException e) {
-				log.error("Could not factory event response task, skipping response...");
-				continue; 
-			}
-		}
-		
-		log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!(7)");
-		
-		return ertList;
-	}
 	
-	//public void invokeEventDefinitionResponses(EventDefinition eventDef, OperationContext context) throws ScriptInvocationException {
-	public void invokeEventResponseTask(EventResponseTask eventResponseTask, OperationContext context) throws ScriptInvocationException {
-		ScriptingManager sm = new ScriptingManager();
+	public void raiseSystemEvent(String eventUniqueName, OperationContext context) throws EventExecutionException {
+		log.info("Executing system event with unique name '" + eventUniqueName +"'");
+		SystemEvent se = findSystemEvent(eventUniqueName);
 		
-		log.info("Invokign event response(task) '" + eventResponseTask.getEventResponse().getDescription() + "'");
+		if (se == null) throw new EventExecutionException("Couldn't find system event with unique name '" + eventUniqueName +"'");
+		log.info("Found event, with response amount '" + se.getEventResponses().size() + "'");
+		
+		se.setContext(context);
 		try {
-			ScriptEngine se = sm.getScriptEngine(eventResponseTask.getEventResponse().getActionLanguage().getName().toLowerCase());
-			
-			//meaning task is persistence, de-serialize the context
-			if (context == null) {
-				log.debug("Context is null, meaning event(task) is persistence, de-serializing context...");
-				se.put("cntx",eventResponseTask.getDeserializedContent());
-			} else {
-				log.debug("Context is available, meaning event(task) is not persistence, adding context to script");
-				se.put("cntx", context);				
-			}
-			
-			se.put("log", log);
-			GenericTools tools = new GenericTools();
-			se.put("tools", tools);
-			//entities
-			if (eventResponseTask.getUserRef() != null) {
-				se.put("user", eventResponseTask.getUserRef());
-			}
-			if (eventResponseTask.getTaskRef() != null) {
-				se.put("task", eventResponseTask.getTaskRef());
-			}
-			if (eventResponseTask.getRequestRef() != null) {
-				se.put("request", eventResponseTask.getRequestRef());
-			}
-			
-			
-			//invoke the action
-			log.trace("Invoking default method over scripted object");
-			se.eval(eventResponseTask.getEventResponse().getContent());
-			log.trace("Ended method invocation");
-			
-		} catch (FactoryException e) {
-			String errMsg = "Could not factory scripting manager: " + e.toString();
-			log.error(errMsg);
-			//setErrorMessage(errMsg);
-		} catch (ScriptException e) {
-			log.error("Failed to execute event response ID '" + eventResponseTask.getEventResponse().getDescription() + "': " + e.toString());
-			
-			log.trace("Determining whether the failed resource action is showStopper or not");
-			if (eventResponseTask.getEventResponse().isShowStopper()) {
-				log.trace("Resource Action is a showStopper, indicating Resource Operation as a failure and stoppoing its invocation.");
-				//setErrorMessage(e.toString());
-				//return false;
-				throw new ScriptInvocationException("Event Response '" + eventResponseTask.getEventResponse().getDescription() + "' was failed and indicated as a showstopper: " + e.getMessage());
-			}
-			else {
-				log.trace("Resource Action is not a showstopper, continuing Resource Operation invocation...");
-				log.error(e.getMessage());
-				//TODO: Log the error, so it could be then logged into the relevant task log..
-			}
+			se.execute();
+		} catch (ActionExecutionException e) {
+			throw new EventExecutionException(e.getMessage());
+		}
+	}
+	
+	public void raiseReconcileEvent(String eventUniqueName, ReconcilePolicy rp, OperationContext context) throws EventExecutionException {
+		log.info("Executing reconcile event with unique name '" + eventUniqueName +"'");
+		ReconcileEvent event = findReconcileEvent(eventUniqueName);
+		if (event == null) throw new EventExecutionException("Couldn't find reconcile event with unique name '" + event.getDisplayName() +"'");
+	}
+	
+	public void raiseReconcileEvent(ReconcileEvent event, ReconcilePolicy rp, OperationContext context) throws EventExecutionException {
+		log.info("Executing event '" + event.getDisplayName() + "' with response amount(for all reconcile policies) '" + event.getEventResponses().size() + "'");		
+		
+		event.setContext(context);
+		try {
+			event.execute(rp);
+		} catch (ActionExecutionException e) {
+			throw new EventExecutionException(e.getMessage());
 		}
 	}
 	
 	
-	public EventDefinition find(String uniqueName) {
-		
-		log.debug("Finding Event Definition in repository with uniqueName '" + uniqueName + "'");
+	
+	public ReconcileEvent findReconcileEvent(String uniqueName) {
+		log.info("Finding Reconcile Event with uniqueName '" + uniqueName + "'");
 
 		try {
-			Query q = em.createNamedQuery("eventDefinition.findByUniqueName").setParameter("uniqueName",uniqueName);
-			return (EventDefinition) q.getSingleResult();
+			Query q = em.createNamedQuery("reconcileEvent.findByUniqueName").setParameter("uniqueName",uniqueName);
+			return (ReconcileEvent) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
-			log.debug("'Find Event Definition' did not result any EventDefintion with unique name '" + uniqueName + "', returning null.");
+			log.info("'Reconcile Event find method couldn't find any event for unique name '" + uniqueName + "', returning null.");
 			return null;
 		}
 	}
+	
+	public SystemEvent findSystemEvent(String uniqueName) {
+		log.info("Finding System Event with uniqueName '" + uniqueName + "'");
+
+		try {
+			Query q = em.createNamedQuery("systemEvent.findByUniqueName").setParameter("uniqueName",uniqueName);
+			return (SystemEvent) q.getSingleResult();
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.info("'System Event find method couldn't find any event for unique name '" + uniqueName + "', returning null.");
+			return null;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Invokes any kind(including sub-types) of event response
+	 * 
+	 * @param rer The EventResponse to be executed
+	 * @throws EventResponseException in case where an exception occurs while invoking the response (only when isShowStopper is set to true)
+	 */
+	public void executeEventResponse(EventResponse rer) throws EventResponseException {
+		try {
+			rer.execute();
+		}catch(ActionExecutionException e) {
+			if (rer.getShowStopper()) {
+				throw new EventResponseException("Could not execute event response ID '" + rer.getEventResponseId() + "' [" + rer.getName() + "]" + e.getMessage());
+			} else {
+				log.error("Could not execute event response ID '" + rer.getEventResponseId() + "' [" + rer.getName() + "]" + e.getMessage());
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	public void invokeEvent(EventDefinition eventDef, OperationContext context) throws ScriptInvocationException {
+//		log.info("Invoking event definition '" + eventDef.getDisplayName() + "'");
+//		Set<EventResponseTask> ertList = factorEventResponseTasks(eventDef,context);
+//		Set<EventResponseTask> ertListToInvoke = new HashSet<EventResponseTask>();
+//
+//		log.debug("Iterating over event response tasks to invoke, determining whether to invoke/persist tasks");
+//		for (EventResponseTask currERT : ertList) {
+//			if (currERT.getEventResponse().isPersistence()) {
+//				log.trace("event response task '" + currERT.getEventResponse().getDescription() + "' is flagged as persistence, persisting task");
+//				taskManager.persistTask(currERT);
+//			} else {
+//				log.trace("event response task '" + currERT.getEventResponse().getDescription() + "' was not flagged as persistence, invoking task immediately.");
+//				ertListToInvoke.add(currERT);
+//			}
+//		}
+//		
+//		
+//		if (ertListToInvoke.size() > 0) {
+//			for (EventResponseTask currERT : ertListToInvoke) {
+//				invokeEventResponseTask(currERT, context);
+//			}
+//		}
+//	}
+//	
+//	private Set<EventResponseTask> factorEventResponseTasks(EventDefinition eventDef, OperationContext context) {
+//		log.debug("Factoring active event responses tasks with amount '" + eventDef.getActiveEventResponses().size() + "'");
+//		log.debug("!!!!!!!!!!!!1Factoring active event responses tasks with amount '" + eventDef.getActiveEventResponses().size() + "'");
+//		Set<EventResponseTask> ertList = new HashSet<EventResponseTask>();
+//		for (EventResponseOLD currER : eventDef.getActiveEventResponses()) {
+//			try {
+//				ertList.add(EventResponseTask.factory(currER, context));
+//			} catch (ObjectFactoryException e) {
+//				log.error("Could not factory event response task, skipping response...");
+//				continue; 
+//			}
+//		}
+//		
+//		log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!(7)");
+//		
+//		return ertList;
+//	}
+//	
+//	//public void invokeEventDefinitionResponses(EventDefinition eventDef, OperationContext context) throws ScriptInvocationException {
+//	public void invokeEventResponseTask(EventResponseTask eventResponseTask, OperationContext context) throws ScriptInvocationException {
+//		ScriptingManager sm = new ScriptingManager();
+//		
+//		log.info("Invokign event response(task) '" + eventResponseTask.getEventResponse().getDescription() + "'");
+//		try {
+//			ScriptEngine se = sm.getScriptEngine(eventResponseTask.getEventResponse().getActionLanguage().getName().toLowerCase());
+//			
+//			//meaning task is persistence, de-serialize the context
+//			if (context == null) {
+//				log.debug("Context is null, meaning event(task) is persistence, de-serializing context...");
+//				se.put("cntx",eventResponseTask.getDeserializedContent());
+//			} else {
+//				log.debug("Context is available, meaning event(task) is not persistence, adding context to script");
+//				se.put("cntx", context);				
+//			}
+//			
+//			se.put("log", log);
+//			GenericTools tools = new GenericTools();
+//			se.put("tools", tools);
+//			//entities
+//			if (eventResponseTask.getUserRef() != null) {
+//				se.put("user", eventResponseTask.getUserRef());
+//			}
+//			if (eventResponseTask.getTaskRef() != null) {
+//				se.put("task", eventResponseTask.getTaskRef());
+//			}
+//			if (eventResponseTask.getRequestRef() != null) {
+//				se.put("request", eventResponseTask.getRequestRef());
+//			}
+//			
+//			
+//			//invoke the action
+//			log.trace("Invoking default method over scripted object");
+//			se.eval(eventResponseTask.getEventResponse().getContent());
+//			log.trace("Ended method invocation");
+//			
+//		} catch (FactoryException e) {
+//			String errMsg = "Could not factory scripting manager: " + e.toString();
+//			log.error(errMsg);
+//			//setErrorMessage(errMsg);
+//		} catch (ScriptException e) {
+//			log.error("Failed to execute event response ID '" + eventResponseTask.getEventResponse().getDescription() + "': " + e.toString());
+//			
+//			log.trace("Determining whether the failed resource action is showStopper or not");
+//			if (eventResponseTask.getEventResponse().isShowStopper()) {
+//				log.trace("Resource Action is a showStopper, indicating Resource Operation as a failure and stoppoing its invocation.");
+//				//setErrorMessage(e.toString());
+//				//return false;
+//				throw new ScriptInvocationException("Event Response '" + eventResponseTask.getEventResponse().getDescription() + "' was failed and indicated as a showstopper: " + e.getMessage());
+//			}
+//			else {
+//				log.trace("Resource Action is not a showstopper, continuing Resource Operation invocation...");
+//				log.error(e.getMessage());
+//				//TODO: Log the error, so it could be then logged into the relevant task log..
+//			}
+//		}
+//	}
+//	
+//	
+//	public EventDefinition find(String uniqueName) {
+//		
+//		log.debug("Finding Event Definition in repository with uniqueName '" + uniqueName + "'");
+//
+//		try {
+//			Query q = em.createNamedQuery("eventDefinition.findByUniqueName").setParameter("uniqueName",uniqueName);
+//			return (EventDefinition) q.getSingleResult();
+//		}
+//		catch (javax.persistence.NoResultException e) {
+//			log.debug("'Find Event Definition' did not result any EventDefintion with unique name '" + uniqueName + "', returning null.");
+//			return null;
+//		}
+//	}
 		
 	
 	
@@ -461,37 +588,37 @@ public class EventBean implements EventManagerLocal, EventManagerRemote {
 */
 	
 	
-	@Deprecated
-	public void createEventResponsesOfEventDefinition(EventDefinition ed,
-			Map<String, Object> responseProperties)
-			throws EventResponseException {
-		List<Map<String, Object>> responsesProperties = new ArrayList<Map<String, Object>>();
-		responsesProperties.add(responseProperties);
-
-		/*JB
-		BulkTask bt = createEventResponsesOfEventDefinitionBulkTask(ed,
-				responsesProperties);
-		if (bt.getTasks().size() > 0) {
-			taskManager.persistBulkTask(bt);
-		}
-		*/
-	}
-
-	@Deprecated
-	public void createEventResponsesOfEventDefinition(EventDefinition ed,
-			List<Map<String, Object>> responsesProperties)
-			throws EventResponseException {
-		/*JB
-		BulkTask bt = createEventResponsesOfEventDefinitionBulkTask(ed,
-				responsesProperties);
-
-		if (bt.getTasks().size() > 0) {
-			taskManager.persistBulkTask(bt);
-		}
-		*/
-	}
-
-	
+//	@Deprecated
+//	public void createEventResponsesOfEventDefinition(EventDefinition ed,
+//			Map<String, Object> responseProperties)
+//			throws EventResponseException {
+//		List<Map<String, Object>> responsesProperties = new ArrayList<Map<String, Object>>();
+//		responsesProperties.add(responseProperties);
+//
+//		/*JB
+//		BulkTask bt = createEventResponsesOfEventDefinitionBulkTask(ed,
+//				responsesProperties);
+//		if (bt.getTasks().size() > 0) {
+//			taskManager.persistBulkTask(bt);
+//		}
+//		*/
+//	}
+//
+//	@Deprecated
+//	public void createEventResponsesOfEventDefinition(EventDefinition ed,
+//			List<Map<String, Object>> responsesProperties)
+//			throws EventResponseException {
+//		/*JB
+//		BulkTask bt = createEventResponsesOfEventDefinitionBulkTask(ed,
+//				responsesProperties);
+//
+//		if (bt.getTasks().size() > 0) {
+//			taskManager.persistBulkTask(bt);
+//		}
+//		*/
+//	}
+//
+//	
 	
 	
 	

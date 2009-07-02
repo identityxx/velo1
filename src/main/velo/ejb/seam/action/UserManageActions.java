@@ -41,9 +41,9 @@ public interface UserManageActions {
 	public String viewModifiedUserIdentityAttributes();
 	public String updateModifiedUserAttributes();
 	
-	public void disableUser();
-	public void enableUser();
-	public void refreshUserAccounts();
+	//public void disableUser();
+	//public void enableUser();
+	//public void refreshUserAccounts();
 	
 	public String performUserRolesModifications();
 	

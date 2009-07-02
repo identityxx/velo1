@@ -8,6 +8,6 @@
       xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd">
       
    <param name="resourceReconcileSummaryFrom"/>
-   <param name="resourceReconcileSummaryId" value="#{resourceReconcileSummaryHome.resourceReconcileSummaryId}"/>
+   <param name="processSummaryId" value="#{resourceReconcileSummaryHome.processSummaryId}"/>
 
 </page>

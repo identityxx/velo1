@@ -10,6 +10,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
                 template="layout/template.xhtml">
                        
 <ui:define name="body">
@@ -26,10 +27,121 @@
             <ui:define name="label">Display Name</ui:define>
             #{reconcileResourcePolicyHome.instance.name}
         </s:decorate>
+        
+        <s:decorate id="correlationRule" template="layout/display.xhtml">
+            <ui:define name="label">Correlation Rule</ui:define>
+            <h:outputText value="#{reconcileResourcePolicyHome.instance.correlationRule.description}" rendered="#{reconcileResourcePolicyHome.instance.correlationRule ne null}"/>
+            <h:outputText value="Correlation rule was not attached!" rendered="#{reconcileResourcePolicyHome.instance.correlationRule eq null}"/>
+        </s:decorate>
+        
+        <s:decorate id="confirmationRule" template="layout/display.xhtml">
+            <ui:define name="label">Confirmation Rule</ui:define>
+            <h:outputText value="#{reconcileResourcePolicyHome.instance.confirmationRule.description}" rendered="#{reconcileResourcePolicyHome.instance.confirmationRule ne null}"/>
+            <h:outputText value="Confirmation rule was not attached!" rendered="#{reconcileResourcePolicyHome.instance.confirmationRule eq null}"/>
+        </s:decorate>
+        
+        <s:decorate id="reCorrelateOrphanIdentities" template="layout/display.xhtml">
+            <ui:define name="label">Re-correlate existence orphan identities ?</ui:define>
+            <h:outputText value="#{reconcileResourcePolicyHome.instance.reCorrelateOrphanIdentities}"/>
+        </s:decorate>
 
         <div style="clear:both"/>
         
     </rich:panel>
+    <br/>
+
+<h:form>    
+    <rich:panel>
+    	<rich:panel>
+        	<f:facet name="header">Identity Confirmed Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="IDENTITY_CONFIRMED" />
+			</ui:include>
+		</rich:panel>
+    	<rich:spacer width="1" height="15"/>
+		<rich:panel>
+        	<f:facet name="header">Identity Unmatched Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="IDENTITY_UNMATCHED" />
+			</ui:include>
+		</rich:panel>
+    	<rich:spacer width="1" height="15"/>
+    	<rich:panel>
+        	<f:facet name="header">Identity Unassigned Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="IDENTITY_UNASSIGNED" />
+			</ui:include>
+		</rich:panel>
+		<rich:spacer width="1" height="15"/>
+		<rich:panel>
+        	<f:facet name="header">Identity Removed Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="IDENTITY_REMOVED" />
+			</ui:include>
+		</rich:panel>
+		<rich:spacer width="1" height="15"/>
+		<rich:panel>
+        	<f:facet name="header">Identity Modified Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="IDENTITY_MODIFIED" />
+			</ui:include>
+		</rich:panel>
+		<rich:spacer width="1" height="15"/>		
+		<rich:panel>
+        	<f:facet name="header">Identity Attribute Modified Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="IDENTITY_ATTRIBUTE_MODIFIED" />
+			</ui:include>
+		</rich:panel>
+    </rich:panel>
+    <rich:spacer width="1" height="15"/><rich:separator /><rich:spacer width="1" height="15"/>
+    <rich:panel>
+		<rich:panel>
+        	<f:facet name="header">Resource Group Created Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="GROUP_CREATED" />
+			</ui:include>
+		</rich:panel>
+		<rich:spacer width="1" height="15"/>
+		<rich:panel>
+        	<f:facet name="header">Resource Group Modified Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="GROUP_MODIFIED" />
+			</ui:include>
+		</rich:panel>
+		<rich:spacer width="1" height="15"/>
+		<rich:panel>
+        	<f:facet name="header">Resource Group Removed Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="GROUP_REMOVED" />
+			</ui:include>
+		</rich:panel>
+	</rich:panel>
+	<rich:spacer width="1" height="15"/><rich:separator /><rich:spacer width="1" height="15"/>
+    <rich:panel>
+		<rich:panel>
+        	<f:facet name="header">Resource Group Membership Associated Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="GROUP_MEMBER_ASSOCIATED" />
+			</ui:include>
+		</rich:panel>
+		<rich:spacer width="1" height="15"/>
+		<rich:panel>
+        	<f:facet name="header">Resource Group Membership Dissociated Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="GROUP_MEMBER_DISSOCIATED" />
+			</ui:include>
+		</rich:panel>
+		<rich:spacer width="1" height="15"/>
+		<rich:panel>
+        	<f:facet name="header">Resource Group Membership Modification Event Responses</f:facet>
+        	<ui:include src="/admin/incl/ReconcileEventResponses.xhtml">
+				<ui:param name="event_response_name" value="GROUP_MEMBERSHIP_MODIFY" />
+			</ui:include>
+		</rich:panel>
+	</rich:panel>
+	</h:form>
+    
     
     <div class="actionButtons">      
 
@@ -40,6 +152,12 @@
         <s:button view="/admin/#{empty reconcileResourcePolicyFrom ? 'ReconcileResourcePolicyList' : psaswordPolicyFrom}.xhtml"
                     id="done"
                  value="Done"/>
+                 
+		<s:button view="/admin/ReconcileEventResponseEdit.xhtml"
+			id="create" 
+			value="Create Event Response"
+			rendered="true">
+		</s:button>
                  
     </div>
 

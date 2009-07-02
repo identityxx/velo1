@@ -48,7 +48,7 @@ public class GenericActionTools extends CoreActionTools {
         }
         
     }
-    
+    /*
     public void disableAccount(String accountName, String targetName) throws OperationException {
         AccountManagerRemote accountManager = getAccountManager();
         try {
@@ -62,7 +62,7 @@ public class GenericActionTools extends CoreActionTools {
         } catch (NonUniqueResultException ex) {
             throw new OperationException(ex);
         }
-    }
+    }*/
     
     public User loadUser(String userName) throws OperationException {
         try     {

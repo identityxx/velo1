@@ -25,23 +25,23 @@ import javax.annotation.PostConstruct;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.framework.EntityQuery;
 
-import velo.entity.ResourceReconcileSummaryEntity;
+import velo.entity.ReconcileProcessSummary;
 
 @Name("resourceReconcileSummaryList")
 public class ResourceReconcileSummaryList extends EntityQuery {
 
 	private static final String[] RESTRICTIONS = {
-			//"lower(bulkTask.bulkTaskId) = #{bulkTaskList.bulkTask.bulkTaskId}",
-			//"lower(bulkTask.description) like concat(lower(#{bulkTaskList.bulkTask.description}),'%')",
-			//"lower(bulkTask.creationDate) = #{bulkTaskList.bulkTask.creationDate}",};
+			"lower(reconcileProcessSummary.reconcileProcessSummaryId) = #{resourceReconcileSummaryList.reconcileProcessSummary.reconcileProcessSummaryId}",
+			"reconcileProcessSummary.processType = #{resourceReconcileSummaryList.reconcileProcessSummary.processType}",
+			"reconcileProcessSummary.startDate >= #{resourceReconcileSummaryList.reconcileProcessSummary.fromStartDate}",
+			"reconcileProcessSummary.endDate >= #{resourceReconcileSummaryList.reconcileProcessSummary.toEndDate}",
 	};
 
-	private ResourceReconcileSummaryEntity resourceReconcileSummary = new ResourceReconcileSummaryEntity();
+	private ReconcileProcessSummary reconcileProcessSummary = new ReconcileProcessSummary();
 	private Integer amount;
 
-	private static final String EJBQL = "select recSum from ResourceReconcileSummaryEntity recSum ORDER BY creationDate DESC";
+	private static final String EJBQL = "select rps from ReconcileProcessSummary rps ORDER BY reconcileProcessSummaryId DESC";
 	
-
 	@Override
 	public Integer getMaxResults() {
 		if (getAmount() != null) {
@@ -53,8 +53,8 @@ public class ResourceReconcileSummaryList extends EntityQuery {
 		return 25;
 	}
 
-	public ResourceReconcileSummaryEntity getResourceReconcileSummary() {
-		return resourceReconcileSummary;
+	public ReconcileProcessSummary getReconcileProcessSummary() {
+		return reconcileProcessSummary;
 	}
 
 	

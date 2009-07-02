@@ -40,12 +40,15 @@ import javax.persistence.Query;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.security.management.PasswordHash;
 
 import velo.common.SysConf;
 import velo.ejb.interfaces.CommonUtilsManagerLocal;
 import velo.ejb.interfaces.ConfManagerLocal;
 import velo.ejb.interfaces.ConfManagerRemote;
+import velo.ejb.interfaces.PasswordManagerLocal;
+import velo.ejb.interfaces.ReconcileManagerLocal;
 import velo.ejb.interfaces.ResourceAttributeManagerLocal;
 import velo.ejb.interfaces.ResourceGroupManagerLocal;
 import velo.ejb.interfaces.ResourceManagerLocal;
@@ -56,17 +59,22 @@ import velo.entity.ActionLanguage;
 import velo.entity.BaseEntity;
 import velo.entity.Capability;
 import velo.entity.CapabilityFolder;
-import velo.entity.EventDefinition;
 import velo.entity.IdentityAttribute;
 import velo.entity.IdentityAttributesGroup;
 import velo.entity.PasswordPolicy;
 import velo.entity.PasswordPolicyContainer;
+import velo.entity.ReadyAction;
+import velo.entity.ReconcileAuditPolicy;
+import velo.entity.ReconcileEvent;
 import velo.entity.ReconcilePolicy;
 import velo.entity.Resource;
+import velo.entity.ResourceAdmin;
+import velo.entity.ResourceAttribute;
 import velo.entity.ResourceGlobalOperation;
 import velo.entity.ResourceType;
 import velo.entity.ResourceTypeAttribute;
 import velo.entity.ResourceTypeOperation;
+import velo.entity.SystemEvent;
 import velo.entity.User;
 import velo.entity.UserContainer;
 import velo.entity.Attribute.AttributeDataTypes;
@@ -100,17 +108,25 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	public Set<Object> capabilityFolders = new LinkedHashSet<Object>();
 	public Set<Object> identityAttributes = new LinkedHashSet<Object>();
 	public Set<Object> identityAttributesGroups = new LinkedHashSet<Object>();
-	public Set<Object> reconcileTargetPolicies = new LinkedHashSet<Object>();
 	public Set<Object> taskDefinitions = new LinkedHashSet<Object>();
 	public Set<Object> passwordPolicies = new LinkedHashSet<Object>();
 	public Set<Object> passwordPolicyContainers = new LinkedHashSet<Object>();
-	public Set<Object> eventDefinitions = new LinkedHashSet<Object>();
+	public Set<Object> systemEvents = new LinkedHashSet<Object>();
 	public Set<Object> users = new LinkedHashSet<Object>();
 	public Set<Object> actionLanguages = new HashSet<Object>();
 	public Set<Object> userContainers = new HashSet<Object>();
 	public Set<Object> resourceTypeAttributes = new HashSet<Object>();
 	public Set<Object> resourceGlobalOperations = new HashSet<Object>();
 
+	
+	//reconcile related
+	public Set<Object> reconcileTargetPolicies = new LinkedHashSet<Object>();	
+	public Set<Object> reconcileEvents = new LinkedHashSet<Object>();
+	
+	//actions
+	public Set<Object> readyActions = new LinkedHashSet<Object>();
+	
+	
 
 	/**
 	 * Injected entity manager
@@ -144,6 +160,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 	@EJB
 	ResourceGroupManagerLocal tsgm;
+	
+	@EJB
+	PasswordManagerLocal passwordManager;
+	
+	@EJB
+	ReconcileManagerLocal reconcileManager;
 
 	/**
 	 * 
@@ -152,20 +174,49 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	private static Logger logger = Logger.getLogger(ConfBean.class.getName());
 
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//INDIVIDUAL CONTENT
+	public void importReconcileEvents() {
+		initReconcileEvents();
+		persistEntities(reconcileEvents);
+	}
+	
+	public void importSystemEvents() {
+		initSystemEvents();
+		persistEntities(systemEvents);
+	}
+	
+	public void importReadyActions() {
+		initReadyActions();
+		persistEntities(readyActions);
+	}
+	
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public void generateResourcePrincipalsEncryptionKey() throws OperationException {
 		String fileName = SysConf.getSysConf().getString(
 		"system.directory.system_conf")
@@ -277,7 +328,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		em.flush();
 		persistEntities(passwordPolicyContainers);
 		em.flush();
-		persistEntities(eventDefinitions);
+		persistEntities(systemEvents);
 		em.flush();
 		persistEntities(users);
 		em.flush();
@@ -285,7 +336,10 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		em.flush();
 		persistEntities(actionLanguages);
 		em.flush();
-		
+		persistEntities(reconcileEvents);
+		em.flush();
+		persistEntities(readyActions);
+		em.flush();
 		
 		//TODO: generate keys
 	}
@@ -353,7 +407,22 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ResourceGlobalOperation rodModifyAccount =  new ResourceGlobalOperation("MODIFY_ACCOUNT","Modify Account","Modify access and attributes of an existence account", false);
 		resourceGlobalOperations.add(rodModifyAccount);
 
+		
+		
+		
 		//RECONCILIATION
+		ResourceGlobalOperation rodResourceIdentitiesReconciliationFull = new ResourceGlobalOperation("RESOURCE_IDENTITIES_RECONCILIATION_FULL","Full Resource Identities Reconciliation","A full resource identities reconciliation process.", false);
+		resourceGlobalOperations.add(rodResourceIdentitiesReconciliationFull);
+		ResourceGlobalOperation rodResourceIdentitiesReconciliationIncremental = new ResourceGlobalOperation("RESOURCE_IDENTITIES_RECONCILIATION_INCREMENTAL","Incremental Resource Identities Reconciliation","An incremental resource identities reconciliation process.", false);
+		resourceGlobalOperations.add(rodResourceIdentitiesReconciliationIncremental);
+		ResourceGlobalOperation rodResourceGroupsReconciliation = new ResourceGlobalOperation("RESOURCE_GROUPS_RECONCILIATION_FULL","Full Resource Groups Reconciliation","A full resource groups reconciliation process.", false);
+		resourceGlobalOperations.add(rodResourceGroupsReconciliation);
+		ResourceGlobalOperation rodResourceGroupMembershipReconciliation = new ResourceGlobalOperation("RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_FULL","Full Resource Group Membership Reconciliation","A full resource group membership reconciliation process.", false);
+		resourceGlobalOperations.add(rodResourceGroupMembershipReconciliation);
+		
+		
+		
+		//TODO: RECONCILIATION - OLD SHOULD BE DEPRECATED!!!!!!!!
 		ResourceGlobalOperation rodResourceReconciliation = new ResourceGlobalOperation("RESOURCE_RECONCILIATION","Resource Reconciliation","A resource reconciliation process.", false);
 		resourceGlobalOperations.add(rodResourceReconciliation);
 		ResourceGlobalOperation rodResourceFetchActiveDataOffline = new ResourceGlobalOperation("RESOURCE_FETCH_ACTIVE_DATA_OFFLINE","Resource Fetch Active Data Offline", "Fetch Active Data from resource offline", false);
@@ -579,8 +648,17 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ResourceTypeOperation rtodAddGroupMembership = new ResourceTypeOperation(rodAddGroupMembership, jdbcType, false,true,false);
 		ResourceTypeOperation rtodDelGroupMembership = new ResourceTypeOperation(rodDeleteGroupMembership, jdbcType, false,true,false);
 		ResourceTypeOperation rtodModifyAccount = new ResourceTypeOperation(rodModifyAccount, jdbcType, false,false,false);
-		ResourceTypeOperation rtodResourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, jdbcType, false,false,false);
-		ResourceTypeOperation rtodResourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, jdbcType, false,true,false);
+		
+		//Reconcile
+		ResourceTypeOperation rtodResourceIdentitiesReconcileFull = new ResourceTypeOperation(rodResourceIdentitiesReconciliationFull, jdbcType, false,false,false);
+		ResourceTypeOperation rtodResourceIdentitiesReconcileIncremental = new ResourceTypeOperation(rodResourceIdentitiesReconciliationIncremental, jdbcType, false,false,false);
+		ResourceTypeOperation rtodResourceGroupsReconcileFull = new ResourceTypeOperation(rodResourceGroupsReconciliation, jdbcType, false,false,false);
+		ResourceTypeOperation rtodResourceGroupMembershipReconcileFull = new ResourceTypeOperation(rodResourceGroupMembershipReconciliation, jdbcType, false,false,false);
+		
+		//ResourceTypeOperation rtodResourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, jdbcType, false,false,false);
+		//ResourceTypeOperation rtodResourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, jdbcType, false,true,false);
+		
+		
 		jdbcType.getSupportedOperations().add(rtodAddAccount);
 		jdbcType.getSupportedOperations().add(rtodDelAccount);
 		jdbcType.getSupportedOperations().add(rtodSuspend);
@@ -590,14 +668,24 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		jdbcType.getSupportedOperations().add(rtodAddGroupMembership);
 		jdbcType.getSupportedOperations().add(rtodDelGroupMembership);
 		jdbcType.getSupportedOperations().add(rtodModifyAccount);
-		jdbcType.getSupportedOperations().add(rtodResourceReconciliation);
-		jdbcType.getSupportedOperations().add(rtodResourceFetchActiveDataOffline);
+		//jdbcType.getSupportedOperations().add(rtodResourceReconciliation);
+		//jdbcType.getSupportedOperations().add(rtodResourceFetchActiveDataOffline);
 
+		jdbcType.getSupportedOperations().add(rtodResourceIdentitiesReconcileFull);
+		jdbcType.getSupportedOperations().add(rtodResourceIdentitiesReconcileIncremental);
+		jdbcType.getSupportedOperations().add(rtodResourceGroupsReconcileFull);
+		jdbcType.getSupportedOperations().add(rtodResourceGroupMembershipReconcileFull);
+		
+		
 
 		// jdbcType.setConfFileTemplate(FileUtils.getContents(confFileTemplate)
 
 
 
+		
+		
+		
+		
 
 		//REMOTE AD
 		ResourceType activeDirectoryType = new ResourceType();
@@ -617,8 +705,15 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ResourceTypeOperation RADrtodAddGroupMembership = new ResourceTypeOperation(rodAddGroupMembership, activeDirectoryType, false,false,false);
 		ResourceTypeOperation RADrtodDelGroupMembership = new ResourceTypeOperation(rodDeleteGroupMembership, activeDirectoryType, false,false,false);
 		ResourceTypeOperation RADrtodModifyAccount = new ResourceTypeOperation(rodModifyAccount, activeDirectoryType, false,false,false);
-		ResourceTypeOperation RADresourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, activeDirectoryType, false,false,false);
-		ResourceTypeOperation RADresourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, activeDirectoryType, false,false,false);
+		//ResourceTypeOperation RADresourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, activeDirectoryType, false,false,false);
+		//ResourceTypeOperation RADresourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, activeDirectoryType, false,false,false);
+		
+		ResourceTypeOperation RADrtodResourceIdentitiesReconcileFull = new ResourceTypeOperation(rodResourceIdentitiesReconciliationFull, activeDirectoryType, false,false,false);
+		ResourceTypeOperation RADrtodResourceIdentitiesReconcileIncremental = new ResourceTypeOperation(rodResourceIdentitiesReconciliationIncremental, activeDirectoryType, false,false,false);
+		ResourceTypeOperation RADrtodResourceGroupsReconcileFull = new ResourceTypeOperation(rodResourceGroupsReconciliation, activeDirectoryType, false,false,false);
+		ResourceTypeOperation RADrtodResourceGroupMembershipReconcileFull = new ResourceTypeOperation(rodResourceGroupMembershipReconciliation, activeDirectoryType, false,false,false);
+		
+		
 		activeDirectoryType.getSupportedOperations().add(RADrtodAddAccount);
 		activeDirectoryType.getSupportedOperations().add(RADrtodDelAccount);
 		activeDirectoryType.getSupportedOperations().add(RADrtodSuspend);
@@ -628,10 +723,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		activeDirectoryType.getSupportedOperations().add(RADrtodAddGroupMembership);
 		activeDirectoryType.getSupportedOperations().add(RADrtodDelGroupMembership);
 		activeDirectoryType.getSupportedOperations().add(RADrtodModifyAccount);
-		activeDirectoryType.getSupportedOperations().add(RADresourceReconciliation);
-		activeDirectoryType.getSupportedOperations().add(RADresourceFetchActiveDataOffline);
-
-
+		//activeDirectoryType.getSupportedOperations().add(RADresourceReconciliation);
+		//activeDirectoryType.getSupportedOperations().add(RADresourceFetchActiveDataOffline);
+		activeDirectoryType.getSupportedOperations().add(RADrtodResourceIdentitiesReconcileFull);
+		activeDirectoryType.getSupportedOperations().add(RADrtodResourceIdentitiesReconcileIncremental);
+		activeDirectoryType.getSupportedOperations().add(RADrtodResourceGroupsReconcileFull);
+		activeDirectoryType.getSupportedOperations().add(RADrtodResourceGroupMembershipReconcileFull);
 
 
 
@@ -664,8 +761,14 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ResourceTypeOperation NADrtodAddGroupMembership = new ResourceTypeOperation(rodAddGroupMembership, activeDirectoryDotNetType, false,false,false);
 		ResourceTypeOperation NADrtodDelGroupMembership = new ResourceTypeOperation(rodDeleteGroupMembership, activeDirectoryDotNetType, false,false,false);
 		ResourceTypeOperation NADrtodModifyAccount = new ResourceTypeOperation(rodModifyAccount, activeDirectoryDotNetType, false,false,false);
-		ResourceTypeOperation NADresourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, activeDirectoryDotNetType, false,false,false);
-		ResourceTypeOperation NADresourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, activeDirectoryDotNetType, false,false,false);
+		//ResourceTypeOperation NADresourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, activeDirectoryDotNetType, false,false,false);
+		//ResourceTypeOperation NADresourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, activeDirectoryDotNetType, false,false,false);
+		
+		ResourceTypeOperation NADrtodResourceIdentitiesReconcileFull = new ResourceTypeOperation(rodResourceIdentitiesReconciliationFull, activeDirectoryDotNetType, false,false,false);
+		ResourceTypeOperation NADrtodResourceIdentitiesReconcileIncremental = new ResourceTypeOperation(rodResourceIdentitiesReconciliationIncremental, activeDirectoryDotNetType, false,false,false);
+		ResourceTypeOperation NADrtodResourceGroupsReconcileFull = new ResourceTypeOperation(rodResourceGroupsReconciliation, activeDirectoryDotNetType, false,false,false);
+		ResourceTypeOperation NADrtodResourceGroupMembershipReconcileFull = new ResourceTypeOperation(rodResourceGroupMembershipReconciliation, activeDirectoryDotNetType, false,false,false);
+		
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodAddAccount);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodDelAccount);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodSuspend);
@@ -675,9 +778,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodAddGroupMembership);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodDelGroupMembership);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodModifyAccount);
-		activeDirectoryDotNetType.getSupportedOperations().add(NADresourceReconciliation);
-		activeDirectoryDotNetType.getSupportedOperations().add(NADresourceFetchActiveDataOffline);
-
+		//activeDirectoryDotNetType.getSupportedOperations().add(NADresourceReconciliation);
+		//activeDirectoryDotNetType.getSupportedOperations().add(NADresourceFetchActiveDataOffline);
+		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceIdentitiesReconcileFull);
+		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceIdentitiesReconcileIncremental);
+		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceGroupsReconcileFull);
+		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceGroupMembershipReconcileFull);
 
 
 
@@ -716,8 +822,15 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ResourceTypeOperation ORArtodAddGroupMembership = new ResourceTypeOperation(rodAddGroupMembership, oracleServerType, false,false,false);
 		ResourceTypeOperation ORArtodDelGroupMembership = new ResourceTypeOperation(rodDeleteGroupMembership, oracleServerType, false,false,false);
 		ResourceTypeOperation ORArtodModifyAccount = new ResourceTypeOperation(rodModifyAccount, oracleServerType, false,false,false);
-		ResourceTypeOperation ORAresourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, oracleServerType, false,false,false);
-		ResourceTypeOperation ORAresourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, oracleServerType, false,false,false);
+		//ResourceTypeOperation ORAresourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, oracleServerType, false,false,false);
+		//ResourceTypeOperation ORAresourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodResourceIdentitiesReconcileFull = new ResourceTypeOperation(rodResourceIdentitiesReconciliationFull, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodResourceIdentitiesReconcileIncremental = new ResourceTypeOperation(rodResourceIdentitiesReconciliationIncremental, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodResourceGroupsReconcileFull = new ResourceTypeOperation(rodResourceGroupsReconciliation, oracleServerType, false,false,false);
+		ResourceTypeOperation ORArtodResourceGroupMembershipReconcileFull = new ResourceTypeOperation(rodResourceGroupMembershipReconciliation, oracleServerType, false,false,false);
+		
+		
+		
 		oracleServerType.getSupportedOperations().add(ORArtodAddAccount);
 		oracleServerType.getSupportedOperations().add(ORArtodDelAccount);
 		oracleServerType.getSupportedOperations().add(ORArtodSuspend);
@@ -727,8 +840,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		oracleServerType.getSupportedOperations().add(ORArtodAddGroupMembership);
 		oracleServerType.getSupportedOperations().add(ORArtodDelGroupMembership);
 		oracleServerType.getSupportedOperations().add(ORArtodModifyAccount);
-		oracleServerType.getSupportedOperations().add(ORAresourceReconciliation);
-		oracleServerType.getSupportedOperations().add(ORAresourceFetchActiveDataOffline);
+		//oracleServerType.getSupportedOperations().add(ORAresourceReconciliation);
+		//oracleServerType.getSupportedOperations().add(ORAresourceFetchActiveDataOffline);
+		oracleServerType.getSupportedOperations().add(ORArtodResourceIdentitiesReconcileFull);		
+		oracleServerType.getSupportedOperations().add(ORArtodResourceIdentitiesReconcileIncremental);
+		oracleServerType.getSupportedOperations().add(ORArtodResourceGroupsReconcileFull);
+		oracleServerType.getSupportedOperations().add(ORArtodResourceGroupMembershipReconcileFull);
 		
 		
 		
@@ -761,8 +878,15 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ResourceTypeOperation ldapV3rtodAddGroupMembership = new ResourceTypeOperation(rodAddGroupMembership, ldapV3Type, false,false,false);
 		ResourceTypeOperation ldapV3rtodDelGroupMembership = new ResourceTypeOperation(rodDeleteGroupMembership, ldapV3Type, false,false,false);
 		ResourceTypeOperation ldapV3rtodModifyAccount = new ResourceTypeOperation(rodModifyAccount, ldapV3Type, false,false,false);
-		ResourceTypeOperation ldapV3resourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, ldapV3Type, false,false,false);
-		ResourceTypeOperation ldapV3resourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, ldapV3Type, false,false,false);
+		//ResourceTypeOperation ldapV3resourceReconciliation = new ResourceTypeOperation(rodResourceReconciliation, ldapV3Type, false,false,false);
+		//ResourceTypeOperation ldapV3resourceFetchActiveDataOffline = new ResourceTypeOperation(rodResourceFetchActiveDataOffline, ldapV3Type, false,false,false);
+		
+		
+		ResourceTypeOperation ldapV3rtodResourceIdentitiesReconcileFull = new ResourceTypeOperation(rodResourceIdentitiesReconciliationFull, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodResourceIdentitiesReconcileIncremental = new ResourceTypeOperation(rodResourceIdentitiesReconciliationIncremental, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodResourceGroupsReconcileFull = new ResourceTypeOperation(rodResourceGroupsReconciliation, ldapV3Type, false,false,false);
+		ResourceTypeOperation ldapV3rtodResourceGroupMembershipReconcileFull = new ResourceTypeOperation(rodResourceGroupMembershipReconciliation, ldapV3Type, false,false,false);
+		
 		ldapV3Type.getSupportedOperations().add(ldapV3rtodAddAccount);
 		ldapV3Type.getSupportedOperations().add(ldapV3rtodDelAccount);
 		ldapV3Type.getSupportedOperations().add(ldapV3rtodSuspend);
@@ -772,9 +896,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ldapV3Type.getSupportedOperations().add(ldapV3rtodAddGroupMembership);
 		ldapV3Type.getSupportedOperations().add(ldapV3rtodDelGroupMembership);
 		ldapV3Type.getSupportedOperations().add(ldapV3rtodModifyAccount);
-		ldapV3Type.getSupportedOperations().add(ldapV3resourceReconciliation);
-		ldapV3Type.getSupportedOperations().add(ldapV3resourceFetchActiveDataOffline);
-
+		//ldapV3Type.getSupportedOperations().add(ldapV3resourceReconciliation);
+		//ldapV3Type.getSupportedOperations().add(ldapV3resourceFetchActiveDataOffline);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodResourceIdentitiesReconcileFull);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodResourceIdentitiesReconcileIncremental);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodResourceGroupsReconcileFull);
+		ldapV3Type.getSupportedOperations().add(ldapV3rtodResourceGroupMembershipReconcileFull);
 
 
 
@@ -888,7 +1015,11 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ppcDefault.setPasswordPolicy(ppDefault);
 		passwordPolicyContainers.add(ppcDefault);
 
+		
+		
+		
 		// Event Definitions
+		/*
 		EventDefinition edUserCreateSuccess = new EventDefinition();
 		edUserCreateSuccess.setUniqueName("USER_CREATION");
 		edUserCreateSuccess.setDisplayName("Successfully user creation event");
@@ -920,8 +1051,10 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		edResourceReconciliation
 		.setDescription("An event that is triggered when a resoruce reconciliation process finishes");
 		eventDefinitions.add(edResourceReconciliation);
-
-
+		 */
+		
+		
+		
 
 		// IdentityAttribute Group
 		IdentityAttributesGroup iagGeneric = new IdentityAttributesGroup();
@@ -1076,6 +1209,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		iagGeneric.setIdentityAttributes(allDefaultIdentityAttributes);
 		identityAttributesGroups.add(iagGeneric);
 
+		
+		
+		//RECONCILE POLICY & RECONCILE AUDIT POLICY
+		ReconcileAuditPolicy rap = new ReconcileAuditPolicy();
+		rap.setName("DEFAULT");
+		
 		ReconcilePolicy reconcilePolicy = new ReconcilePolicy();
 		reconcilePolicy.setActivateCorrelationRule(false);
 		reconcilePolicy.setConfirmedAccountAttributeEventAction("NOTHING");
@@ -1092,7 +1231,14 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		reconcilePolicy.setUnmatchedAccountAttributeEventAction("NOTHING");
 		reconcilePolicy
 		.setUnmatchedAccountEventAction("PERSIST_ACCOUNT_IN_IDM_REPOSITORY");
+		reconcilePolicy.setReconcileAuditPolicy(rap);
 		reconcileTargetPolicies.add(reconcilePolicy);
+
+		
+		
+		
+		
+		
 
 		// Create an admin user
 		User adminUser = new User();
@@ -1102,7 +1248,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		adminUser.setProtected(true);
 		adminUser.setAuthenticatedViaLocalPassword(true);
 		adminUser.setName("admin");
-		adminUser.setPassword(PasswordHash.instance().generateSaltedHash("admin", adminUser.getName()));
+		
+		if (Contexts.isApplicationContextActive()) {
+			adminUser.setPassword(PasswordHash.instance().generateSaltedHash("admin", adminUser.getName()));
+		}
+		
+		
 		// Admin CapFolder
 		adminUser.getCapabilityFolders().add(adminCapabilityFolder);
 		users.add(adminUser);
@@ -1114,7 +1265,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		// default action languages
 		ActionLanguage alGroovy = new ActionLanguage();
 		//alGroovy.setActionLanguageId(new Long(1));
-		alGroovy.setName("GROOVY");
+		alGroovy.setName("groovy");
 		alGroovy.setDescription("Groovy - An agile scripting language");
 		actionLanguages.add(alGroovy);
 
@@ -1325,11 +1476,75 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 
 
-
-
+		
+		
+		//call inits
+		initReconcileEvents();
+		initSystemEvents();
+		initReadyActions();
 	}
 
-
+	//Individual inits
+	public void initReconcileEvents() {
+		//reconcile events
+		ReconcileEvent reIdentityConfirmed = new ReconcileEvent("IDENTITY_CONFIRMED", "Confirmed Identity", "An event that occurs whenever the identity was confirmed to be existed on the resource");
+		ReconcileEvent reIdentityRemoved = new ReconcileEvent("IDENTITY_REMOVED", "Removed Identity", "An event that occures whenever an identity was removed on the resource");
+		ReconcileEvent reIdentityUnmatched = new ReconcileEvent("IDENTITY_UNMATCHED", "Unmatched Identity", "An event that occures whenever a new identity is discovered on the resource but has no matching owner.");
+		ReconcileEvent reIdentityUnasigned = new ReconcileEvent("IDENTITY_UNASSIGNED", "Unassigned Identity", "An event that occures whenever a new identity is discovered on the resource with a matching owner.");
+		ReconcileEvent reIdentityModified = new ReconcileEvent("IDENTITY_MODIFIED", "Modified Identity", "An event that occures whenever attributes of current existence identity were modified.");
+		ReconcileEvent reIdentityAttributeModified = new ReconcileEvent("IDENTITY_ATTRIBUTE_MODIFIED", "Modified Identity Attribute", "An event that occures whenever a certain attribute of current existence identity was modified.");
+		
+		ReconcileEvent reGroupModified = new ReconcileEvent("GROUP_MODIFIED", "Modified Group", "An event that occures whenever a group was modified on the resource.");
+		ReconcileEvent reGroupCreated = new ReconcileEvent("GROUP_CREATED", "Created Group", "An event that occures whenever a new group was discovered on the resource.");
+		ReconcileEvent reGroupRemoved = new ReconcileEvent("GROUP_REMOVED", "Removed Group", "An event that occures whenever a group was removed from the resource.");
+		
+		
+		ReconcileEvent reGroupMemberAssoc = new ReconcileEvent(ReconcileEvent.GROUP_MEMBER_ASSOCIATED_EVENT_NAME, "Group Member Associated", "An event that occures whenever a new member was associated to a resource group.");
+		ReconcileEvent reGroupMemberDisso = new ReconcileEvent(ReconcileEvent.GROUP_MEMBER_DISSOCIATED_EVENT_NAME, "Group Member Dissociated", "An event that occures whenever a member was dissociated from a resource group.");
+		ReconcileEvent reGroupMemberModify = new ReconcileEvent(ReconcileEvent.GROUP_MEMBERSHIP_MODIFY_EVENT_NAME, "Group Membership Modify", "An event that occures whenever a member(s) was/were associated/disocciated from a resource group.");
+		
+		
+		reconcileEvents.add(reIdentityConfirmed);
+		reconcileEvents.add(reIdentityRemoved);
+		reconcileEvents.add(reIdentityUnmatched);
+		reconcileEvents.add(reIdentityUnasigned);
+		reconcileEvents.add(reIdentityModified);
+		reconcileEvents.add(reIdentityAttributeModified);
+		reconcileEvents.add(reGroupModified);
+		reconcileEvents.add(reGroupCreated);
+		reconcileEvents.add(reGroupRemoved);
+		reconcileEvents.add(reGroupMemberAssoc);
+		reconcileEvents.add(reGroupMemberDisso);
+		reconcileEvents.add(reGroupMemberModify);
+	}
+	
+	public void initSystemEvents() {
+		SystemEvent systemEventUserCreationPre = new SystemEvent("USER_CREATION_PRE","User Creation - Pre", "An event that occurs before a user was successfully created");
+		SystemEvent systemEventUserCreationPost = new SystemEvent("USER_CREATION_POST","User Creation - Post", "An event that occurs after a user was successfully created");
+		SystemEvent systemEventTaskFailure = new SystemEvent("TASK_FAILURE","Task Failure", "An event that occurs when task execution fails");
+		SystemEvent systemEventResourceReconciliationPost = new SystemEvent("RESOURCE_RECONCILIATION_POST","Resource Reconciliation - Post", "An event that occurs after resource reconciliation process is executed");
+		
+		systemEvents.add(systemEventUserCreationPre);
+		systemEvents.add(systemEventUserCreationPost);
+		systemEvents.add(systemEventTaskFailure);
+		systemEvents.add(systemEventResourceReconciliationPost);
+	}
+	
+	
+	public void initReadyActions() {
+		ReadyAction removeAccountReadyAction = new ReadyAction("REMOVE_ACCOUNT_FROM_REPOSITORY", "Remove an account from Velo repository", "velo.actions.readyActions.RemoveAccountFromRepository");
+		ReadyAction addAccountToRepositoryReadyAction = new ReadyAction("ADD_ACCOUNT_TO_REPOSITORY", "Add an account to Velo repository", "velo.actions.readyActions.AddAccountToRepository");
+		ReadyAction addResourceGroupToRepositoryReadyAction = new ReadyAction("ADD_RESOURCE_GROUP_TO_REPOSITORY", "Add a resource group to Velo repository", "velo.actions.readyActions.AddResourceGroupToRepository");
+		ReadyAction removeResourceGroupFromRepositoryReadyAction = new ReadyAction("REMOVE_RESOURCE_GROUP_FROM_REPOSITORY", "Remove a resource group from Velo repository", "velo.actions.readyActions.RemoveResourceGroupFromRepository");
+		
+		readyActions.add(removeAccountReadyAction);
+		readyActions.add(addAccountToRepositoryReadyAction);
+		readyActions.add(addResourceGroupToRepositoryReadyAction);
+		readyActions.add(removeResourceGroupFromRepositoryReadyAction);
+	}
+	
+	
+	
 	private void buildResourceTypes() {
 		ResourceType ldapV3RT = new ResourceType();
 		ldapV3RT.setUniqueName("GENERIC_LDAP_V3");
@@ -1379,6 +1594,50 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 
 
+	
+	public void persistTestData() {
+		ResourceType jdbcResType = resourceManager.findResourceType("JDBC");
+		PasswordPolicyContainer ppc = passwordManager.findPasswordPolicyContainer("DEFAULT");
+		ReconcilePolicy rp = reconcileManager.findReconcilePolicy("Default");
+		
+		
+		Resource resource = new Resource();
+		resource.setAutoFetch(true);
+		resource.setResourceType(jdbcResType);
+		resource.setReconcilePolicy(rp);
+		resource.setPasswordPolicyContainer(ppc);
+		resource.setUniqueName("TESTAPP1");
+		resource.setDisplayName("test application 1");
+		resource.setDescription("A simple mysql test application 1");
+		resource.setConfiguration(jdbcResType.getConfigurationTemplate());
+		resource.setConfiguration(resource.getConfiguration().replace("></host>", ">localhost</host>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></port>", ">3306</port>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></dbName>", ">testapp1</dbName>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></driverName>", ">org.gjt.mm.mysql.Driver</driverName>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></urlTemplate>", ">jdbc:mysql://%h/%d</urlTemplate>"));
+		ResourceAttribute ra1 = new ResourceAttribute(resource, "login_name", "Login Name", "Login Name!",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ra1.setAccountId(true);
+		ResourceAttribute ra2 = new ResourceAttribute(resource, "first_name", "First Name", "First Name!",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ra2.setPersistence(true); ra2.setSynced(true);
+		ResourceAttribute ra3 = new ResourceAttribute(resource, "last_name", "Last Name", "Last!",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ra3.setPersistence(true); ra3.setSynced(true);
+		ResourceAttribute ra4 = new ResourceAttribute(resource, "email", "Email", "Email!",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ra4.setPersistence(true); ra4.setSynced(true);
+		ResourceAttribute ra5 = new ResourceAttribute(resource, "status", "Status", "Status!",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ra5.setPersistence(true); ra5.setSynced(true);
+		ResourceAttribute ra6 = new ResourceAttribute(resource, "children_number", "Children Number", "Children Number!",AttributeDataTypes.INTEGER,true,true,0,3,1,1);
+		ra6.setPersistence(true); ra6.setSynced(true);
+		resource.getResourceAttributes().add(ra1); resource.getResourceAttributes().add(ra2); resource.getResourceAttributes().add(ra3); resource.getResourceAttributes().add(ra4);
+		resource.getResourceAttributes().add(ra5); resource.getResourceAttributes().add(ra6);
+		ResourceAdmin ra = new ResourceAdmin();
+		ra.setUserName("testapp1");
+		ra.setPassword("252-120-0-170-195-49-100-85-192-87-223-195-176-96-83-223");
+		ra.setResource(resource);
+		resource.getResourceAdmins().add(ra);
+		
+		
+		em.persist(resource);
+	}
 
 
 
@@ -1603,6 +1862,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 	private void persistEntities(Collection entities) {
 		for (Object entity : entities) {
+			log.info("PERSISTING obj: '" + entity + "' of CLASS: '" + entity.getClass().getName());
 			em.persist(entity);
 		}
 
@@ -1617,18 +1877,52 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 		persistEntities(resourceGlobalOperations);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public Resource getMockedJdbcResource() {
+		initInitialData();
+		
+		ResourceType jdbcResourceType = resourceTypes.get("JDBC");
+		Resource resource = new Resource();
+		resource.setResourceType(jdbcResourceType);
+		resource.setUniqueName("TESTAPP1");
+		resource.setDisplayName("test application 1");
+		resource.setDescription("A simple mysql test application 1");
+		resource.setConfiguration(jdbcResourceType.getConfigurationTemplate());
+		
+		resource.setConfiguration(resource.getConfiguration().replace("></host>", ">localhost</host>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></port>", ">3306</port>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></dbName>", ">testapp1</dbName>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></driverName>", ">org.gjt.mm.mysql.Driver</driverName>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></urlTemplate>", ">jdbc:mysql://%h/%d</urlTemplate>"));
+		
+		ResourceAttribute ra1 = new ResourceAttribute(resource, "login_name", "Login Name", "Login Name",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ra1.setAccountId(true);
+		ResourceAttribute ra2 = new ResourceAttribute(resource, "first_name", "First Name", "First Name",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ResourceAttribute ra3 = new ResourceAttribute(resource, "last_name", "Last Name", "Last",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		resource.getResourceAttributes().add(ra1); resource.getResourceAttributes().add(ra2); resource.getResourceAttributes().add(ra3);
 
-
-
-
-
-	public void dumpDefaultMysqlAppData() {
-		Resource r = new Resource();
-		r.setActive(true);
-		r.setConfiguration("ASDFSADF");
-		r.setDescription("Mysql Test App1");
-		r.setDisplayName("Mysql Test App1");
+		ResourceAdmin ra = new ResourceAdmin();
+		ra.setUserName("testapp1");
+		ra.setPassword("252-120-0-170-195-49-100-85-192-87-223-195-176-96-83-223");
+		
+		resource.getResourceAdmins().add(ra);
+		return resource;
 	}
-
 
 }

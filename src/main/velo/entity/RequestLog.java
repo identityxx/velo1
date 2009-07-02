@@ -38,6 +38,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="VL_REQUEST_LOG")
 @SequenceGenerator(name="RequestLogIdSeq",sequenceName="REQUEST_LOG_ID_SEQ")
+@Deprecated
 public class RequestLog extends EntityLog implements Serializable {
     
     private static final long serialVersionUID = 1987302492306161413L;

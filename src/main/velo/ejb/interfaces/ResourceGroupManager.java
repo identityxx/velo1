@@ -33,10 +33,29 @@ import velo.exceptions.NoResultFoundException;
  * @author Asaf Shakarchi
  */
 public interface ResourceGroupManager {
-
+	public boolean isGroupExists(String groupName,Resource resource);
+	public ResourceGroup findGroup(String groupUniqueId, Resource resource);
+	public void persistGroup(ResourceGroup group);
 	public void removeGroup(ResourceGroup rg);
+	public void updateGroup(ResourceGroup group);
 	
-	public void persistGroup(ResourceGroup rg);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public void persistGroups(Collection<ResourceGroup> groupsToPersist);
 	
@@ -137,35 +156,15 @@ public interface ResourceGroupManager {
 	@Deprecated
 	public List<ResourceGroup> loadAllGroups(Resource ts);
 	
-	/**
-	 * Whether a group exist on the specified resource or not
-	 * @param uniqueId The group's unique ID to check
-	 * @param resource The resource the account is related to
-	 * @return true/false upon existense/non-existense
-	 */
-	@Deprecated
-	public boolean isGroupExistOnTarget(String uniqueId, Resource resource);
 	
+	//@Deprecated
+	//public void addMemberToGroup(ResourceGroup tsg, Account account);
 	
-	/**
-	 * Update a group entity into the database
-	 * @param tsg The group entity to update
-	 */
-	@Deprecated
-	public void updateGroupEntity(ResourceGroup tsg);
-	
-	
-	@Deprecated
-	public void addMemberToGroup(ResourceGroup tsg, Account account);
-	
-	@Deprecated
-	public void removeMemberFromGroup(ResourceGroup tsg, Account account);
+	//@Deprecated
+	//public void removeMemberFromGroup(ResourceGroup tsg, Account account);
 	
 	
 	@Deprecated
 	public void setGroupAsActive(ResourceGroup tsg);
 	
-	
-	@Deprecated
-	public void destroy();
 }

@@ -17,15 +17,18 @@
  */
 package velo.ejb.interfaces;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
 
 import velo.entity.BulkTask;
 import velo.entity.ReconcilePolicy;
+import velo.entity.ReconcileProcessSummary;
 import velo.entity.ReconcileUsersPolicy;
 import velo.entity.Resource;
 import velo.entity.Task;
+import velo.exceptions.OperationException;
 import velo.exceptions.ReconcileAccountsException;
 import velo.exceptions.ReconcileGroupsException;
 import velo.exceptions.ReconcileProcessException;
@@ -38,7 +41,36 @@ import velo.exceptions.TaskCreationException;
  * @author Asaf Shakarchi
  */
 public interface ReconcileManager {
-
+	public ReconcilePolicy findReconcilePolicy(String name);
+	public void reconcileAllIdentities(String resourceUniqueName, boolean async) throws OperationException;
+	public void reconcileIdentitiesIncrementally(String resourceUniqueName, boolean async) throws OperationException;
+	public void reconcileIdentitiesFull(String resourceUniqueName, boolean async) throws OperationException;
+	public void reconcileGroupsFull(String resourceUniqueName, boolean async) throws OperationException;
+	public void reconcileGroupMembershipFull(String resourceUniqueName, boolean async) throws OperationException;
+	public void persistReconcileProcessSummary(ReconcileProcessSummary reconcileProcessSummary);
+	public int deleteAllReconcileProcessSummaries(Date untilDate);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Create reconciliation bulkTask for a certain resource
 	 * @param resource The resource to perform the reconcile process

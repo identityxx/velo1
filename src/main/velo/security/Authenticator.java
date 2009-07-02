@@ -19,12 +19,12 @@ package velo.security;
 
 import javax.ejb.Local;
 
-import velo.entity.User;
-
 @Local
 public interface Authenticator {
 	public boolean authenticate();
 	public boolean autoLogin();
+	public boolean emptyAuth();
+	public void ssoRedirect() throws Exception;
 	public void registerUserInSession(String userName);
 	
 	//public User getLoggedUser();

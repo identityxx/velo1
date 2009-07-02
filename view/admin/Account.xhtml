@@ -10,6 +10,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
                 template="layout/template.xhtml">
                        
 <ui:define name="body">
@@ -39,17 +40,67 @@
         
         <s:decorate id="creationDate" template="layout/display.xhtml">
             <ui:define name="label">Creation Date</ui:define>
-            #{accountHome.instance.creationDate}
+            <h:outputText value="#{accountHome.instance.creationDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
         </s:decorate>
         
         <s:decorate id="lastUpdateDate" template="layout/display.xhtml">
             <ui:define name="label">Last Update Date</ui:define>
-            #{accountHome.instance.lastUpdateDate}
+            <h:outputText value="#{accountHome.instance.lastUpdateDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
         </s:decorate>
         
         <div style="clear:both"/>
         
     </rich:panel>
+    
+    <rich:panel>
+        <f:facet name="header">Persistence Attributes</f:facet>
+		<rich:dataTable value="#{velo:setAsList(accountHome.instance.accountAttributes)}" var="attr">
+			<rich:column>
+				<f:facet name="header">Attribute Name</f:facet>
+				#{attr.displayName}
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">Last Updated</f:facet>
+				#{attr.lastUpdateDate}
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">Attribute Value</f:facet>
+				<ui:repeat value="#{attr.values}" var="currValue">
+					<h:panelGrid columns="1">
+						#{currValue.asString} [#{currValue.dataType}]
+					</h:panelGrid>
+				</ui:repeat>
+			</rich:column>
+		</rich:dataTable>
+	</rich:panel>
+    
+    
+    <rich:panel>
+        <f:facet name="header">Member in Groups (as in resource)</f:facet>
+		<rich:dataTable value="#{velo:setAsList(accountHome.instance.groupMembership)}" var="gm">
+			<rich:column>
+				<f:facet name="header">Group Unique Id</f:facet>
+				#{gm.resourceGroup.uniqueId}
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">Group Type</f:facet>
+				#{gm.resourceGroup.type}
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">Display Name</f:facet>
+				#{gm.resourceGroup.displayName}
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">Description</f:facet>
+				#{gm.resourceGroup.description}
+			</rich:column>
+		</rich:dataTable>
+	</rich:panel>
+    
     
     <div class="actionButtons">      
 

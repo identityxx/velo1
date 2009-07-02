@@ -46,6 +46,7 @@ import velo.reconcilidation.events.reconcileUsers.DeletedUserInSourceEvent;
  * A users reconciliation action. Reconcile Users based on the defined 'Users
  * Reconcile' policies.
  */
+@Deprecated
 public class ReconcileUsers {
 	private static Logger logger = Logger.getLogger(ReconcileUsers.class
 			.getName());

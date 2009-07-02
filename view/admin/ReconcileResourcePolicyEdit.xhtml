@@ -57,6 +57,77 @@
 				</rich:panel>
 				
 				<rich:panel>
+				<f:facet name="header">Correlation Details</f:facet>
+				<s:decorate id="correlationRuleDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Correlation Rule</ui:define>
+					<h:selectOneMenu id="confirmationRule" value="#{reconcileResourcePolicyHome.instance.correlationRule}">
+                        <s:selectItems value="#{guiScriptedActions}" var="sa" label="#{sa.description}" noSelectionLabel="---select---" />
+                        <s:convertEntity/>
+                    </h:selectOneMenu>
+				</s:decorate>
+				
+				<s:decorate id="confirmationRuleDecoration" template="layout/edit.xhtml" rendered="true">
+					<ui:define name="label">Confirmation Rule</ui:define>
+					<h:selectOneMenu id="confirmationRule" value="#{reconcileResourcePolicyHome.instance.confirmationRule}">
+                        <s:selectItems value="#{guiScriptedActions}" var="sa" label="#{sa.description}" noSelectionLabel="---select---" />
+                        <s:convertEntity/>
+                    </h:selectOneMenu>
+				</s:decorate>
+				<s:decorate id="reCorrelateOrphanIdentitiesDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Re-correlate existence orphan identities ?</ui:define>
+						<h:selectBooleanCheckbox id="reCorrelateOrphanIdentities" value="#{reconcileResourcePolicyHome.instance.reCorrelateOrphanIdentities}"/>
+				</s:decorate>
+				
+				
+				<div style="clear: both"/>
+				</rich:panel>
+				
+				
+				<rich:panel>
+				<f:facet name="header">Reconcile Groups Policies</f:facet>
+				<s:decorate id="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroupDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Reconcile Processes Number Group Keeps Being Deleted Before Remove Group</ui:define>
+					<h:inputText id="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup" required="true" size="4" maxlength="4"
+						value="#{reconcileResourcePolicyHome.instance.reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup}">
+						<a:support event="onblur" reRender="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroupDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+				
+				
+				<s:decorate id="deleteGroupAfterReconcileProcessesNumberExceededDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Delete group after Reconcile Processes number exceeded?</ui:define>
+					<h:selectBooleanCheckbox id="deleteGroupAfterReconcileProcessesNumberExceeded" value="#{reconcileResourcePolicyHome.instance.deleteGroupAfterReconcileProcessesNumberExceeded}"/>
+				</s:decorate>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+				</rich:panel>
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				<rich:panel rendered="false">
 				<f:facet name="header">Events Policy</f:facet>
 				<s:decorate id="confirmedAccountEventActionDecoration" template="layout/edit.xhtml">
 					<ui:define name="label">Confirm Account Event Action</ui:define>
@@ -112,7 +183,7 @@
 				</rich:panel>
 				
 				
-				<rich:panel>
+				<rich:panel rendered="false">
 				<f:facet name="header">Correlation Details</f:facet>
 				<s:decorate id="activateCorrelationRuleDecoration" template="layout/edit.xhtml">
 					<ui:define name="label">Activate Correlation Rule?</ui:define>
@@ -133,36 +204,11 @@
 					<h:selectBooleanCheckbox id="autoCorrelateAccountIfMatchedToUser" value="#{reconcileResourcePolicyHome.instance.autoCorrelateAccountIfMatchedToUser}"/>
 				</s:decorate>
 				
-				
-				
 				<div style="clear: both"/>
 				</rich:panel>
 				
-				<rich:panel>
-				<f:facet name="header">Reconcile Groups Policies</f:facet>
-				<s:decorate id="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroupDecoration" template="layout/edit.xhtml">
-					<ui:define name="label">Reconcile Processes Number Group Keeps Being Deleted Before Remove Group</ui:define>
-					<h:inputText id="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup" required="true" size="4" maxlength="4"
-						value="#{reconcileResourcePolicyHome.instance.reconcilesGroupKeepsBeingDeletedBeforeRemoveGroup}">
-						<a:support event="onblur" reRender="reconcilesGroupKeepsBeingDeletedBeforeRemoveGroupDecoration"
-							bypassUpdates="true" />
-					</h:inputText>
-				</s:decorate>
-				
-				
-				<s:decorate id="deleteGroupAfterReconcileProcessesNumberExceededDecoration" template="layout/edit.xhtml">
-					<ui:define name="label">Delete group after Reconcile Processes number exceeded?</ui:define>
-					<h:selectBooleanCheckbox id="deleteGroupAfterReconcileProcessesNumberExceeded" value="#{reconcileResourcePolicyHome.instance.deleteGroupAfterReconcileProcessesNumberExceeded}"/>
-				</s:decorate>
-				
 				<div style="clear: both"/>
-				</rich:panel>
-				
-				<div style="clear: both"><span class="required">*</span>
-				required fields</div>
-
 			</rich:panel>
-
 			<div class="actionButtons"><h:commandButton id="save"
 				value="Save" action="#{reconcileResourcePolicyHome.persist}"
 				disabled="#{!reconcileResourcePolicyHome.wired}"

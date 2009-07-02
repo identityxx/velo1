@@ -108,11 +108,6 @@ public class ResourceAttribute extends ResourceAttributeBase implements Serializ
     
     
     
-    
-    
-    
-    
-    
     public static ResourceAttribute factory(Resource resource) {
     	ResourceAttribute ra = new ResourceAttribute();
     	ra.setCreationDate(new Date());

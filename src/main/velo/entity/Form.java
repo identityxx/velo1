@@ -37,6 +37,7 @@ import javax.persistence.Table;
 @SequenceGenerator(name="FormIdSeq",sequenceName="FORM_ID_SEQ")
 //@DiscriminatorColumn(name="TYPE")
 //@MappedSuperclass
+@Deprecated
 public class Form extends BaseEntity implements Serializable {
 
 	private Long formId;

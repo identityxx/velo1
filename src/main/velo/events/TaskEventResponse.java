@@ -26,6 +26,7 @@ import velo.entity.Task;
  * 
  * @author Asaf Shakarchi
  */
+@Deprecated
 public abstract class TaskEventResponse extends GenericEventResponse {
 	
 	public Task task;

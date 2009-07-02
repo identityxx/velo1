@@ -142,11 +142,20 @@
                  value="Test Connectivity"/>
 		<br/>
 		<h:form>
-			<h:commandButton action="#{reconcileActions.reconcileResource}"
-                    id="reconcileResource"
-                 value="Reconcile Resource Now!"/>
-			<h:selectBooleanCheckbox title="Fetch Active Data?" 
-				value="#{reconcileActions.fetchActiveData}"></h:selectBooleanCheckbox> 
+		
+			
+			<h:commandButton action="#{reconcileActions.resourceReconcileFull}"
+                 value="Execute Full Resource Reconciliation"/>
+            <h:commandButton action="#{reconcileActions.resourceReconcileIncremental}"
+                 value="Execute Resource Reconciliation Incrementally" rendered="false"/>
+			<h:commandButton action="#{reconcileActions.resourceReconcileGroupsFull}"
+                 value="Execute Resource Groups Reconciliation"/>
+			<h:commandButton action="#{reconcileActions.resourceReconcileGroupMembershipFull}"
+                 value="Execute Resource Group Membership Reconciliation"/>
+			<h:selectBooleanCheckbox title="Execute Asynchroniously?" value="#{reconcileActions.executeProcessAsync}"/>
+			 
+<!--			<h:selectBooleanCheckbox title="Fetch Active Data?" -->
+<!--				value="{reconcileActions.fetchActiveData}"></h:selectBooleanCheckbox>--> 
 		</h:form>
     </div>
 

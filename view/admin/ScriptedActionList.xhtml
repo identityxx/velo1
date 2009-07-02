@@ -1,0 +1,128 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2009, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:sb="http://myfaces.apache.org/sandbox"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <h:form id="scriptedActionSearch" styleClass="edit">
+    
+        <rich:simpleTogglePanel label="Scrtiped Actions Search Parameters" switchType="ajax">
+        
+        	<s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Action Name</ui:define>
+                <h:inputText id="name" value="#{scriptedActionList.scriptedAction.name}"/>
+            </s:decorate>
+            
+            <s:decorate template="layout/display.xhtml">
+            	<ui:define name="label">Action Description</ui:define>
+            	<h:inputText id="name" value="#{scriptedActionList.scriptedAction.description}"/>
+			</s:decorate>
+            
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/admin/ScriptedActionList.xhtml"/>
+        </div>
+        
+    </h:form>
+    
+    <h:form id="accountList">
+    <rich:panel>
+        <f:facet name="header">Scripted Action Search Results</f:facet>
+    <div class="results" id="scriptedActionList">
+
+    <h:outputText value="No scripted actions exists" 
+               rendered="#{empty scriptedActionList.resultList}"/>
+               
+    <rich:dataTable id="scriptedActionList" 
+                var="action"
+              value="#{scriptedActionList.resultList}" 
+           rendered="#{not empty scriptedActionList.resultList}">
+		<h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Action Name #{scriptedActionList.order=='name asc' ? messages.down : ( scriptedActionList.order=='name desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{scriptedActionList.order=='name asc' ? 'name desc' : 'name asc'}"/>
+                </s:link>
+            </f:facet>
+            
+            <s:link view="/admin/#{empty from ? 'ScriptedAction' : from}.xhtml" value="#{action.name}" >
+                <f:param name="actionId" value="#{action.id}"/>
+            </s:link>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Description #{scriptedActionList.order=='description asc' ? messages.down : ( scriptedActionList.order=='description desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{scriptedActionList.order=='description asc' ? 'description desc' : 'description asc'}"/>
+                </s:link>
+            </f:facet>
+            #{action.description}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Creation Date#{accountList.order=='creationDate asc' ? messages.down : ( accountList.order=='creationDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{accountList.order=='creationDate asc' ? 'creationDate desc' : 'creationDate asc'}"/>
+                </s:link>
+            </f:facet>
+            #{action.creationDate}
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                Action Type
+            </f:facet>
+            #{action.displayableActionType}
+        </h:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+    
+    <div class="tableControl">
+      
+        <ui:include src="/admin/incl/pagingPanel.xhtml">
+			<ui:param name="currentPage" value="/admin/ScriptedActionList.xhtml" />
+			<ui:param name="iteratedList" value="#{scriptedActionList}" />
+		</ui:include>
+        
+    </div>
+    
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+    <h:panelGrid styleClass="vertical-menu-cell" columnClasses="optionList" columns="1" cellspacing="0" cellpadding="0">
+    	<!-- 
+		<rich:dropDownMenu style="border:1px solid #{a4jSkin.panelBorderColor}" value="Create New Action" direction="bottom-right" jointPoint="tr" submitMode="ajax">
+			<rich:menuItem value="Create Reconcile Correlation Rule" submitMode="server" action="/admin/ReconcileCorrelationRuleScriptedActionEdit.xhtml"/>
+			<rich:menuItem value="Create Reconcile Action" submitMode="server" action="/admin/ReconcileScriptedActionEdit.xhtml"/>
+			<rich:menuItem value="Create Workflow Action" submitMode="server" action="/admin/WorkflowScriptedActionEdit.xhtml"/>
+		</rich:dropDownMenu>
+		 -->
+		 <s:button view="/admin/ScriptedActionEdit.xhtml" id="create" value="Create Action">
+		</s:button>
+	</h:panelGrid>
+            
+            <!-- 
+        <s:button view="/admin/ScriptedActionEdit.xhtml" id="create"
+				value="Create Action">
+				<f:param name="roleId" />
+		</s:button>
+		 -->
+    </s:div>
+    </h:form>
+    
+</ui:define>
+
+</ui:composition>
+

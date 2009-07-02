@@ -26,7 +26,8 @@ import javax.persistence.Transient;
 import velo.entity.Account;
 import velo.entity.ResourceGroup;
 
-@Entity
+//@Entity
+@Deprecated
 public class ActiveGroup extends ResourceGroup {
 	/**
 	 * this is used by the reconcile group membership loading process. 

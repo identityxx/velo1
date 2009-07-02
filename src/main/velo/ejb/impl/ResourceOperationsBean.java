@@ -92,7 +92,6 @@ import velo.ejb.interfaces.ResourceOperationsManagerRemote;
 import velo.ejb.interfaces.TaskManagerLocal;
 import velo.entity.Account;
 import velo.entity.Attribute;
-import velo.entity.EventDefinition;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceGlobalOperation;
@@ -346,7 +345,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		
 		try {
 			//Account account = buildVirtualAccount(resource,user);
-			Map<String,Attribute> accAttrs = virtualAccount.getTransientAttributes();
+			Map<String,Attribute> accAttrs = virtualAccount.getActiveAttributes();
 			
 			ResourceTypeOperation rto = virtualAccount.getResource().getResourceType().findResourceTypeOperation(operationUniqueName);
 			if (rto == null) {
@@ -467,7 +466,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 				throw new ObjectsConstructionException("Could not find a value for attribute '" + attrsMap.get(ra.getUniqueName()).getUniqueName() + "' that is indicated as the Account ID for resource.");
 			}
 			
-			account.setTransientAttributes(attrsMap);
+			account.setActiveAttributes(attrsMap);
 			
 			return account;
 	}
@@ -501,7 +500,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 			Account account = buildVirtualAccount(resource, user, roles,null);
 		
 			//get the constructed virtual resource attributes for the account
-			HashMap<String, Attribute> accAttrs = account.getTransientAttributes();
+			HashMap<String, Attribute> accAttrs = account.getActiveAttributes();
 		
 			//build the context
 			OperationContext cntx = new OperationContext();
@@ -544,7 +543,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 			log.trace(accAttrs);
 			
 			//?not needed, passed by reference
-			account.setTransientAttributes(accAttrs);
+			account.setActiveAttributes(accAttrs);
 			
 			
 			return createAddAccountRequestForUserTask(resource,user,memberOfGroups,account);
@@ -911,8 +910,9 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		context.addVar("accountsQueryManager", new Query());
 		context.addVar("groupsQueryManager", new Query());
 		
+		
 		log.trace("Factoring ResourceOperation object...");
-		ResourceOperation ro = factoryResourceOperation(resource, context, resourceTask.getResourceTypeOperation());
+		ResourceOperation ro = resource.factoryResourceOperation(context, resourceTask.getResourceTypeOperation());
 		ro.setResource(resource);
 		
 		boolean invocationStatus;
@@ -957,6 +957,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Transactional
 	*/
+	@Deprecated
 	public void performResourceReconciliation(Resource resource) throws OperationException {
 		//in case the resource was renamed/deleted/etc...
 		if (resource == null) {
@@ -1042,14 +1043,14 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		context.addVar("reconcileSummary", rrs);
 		
 		
-		EventDefinition ed = eventManager.find(resourceReconcilationEvent);
-
-		try {
-			//eventManager.invokeEventDefinitionResponses(ed, context);
-			eventManager.invokeEvent(ed, context);
-		} catch (ScriptInvocationException e) {
-			log.error(e.toString());
-		}
+//		EventDefinition ed = eventManager.find(resourceReconcilationEvent);
+//
+//		try {
+//			//eventManager.invokeEventDefinitionResponses(ed, context);
+//			eventManager.invokeEvent(ed, context);
+//		} catch (ScriptInvocationException e) {
+//			log.error(e.toString());
+//		}
 	}
 	
 	
@@ -1078,7 +1079,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		context.addVar("targetName", targetName, PhaseRelevance.ALL);
 		
 		log.trace("Factoring ResourceOperation object...");
-		ResourceOperation ro = factoryResourceOperation(resource, context, spmlTask.getResourceTypeOperation());
+		ResourceOperation ro = resource.factoryResourceOperation(context, spmlTask.getResourceTypeOperation());
 		ro.setResource(resource);
 		
 		
@@ -1151,7 +1152,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		context.addVar("targetName", targetName, PhaseRelevance.ALL);
 		
 		log.trace("Factoring ResourceOperation object...");
-		ResourceOperation ro = factoryResourceOperation(resource, context, spmlTask.getResourceTypeOperation());
+		ResourceOperation ro = resource.factoryResourceOperation(context, spmlTask.getResourceTypeOperation());
 		ro.setResource(resource);
 		
 		
@@ -1232,7 +1233,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		
 		
 		log.trace("Factoring ResourceOperation object...");
-		ResourceOperation ro = factoryResourceOperation(resource, context, spmlTask.getResourceTypeOperation());
+		ResourceOperation ro = resource.factoryResourceOperation(context, spmlTask.getResourceTypeOperation());
 		ro.setResource(resource);
 		
 		
@@ -1417,7 +1418,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		//----EXPERIMENTAL----
 		
 		log.trace("Factoring ResourceOperation object...");
-		ResourceOperation ro = factoryResourceOperation(resource, context, spmlTask.getResourceTypeOperation());
+		ResourceOperation ro = resource.factoryResourceOperation(context, spmlTask.getResourceTypeOperation());
 		ro.setResource(resource);
 		
 		
@@ -1559,7 +1560,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		log.trace("Initialized operation context variables, dump of context: " + context.toString());
 		
 		log.trace("Factoring ResourceOperation object...");
-		ResourceOperation ro = factoryResourceOperation(resource, context, spmlTask.getResourceTypeOperation());
+		ResourceOperation ro = resource.factoryResourceOperation(context, spmlTask.getResourceTypeOperation());
 		ro.setResource(resource);
 		
 		
@@ -1696,19 +1697,6 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 	
 	
 	//helper
-	private ResourceOperation factoryResourceOperation(Resource resource, OperationContext context, ResourceTypeOperation resourceTypeOperation) {
-		//return ResourceOperation.Factory(resource, context, resourceTypeOperation);
-		ResourceOperation ro = new ResourceOperation(resource,context);
-		
-		ro.setCreationPhaseResourceActions(resource.getCreationPhaseActions(resourceTypeOperation));
-		ro.setValidateResourceActions(resource.getValidatePhaseActions(resourceTypeOperation));
-		ro.setPreResourceActions(resource.getPrePhaseActions(resourceTypeOperation));
-		ro.setPostResourceActions(resource.getPostPhaseActions(resourceTypeOperation));
-		ro.setResourceTypeOperation(resourceTypeOperation);
-		
-		return ro;
-	}
-
 	
 	
 	private String getRepositoryUserNameReferenceFromAddRequest(AddRequest request) throws NoResultFoundException {
@@ -1770,7 +1758,7 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 	private void performTaskCreationPhaseActions(Resource resource, Task task, ResourceTypeOperation rto) throws OperationException {
 		OperationContext context = new OperationContext();
 		context.addVar("task", task);
-		ResourceOperation ro = factoryResourceOperation(resource, context, rto);
+		ResourceOperation ro = resource.factoryResourceOperation(context, rto);
 		boolean indicator = ro.creationActionOperation();
 		
 		if (!indicator) {

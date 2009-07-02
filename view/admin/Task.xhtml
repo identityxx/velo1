@@ -10,6 +10,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:a="https://ajax4jsf.dev.java.net/ajax"
                 xmlns:velo="http://open-identity.net/products/velo/taglib"
                 template="layout/template.xhtml">
                        
@@ -23,10 +24,12 @@
             #{taskHome.instance.taskId}
         </s:decorate>
         
+        <a:outputPanel id="statusPanel">
         <s:decorate id="status" template="layout/display.xhtml">
             <ui:define name="label">Status</ui:define>
             #{taskHome.instance.status}
         </s:decorate>
+        </a:outputPanel>
         
         <s:decorate id="description" template="layout/display.xhtml">
             <ui:define name="label">Description</ui:define>
@@ -64,7 +67,7 @@
         
         <rich:spacer width="1" height="8"/><rich:separator /><rich:spacer width="1" height="8"/>
         
-
+		<a:outputPanel id="taskLogsPanel">
         <rich:panel>
         	<f:facet name="header">Task Logs</f:facet>
         	<rich:dataTable width="100%" id="taskLogsDataTableList" rows="100" 
@@ -90,6 +93,7 @@
         		</h:column>
 			</rich:dataTable>
 		</rich:panel>
+		</a:outputPanel>
 
 
 		<rich:panel>
@@ -135,7 +139,7 @@
     
     
     <div class="actionButtons">      
-
+	<h:form>
         <s:button view="/admin/#{empty taskFrom ? 'TaskList' : taskFrom}.xhtml"
                     id="done"
                  value="Done"/>
@@ -148,6 +152,7 @@
                     id="executeTask"
                  value="Execute Task Now!" rendered="#{taskHome.instance.status ne 'SUCCESS'}"/>
         <s:button id="requeueTask" value="Re-Queue Task" action="#{taskActions.reQueueTask()}" rendered="#{taskHome.instance.status eq 'FATAL_ERROR'}"/>
+        
        	<s:button action="#{taskActions.cancelTask}"
 	       	id="cancelTask"
 			value="Cancel Task" rendered="#{taskHome.instance.status ne 'SUCCESS'}"/>
@@ -155,7 +160,18 @@
          <s:button action="#{taskActions.handledManuallyTask}"
 	       	id="handledManually"
 			value="Handled Manually" rendered="#{taskHome.instance.status ne 'SUCCESS'}"/>
-         
+
+
+		<s:button action="#{taskActions.resetRunningTask}"
+	       	id="resetRunningTask" 
+			value="Reset Running Task" rendered="#{taskHome.instance.status eq 'RUNNING'}"/>
+
+		
+
+			<!-- DOES NOT WORK 
+			<a:commandButton id="refreshTask" value="Refresh Task" action="{taskActions.refreshTask}" reRender="taskLogsPanel,statusPanel" rendered="#{taskHome.instance.status eq 'SUCCESS'}"/>
+			-->
+	</h:form>
     </div>
 
 </ui:define>

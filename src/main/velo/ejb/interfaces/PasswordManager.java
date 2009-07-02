@@ -29,6 +29,25 @@ import velo.exceptions.NoResultFoundException;
  * @author Asaf Shakarchi
  */
 public interface PasswordManager {
+	/**
+	 * Find a a PasswordPolicy Container by unique name
+	 * @param uniqueName The unique name of the password policy container to find
+	 * @return A loaded PasswordPolicy entity, or null if could not find one.
+	 */
+	public PasswordPolicyContainer findPasswordPolicyContainer(String uniqueName);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Persist a PasswordPolicy entity in the database
@@ -44,16 +63,6 @@ public interface PasswordManager {
 	 */
 	@Deprecated
 	public List<PasswordPolicy> loadAllPasswordPolicies();
-	
-	
-	/**
-	 * Find a PasswordPolicy by unique name
-	 * @param uniqueName The unique name of the password policy to find
-	 * @return A loaded PasswordPolicy entity
-	 * @throws NoResultFoundException
-	 */
-	@Deprecated
-	public PasswordPolicy findPasswordPolicyByUniqueName(String uniqueName) throws NoResultFoundException;
 	
 	
 	/**
@@ -95,15 +104,6 @@ public interface PasswordManager {
 	@Deprecated
 	public List<PasswordPolicyContainer> loadAllPasswordPolicyContainers();
 
-	/**
-	 * Find a Password Policy Containers by unique name
-	 * @param uniqueName The unique name of the password policy to find
-	 * @return A loaded PasswordPolicyContainer entity
-	 * @throws NoResultFoundException
-	 */
-	@Deprecated
-	public PasswordPolicyContainer findPasswordPolicyContainerByUniqueName(String uniqueName) throws NoResultFoundException;
-	
 	
 	/**
 	 * Whether or not a password policy container exists by its unique name

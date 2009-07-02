@@ -1,0 +1,11 @@
+<binding xmlns:tns="http://reconciliation.velo/xml/entities/identities" name="binding" package="velo.reconciliation.xml.entities.identities">
+  <namespace uri="http://reconciliation.velo/xml/entities/identities" default="elements"/>
+  <mapping class="velo.reconciliation.xml.entities.identities.Identities" name="identities">
+    <collection get-method="getIdentities" set-method="setIdentities" create-type="java.util.ArrayList">
+      <structure type="velo.reconciliation.xml.entities.identities.Identities$Identity" name="identity">
+        <value style="attribute" name="identifier" get-method="getIdentifier" set-method="setIdentifier"/>
+      </structure>
+    </collection>
+    <value style="attribute" name="resource_unique_id" get-method="getResourceUniqueId" set-method="setResourceUniqueId"/>
+  </mapping>
+</binding>

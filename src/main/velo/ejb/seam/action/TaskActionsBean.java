@@ -32,6 +32,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
 
 import velo.ejb.interfaces.TaskManagerLocal;
+import velo.ejb.seam.TaskHome;
 import velo.entity.Task;
 import velo.entity.Task.TaskStatus;
 import velo.exceptions.CannotRequeueTaskException;
@@ -55,6 +56,16 @@ public class TaskActionsBean implements TaskActions {
 
 	@In(value = "#{taskHome.instance}")
 	Task task;
+	
+	@In
+	TaskHome taskHome;
+	
+	public void refreshTask() {
+		System.out.println("REFRESHING!!!!!!!!" + taskHome.getInstance().getStatus());
+		taskHome.refresh();
+		System.out.println("REFRESHING!!!!!!!!" + taskHome.getInstance().getStatus());
+	}
+	
 	
 	public void executeTask() {
 		if (task.isInProcess()) {
@@ -89,7 +100,10 @@ public class TaskActionsBean implements TaskActions {
         }
     }
 	
-	
+	public void resetRunningTask() {
+		taskManager.resetRunningTask(task);
+		facesMessages.add("Reset running task ID '#0' to PENDING status.", task.getTaskId());
+	}
 	
 	//Scanner methods
     public void changeTaskScannerMode() {

@@ -177,6 +177,7 @@ public class ResourceType extends BaseEntity implements Serializable {
 	//@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, targetEntity = velo.entity.ResourceTypeOperation.class)
 	//@JoinTable(name = "VL_RES_TYPES_TO_RES_OPRTN_DEFS", joinColumns = @JoinColumn(name = "RESOURCE_TYPE_ID"), inverseJoinColumns = @JoinColumn(name = "RES_TYOE_OPERATION_ID"))
 	@OneToMany(mappedBy = "resourceType", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OrderBy("resourceGlobalOperation ASC")
 	public Set<ResourceTypeOperation> getSupportedOperations() {
 		return supportedOperations;
 	}
@@ -252,14 +253,7 @@ public class ResourceType extends BaseEntity implements Serializable {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 
 	@Transient

@@ -29,6 +29,8 @@ import org.sadun.util.OperationTimedoutException;
 
 import velo.action.ResourceOperation;
 import velo.adapters.GenericTelnetAdapterNew;
+import velo.collections.Accounts;
+import velo.collections.ResourceGroups;
 import velo.contexts.OperationContext;
 import velo.entity.Resource;
 import velo.entity.ResourceTask;
@@ -41,6 +43,10 @@ import velo.resource.general.ScriptedResourceCommands;
 public class TelnetSpmlResourceOperationController extends SpmlResourceOperationController {
 	private static Logger log = Logger.getLogger(TelnetSpmlResourceOperationController.class.getName());
 	GenericTelnetAdapterNew adapter;
+	
+	public Accounts listAllIdentities(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
 	
 	public TelnetSpmlResourceOperationController() {
 
@@ -88,11 +94,29 @@ public class TelnetSpmlResourceOperationController extends SpmlResourceOperation
 	}
 	
 	
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesIncrementally(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
+
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
 	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupsFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
 	
-	
-	
-	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupMembershipFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
 	
 	
 	
@@ -115,7 +139,6 @@ public class TelnetSpmlResourceOperationController extends SpmlResourceOperation
 			throw new OperationException(e.toString());
 		}
 	}
-	
 	
 	
 	
@@ -150,10 +173,13 @@ public class TelnetSpmlResourceOperationController extends SpmlResourceOperation
 		}
 	}
 	
-	
+	@Deprecated
 	public void resourceFetchActiveDataOffline(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
 		
 	}
+	
+	
+	
 	
 	
 

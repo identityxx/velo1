@@ -36,8 +36,8 @@ public class TaskStatusBean implements TaskStatusManager {
 	public void changeStatus(TaskStatus newStatus, Task task) {
 		//task.setStatus(newStatus);
     	//em.merge(task);
-    	
-    	try {
+
+		try {
     		utx.begin();
         	task.setStatus(newStatus);
         	em.merge(task);

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://reconciliation.velo/xml/entities/identities" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" id="OTA2007A"
+    targetNamespace="http://reconciliation.velo/xml/entities/identities" version="1.0">
+    
+    
+    
+    
+    
+    
+    <xs:element name="identities">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="identity" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:attribute name="identifier" use="required">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="1"></xs:minLength>
+                                    <xs:maxLength value="255"></xs:maxLength>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="argh" use="required">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="1"></xs:minLength>
+                                    <xs:maxLength value="255"></xs:maxLength>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="resource_unique_id" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:minLength value="1"></xs:minLength>
+                        <xs:maxLength value="255"></xs:maxLength>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    
+    
+    
+    
+    
+    
+    
+    <!-- definition of attributes -->
+    <!-- 
+    <xs:attribute name="resource_unique_id">
+    	<xs:simpleType>
+    		<xs:restriction base="xs:string">
+    			<xs:minLength value="1"></xs:minLength>
+    			<xs:maxLength value="255"></xs:maxLength>
+    		</xs:restriction>
+    	</xs:simpleType>
+    </xs:attribute>
+    -->
+ 
+ 
+    <!-- A single identity element -->
+    <!-- 
+    <xs:element name="identity">
+        <xs:complexType>
+    	   <xs:attribute name="identifier" use="required">
+    	   	<xs:simpleType>
+    	   		<xs:restriction base="xs:string">
+    	   			<xs:minLength value="1"></xs:minLength>
+    	   			<xs:maxLength value="255"></xs:maxLength>
+    	   		</xs:restriction>
+    	   	</xs:simpleType>
+    	   </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+     -->
+     
+     
+    <!-- A parent of all identities elements (top element) -->
+    <!-- 
+    <xs:element name="identities">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="identity" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute ref="resource_unique_id" use="required"/>
+        </xs:complexType>
+    </xs:element>
+     -->
+</xsd:schema>

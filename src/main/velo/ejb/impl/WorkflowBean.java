@@ -31,7 +31,6 @@ import org.jbpm.JbpmContext;
 import org.jbpm.db.GraphSession;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.jpdl.JpdlException;
 
 import velo.entity.WorkflowProcessDef;
 import velo.exceptions.OperationException;

@@ -19,6 +19,7 @@ package velo.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -100,6 +101,7 @@ public class Attribute extends BaseEntity implements Serializable {
 	
 	//Transient
 	List<AttributeValue> transientValues = new ArrayList<AttributeValue>();
+	List<AttributeValue> oldValues = new ArrayList<AttributeValue>();
 
 	/**
 	 * @return the uniqueName
@@ -328,6 +330,10 @@ public class Attribute extends BaseEntity implements Serializable {
 		return transientValues;
 	}
 	
+	public void setValues(List<AttributeValue> values) {
+		this.transientValues = values;
+	}
+	
 	//for easier value set, without manging multiple values stuff (for AttributeRule expressions)
 	//hopefully exception will be catched by groovy expression
 	@Transient
@@ -346,6 +352,17 @@ public class Attribute extends BaseEntity implements Serializable {
 			return null;
 		}
 	}
+	
+	@Transient
+	public AttributeValue getFirstOldValue() {
+		if (getOldValues().size() > 0) {
+			return getOldValues().iterator().next();
+		}
+		else {
+			return null;
+		}
+	}
+	
 	
 	@Transient
 	public String getFirstValueAsString() {
@@ -383,20 +400,74 @@ public class Attribute extends BaseEntity implements Serializable {
 			}
 		}
 		
+		if ( (getOldValues() != null) && (getOldValues().size() > 0) ){
+			sb.append(", OLD VALUES: ");
+			for (AttributeValue currValue : getOldValues()) {
+				sb.append(", VALUE: [" + currValue.getAsString() + ":" + currValue.getDataType().toString() + "],");
+			}
+		}
 		return sb.toString();
 	}
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	public boolean compareValues(Attribute attr) {
-		//TODO: SHOULD IMPLEMENTED, NEEDED BY SYNCACCOUNTATTRIUTESEVENT of REconcile process!
-		return true;
+
+	public boolean equalToAttribute(Attribute attr) {
+		return equalToValues(attr.getValues());
 	}
+	
+	public boolean equalToValues(Collection<AttributeValue> foreignValues) {
+		//if amount of values are different, then return false
+		if (getValues().size() != foreignValues.size()) {
+			return false;
+		}
+		
+		//if both has no values
+		if ( (getValues().size() == 0) && foreignValues.size() ==0 ) {
+			return true;
+		}
+		
+		
+		//TODO: Better sort and compare, loop within loop is evil.
+		int i=0;
+		for (AttributeValue currValue : getValues()) {
+			i++;
+			boolean lastValueIsTrue = false;
+			
+			//per value of current attr, seek for a value that is equal on the compared attr.
+			for (AttributeValue currValueOf2ndAttr : foreignValues) {
+				if (currValue.compareValue(currValueOf2ndAttr)) {
+					lastValueIsTrue = true;
+					break;
+				}
+			}
+			
+			//if last value comparation was false, then return false
+			if (!lastValueIsTrue) {
+				return false;
+			}
+			
+			//did we compare all values? if yes, return true.
+			if (i == getValues().size()) {
+				return true;
+			}
+		}
+		
+		
+		//should never get here.
+		return false;
+	}
+
+	
+	
+	
+	@Transient
+	public List<AttributeValue> getOldValues() {
+		return oldValues;
+	}
+
+	public void setOldValues(List<AttributeValue> oldValues) {
+		this.oldValues = oldValues;
+	}
+	
 }

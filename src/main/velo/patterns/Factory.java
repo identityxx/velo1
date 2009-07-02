@@ -59,6 +59,20 @@ public class Factory implements Serializable{
 		}
 	}
 	
+	public static Object factoryInstance(String fullyQualifiedClassName, Class ofInstance) throws FactoryException {
+		Object obj;
+		
+		try {
+			obj = factoryInstance(fullyQualifiedClassName);
+			if (!ofInstance.isInstance(obj)) {
+				throw new FactoryException("Object was initiated but is not an instance of type '" + ofInstance.getName() + "'");
+			}
+			
+			return obj;
+		} catch (FactoryException e) {
+			throw new FactoryException("Could not factory class: " + e.getMessage());
+		}
+	}
 	
 	
 	
@@ -160,5 +174,16 @@ public class Factory implements Serializable{
 			throw new FactoryException(cnfe.getMessage());
 		}
 	}
+    
+    
+    public static void main(String[] args) {
+    	try {
+			Object o = Factory.factoryInstance("velo.actions.readyActions.RemoveAccount", velo.entity.ReadyAction.class);
+			System.out.println("O class '" + o.getClass().getName() + "'");
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 	
 }

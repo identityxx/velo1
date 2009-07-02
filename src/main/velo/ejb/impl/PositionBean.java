@@ -34,7 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.IgnoreDependency;
+import org.jboss.ejb3.annotation.IgnoreDependency;
 
 import velo.common.SysConf;
 import velo.ejb.interfaces.AdapterManagerLocal;
@@ -44,9 +44,7 @@ import velo.ejb.interfaces.ResourceManagerLocal;
 import velo.ejb.interfaces.RoleManagerLocal;
 import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
-import velo.entity.Account;
 import velo.entity.BulkTask;
-import velo.entity.ModifyUserRolesRequest;
 import velo.entity.Position;
 import velo.entity.PositionRole;
 import velo.entity.Role;
@@ -83,7 +81,8 @@ public class PositionBean implements PositionManagerLocal, PositionManagerRemote
 	/**
 	 * Inject the Role Bean
 	 */
-	@IgnoreDependency 
+	@org.jboss.annotation.IgnoreDependency
+	@IgnoreDependency
 	@EJB
 	RoleManagerLocal roleManager;
 	

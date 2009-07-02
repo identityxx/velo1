@@ -37,10 +37,17 @@ public interface ConfManager {
 	
 	
 	
+	//individual imports
+	public void importReconcileEvents();
+	public void importReadyActions();
+	public void importSystemEvents();
+	
+	
+	
 	public void syncResourceTypes();
 	public boolean isInitialDataImported();
-	@Deprecated
     public void persistInitialtData();
+    public void persistTestData();
     
     
 	@Deprecated

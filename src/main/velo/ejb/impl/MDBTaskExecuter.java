@@ -76,7 +76,8 @@ public class MDBTaskExecuter implements MessageListener {
 
                 //Load the task entity by the specified ID
                 Task task = taskManager.findTaskById(taskId);
-                taskManager.executeTask(task);
+                logger.trace("Succesfully loaded task ID '" + taskId + "', performing execution...");
+                taskManager.executeTaskAsync(task);
                 
                 bm = null;
             //appearntly other exceptions are thrown such as 'JmsServerSession', better to catch them all

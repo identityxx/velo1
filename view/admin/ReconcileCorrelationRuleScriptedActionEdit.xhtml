@@ -1,0 +1,63 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="reconcileResourceCorrelationRuleAction" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Edit Resource Correlation Rule</f:facet>
+
+				<ui:include src="/admin/incl/ActionEdit.xhtml">
+        			<ui:param name="action" value="#{reconcileResourceCorrelationRuleHome.instance}" />
+   				</ui:include>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+			
+			
+			<rich:panel rendered="#{!reconcileResourceCorrelationRuleHome.managed}">
+				<f:facet name="header">Script Details</f:facet>
+				<ui:include src="/admin/incl/ActionScriptEdit.xhtml">
+        			<ui:param name="script" value="#{reconcileResourceCorrelationRuleHome.script}" />
+   				</ui:include>
+			</rich:panel>
+				
+			<div class="actionButtons">
+				<h:commandButton id="save" value="Save" action="#{reconcileResourceCorrelationRuleHome.persist}"
+					rendered="#{!reconcileResourceCorrelationRuleHome.managed}" /> 
+				<h:commandButton
+					id="update" value="Save" action="#{reconcileResourceCorrelationRuleHome.update}"
+					rendered="#{reconcileResourceCorrelationRuleHome.managed}" /> 
+				<h:commandButton
+					id="delete" value="Delete" action="#{reconcileResourceCorrelationRuleHome.remove}"
+					rendered="#{reconcileResourceCorrelationRuleHome.managed}" /> 
+				<s:button id="done"
+					value="Done" propagation="end" view="/admin/ScriptedAction.xhtml"
+					rendered="#{reconcileResourceCorrelationRuleHome.managed}">
+					<f:param name="actionId" value="#{reconcileResourceCorrelationRuleHome.instance.id}"/>
+				</s:button> 
+				<s:button id="cancel"
+					value="Cancel" propagation="end"
+					view="/admin/#{empty scriptedActionFrom ? 'ScriptedActionList' : scriptedActionFrom}.xhtml"
+					rendered="#{!reconcileResourceCorrelationRuleHome.managed}" />
+			</div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

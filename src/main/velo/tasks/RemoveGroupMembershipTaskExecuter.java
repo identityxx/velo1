@@ -21,9 +21,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.NonUniqueResultException;
-
-import velo.actions.ActionInterface;
-import velo.actions.ResourceAccountActionInterface;
 import velo.actions.tools.RemoveGroupMembershipTools;
 import velo.ejb.interfaces.AccountManagerRemote;
 import velo.ejb.interfaces.ResourceGroupManagerRemote;
@@ -51,6 +48,7 @@ public class RemoveGroupMembershipTaskExecuter extends DefaultTaskExecuter {
 		}
 	}
 	
+	/*
 	public boolean execute(Task task) {
 		try {
 			System.out.println("Executing Remove Group Membership Task Started...");
@@ -97,4 +95,5 @@ public class RemoveGroupMembershipTaskExecuter extends DefaultTaskExecuter {
 			return false;
 		}
 	}
+	*/
 }

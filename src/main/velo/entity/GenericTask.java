@@ -5,7 +5,7 @@ import javax.persistence.MappedSuperclass;
 
 import velo.exceptions.ExecutionException;
 
-@Entity
+//@Entity
 @MappedSuperclass
 public abstract class GenericTask extends Task {
 	public GenericTask() {

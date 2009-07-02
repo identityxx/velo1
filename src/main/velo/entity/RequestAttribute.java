@@ -47,6 +47,7 @@ import velo.exceptions.AttributeSetValueException;
 @Table(name="VL_REQUEST_ATTRIBUTE")
 @Entity
 @SequenceGenerator(name="RequestAttributeIdSeq",sequenceName="REQUEST_ATTRIBUTE_ID_SEQ")
+@Deprecated
 public class RequestAttribute extends GuiAttribute implements Serializable, Cloneable {
     
     private static final long serialVersionUID = 1987305452306161213L;

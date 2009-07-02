@@ -137,14 +137,14 @@ public class SyncTargetImporter {
     
     
     public static void main(String[] args) throws SyncListImporterException{
-        SyncTargetImporter syncImporter = new SyncTargetImporter("C:/temp/velo/velo_ws/targets_scripts/asdf/sync_files/asdf_sync.xml");
+        SyncTargetImporter syncImporter = new SyncTargetImporter("C:/data/apps/velo/velo_ws/resources/adtest/sync_files/adtest_sync.xml");
         SyncTargetData syncData = syncImporter.getSyncedData();
         
         System.out.println("Parsed accounts amount: " + syncData.getAccounts().size());
         System.out.println("Parsed groups amount: " + syncData.getGroups().size());
         for (Account currAccount : syncData.getAccounts()) {
         	System.out.println("Printing attributes for account name '" + currAccount.getName() + "'");
-            for (Map.Entry<String,Attribute> currAttr : currAccount.getTransientAttributes().entrySet()) {
+            for (Map.Entry<String,Attribute> currAttr : currAccount.getActiveAttributes().entrySet()) {
             	System.out.println(currAttr.getValue().getDisplayable());
             }
         }

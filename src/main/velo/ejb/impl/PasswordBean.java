@@ -18,7 +18,6 @@
 package velo.ejb.impl;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -26,10 +25,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
+
 import velo.ejb.interfaces.PasswordManagerLocal;
 import velo.ejb.interfaces.PasswordManagerRemote;
 import velo.entity.PasswordPolicy;
 import velo.entity.PasswordPolicyContainer;
+import velo.entity.Resource;
 import velo.exceptions.NoResultFoundException;
 
 /**
@@ -39,15 +41,49 @@ import velo.exceptions.NoResultFoundException;
  */
 @Stateless()
 public class PasswordBean implements PasswordManagerLocal, PasswordManagerRemote {
-
+	private static Logger log = Logger.getLogger(PasswordBean.class.getName());
+	
 	/**
 	 * Injected entity manager
 	 */
 	@PersistenceContext
 	public EntityManager em;
 
-	private static Logger logger = Logger.getLogger(PasswordBean.class.getName());
+	
+	public PasswordPolicyContainer findPasswordPolicyContainer(String uniqueName) {
+		log.debug("Finding Password Policy Container in repository with unique name '" + uniqueName + "'");
 
+		try {
+			Query q = em.createNamedQuery("passwordPolicyContainer.findByUniqueName").setParameter("uniqueName",uniqueName);
+			return (PasswordPolicyContainer) q.getSingleResult();
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.debug("Could not find any Password Policy Container for unique name '" + uniqueName + "', returning null.");
+			return null;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	//MANAGE PASSWORD POLICIES
 	@Deprecated
@@ -88,7 +124,7 @@ public class PasswordBean implements PasswordManagerLocal, PasswordManagerRemote
 	
 	@Deprecated
 	public void deletePasswordPolicy(PasswordPolicy pp) {
-		logger.info("Removing Password Policy with Unique Name '" + pp.getUniqueName());
+		log.info("Removing Password Policy with Unique Name '" + pp.getUniqueName());
 
 		PasswordPolicy mergedPasswordPolicy = em.merge(pp);
 		em.remove(pp);
@@ -113,16 +149,7 @@ public class PasswordBean implements PasswordManagerLocal, PasswordManagerRemote
 		return em.createNamedQuery("passwordPolicyContainer.findAll").getResultList();
 	}
 
-	@Deprecated
-	public PasswordPolicyContainer findPasswordPolicyContainerByUniqueName(String uniqueName) throws NoResultFoundException {
-		try {
-			return (PasswordPolicyContainer) em.createNamedQuery("passwordPolicyContainer.findByUniqueName")
-				.setParameter("uniqueName", uniqueName).getSingleResult();
-		} catch (NoResultException e) {
-			throw new NoResultFoundException("Couldnt find Password Policy Container for unique name: "
-					+ uniqueName + ", detailed message is: " + e.getMessage());
-		}
-	}
+	
 	
 	@Deprecated
 	public boolean isPasswordPolicyContainerExistsByUniqueName(String uniqueName) {
@@ -141,7 +168,7 @@ public class PasswordBean implements PasswordManagerLocal, PasswordManagerRemote
 	
 	@Deprecated
 	public void deletePasswordPolicyContainer(PasswordPolicyContainer pp) {
-		logger.info("Removing Password PolicyContainer with Unique Name '" + pp.getUniqueName());
+		log.info("Removing Password PolicyContainer with Unique Name '" + pp.getUniqueName());
 
 		PasswordPolicyContainer mergedPasswordPolicyContainer = em.merge(pp);
 		em.remove(pp);

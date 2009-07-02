@@ -63,6 +63,9 @@ public abstract class ResourceAttributeBase extends Attribute implements Seriali
 	
 	private Integer priority = 0;
 	
+	private boolean persistence = false;
+	
+	
 	
 	//sources
 	public enum SourceTypes { 
@@ -254,6 +257,16 @@ public abstract class ResourceAttributeBase extends Attribute implements Seriali
 	 */
 	public void setPriority(Integer priority) {
 		this.priority = priority;
+	}
+	
+	
+	@Column(name = "PERSISTENCE", nullable=false)
+	public boolean isPersistence() {
+		return persistence;
+	}
+
+	public void setPersistence(boolean persistence) {
+		this.persistence = persistence;
 	}
 
 	@Transient

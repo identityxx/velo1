@@ -1,0 +1,130 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:s="http://jboss.com/products/seam/taglib"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+                xmlns:velo="http://open-identity.net/products/velo/taglib"
+                template="layout/template.xhtml">
+                       
+<ui:define name="body">
+    
+    <rich:panel>
+        <f:facet name="header">Scripted Action</f:facet>
+
+		<s:decorate id="name" template="layout/display.xhtml">
+            <ui:define name="label">Name</ui:define>
+            #{scriptedActionGenericHome.instance.name}
+        </s:decorate>
+        
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            #{scriptedActionGenericHome.instance.description}
+        </s:decorate>
+        
+        <s:decorate id="showStopper" template="layout/display.xhtml">
+            <ui:define name="label">Show Stopper?</ui:define>
+            <h:outputText value="Yes" rendered="#{scriptedActionGenericHome.instance.showStopper}" />
+			<h:outputText value="No" rendered="#{!scriptedActionGenericHome.instance.showStopper}" />
+        </s:decorate>
+        
+        <s:decorate id="active" template="layout/display.xhtml">
+            <ui:define name="label">Active?</ui:define>
+            <h:outputText value="Yes" rendered="#{scriptedActionGenericHome.instance.active}" />
+			<h:outputText value="No" rendered="#{!scriptedActionGenericHome.instance.active}" />
+        </s:decorate>
+        
+        <s:decorate id="showSequence" template="layout/display.xhtml">
+            <ui:define name="label">Sequence</ui:define>
+            #{scriptedActionGenericHome.instance.sequence}
+        </s:decorate>
+        
+        <!-- TODO: add support for specific action type classes attributes-->
+        
+        <div style="clear:both"/>
+        
+    </rich:panel>
+    
+    <rich:panel>
+        <f:facet name="header">Action Scripts</f:facet>
+        <rich:dataTable id="actionScripts" 
+                var="currScript"
+              value="#{velo:setAsList(scriptedActionGenericHome.instance.scripts)}" 
+           rendered="#{not empty scriptedActionGenericHome.instance.scripts}">
+		<h:column>
+            <f:facet name="header">
+            	Title
+            </f:facet>
+            <s:link view="/admin/#{empty from ? 'ActionScriptEdit' : from}.xhtml" value="#{currScript.title}" >
+                <f:param name="scriptId" value="#{currScript.id}"/>
+            </s:link>
+		</h:column>
+		<h:column>
+            <f:facet name="header">
+            	Active?
+            </f:facet>
+            #{currScript.active}
+		</h:column>
+		<h:column>
+            <f:facet name="header">
+            	Show Stopper?
+            </f:facet>
+            #{currScript.showStopper}
+		</h:column>
+		<h:column>
+            <f:facet name="header">
+            	Sequence
+            </f:facet>
+            #{currScript.sequence}
+		</h:column>
+		<h:column>
+            <f:facet name="header">
+            	Invoke Phase
+            </f:facet>
+            #{currScript.invokePhase}
+		</h:column>
+		<h:column>
+            <f:facet name="header">
+            	Script Language
+            </f:facet>
+            #{currScript.actionLanguage.name}
+		</h:column>
+		</rich:dataTable>
+
+    </rich:panel>
+    <div class="actionButtons">
+    	<!--        
+        <s:button rendered="#{scriptedActionGenericHome.instance.class.name eq 'velo.entity.ReconcileResourceCorrelationRule'}" view="/admin/ReconcileCorrelationRuleScriptedActionEdit.xhtml" 
+                    id="edit1" 
+                 value="Edit">
+		</s:button>
+		<s:button rendered="#{scriptedActionGenericHome.instance.class.name eq 'velo.entity.ReconcileScriptedAction'}" view="/admin/ReconcileScriptedActionEdit.xhtml" 
+                    id="edit2" 
+                 value="Edit">
+		</s:button>
+		-->
+
+		<s:button view="/admin/ScriptedActionEdit.xhtml" 
+                    id="edit" 
+                 value="Edit">
+		</s:button>
+		<s:button view="/admin/#{empty scriptedActionFrom ? 'ScriptedActionList' : scriptedActionFrom}.xhtml"
+                    id="done"
+                 value="Done">
+		</s:button>
+		
+		<s:button view="/admin/ActionScriptEdit.xhtml" 
+                    id="createNewActionScript" 
+                 value="Add Script">
+		</s:button>
+    </div>
+
+</ui:define>
+
+</ui:composition>

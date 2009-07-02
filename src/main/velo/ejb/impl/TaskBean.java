@@ -54,9 +54,9 @@ import javax.transaction.TransactionManager;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.IgnoreDependency;
 import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.IgnoreDependency;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
-
 import velo.common.SysConf;
 import velo.contexts.OperationContext;
 import velo.ejb.interfaces.AdapterManagerLocal;
@@ -68,8 +68,6 @@ import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.TaskManagerRemote;
 import velo.ejb.interfaces.TaskStatusManager;
 import velo.entity.BulkTask;
-import velo.entity.EventDefinition;
-import velo.entity.EventResponseTask;
 import velo.entity.GenericTask;
 import velo.entity.ResourceTask;
 import velo.entity.SpmlTask;
@@ -78,10 +76,14 @@ import velo.entity.TaskDefinition;
 import velo.entity.Task.TaskStatus;
 import velo.exceptions.CannotRequeueTaskException;
 import velo.exceptions.CollectionLoadingException;
+import velo.exceptions.EventExecutionException;
 import velo.exceptions.ExecutionException;
+import velo.exceptions.FactoryException;
 import velo.exceptions.NoResultFoundException;
 import velo.exceptions.OperationException;
-import velo.exceptions.ScriptInvocationException;
+import velo.exceptions.TaskExecutionException;
+import velo.patterns.Factory;
+import velo.tasks.TaskExecuter;
 /**
  * A Stateless EJB bean for managing Tasks
  *
@@ -102,10 +104,9 @@ import velo.exceptions.ScriptInvocationException;
     @EJB(name="resourceAttributeEjbRef", beanInterface=resourceAttributeManagerLocal.class),
     @EJB(name="identityAttributeEjbRef", beanInterface=IdentityAttributeManagerLocal.class)
 })*/
-        
+        @Name("taskManager")
         @Stateless()
         @AutoCreate
-        @Name("taskManager")
         //@TransactionManagement(TransactionManagementType.BEAN)
         public class TaskBean implements TaskManagerLocal, TaskManagerRemote {
     /**
@@ -123,7 +124,8 @@ import velo.exceptions.ScriptInvocationException;
     @EJB
     CommonUtilsManagerLocal cum;
     
-    @IgnoreDependency 
+    @org.jboss.annotation.IgnoreDependency
+	@IgnoreDependency
     @EJB
     EventManagerLocal eventManager;
     
@@ -131,7 +133,8 @@ import velo.exceptions.ScriptInvocationException;
     ResourceManagerLocal resourceManager;
     
     @EJB
-    @IgnoreDependency
+    @org.jboss.annotation.IgnoreDependency
+	@IgnoreDependency
     ResourceOperationsManagerLocal resourceOperationsManager;
     
     @EJB
@@ -164,23 +167,157 @@ import velo.exceptions.ScriptInvocationException;
         em.merge(task);
     }
     
+    //This is -just- the execution, not taking care of statuses or anything else.
+    //Private as it's only used by this bean internally.
+    private void taskExecutionOnly(Task task) throws TaskExecutionException {
+    	if (task.getTaskExecuterClassName() != null) {
+    		executeTaskViaTaskExecuter(task);
+    	} else {
+    		//For tasks that were not migrated to task executers yet.
+    		//HANDLES TASK STATUS ALREADY
+    		executeTaskViaQueue(task);
+    	}
+    }
+    
+    
+    
+    
+    //This method is the public one and should be used from other external places
+    public void executeTask(Task task) throws TaskExecutionException {
+    	log.trace("Executing task ID '" + task.getTaskId() + "'");
+    	
+    	//If async, just persist the task, will be executed by the standard task queues
+    	if (task.getAsync()) {
+    		persistTask(task);
+    	} else {
+    		//execute the task now.
+    		taskExecutionOnly(task);
+    	}
+    }
+    
+    
+    public void resetRunningTask(Task task) {
+    	if (task.getStatus() == TaskStatus.RUNNING) {
+    		task.setStatus(TaskStatus.PENDING);
+    		task.addLog("INFO", "Reset task status.", "Reset task status from RUNNING to PENDING.");
+    		
+    		setTaskStatus(TaskStatus.PENDING,task);
+    	}else {
+    		log.error("Cannot reset running task ID '" + task.getTaskId() + "' as its status is not RUNNING (status is '" + task.getStatus() +"')");
+    	}
+    }
+    
+    
+    //This method should only be used by the MDB Task Executer.
+    //It handles statuses of tasks and assume that the execution is async.
+    public void executeTaskAsync(Task task) throws TaskExecutionException {
+    	/*
+    	UserTransaction transaction = ejbContext.getUserTransaction();
+    	
+    	try {
+    		System.out.println("!!!!!!!!!!!!!!!!!!!!B1: " + transaction.getStatus());
+    		transaction.begin();
+    		System.out.println("!!!!!!!!!!!!!!!!!!!!B2: " + transaction.getStatus());
+    	}catch(NotSupportedException e) {
+    		e.printStackTrace();
+    	}catch (SystemException e) {
+    		e.printStackTrace();
+    	}
+    	*/
+    	
+    	log.trace("Making sure Task is an instance of SPML Task, that is currently the only supported type");
+    	
+    	if (task.getStatus() == TaskStatus.RUNNING) {
+    		log.warn("Task is already in RUNNING state, skipping task execution for task ID: " + task.getTaskId());
+    		return;
+    	}
+    	
+    	if ( (task.getStatus() != TaskStatus.PENDING) && (task.getStatus() != TaskStatus.FAILURE) && (task.getStatus() != TaskStatus.FATAL_ERROR) ) {
+    		log.warn("Task status is '" + task.getStatus() + "' and cannot be executed.");
+    		task.addLog("WARN", "Task could not be executed", "Task status is '" + task.getStatus() + "' and cannot be executed.");
+    		em.merge(task);
+    		return;
+    	}
+    	
+    	
+    	InitialContext ctx = null;
+    	TransactionManager tm = null;
+        try {
+          ctx = new InitialContext();
+          tm = (TransactionManager) ctx.lookup("java:/TransactionManager");
+        }catch(Exception e) {
+        	e.printStackTrace();
+        }
+        finally {
+           if(ctx!=null) {
+              try { ctx.close(); } catch (NamingException e) {}
+           }
+        }
+           
+        /*
+    	//System.out.println("!!!!!!!!!!!!!!!B1: " + em.getFlushMode());
+    	try {
+    		//System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getStatus());
+    		//System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getTransaction().getStatus());
+    	}catch(SystemException e) {
+    		e.printStackTrace();
+    	}
+    	*/
+        indicateTaskAsRunning(task);
+    	
+    	
+    	
+        try {
+        	taskExecutionOnly(task);
+        	task.setLastExecutionDate(new Date());
+        	indicateTaskExecutionSuccess(task);
+        }catch (TaskExecutionException e) {
+        	task.setLastExecutionDate(new Date());
+        	indicateTaskExecutionFailure(task, e.getMessage());
+        }
+    }
+    
+    //This method really execute the task via the task executer 
+    //really does the work no matter if the task is sync/async
+    public void executeTaskViaTaskExecuter(Task task) throws TaskExecutionException {
+    	//factory task executer
+    	try {
+			TaskExecuter taskExec = (TaskExecuter)Factory.factoryInstance(task.getTaskExecuterClassName());
+			taskExec.execute(task);
+		} catch (FactoryException e) {
+			throw new TaskExecutionException(e.getMessage());
+		}
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     public void indicateTaskExecutionFailure(Task task, String errorMsg) {
         log.warn("Indicating task execution failure for task ID: " + task.getTaskId());
         task.addLog("ERROR", errorMsg, null);
         setTaskStatus(TaskStatus.FATAL_ERROR, task);
         
         //invoke event
-        EventDefinition ed = eventManager.find(eventTaskFailure);
-        
+        //EventDefinition ed = eventManager.find(eventTaskFailure);
         OperationContext context = new OperationContext();
 		context.addVar("task", task);
-		
 		try {
-			//eventManager.invokeEventDefinitionResponses(ed, context);
-			eventManager.invokeEvent(ed, context);
-		} catch (ScriptInvocationException e) {
-			log.error("Error while trying to execute event definition response: " + e.toString());
+			eventManager.raiseSystemEvent("TASK_FAILURE", context);
+		} catch (EventExecutionException e) {
+			log.error("Error while trying to execute system event 'TASK_FAILURE': " + e.toString());
 		}
+		
+		
+//		try {
+//			//eventManager.invokeEventDefinitionResponses(ed, context);
+//			//eventManager.invokeEvent(ed, context);
+//		} catch (ScriptInvocationException e) {
+//			log.error("Error while trying to execute event definition response: " + e.toString());
+//		}
         
         
         //int failures = task.getFailureCounts() + 1;
@@ -342,60 +479,15 @@ import velo.exceptions.ScriptInvocationException;
     }
     
     
-    public boolean executeTask(Task task) {
-    	/*
-    	UserTransaction transaction = ejbContext.getUserTransaction();
-    	
-    	try {
-    		System.out.println("!!!!!!!!!!!!!!!!!!!!B1: " + transaction.getStatus());
-    		transaction.begin();
-    		System.out.println("!!!!!!!!!!!!!!!!!!!!B2: " + transaction.getStatus());
-    	}catch(NotSupportedException e) {
-    		e.printStackTrace();
-    	}catch (SystemException e) {
-    		e.printStackTrace();
-    	}
-    	*/
-    	
-    	
-    	
-    	log.trace("Making sure Task is an instance of SPML Task, that is currently the only supported type");
-    	
-    	if (task.getStatus() == TaskStatus.RUNNING) {
-    		log.warn("Task is already in RUNNING state, skipping task execution for task ID: " + task.getTaskId());
-    		return false;
-    	}
-    	
-    	InitialContext ctx = null;
-    	TransactionManager tm = null;
-        try {
-          ctx = new InitialContext();
-          tm = (TransactionManager) ctx.lookup("java:/TransactionManager");
-        }catch(Exception e) {
-        	e.printStackTrace();
-        }
-        finally {
-           if(ctx!=null) {
-              try { ctx.close(); } catch (NamingException e) {}
-           }
-        }
-           
-        /*
-    	//System.out.println("!!!!!!!!!!!!!!!B1: " + em.getFlushMode());
-    	try {
-    		//System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getStatus());
-    		//System.out.println("!!!!!!!!!!!!!!!B1: " + tm.getTransaction().getStatus());
-    	}catch(SystemException e) {
-    		e.printStackTrace();
-    	}
-    	*/
-    	
+    
+    //THIS NAME IS BAD, THIS IS NOT REALLY VIA QUEUE, IT'S THE OLD TASK EXECUTION THAT SHOULD DIE, INSTEAD, WE HAVE 'executeTaskViaTaskExecuter'
+    public boolean executeTaskViaQueue(Task task) throws TaskExecutionException {
     	//currently only SPML tasks are supported
     	if (task instanceof SpmlTask) {
     		SpmlTask spmlTask = (SpmlTask)task;
     		
     		try {
-    			indicateTaskAsRunning(spmlTask);
+//    			indicateTaskAsRunning(spmlTask);
     			//System.out.println("!!!!!!!!!!!!!!!BB2: " + em.getFlushMode());
     	    	//try {
     	    		//System.out.println("!!!!!!!!!!!!!!!BB2: " + tm.getStatus());
@@ -404,7 +496,7 @@ import velo.exceptions.ScriptInvocationException;
     	    		//e.printStackTrace();
     	    	//}
     			resourceOperationsManager.performSpmlTask(spmlTask);
-    			indicateTaskExecutionSuccess(spmlTask);
+//    			indicateTaskExecutionSuccess(spmlTask);
     			
     			/*
     			try {
@@ -441,53 +533,64 @@ import velo.exceptions.ScriptInvocationException;
     	    	}
     	    	*/
     	    	
-    			indicateTaskExecutionFailure(spmlTask, e.toString());
-    			return false;
+//    			indicateTaskExecutionFailure(spmlTask, e.toString());
+    			throw new TaskExecutionException(e);
+//    			return false;
     		}
     	}
     	
+    	
+    	
+    	
+    	//TODO: Replace all this crap with task executers
     	//CLEAN!
     	else if (task instanceof ResourceTask) {
     		try {
-    			indicateTaskAsRunning(task);
+//    			indicateTaskAsRunning(task);
     			ResourceTask resourceTask = (ResourceTask)task;
     			resourceOperationsManager.performResourceTask(resourceTask);
-    			indicateTaskExecutionSuccess(resourceTask);
+//    			indicateTaskExecutionSuccess(resourceTask);
     			return true;
     		}
     		catch (OperationException e) {
-    			indicateTaskExecutionFailure(task, e.toString());
-    			return false;
+//    			indicateTaskExecutionFailure(task, e.toString());
+    			throw new TaskExecutionException(e);
+//    			return false;
     		}
     	}
     	else if (task instanceof GenericTask) {
     		log.debug("Task id '" + task.getTaskId() + "', is a generic type task, executing task.");
-    		indicateTaskAsRunning(task);
+//    		indicateTaskAsRunning(task);
     		GenericTask genTask = (GenericTask)task;
     		try {
     			genTask.execute();
-    			indicateTaskExecutionSuccess(genTask);
+//    			indicateTaskExecutionSuccess(genTask);
     			return true;
     		}catch(ExecutionException e) {
-    			indicateTaskExecutionFailure(task, e.toString());
-    			return false;
+//    			indicateTaskExecutionFailure(task, e.toString());
+    			throw new TaskExecutionException(e);
+//    			return false;
     		}
     	}
+    	/*
     	else if (task instanceof EventResponseTask) {
     		indicateTaskAsRunning(task);
     		EventResponseTask eventResponseTask = (EventResponseTask)task;
     		try {
     			eventManager.invokeEventResponseTask(eventResponseTask, null);
-    			indicateTaskExecutionSuccess(eventResponseTask);
+//    			indicateTaskExecutionSuccess(eventResponseTask);
     			return true;
     		}catch (ScriptInvocationException e) {
-    			indicateTaskExecutionFailure(task, e.toString());
+//    			indicateTaskExecutionFailure(task, e.toString());
+    			throw e;
     			return false;
     		}
     	}
+    	*/
     	else {
-    		indicateTaskExecutionFailure(task, "Task type is not supported!");
-    		return false;
+//    		indicateTaskExecutionFailure(task, "Task type is not supported!");
+    		throw new TaskExecutionException("Task type is not supported!");
+//    		return false;
     	}
     	
     	
@@ -551,6 +654,7 @@ import velo.exceptions.ScriptInvocationException;
         
         return bulkTask.getBulkTaskId();
     }
+    
     
     public void reQueueTask(Task task) throws CannotRequeueTaskException {
         if (task.getStatus() != TaskStatus.FATAL_ERROR) {
@@ -648,12 +752,12 @@ import velo.exceptions.ScriptInvocationException;
             	
             	
             	//FIXME: REMOVED JMS FOR NOW, SOMETIMES QUEUE CRASHES, HAPPEND IN PARTNER, IL 
-            	//sendTaskToJmsQueue(currTaskToQueue);
+            	sendTaskToJmsQueue(currTaskToQueue);
             	
             	
             	
             	//em.clear();
-            	executeTask(currTaskToQueue);
+            	//executeTaskViaQueue(currTaskToQueue);
             	//em.clear();
             }
         }
@@ -714,8 +818,6 @@ import velo.exceptions.ScriptInvocationException;
      * Queue the specified task for execution
      */
     public void sendTaskToJmsQueue(Task task) {
-        //Whether to send the whole task or only the ID in message body
-        //27-may-07 (Asaf): Modified, sending only ID, seems like tasks sometimes are TOO heavy (40-200K) to be sent over JMS
         boolean onlySendTaskIdInMessageBody = true;
         
         try {

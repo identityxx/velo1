@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
+xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">
+
+    <!--
+    Create an "velo.collections.Accounts" bean instance when we visit the start of the <identities> element.
+    Assign the new bean instance to the beanId of "order".
+    Wire in the "accounts" beans.
+    -->
+    <jb:bindings beanId="reconIdentities" class="velo.collections.Accounts" createOnElement="identities">
+    	<!-- Seems like a bug, doesn't bind! -->
+        <jb:value property="resourceUniqueName" data="identities/@resource_unique_id" />
+        <jb:value property="fetchType" data="identities/@fetch_type" />
+        <jb:value property="creationDate" decoder="Date" data="identities/@creation_date">
+<!--			<jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>-->
+			<jb:decodeParam name="format">MM/dd/yyyy HH:mm:ss</jb:decodeParam>
+<!--			<jb:decodeParam name="locale-language">en</jb:decodeParam>-->
+<!--            <jb:decodeParam name="locale-country">IE</jb:decodeParam>-->
+		</jb:value>
+		
+		<jb:wiring property="" beanIdRef="account"/>
+    </jb:bindings>
+    
+
+    <!--
+    Create an "example.beans.OrderItem" bean instance when we visit the start of the <order-item> element.
+    This bean is wired into the "orderItems" ArrayList bean.
+    -->
+    <jb:bindings beanId="account" class="velo.entity.Account" createOnElement="identity">
+    	<jb:value property="name" data="identity/@identifier" />
+    	
+    	<jb:wiring property="transientAttributes" beanIdRef="attributes"/>
+    </jb:bindings>
+    
+    
+    <jb:bindings beanId="attributes" class="java.util.HashMap" createOnElement="attributes">
+<!--		<jb:wiring beanIdRef="attribute"/>-->
+    </jb:bindings>
+    
+     <jb:bindings beanId="attribute" class="velo.entity.Attribute" createOnElement="attribute">	
+		<!-- It's impossible to add into the map a dynamic name, thus using groovy script below-->
+		<jb:wiring property="values" beanIdRef="values"/>
+     </jb:bindings>
+     
+     
+     <jb:bindings beanId="values" class="java.util.ArrayList" createOnElement="values">
+		<jb:wiring beanIdRef="value"/>
+    </jb:bindings>
+     
+     
+     <jb:bindings beanId="value" class="velo.entity.AttributeValue" createOnElement="value">
+     	<jb:value property="value" data="value" />
+     </jb:bindings>
+     
+     
+     <g:groovy executeOnElement="attribute">
+             <g:script>
+                 <!--
+                 //Get the attributes map
+                 Map attrs = getBean("attributes");
+                 //Get the current detail
+                 velo.entity.Attribute attr = getBean("attribute");
+                 attr.setUniqueName(element.getAttribute("unique_name"));
+                 attrs.put(attr.getUniqueName(),attr);
+                 
+                 //List detail = getBean("detail");
+				//details.put(element.getAttribute("unique_name"), detail);
+				
+                 -->
+             </g:script>
+         </g:groovy> 
+
+</smooks-resource-list>

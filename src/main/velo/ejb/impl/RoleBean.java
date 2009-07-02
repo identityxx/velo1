@@ -43,9 +43,6 @@ import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 
-import velo.actions.ActionManager;
-import velo.actions.ResourceActionInterface;
-import velo.actions.factory.DeleteAccountActionFactory;
 import velo.common.EdmMessages;
 import velo.common.SysConf;
 import velo.contexts.OperationContext;
@@ -61,7 +58,6 @@ import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.Account;
 import velo.entity.BulkTask;
-import velo.entity.EventDefinition;
 import velo.entity.Position;
 import velo.entity.PositionRole;
 import velo.entity.Resource;
@@ -72,17 +68,13 @@ import velo.entity.SpmlTask;
 import velo.entity.Task;
 import velo.entity.User;
 import velo.entity.UserRole;
-import velo.exceptions.ActionFactoryException;
 import velo.exceptions.AssigningRoleToUserException;
-import velo.exceptions.FactoryResourceActionsForRoleException;
 import velo.exceptions.LoadingObjectsException;
 import velo.exceptions.MergeEntityException;
-import velo.exceptions.ModifyResourceGroupsInRoleException;
 import velo.exceptions.NoResultFoundException;
 import velo.exceptions.OperationException;
 import velo.exceptions.PersistEntityException;
 import velo.exceptions.ScriptInvocationException;
-import velo.exceptions.TaskCreationException;
 import velo.exceptions.ValidationException;
 import velo.scripting.GenericTools;
 
@@ -335,11 +327,13 @@ public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
     //The working one :)
     public BulkTask modifyRolesOfUserTasks(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
     	//trigger the event, let it have a chance to modify anything related to access...
-    	try {
-			invokePreModifyUserRolesEvent(user, rolesToAdd, rolesToRemove);
-		} catch (ScriptInvocationException e) {
-			log.error(e.toString());
-		}
+    	
+    	//TODO: Replace with another event of the new system evens
+//    	try {
+//			invokePreModifyUserRolesEvent(user, rolesToAdd, rolesToRemove);
+//		} catch (ScriptInvocationException e) {
+//			log.error(e.toString());
+//		}
     	
     	//This is critical, the user is obviously not in managed state, when invoked user.getUserRoles.add(role) it got persisted
     	//when invoked user.getUserRoles().remove(userRole) it didn't... not sure how Hibernate acts here but reloading the user and having it in managed state should hopefully solve these problems
@@ -2226,7 +2220,8 @@ UserRole currUserRoleToRemove = new UserRole();
     @param groupsToAdd A collection of ResourceGroup entities to add.
     @param groupsToRemove A collection of ResourceGroup entities to remove.
      */
-    @Deprecated
+    //@Deprecated
+    /*
     public void modifyResourceGroupsInRole(Role role, Collection<ResourceGroup> groupsToAdd, Collection<ResourceGroup> groupsToRemove) throws ModifyResourceGroupsInRoleException {
         log.info("Starting Modify Groups in Role process, modifying role '" + role.getName() + "', size of groups to remove: *" + groupsToRemove.size() + "*, size of groups to add: *" + groupsToAdd.size() + "*");
 
@@ -2388,7 +2383,7 @@ UserRole currUserRoleToRemove = new UserRole();
             em.clear();
             throw new ModifyResourceGroupsInRoleException("Role could not be validated during ResourceGroups in Role modifications for Role named: '" + role.getName() + "', request was cancelled!");
         }*/
-    }
+    //}
 
 
     /*
@@ -2437,6 +2432,7 @@ UserRole currUserRoleToRemove = new UserRole();
     //	}
 
 
+    /*
     @Deprecated
     public Collection<ResourceActionInterface> factoryResourceActionsForRoleRomoval(Role role, User user) throws FactoryResourceActionsForRoleException {
         if (role.getResources().size() == 0) {
@@ -2468,6 +2464,7 @@ UserRole currUserRoleToRemove = new UserRole();
 
         return roleActions;
     }
+    */
 
 
     //should be available in the role entity itself
@@ -2713,7 +2710,7 @@ UserRole currUserRoleToRemove = new UserRole();
         try {
             velo.entity.Resource loadedTs = tsm.findResourceByName(groupTargetName);
 
-            if (!tsgm.isGroupExistOnTarget(groupUniqueId, loadedTs)) {
+            if (!tsgm.isGroupExists(groupUniqueId, loadedTs)) {
                 throw new velo.exceptions.OperationException(errMsg + " The specified group does not exist!");
             }
             if (!isRoleExit(roleName)) {
@@ -2771,23 +2768,24 @@ UserRole currUserRoleToRemove = new UserRole();
     
     
   //helper
-	private void invokePreModifyUserRolesEvent(User user, Set<Role> rolesToAdd, Set<Role> rolesToRemove) throws ScriptInvocationException {
-		EventDefinition ed = eventManager.find(EVENT_PRE_MODIFY_USER_ROLES);
-		//make sure that the event was found, otherwise throw an exception
-		if (ed == null) {
-			log.error("Could not find event definition '" + EVENT_PRE_MODIFY_USER_ROLES + "', skipping event response invocations...");
-			return;
-		}
-		OperationContext context = new OperationContext();
-		context.addVar("user", user);
-		context.addVar("userName", user.getName());
-		context.addVar("rolesToAdd", rolesToAdd);
-		context.addVar("rolesToRemove", rolesToRemove);
-		context.addVar("tools", new GenericTools());
-		
-		//eventManager.invokeEventDefinitionResponses(ed, context);
-		eventManager.invokeEvent(ed, context);
-	}
+    //@Deprecated
+//	private void invokePreModifyUserRolesEvent(User user, Set<Role> rolesToAdd, Set<Role> rolesToRemove) throws ScriptInvocationException {
+//		EventDefinition ed = eventManager.find(EVENT_PRE_MODIFY_USER_ROLES);
+//		//make sure that the event was found, otherwise throw an exception
+//		if (ed == null) {
+//			log.error("Could not find event definition '" + EVENT_PRE_MODIFY_USER_ROLES + "', skipping event response invocations...");
+//			return;
+//		}
+//		OperationContext context = new OperationContext();
+//		context.addVar("user", user);
+//		context.addVar("userName", user.getName());
+//		context.addVar("rolesToAdd", rolesToAdd);
+//		context.addVar("rolesToRemove", rolesToRemove);
+//		context.addVar("tools", new GenericTools());
+//		
+//		//eventManager.invokeEventDefinitionResponses(ed, context);
+//		eventManager.invokeEvent(ed, context);
+//	}
     
     
     

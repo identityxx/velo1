@@ -50,6 +50,8 @@ import org.openspml.v2.msg.spmlsuspend.SuspendRequest;
 
 import velo.action.ResourceOperation;
 import velo.adapters.ActiveDirectoryAdapter;
+import velo.collections.Accounts;
+import velo.collections.ResourceGroups;
 import velo.contexts.OperationContext;
 import velo.entity.Account;
 import velo.entity.Attribute;
@@ -86,6 +88,11 @@ public class ActiveDirecotryRemoteSpmlResourceOperationController extends
 	public int UF_DONT_EXPIRE_PASSWD = 0x10000;
 	public int UF_PASSWORD_EXPIRED = 0x800000;
 
+	
+	public Accounts listAllIdentities(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
+	
 	public ActiveDirecotryRemoteSpmlResourceOperationController() {
 
 	}
@@ -465,6 +472,30 @@ public class ActiveDirecotryRemoteSpmlResourceOperationController extends
 	}
 	
 	
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesIncrementally(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
+
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupsFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupMembershipFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
 	
 	
 	
@@ -611,7 +642,7 @@ public class ActiveDirecotryRemoteSpmlResourceOperationController extends
 							.trace("START to dump loaded attributes of Active-Account name: "
 									+ currActiveAccount.getName());
 					for (Attribute currAttr : currActiveAccount
-							.getTransientAttributes().values()) {
+							.getActiveAttributes().values()) {
 						if (currAttr.getFirstValue() == null) {
 							log.debug("NOTE: Attriubte name: '"
 									+ currAttr.getUniqueName()
@@ -677,15 +708,15 @@ public class ActiveDirecotryRemoteSpmlResourceOperationController extends
 				String displayName = (String) currGroupMap.get("name")
 						.iterator().next();
 
-				try {
+//				try {
 					ResourceGroup currRG = ResourceGroup.factory(uniqueId,
 							displayName, description, getResource());
 					activeGroups.add(currRG);
-				} catch (ObjectFactoryException e) {
-					log
-							.warn("Skipping group loading due to exception while trying to load group, failure message: '"
-									+ e.toString() + "'");
-				}
+				//} catch (ObjectFactoryException e) {
+//					log
+//							.warn("Skipping group loading due to exception while trying to load group, failure message: '"
+//									+ e.toString() + "'");
+//				}
 			}
 
 			log.info("Successfully retrieved groups with amount: '"

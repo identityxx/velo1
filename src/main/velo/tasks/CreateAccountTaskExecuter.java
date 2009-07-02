@@ -24,6 +24,7 @@ import javax.naming.NamingException;
 import velo.ejb.interfaces.AccountManagerRemote;
 import velo.ejb.interfaces.RoleManagerRemote;
 import velo.entity.Task;
+import velo.exceptions.TaskExecutionException;
 
 public class CreateAccountTaskExecuter extends BasicTaskExecuter {
     AccountManagerRemote am;
@@ -46,7 +47,7 @@ public class CreateAccountTaskExecuter extends BasicTaskExecuter {
         }
     }
     
-    public boolean execute(Task task) {
+    public void execute(Task task) throws TaskExecutionException {
         //If needed, keep the task script before execution (which after success might delete it)
         String taskScript = null;
         //TODO: FIX!!!!!!
@@ -109,6 +110,5 @@ public class CreateAccountTaskExecuter extends BasicTaskExecuter {
             return false;
         }
         */
-        return true;
     }
 }

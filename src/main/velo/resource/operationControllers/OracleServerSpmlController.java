@@ -35,6 +35,8 @@ import org.openspml.v2.msg.spmlsuspend.SuspendRequest;
 
 import velo.action.ResourceOperation;
 import velo.adapters.JdbcAdapter;
+import velo.collections.Accounts;
+import velo.collections.ResourceGroups;
 import velo.contexts.OperationContext;
 import velo.entity.Account;
 import velo.entity.Resource;
@@ -61,6 +63,10 @@ public class OracleServerSpmlController extends GroupMembershipSpmlResourceOprea
 	private String fetchActiveUsersQuery = "SELECT USERNAME FROM ALL_USERS";
 	private String grantRoleToUserQuery = "GRANT %ROLE_NAME% TO %USER%";
 	private String revokeRoleToUserQuery = "REVOKE %ROLE_NAME% FROM %USER%";
+	
+	public Accounts listAllIdentities(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
 	
 	public OracleServerSpmlController() {
 		
@@ -209,7 +215,38 @@ public class OracleServerSpmlController extends GroupMembershipSpmlResourceOprea
 	
 	
 	
+	//lists
+	@Override
+	public Accounts listIdentitiesIncrementally(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
 	
+	@Override
+	public Accounts listIdentitiesFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	@Override
+	public ResourceGroups listGroupsFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	@Override
+	public ResourceGroups listGroupMembershipFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Deprecated
 	public void resourceFetchActiveDataOffline(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
 		Query accountsQueryManager = new Query(QueryType.SELECT);
 		accountsQueryManager.add(fetchActiveUsersQuery);
@@ -255,8 +292,7 @@ public class OracleServerSpmlController extends GroupMembershipSpmlResourceOprea
 	
 	
 	
-	
-	
+	@Deprecated
 	private boolean createFetchActiveDataOfflineFile(List accountsQueryResult, List groupsQueryResult, Resource resource) throws IOException {
 		List<Account> activeAccounts = new ArrayList<Account>();
 	    List<ResourceGroup> activeGroups = new ArrayList<ResourceGroup>();
@@ -275,7 +311,7 @@ public class OracleServerSpmlController extends GroupMembershipSpmlResourceOprea
             
             account.setResource(resource);
             try {
-                account.loadAccountByMap(currUser);
+                account.loadActiveAttributesByMap(currUser);
                 activeAccounts.add(account);
             } catch (ObjectsConstructionException e) {
                 //logger.error("Couldnt load account by map, with message: " + e.getMessage());

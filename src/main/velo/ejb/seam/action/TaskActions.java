@@ -19,12 +19,16 @@ package velo.ejb.seam.action;
 
 import javax.ejb.Local;
 
+import velo.entity.Task;
+
 @Local
 public interface TaskActions {
+	public void refreshTask();
 	public void executeTask();
 	public void cancelTask();
 	public void handledManuallyTask();
 	public void reQueueTask();
+	public void resetRunningTask();
 	public void changeTaskScannerMode();
 	public boolean isTaskScannerActivate();
 	public void scanTasks();

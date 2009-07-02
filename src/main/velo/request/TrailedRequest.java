@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import velo.actions.ResourceActionInterface;
+//import velo.actions.ResourceActionInterface;
 import velo.ejb.interfaces.RoleManagerLocal;
 import velo.entity.Request;
 import velo.entity.Role;
@@ -45,11 +45,11 @@ public class TrailedRequest implements Serializable {
 	
 	private Collection<Role> rolesToRemove = new ArrayList<Role>();
 	
-	private Collection<ResourceActionInterface> resourceActions = new ArrayList<ResourceActionInterface>();
+//	private Collection<ResourceActionInterface> resourceActions = new ArrayList<ResourceActionInterface>();
 	
 	private Collection<Attribute> requestAttributes = new ArrayList<Attribute>();
 	
-	private Collection<ResourceActionInterface> allresourceActionsForExecution = new ArrayList<ResourceActionInterface>();
+//private Collection<ResourceActionInterface> allresourceActionsForExecution = new ArrayList<ResourceActionInterface>();
 	
 	private boolean isPrepared = false;
 	
@@ -154,30 +154,30 @@ public class TrailedRequest implements Serializable {
 	/**
 	 * @param resourceActions The resourceActions to set.
 	 */
-	public void setResourceActions(Collection<ResourceActionInterface> resourceActions) {
+	/*public void setResourceActions(Collection<ResourceActionInterface> resourceActions) {
 		this.resourceActions = resourceActions;
-	}
+	}*/
 	
 	/**
 	 * @return Returns the resourceActions.
 	 */
-	public Collection<ResourceActionInterface> getResourceActions() {
+	/*public Collection<ResourceActionInterface> getResourceActions() {
 		return resourceActions;
-	}
+	}*/
 	
 	/**
 	 * @param allresourceActionsForExecution The allresourceActionsForExecution to set.
 	 */
-	public void setAllresourceActionsForExecution(Collection<ResourceActionInterface> allresourceActionsForExecution) {
+	/*public void setAllresourceActionsForExecution(Collection<ResourceActionInterface> allresourceActionsForExecution) {
 		this.allresourceActionsForExecution = allresourceActionsForExecution;
-	}
+	}*/
 	
 	/**
 	 * @return Returns the allresourceActionsForExecution.
 	 */
-	public Collection<ResourceActionInterface> getAllresourceActionsForExecution() {
+	/*public Collection<ResourceActionInterface> getAllresourceActionsForExecution() {
 		return allresourceActionsForExecution;
-	}
+	}*/
 	
 	/**
 	 * <p>Generate the actions from the specified role list
@@ -215,10 +215,10 @@ public class TrailedRequest implements Serializable {
 	
 	/**
 	 * Add actions from the request to the GLOBAL resourceActions collection of this request
-	 */
+	 *//*
 	public void addActionsFromRequestresourceActions() {
 		getAllresourceActionsForExecution().addAll(getResourceActions());
-	}
+	}*/
 	
 	/**
 	 * Make any required preparations before creating the actions objects  

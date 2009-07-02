@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 //WHAT THE HELL IS THAT CLASS?
 @Entity 
 @DiscriminatorValue("ATTRIBUTE_ACTION_RULE")
+@Deprecated // we got resourceattributeActionRule
 public abstract class AttributeActionRule extends ActionRule {
 	private static final long serialVersionUID = 1L;
 	private static transient Logger log = Logger.getLogger(AttributeActionRule.class.getName());

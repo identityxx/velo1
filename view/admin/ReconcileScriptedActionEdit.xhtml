@@ -1,0 +1,63 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="reconcileScriptedAction" styleClass="edit">
+
+			<rich:panel>
+				<f:facet name="header">Resource Scripted Action Details</f:facet>
+
+				<ui:include src="/admin/incl/ActionEdit.xhtml">
+        			<ui:param name="action" value="#{reconcileScriptedActionHome.instance}" />
+   				</ui:include>
+				
+				<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+
+			</rich:panel>
+			
+			
+			<rich:panel rendered="#{!reconcileScriptedActionHome.managed}">
+				<f:facet name="header">Script Details</f:facet>
+				<ui:include src="/admin/incl/ActionScriptEdit.xhtml">
+        			<ui:param name="script" value="#{reconcileScriptedActionHome.script}" />
+   				</ui:include>
+			</rich:panel>
+				
+			<div class="actionButtons">
+				<h:commandButton id="save" value="Save" action="#{reconcileScriptedActionHome.persist}"
+					rendered="#{!reconcileScriptedActionHome.managed}" /> 
+				<h:commandButton
+					id="update" value="Save" action="#{reconcileScriptedActionHome.update}"
+					rendered="#{reconcileScriptedActionHome.managed}" /> 
+				<h:commandButton
+					id="delete" value="Delete" action="#{reconcileScriptedActionHome.remove}"
+					rendered="#{reconcileScriptedActionHome.managed}" /> 
+				<s:button id="done"
+					value="Done" propagation="end" view="/admin/ScriptedAction.xhtml"
+					rendered="#{reconcileScriptedActionHome.managed}">
+					<f:param name="actionId" value="#{reconcileScriptedActionHome.instance.id}"/>
+				</s:button> 
+				<s:button id="cancel"
+					value="Cancel" propagation="end"
+					view="/admin/#{empty scriptedActionFrom ? 'ScriptedActionList' : scriptedActionFrom}.xhtml"
+					rendered="#{!reconcileScriptedActionHome.managed}" />
+			</div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

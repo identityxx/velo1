@@ -54,6 +54,17 @@ public class ResourceAction extends ActionRule {
 
 	private ResourceTypeOperation resourceTypeOperation;
 
+	public ResourceAction() {
+		
+	}
+	
+	public ResourceAction(Resource resource, String description, InvokePhases phase, boolean active, ResourceTypeOperation rto) {
+		setResource(resource);
+		setDescription(description);
+		setInvokePhase(phase);
+		setActive(active);
+		setResourceTypeOperation(rto);
+	}
 
 	/**
 	 * @return the resource

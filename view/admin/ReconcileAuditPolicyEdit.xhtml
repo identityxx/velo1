@@ -1,0 +1,122 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form id="reconcileAuditPolicy" styleClass="edit">
+
+			<rich:panel>
+				<rich:panel>
+				<f:facet name="header">General Details</f:facet>
+
+				<s:decorate id="nameDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Name</ui:define>
+					<h:inputText id="name" required="true" size="50" maxlength="50"
+						value="#{reconcileAuditPolicyHome.instance.name}">
+						<a:support event="onblur" reRender="nameDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+                    
+				<div style="clear: both"/>
+				</rich:panel>
+				
+				
+				<rich:panel>
+					<f:facet name="header">Identity Events</f:facet>
+					<s:decorate id="identityConfirmedEventDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Identity Confirmed Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditIdentityConfirmedEvent}"/>
+					</s:decorate>
+					
+					<s:decorate id="identityRemovedEventDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Identity Removed Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditIdentityRemovedEvent}"/>
+					</s:decorate>
+        	
+        	
+        			<s:decorate id="identityUnassignedEventDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Identity Unassigned Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditIdentityUnassignedEvent}"/>
+					</s:decorate>
+					
+					<s:decorate id="identityUnmatchedEventDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Identity Unmatched Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditIdentityUnmatchedEvent}"/>
+					</s:decorate>
+					
+					<s:decorate id="identityModifiedEventDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Identity Modified Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditIdentityModifiedEvent}"/>
+					</s:decorate>
+					
+					<s:decorate id="identityAttributeEventDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Identity Attribute Modified Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditIdentityAttributeModifiedEvent}"/>
+					</s:decorate>
+					
+					
+					<div style="clear: both"/>
+				</rich:panel>
+				<rich:panel>
+					<f:facet name="header">Groups Events</f:facet>
+					<s:decorate id="groupCreatedDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Group Created Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditGroupCreatedEvent}"/>
+					</s:decorate>
+					<s:decorate id="groupModifiedDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Group Modified Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditGroupModifiedEvent}"/>
+					</s:decorate>
+					<s:decorate id="groupRemovedDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Group Removed Event?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditGroupRemovedEvent}"/>
+					</s:decorate>
+					
+					<div style="clear: both"/>
+				</rich:panel>
+				<rich:panel>
+					<f:facet name="header">Group Membership Events</f:facet>
+					<s:decorate id="groupMembershipAssocDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Group Membership Association?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditGroupRemovedEvent}"/>
+					</s:decorate>
+					<s:decorate id="groupMembershipDessocDecoration" template="layout/edit.xhtml">
+						<ui:define name="label">Audit Group Membership Dessociation?</ui:define>
+						<h:selectBooleanCheckbox value="#{reconcileAuditPolicyHome.instance.auditGroupMembershipDessocEvent}"/>
+					</s:decorate>
+					
+					<div style="clear: both"/>
+				</rich:panel>
+			</rich:panel>
+
+
+			<div class="actionButtons"><h:commandButton id="save"
+				value="Save" action="#{reconcileAuditPolicyHome.persist}"
+				disabled="#{!reconcileAuditPolicyHome.wired}"
+				rendered="#{!reconcileAuditPolicyHome.managed}" /> <h:commandButton
+				id="update" value="Save" action="#{reconcileAuditPolicyHome.update}"
+				rendered="#{reconcileAuditPolicyHome.managed}" /> <h:commandButton
+				id="delete" value="Delete" action="#{reconcileAuditPolicyHome.remove}"
+				rendered="#{reconcileAuditPolicyHome.managed}" /> <s:button id="done"
+				value="Done" propagation="end" view="/admin/ReconcileAuditPolicy.xhtml"
+				rendered="#{reconcileAuditPolicyHome.managed}" /> <s:button id="cancel"
+				value="Cancel" propagation="end"
+				view="/admin/#{empty reconcileAuditPolicyFrom ? 'ReconcileAuditPolicyList' : reconcileAuditPolicyFrom}.xhtml"
+				rendered="#{!reconcileAuditPolicyHome.managed}" /></div>
+	</h:form>
+	</ui:define>
+
+</ui:composition>

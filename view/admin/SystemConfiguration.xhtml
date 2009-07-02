@@ -98,6 +98,15 @@
 	       </h:panelGrid>
        </h:form>
 	</rich:tab>
+	<rich:tab id="systemDataImports" label="System Data Imports">
+		<h:form>
+			<h:panelGrid columns="1">
+                <h:commandButton action="#{confActions.importReconcileEvents}" value="Import Reconcile Events"/>
+                <h:commandButton action="#{confActions.importSystemEvents}" value="Import System Events"/>
+                <h:commandButton action="#{confActions.importReadyActions}" value="Import Ready Actions"/>
+	       </h:panelGrid>
+		</h:form>
+	</rich:tab>
 	</rich:tabPanel>
 
 	</ui:define>

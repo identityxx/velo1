@@ -215,11 +215,11 @@ public interface RoleManager {
 	public Collection<BulkTask> addRolesByRolesNamesToUserBulkTaskList(
 			List<String> rolesToAdd, User user, boolean isDirect);
 
-	@Deprecated
-	public void modifyResourceGroupsInRole(Role role,
+	//@Deprecated
+	/*public void modifyResourceGroupsInRole(Role role,
 			Collection<ResourceGroup> groupsToAdd,
 			Collection<ResourceGroup> groupsToRemove)
-			throws ModifyResourceGroupsInRoleException;
+			throws ModifyResourceGroupsInRoleException;*/
 
 	@Deprecated
 	public boolean isResourceAssignedToRole(Role role, Resource resource);

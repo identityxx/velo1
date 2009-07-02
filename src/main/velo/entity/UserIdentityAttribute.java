@@ -455,9 +455,9 @@ import velo.exceptions.UnsupportedAttributeTypeException;
     
     /**
      * Add values by collection of -generic- AttributeValues objects
-     * @param values The collection of attribute values to add to this UserIdentityAttribute entity.
+     * @param attributeValues The collection of attribute values to add to this UserIdentityAttribute entity.
      */
-    @Transient
+    //@Transient
     public void setValuesByAV(List<AttributeValue> attributeValues) throws AttributeSetValueException {
     	if (getValues().size() == attributeValues.size()) {
     		for (int i=0;i<getValues().size();i++) {

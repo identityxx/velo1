@@ -20,6 +20,7 @@ package velo.ejb.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -29,13 +30,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.IgnoreDependency;
+import org.jboss.ejb3.annotation.IgnoreDependency;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 import org.xml.sax.SAXException;
 
-import velo.actions.ActionManager;
-import velo.actions.ResourceActionInterface;
 import velo.adapters.Adapter;
 import velo.adapters.AdapterFactoryabbbbb;
 import velo.adapters.ResourceAdapter;
@@ -45,10 +44,14 @@ import velo.ejb.interfaces.ResourceAttributeManagerLocal;
 import velo.ejb.interfaces.ResourceManagerLocal;
 import velo.ejb.interfaces.ResourceManagerRemote;
 import velo.ejb.interfaces.TaskManagerLocal;
+import velo.ejb.utils.PageControl;
+import velo.ejb.utils.QueryGenerator;
+import velo.entity.ReconcileProcessSummary;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceType;
 import velo.entity.User;
+import velo.entity.ReconcileProcessSummary.ReconcileProcesses;
 import velo.exceptions.AccountIdGenerationException;
 import velo.exceptions.DeleteObjectViolation;
 import velo.exceptions.FactoryException;
@@ -99,16 +102,30 @@ public class ResourceBean implements ResourceManagerLocal,
     /**
      * Inject a local AccountManager EJB
      */
-    @IgnoreDependency
+    @org.jboss.annotation.IgnoreDependency
+	@IgnoreDependency
     @EJB
     public AccountManagerLocal am;
     
     //JB@EJB //CAUSE JBOSS CIRCULATION ERROR, BUT WHY? NO DEPENDENCY ON THE OTHER SIDE
-    @IgnoreDependency
+    @org.jboss.annotation.IgnoreDependency
+	@IgnoreDependency
     @EJB
     TaskManagerLocal tm;
     
     
+    
+    public List<Resource> findResources(Resource criteria, String[] optionalData, PageControl pc) throws Exception {
+    	QueryGenerator qg = new QueryGenerator(criteria,optionalData,pc);
+    	
+    	try {
+    		System.out.println("!!!!!" + qg.getQueryString());
+			Query q = qg.getQuery(em);
+			return q.getResultList();
+		} catch (Exception e) {
+			throw e;
+		}
+    }
     
     
     public Resource findResource(String uniqueName) {
@@ -122,6 +139,23 @@ public class ResourceBean implements ResourceManagerLocal,
 			log.debug("Found user did not result any user for name '" + uniqueName + "', returning null.");
 			return null;
 		}
+    }
+    
+    public Resource findResourceEagerly(String uniqueName) {
+    	Resource r = findResource(uniqueName);
+    	
+    	if (r == null) {
+    		return null;
+    	}
+    	
+    	r.getAccounts().size();
+    	r.getResourceActions().size();
+    	r.getGroups().size();
+    	r.getResourceAttributes().size();
+    	r.getResourceAdmins().size();
+    	r.getResourceType().getResourceTypeAttributes().size();
+    	
+    	return r;
     }
     
     public ResourceType findResourceType(String uniqueName) {
@@ -148,6 +182,34 @@ public class ResourceBean implements ResourceManagerLocal,
     	
     	return attrs;
     }
+    
+    
+    public ReconcileProcessSummary findLatestReconcileProcessSummary(ReconcileProcesses processType) {
+    	List<ReconcileProcessSummary> lst =  em.createNamedQuery("reconcileProcessSummary.findLatestForProcessType").setParameter("processType",processType).getResultList();
+    	
+    	if (lst.size() > 0) {
+    		return lst.iterator().next();
+    	} else {
+    		return null;
+    	}
+    }
+    
+    public ReconcileProcessSummary findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses processType) {
+    	List<ReconcileProcessSummary> lst =  em.createNamedQuery("reconcileProcessSummary.findLatestSuccessfullForProcessType").setParameter("processType",processType).getResultList();
+    	
+    	if (lst.size() > 0) {
+    		return lst.iterator().next();
+    	} else {
+    		return null;
+    	}
+    }
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -521,7 +583,7 @@ public class ResourceBean implements ResourceManagerLocal,
     
     
     
-    
+    /*
     public ResourceActionInterface factoryActionScriptByActionName(
             Resource resource, String actionName)
             throws ScriptLoadingException {
@@ -546,6 +608,7 @@ public class ResourceBean implements ResourceManagerLocal,
         
         return tsai;
     }
+    */
     
         /*
          * @Transient public ResourceDescriptor factoryResourceAdapter() {

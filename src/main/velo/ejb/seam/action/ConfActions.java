@@ -28,7 +28,10 @@ public interface ConfActions {
 	public Configuration getVeloConfig();
 	public void generateResourcePrincipalsEncryptionKey();
 	//public void generateUsersLocalPasswordsEncryptionKey();
-	
+	public void importReconcileEvents();
+	public void importReadyActions();
+	public String importTestData();
+	public void importSystemEvents();
 	
 	public void destroy();
 	

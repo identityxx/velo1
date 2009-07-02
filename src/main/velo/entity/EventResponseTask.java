@@ -40,12 +40,13 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 @Entity
 @DiscriminatorValue("EVENT_RESPONSE")
+@Deprecated
 public class EventResponseTask extends Task implements Serializable {
 	private static Logger log = Logger.getLogger(EventResponseTask.class.getName());
 	private Request requestRef;
 	private Task taskRef;
 	private User userRef;
-	private EventResponse eventResponse;
+	//private EventResponseOLD eventResponseOLD;
 	private String context;
 	
 	
@@ -99,21 +100,21 @@ public class EventResponseTask extends Task implements Serializable {
 
 	
 	
-	/**
-	 * @return the eventResponse
-	 */
-	@ManyToOne(optional=true)
-    @JoinColumn(name = "EVENT_RESPONSE_ID", nullable = true)
-	public EventResponse getEventResponse() {
-		return eventResponse;
-	}
-
-	/**
-	 * @param eventResponse the eventResponse to set
-	 */
-	public void setEventResponse(EventResponse eventResponse) {
-		this.eventResponse = eventResponse;
-	}
+//	/**
+//	 * @return the eventResponse
+//	 */
+//	@ManyToOne(optional=true)
+//    @JoinColumn(name = "EVENT_RESPONSE_ID", nullable = true)
+//	public EventResponseOLD getEventResponse() {
+//		return eventResponseOLD;
+//	}
+//
+//	/**
+//	 * @param eventResponseOLD the eventResponse to set
+//	 */
+//	public void setEventResponse(EventResponseOLD eventResponseOLD) {
+//		this.eventResponseOLD = eventResponseOLD;
+//	}
 	
 	
 
@@ -133,37 +134,37 @@ public class EventResponseTask extends Task implements Serializable {
 		this.context = context;
 	}
 
-	public static EventResponseTask factory(EventResponse eventRes, OperationContext context) throws ObjectFactoryException {
-		log.debug("(1)Factoring event response task '" + eventRes.getDescription() + "', of event: '" + eventRes.getEventDefinition().getDisplayName() + "'");
-		EventResponseTask ert = new EventResponseTask();
-		ert.setStatus(Task.TaskStatus.PENDING);
-		ert.setDescription(eventRes.getDescription());
-		ert.setCreationDate(new Date());
-		ert.setEventResponse(eventRes);
-		//log.debug("!!!!2");
-		
-		if (eventRes.isPersistence()) {
-		try {
-			//log.debug("!!!!3");
-			XStream xstream = new XStream(new DomDriver());
-			//log.debug("!!!!4");
-			ert.setContext(xstream.toXML(context));
-		}catch (Exception e) {
-			log.error("Could not serialize context for event response '" + eventRes.getDescription() + "': " + e.getMessage());
-			throw new ObjectFactoryException(e);
-		}
-		}
-		//log.debug("!!!!5");
-		
-		if (eventRes.getExecutionTimeDifference() != null) {
-			Calendar c = Calendar.getInstance();
-			c.add(Calendar.HOUR, eventRes.getExecutionTimeDifference());
-			ert.setExpectedExecutionDate(c.getTime());
-		}
-		
-		//log.debug("!!!!6");
-		return ert;
-	}
+//	public static EventResponseTask factory(EventResponseOLD eventRes, OperationContext context) throws ObjectFactoryException {
+//		log.debug("(1)Factoring event response task '" + eventRes.getDescription() + "', of event: '" + eventRes.getEventDefinition().getDisplayName() + "'");
+//		EventResponseTask ert = new EventResponseTask();
+//		ert.setStatus(Task.TaskStatus.PENDING);
+//		ert.setDescription(eventRes.getDescription());
+//		ert.setCreationDate(new Date());
+//		ert.setEventResponse(eventRes);
+//		//log.debug("!!!!2");
+//		
+//		if (eventRes.isPersistence()) {
+//		try {
+//			//log.debug("!!!!3");
+//			XStream xstream = new XStream(new DomDriver());
+//			//log.debug("!!!!4");
+//			ert.setContext(xstream.toXML(context));
+//		}catch (Exception e) {
+//			log.error("Could not serialize context for event response '" + eventRes.getDescription() + "': " + e.getMessage());
+//			throw new ObjectFactoryException(e);
+//		}
+//		}
+//		//log.debug("!!!!5");
+//		
+//		if (eventRes.getExecutionTimeDifference() != null) {
+//			Calendar c = Calendar.getInstance();
+//			c.add(Calendar.HOUR, eventRes.getExecutionTimeDifference());
+//			ert.setExpectedExecutionDate(c.getTime());
+//		}
+//		
+//		//log.debug("!!!!6");
+//		return ert;
+//	}
 	
 	@Transient
 	public OperationContext getDeserializedContent() {

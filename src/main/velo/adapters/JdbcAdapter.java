@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.dbutils.DbUtils;
@@ -343,7 +344,7 @@ public class JdbcAdapter extends QueryBasedAdapter {
                     ResultSet rs = (ResultSet) stmt.executeQuery();
                     
                     rs = StringTrimmedResultSet.wrap(rs);
-                    MapListHandler mlh = new MapListHandler();
+                    MapListHandler mlh = new MapListHandler(new VeloDbUtilsRowProcessor());
                     
                     if (lMap == null) {
                     	lMap = (List) mlh.handle(rs);
@@ -682,6 +683,20 @@ public class JdbcAdapter extends QueryBasedAdapter {
         st.setQueryTimeout(getQueryTimeout());
         
         return st;
+    }
+    
+    
+    public void dumpResults() {
+    	int i=0;
+    	for (Object currRow : getResult()) {
+    		i++;
+    		Map<String,Object> currRowMap = (Map<String,Object>)currRow;
+    		log.info("Start of row [" + i + "]");
+    		for (Map.Entry<String, Object> currColumn : currRowMap.entrySet()) {
+    			log.info("\t column name: '" + currColumn.getKey() + "', value: '"+currColumn.getValue()+"'[" + currColumn.getValue().getClass().getName() + "]");
+    		}
+    		log.info("End of row [" + i + "]");
+    	}
     }
     
 }//eoc

@@ -36,7 +36,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.jboss.seam.annotations.Name;
 

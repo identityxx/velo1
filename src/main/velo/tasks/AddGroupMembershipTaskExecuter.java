@@ -21,9 +21,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.NonUniqueResultException;
-
-import velo.actions.ActionInterface;
-import velo.actions.ResourceAccountActionInterface;
 import velo.actions.tools.AddGroupMembershipTools;
 import velo.ejb.interfaces.AccountManagerRemote;
 import velo.ejb.interfaces.ResourceGroupManagerRemote;
@@ -50,6 +47,7 @@ public class AddGroupMembershipTaskExecuter extends DefaultTaskExecuter {
 		}
 	}
 	
+	/*
 	public boolean execute(Task task) {
 		try {
 			System.out.println("Executing Add Group Membership Task Started...");
@@ -93,6 +91,7 @@ public class AddGroupMembershipTaskExecuter extends DefaultTaskExecuter {
 		}
 		*/
 		//TODO: Improve error handling! these errors goes to the logs and thats it!
+	/*
 		catch (NonUniqueResultException nure) {
 			String errMsg ="Multiple accounts were returned for the same account name on the same target!!!, detailed failure message is: " + nure.getMessage();
 			System.out.println(errMsg);
@@ -108,4 +107,5 @@ public class AddGroupMembershipTaskExecuter extends DefaultTaskExecuter {
 		}
 		
 	}
+*/
 }

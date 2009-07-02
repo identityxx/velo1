@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+	targetNamespace="http://reconciliation.velo/xml/entities/groups"
+	xmlns="hhttp://reconciliation.velo/xml/entities/groups"
+	elementFormDefault="qualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+
+
+	<xs:element name="groups">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="group" minOccurs="0"
+					maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="unique_id" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"></xs:minLength>
+									<xs:maxLength value="255"></xs:maxLength>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="type" use="optional">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"></xs:minLength>
+									<xs:maxLength value="255"></xs:maxLength>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="description"
+							use="optional">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"></xs:minLength>
+									<xs:maxLength value="255"></xs:maxLength>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="resource_unique_id" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"></xs:minLength>
+						<xs:maxLength value="255"></xs:maxLength>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+
+
+
+	<!-- definition of attributes -->
+	<!-- 
+		<xs:attribute name="resource_unique_id">
+		<xs:simpleType>
+		<xs:restriction base="xs:string">
+		<xs:minLength value="1"></xs:minLength>
+		<xs:maxLength value="255"></xs:maxLength>
+		</xs:restriction>
+		</xs:simpleType>
+		</xs:attribute>
+	-->
+
+
+	<!-- A single identity element -->
+	<!-- 
+		<xs:element name="group">
+        <xs:complexType>
+    	   <xs:attribute name="unique_id" use="required">
+    	   	<xs:simpleType>
+    	   		<xs:restriction base="xs:string">
+    	   			<xs:minLength value="1"></xs:minLength>
+    	   			<xs:maxLength value="255"></xs:maxLength>
+    	   		</xs:restriction>
+    	   	</xs:simpleType>
+    	   </xs:attribute>
+		<xs:attribute name="type" use="optional">
+		<xs:simpleType>
+		<xs:restriction base="xs:string">
+		<xs:minLength value="1"></xs:minLength>
+		<xs:maxLength value="255"></xs:maxLength>
+		</xs:restriction>
+		</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="description" use="optional">
+		<xs:simpleType>
+		<xs:restriction base="xs:string">
+		<xs:minLength value="1"></xs:minLength>
+		<xs:maxLength value="255"></xs:maxLength>
+		</xs:restriction>
+		</xs:simpleType>
+		</xs:attribute>
+		</xs:complexType>
+		</xs:element>
+	-->
+	<!-- A parent of all groups elements (top element) -->
+	<!-- 
+		<xs:element name="groups">
+		<xs:complexType>
+		<xs:sequence>
+		<xs:element ref="group" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute ref="resource_unique_id" use="required"/>
+		</xs:complexType>
+		</xs:element>
+	-->
+</xs:schema>

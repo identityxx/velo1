@@ -27,6 +27,7 @@ import javax.persistence.ManyToOne;
  */
 //@Entity
 //@DiscriminatorValue("MODIFY_USER_ROLES_REVOKE")
+@Deprecated
 public class RequestRoleModifyUserRolesRevoke extends RequestRole {
     private static final long serialVersionUID = 1987302492306161429L;
     private Request request;

@@ -92,7 +92,20 @@
                     <f:param name="order" value="#{accountList.order=='creationDate asc' ? 'creationDate desc' : 'creationDate asc'}"/>
                 </s:link>
             </f:facet>
-            #{account.creationDate}
+            <h:outputText value="#{account.creationDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <s:link styleClass="columnHeader"
+                             value="Last Update Date#{accountList.order=='lastUpdateDate asc' ? messages.down : ( accountList.order=='lastUpdateDate desc' ? messages.up : '' )}">
+                    <f:param name="order" value="#{accountList.order=='lastUpdateDate asc' ? 'lastUpdateDate desc' : 'lastUpdateDate asc'}"/>
+                </s:link>
+            </f:facet>
+            <h:outputText value="#{account.lastUpdateDate}">
+            	<s:convertDateTime pattern="MM/dd/yyyy - hh:mm:ss"/>
+            </h:outputText>
         </h:column>
         <h:column>
             <f:facet name="header">Action</f:facet>

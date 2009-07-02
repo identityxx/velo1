@@ -51,7 +51,10 @@
 								value="#{reconcileResourcePolicyList.order=='name asc' ? 'name desc' : 'name asc'}" />
 						</s:link>
 					</f:facet>
-            		#{reconcilePolicy.name}
+					<s:link view="/admin/ReconcileResourcePolicy.xhtml" value="#{reconcilePolicy.name}">
+						<f:param name="reconcilePolicyId"
+							value="#{reconcilePolicy.reconcilePolicyId}" />
+					</s:link>
         		</h:column>
 				<h:column>
 					<f:facet name="header">
@@ -62,6 +65,12 @@
 						</s:link>
 					</f:facet>
         	    	#{reconcilePolicy.activateCorrelationRule}
+        		</h:column>
+        		<h:column>
+					<f:facet name="header">
+						Auto Correlate?
+					</f:facet>
+        	    	#{reconcilePolicy.autoCorrelateAccountIfMatchedToUser}
         		</h:column>
 				<h:column>
 					<f:facet name="header">action</f:facet>

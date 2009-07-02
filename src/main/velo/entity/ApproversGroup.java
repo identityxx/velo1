@@ -37,7 +37,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.jboss.seam.annotations.Name;
 //@!@clean

@@ -82,7 +82,7 @@ public class UsersToRoles {
                         isInheritedBool = false;
                     }
                     
-                    userManager.associateUserToRole(userName, roleName, isInheritedBool);
+//TODO:Replace                    userManager.associateUserToRole(userName, roleName, isInheritedBool);
                     
                     System.out.println("Successfully associated user named '" + userName + "', to role named '" + roleName + "'");
                 } catch (Exception oe) {

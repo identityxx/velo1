@@ -24,8 +24,10 @@ import org.openspml.v2.msg.spml.AddRequest;
 import org.openspml.v2.msg.spml.Request;
 
 import velo.action.ResourceOperation;
+import velo.collections.ResourceGroups;
 import velo.entity.Resource;
 import velo.entity.ResourceGroup;
+import velo.entity.ResourceTask;
 import velo.entity.SpmlTask;
 import velo.exceptions.OperationException;
 
@@ -43,6 +45,7 @@ public abstract class GroupMembershipSpmlResourceOpreationController extends Spm
 	
 	public abstract void performOperationAddGroupMembership(SpmlTask spmlTask, ResourceOperation ro, Request request, List<ResourceGroup> groupsToAdd) throws OperationException; 
 	public abstract void performOperationRemoveGroupMembership(SpmlTask spmlTask, ResourceOperation ro, Request request, List<ResourceGroup> groupsToRemove) throws OperationException;
+	
 	//public abstract void performOperationModifyGroupMembership(SpmlTask spmlTask, ResourceOperation ro, AddRequest addRequest, List<String> groupsToAdd, List<String> groupsToRemove) throws OperationException;
 	
 }

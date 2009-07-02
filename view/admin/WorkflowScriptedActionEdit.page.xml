@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.0.xsd"
+      no-conversation-view-id="/admin/Home.xhtml"
+      login-required="true">
+   
+   <begin-conversation join="true"/>
+   
+   <action execute="#{workflowScriptedActionHome.wire}"/>
+   <action execute="#{scriptedActionGenericHome.wire}"/>
+   
+   <param name="actionFrom"/>
+   <param name="actionId" value="#{workflowScriptedActionHome.actionId}"/>
+   <param name="actionId" value="#{scriptedActionGenericHome.actionId}"/>
+
+   <navigation from-action="#{workflowScriptedActionHome.persist}">
+       <end-conversation/>
+       <redirect view-id="/admin/ScriptedAction.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{workflowScriptedActionHome.update}">
+       <end-conversation/>
+       <redirect view-id="/admin/ScriptedAction.xhtml"/>
+   </navigation>
+   
+   <navigation from-action="#{workflowScriptedActionHome.remove}">
+       <end-conversation/>
+       <redirect view-id="/admin/ScriptedActionList.xhtml"/>
+   </navigation>
+   
+</page>

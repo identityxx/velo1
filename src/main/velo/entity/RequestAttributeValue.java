@@ -39,6 +39,7 @@ import velo.entity.Attribute.AttributeDataTypes;
 @Table(name="VL_REQUEST_ATTRIBUTE_VALUE")
 @Entity
 @SequenceGenerator(name="RequestAttributeValueIdSeq",sequenceName="REQUEST_ATTRIBUTE_VALUE_ID_SEQ")
+@Deprecated
 public class RequestAttributeValue extends AttributeValue implements Serializable,Cloneable {
     private static final long serialVersionUID = 1987302492306161423L;
     

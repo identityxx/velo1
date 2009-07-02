@@ -21,12 +21,14 @@ import java.io.IOException;
 
 import javax.faces.application.FacesMessage;
 
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 
 import velo.entity.Resource;
+//import velo.entity.Resource.ResourceFetchType;
 
 @Name("resourceHome")
 public class ResourceHome extends EntityHome<Resource> {
@@ -87,4 +89,10 @@ public class ResourceHome extends EntityHome<Resource> {
 	public Resource getDefinedInstance() {
 		return isIdDefined() ? getInstance() : null;
 	}
+	
+	/*
+	@Factory("resourceFetchTypes")
+	public ResourceFetchType[] getResourceFetchTypes() {
+		return ResourceFetchType.values();
+	}*/
 }

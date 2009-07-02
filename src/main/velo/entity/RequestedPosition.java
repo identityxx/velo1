@@ -49,7 +49,7 @@ import org.jboss.seam.annotations.Name;
 @AssociationOverride(name="primaryKey.request", joinColumns = @JoinColumn(name="REQUEST_ID")),
 @AssociationOverride(name="primaryKey.position", joinColumns = @JoinColumn(name="POSITION_ID"))
 })
-
+@Deprecated
 public class RequestedPosition extends BaseEntity implements Serializable {
     
     private static final long serialVersionUID = 1987302492306161413L;

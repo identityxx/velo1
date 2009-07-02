@@ -50,8 +50,12 @@ import org.jboss.seam.annotations.Name;
 @Name("passwordPolicyContainer") //Seam name
 @SequenceGenerator(name="PasswordPolicyContainerIdSeq",sequenceName="PASSWD_POLICY_CONTAINER_ID_SEQ")
 @NamedQueries({
+	@NamedQuery(name = "passwordPolicyContainer.findByUniqueName",query = "SELECT ppc FROM PasswordPolicyContainer ppc WHERE ppc.uniqueName = :uniqueName"),
+	
+	
+	
+	
     @NamedQuery(name = "passwordPolicyContainer.findById",query = "SELECT object(passwordPolicyContainer) FROM PasswordPolicyContainer passwordPolicyContainer WHERE passwordPolicyContainer.passwordPolicyContainerId = :passwordPolicyContainerId"),
-    @NamedQuery(name = "passwordPolicyContainer.findByUniqueName",query = "SELECT object(passwordPolicyContainer) FROM PasswordPolicyContainer passwordPolicyContainer WHERE passwordPolicyContainer.uniqueName = :uniqueName"),
     @NamedQuery(name = "passwordPolicyContainer.findAll", query = "SELECT object(passwordPolicyContainer) FROM PasswordPolicyContainer passwordPolicyContainer")
 })
 public class PasswordPolicyContainer extends BaseEntity implements Serializable {

@@ -74,7 +74,7 @@ public class ReconcileIdentityAttributes extends Action {
      */
     
     
-    public boolean execute() {
+    public void execute() {
         long startExecutionTime = System.currentTimeMillis();
         
         try {
@@ -150,8 +150,8 @@ public class ReconcileIdentityAttributes extends Action {
                     String errMsg = "Failed to perofrm Reconcile Identity Attributes due to: '" + ex.getMessage() + "')";
                     log.error(errMsg);
                     //throw new ReconcileProcessException(errMsg);
-                    getMsgs().add(errMsg);
-                    return false;
+//                    getMsgs().add(errMsg);
+//                    return false;
                 }
             }
             
@@ -164,7 +164,7 @@ public class ReconcileIdentityAttributes extends Action {
             		log.trace("---START OF DUMP OF ACTIVE ACCOUNTS OF RESOURCE '" + entry.getKey() + "'---");
             		for (Account currAccount : entry.getValue().values()) {
             			log.trace("\t--Start of dump of active account named '" + currAccount.getName() + "'");
-            			for (Map.Entry<String, Attribute> currAttr : currAccount.getTransientAttributes().entrySet()) {
+            			for (Map.Entry<String, Attribute> currAttr : currAccount.getActiveAttributes().entrySet()) {
             				log.trace("\t\tAttribute unique name '" + currAttr.getValue().getUniqueName() + "(" + currAttr.getKey() + ") " + "', first value: '" + currAttr.getValue().getFirstValue().getAsString() + "'");
             			}
             			log.trace("\t--End of dump of active account named '" + currAccount.getName() + "'");
@@ -186,8 +186,8 @@ public class ReconcileIdentityAttributes extends Action {
                 	String errMsg = "Cannot perform Reconcile Identity Attributes since a Resource Attribute flagged as account ID does not exist for Resource named '" + currTs.getDisplayName() + "'";
                 	log.error(errMsg);
                 	//throw new ReconcileProcessException(errMsg);
-                	getMsgs().add(errMsg);
-                	return false;
+//                	getMsgs().add(errMsg);
+//                	return false;
                 }
             }
             stopwatch.stop();
@@ -334,11 +334,11 @@ public class ReconcileIdentityAttributes extends Action {
                                             String raUniqueName = iasbtsa.getResourceAttribute().getUniqueNameInRightCase();
                                             
                                             
-                                            Attribute currActiveAttribute = foundActiveAccount.getTransientAttributes().get(raUniqueName);
+                                            Attribute currActiveAttribute = foundActiveAccount.getActiveAttributes().get(raUniqueName);
                                             UserIdentityAttribute correspondingUserIdentityAttribute = currUser.getUserIdentityAttribute(currIAToSync.getUniqueName());
                                             
                                             
-                                            for (Map.Entry<String, Attribute> currAttr : foundActiveAccount.getTransientAttributes().entrySet()) {
+                                            for (Map.Entry<String, Attribute> currAttr : foundActiveAccount.getActiveAttributes().entrySet()) {
 //                                            	System.out.println("!!!!!!!!!!!!!!!!!!!!!!: '" + currAttr.getKey() +"', " + currAttr.getValue());
 //                                            	System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + foundActiveAccount.getTransientAttributes().get("first_name"));
                                             }
@@ -476,14 +476,14 @@ public class ReconcileIdentityAttributes extends Action {
             
             
             //Perform the updates
-            userManager.updateUserIdentityAttributes(affectedUserIdentityAttributes);
-            userManager.persistUserIdentityAttributes(newUserIdentityAttributesToPersist);
+//fuck1.4            userManager.updateUserIdentityAttributes(affectedUserIdentityAttributes);
+//fucl1.4            userManager.persistUserIdentityAttributes(newUserIdentityAttributesToPersist);
             
-            return true;
+//            return true;
             
         } catch (NamingException ne) {
-            getMsgs().add(ne.getMessage());
-            return false;
+//            getMsgs().add(ne.getMessage());
+//            return false;
         }
     }
 }

@@ -1,0 +1,43 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ Copyright (c) 2000-2007, Shakarchi Asaf.
+ All rights reserved.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich">
+
+				<s:decorate id="nameActionDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Name</ui:define>
+					<h:inputText id="name" required="true" size="80" value="#{action.name}"/>
+				</s:decorate>
+				
+				<s:decorate id="descriptionActionDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputText id="description" size="80" required="true" value="#{action.description}"/>
+				</s:decorate>
+				
+				<s:decorate id="activeActionDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Active?</ui:define>
+					<h:selectBooleanCheckbox value="#{action.active}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="showStopperActionDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Show Stopper?</ui:define>
+					<h:selectBooleanCheckbox value="#{action.showStopper}"></h:selectBooleanCheckbox>
+				</s:decorate>
+				
+				<s:decorate id="sequenceActionDecoration" template="../layout/edit.xhtml">
+					<ui:define name="label">Sequence</ui:define>
+					<h:inputText id="sequence" required="true" size="2" maxlength="2"
+						value="#{action.sequence}">
+						<a:support event="onblur" reRender="sequenceActionDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+				</s:decorate>
+</ui:composition>

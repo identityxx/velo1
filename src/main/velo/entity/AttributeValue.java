@@ -197,7 +197,7 @@ public class AttributeValue extends BaseEntity implements Serializable {
 	//value utilities - mostly used by the Attribute Rules
 	@Transient
     public String getAsString() {
-		log.trace("Invoked 'asString' over value...");
+		//log.trace("Invoked 'asString' over value...");
 		if (getValueAsObject() != null) {
 			return getValueAsObject().toString();
 		}
@@ -238,7 +238,7 @@ public class AttributeValue extends BaseEntity implements Serializable {
 		}
 		
 		if (getDataType() != null) {
-			log.trace("Setting value '" + value + "' with dataType : " + getDataType());
+			//log.trace("Setting value '" + value + "' with dataType : " + getDataType());
 			
 			switch(getDataType()) {
 				case INTEGER: {
@@ -262,7 +262,7 @@ public class AttributeValue extends BaseEntity implements Serializable {
 						setValueDate((Date)value);
 					}
 					else {
-					//TODO: LOG? WARNING? EXCPETION?
+						throw new AttributeSetValueException("Could not set value '" + value  +"', datatype set to 'DATE' but value class is '" + value.getClass().getName() + "'");
 					}
 					break;
 				}
@@ -273,7 +273,7 @@ public class AttributeValue extends BaseEntity implements Serializable {
 		}
 		else {
 			if (value != null) {
-				log.trace("no DataType set, trying to determine what datatype the object class '" + value.getClass().getName() + "' is");
+				//log.trace("no DataType set, trying to determine what datatype the object class '" + value.getClass().getName() + "' is");
 			}
 			if (value instanceof String) {
 				log.trace("String type!");
@@ -312,7 +312,7 @@ public class AttributeValue extends BaseEntity implements Serializable {
 	
 	@Transient
 	public Object getValueAsObject() {
-		log.trace("Getting value as object for dataType '" + getDataType() + "'");
+		//log.trace("Getting value as object for dataType '" + getDataType() + "'");
 		switch(getDataType()) {
 			case INTEGER: return getValueInt(); 
 			case STRING: return getValueString();
@@ -343,15 +343,17 @@ public class AttributeValue extends BaseEntity implements Serializable {
 	
 	
 	@Transient
-	//TODO: Is string comparation safe enough?
 	public boolean compareValue(AttributeValue attrValue) {
 		//Handle null values
 		if ( (isNull()) || (attrValue.isNull()) ) {
 			return (attrValue.getValue() == getValue());
 		}
+
+		//log.trace("Is value '" + getValue().toString() + "' is equal to specified attr value '" + attrValue.getValue().toString() + "'?");
 		
-		log.trace("Is value '" + getValue().toString() + "' is equal to specified attr value '" + attrValue.getValue().toString() + "'?");
-		if (getValue().toString().equals(attrValue.getValue().toString())) {
+		//string comparation: sucks!
+		//if (getValue().toString().equals(attrValue.getValue().toString())) {
+		if ( (getValueAsObject().getClass().equals(attrValue.getValueAsObject().getClass())) && (getValueAsObject().equals(attrValue.getValueAsObject())) ) {
 			return true;
 		}
 		else {
@@ -368,7 +370,7 @@ public class AttributeValue extends BaseEntity implements Serializable {
 	
 	//==Mainly for gui, set by the UIInput with converter to the right data-type attached
 	public void setValue(String value) {
-		log.trace("Invoked setValue(STRING) with value '" + value + "'");
+		//log.trace("Invoked setValue(STRING) with value '" + value + "'");
 		//a workaround !!!!!!!!!!!!!!!!!!!
 		try {
 			setValueAsObject(value);
@@ -378,22 +380,22 @@ public class AttributeValue extends BaseEntity implements Serializable {
 	}
 	
 	public void setValue(Long value) {
-		log.trace("Invoked setValue(LONG) with value '" + value + "'");
+		//log.trace("Invoked setValue(LONG) with value '" + value + "'");
 		setValueLong(value);
 	}
 	
 	public void setValue(Integer value) {
-		log.trace("Invoked setValue(INT) with value '" + value + "'");
+		//log.trace("Invoked setValue(INT) with value '" + value + "'");
 		setValueInt(value);
 	}
 	
 	public void setValue(Date date) {
-		log.trace("Invoked setValue(DATE) with value '" + date.toString() + "'");
+		//log.trace("Invoked setValue(DATE) with value '" + date.toString() + "'");
 		setValueDate(date);
 	}
 	
 	public void setValue(Boolean bool) {
-		log.trace("Invoked setValue(BOOLEAN) with value '" + bool + "'");
+		//log.trace("Invoked setValue(BOOLEAN) with value '" + bool + "'");
 		setValueBoolean(bool);
 	}
 	

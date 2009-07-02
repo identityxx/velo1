@@ -49,8 +49,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.jboss.seam.jsf.SetDataModel;
-
 import velo.exceptions.AttributeNotFound;
 import velo.exceptions.AttributeSetValueException;
 import velo.storage.AttributeValueTypes;
@@ -64,6 +62,7 @@ import velo.storage.AttributeValueTypes;
 @Entity
 @Table(name="VL_REQUEST")
 //@Name("request") //Seam name
+
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="REQUEST_TYPE_CLASS")
 @SequenceGenerator(name="RequestIdSeq",sequenceName="REQUEST_ID_SEQ")
@@ -80,6 +79,7 @@ import velo.storage.AttributeValueTypes;
     @NamedQuery(name = "request.findLastProcessedRequest", query = "SELECT object(request) FROM Request AS request where request.status = 'APPROVED' AND request.processed = 1 AND request.inProcess = 0 and request.processedTime is not null ORDER BY request.processedTime DESC"),
     @NamedQuery(name = "request.countRequestsInProcess", query = "SELECT count(request) FROM Request AS request WHERE request.inProcess = 1 AND request.processed = 0")
 })
+@Deprecated
     public class Request extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     

@@ -40,6 +40,7 @@ import javax.persistence.Table;
 //@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 //@DiscriminatorColumn(name="REQUEST_ROLE_TYPE")
 //@MappedSuperclass
+@Deprecated
 public class RequestRole extends BaseEntity implements Serializable {
     
     private static final long serialVersionUID = 1987302492306161413L;

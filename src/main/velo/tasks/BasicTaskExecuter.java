@@ -22,10 +22,9 @@ import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import velo.actions.ActionInterface;
 import velo.ejb.interfaces.TaskManagerRemote;
 import velo.entity.Task;
+import velo.exceptions.TaskExecutionException;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -51,14 +50,13 @@ public abstract class BasicTaskExecuter implements TaskExecuter {
         }
     }
     
-    public boolean executeActionInTask(Task task) {
+    public void execute(Task task) throws TaskExecutionException {
         //JB boolean status = tm.sendTaskToJms(task);
         boolean status = true;
-        return status;
     }
     
-    public ActionInterface getActionFromTask(Task task) {
-        XStream xstream = new XStream(new DomDriver());
+//    public ActionInterface getActionFromTask(Task task) {
+        //XStream xstream = new XStream(new DomDriver());
         //TODO: FUCK, FIX
         //try {
         	/*
@@ -89,6 +87,6 @@ public abstract class BasicTaskExecuter implements TaskExecuter {
             return null;
         }
         */
-        return null;
-    }
+//        return null;
+//    }
 }

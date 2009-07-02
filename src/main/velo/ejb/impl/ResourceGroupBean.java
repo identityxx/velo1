@@ -25,19 +25,17 @@ import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.ejb.Remove;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.jboss.seam.annotations.Destroy;
 
 import velo.ejb.interfaces.ResourceGroupManagerLocal;
 import velo.ejb.interfaces.ResourceGroupManagerRemote;
-import velo.entity.Account;
 import velo.entity.Resource;
 import velo.entity.ResourceGroup;
 import velo.entity.User;
@@ -61,6 +59,69 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
     private static Logger log = Logger.getLogger(ResourceGroupBean.class.getName());
     
     
+    public boolean isGroupExists(String groupName,Resource resource) {
+		log.debug("Checking whether group name: '" + groupName
+				+ "' On resource name: '" + resource.getDisplayName()
+				+ "' exist or not...");
+
+		
+		Query q = null;
+		if (resource.isCaseSensitive()) {
+			 q = em.createNamedQuery(
+				"resourceGroup.isExistWithCase").setParameter("uniqueId",
+						groupName).setParameter("resourceUniqueName",resource.getUniqueName());
+		} else {
+			q = em.createNamedQuery(
+			"resourceGroup.isExistIgnoreCase").setParameter("uniqueId",
+					groupName.toUpperCase()).setParameter("resourceUniqueName",resource.getUniqueName());
+		}
+
+		
+		Long num = (Long) q.getSingleResult();
+
+		if (num == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	} 
+    
+    public ResourceGroup findGroup(String groupUniqueId, Resource resource) {
+		try {
+			log.trace("Finding Group in repository for name '" + groupUniqueId + "', in resource name '" + resource.getDisplayName() + "'");
+			Query q = null;
+			
+			if (resource.isCaseSensitive()) {
+				q = em.createNamedQuery("resourceGroup.findByUniqueIdWithCase").setParameter("uniqueId", groupUniqueId).setParameter("resourceUniqueName", resource.getUniqueName());
+			} else {
+				q = em.createNamedQuery("resourceGroup.findByUniqueIdIgnoreCase").setParameter("uniqueId", groupUniqueId.toUpperCase()).setParameter("resourceUniqueName", resource.getUniqueName());
+			}
+			
+			return (ResourceGroup) q.getSingleResult();
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.info("FindAccount did not result any account name '" + groupUniqueId + "' on resource name '" + resource.getDisplayName() + "', returning null.");
+			return null;
+		} catch (NonUniqueResultException nure) {
+			log.warn("FindAccount found multiple accounts with name '" + groupUniqueId + "' on resource name '" + resource.getDisplayName() + "', returning null.");
+			return null;
+		}
+	}
+    
+    public void persistGroup(ResourceGroup group) {
+		log.debug("Persisting group '" + group.getUniqueId() + "', of resource '" + group.getResource().getDisplayName() + "'");
+		
+		//make sure account does not exist already in repository
+		if (isGroupExists(group.getUniqueId(), group.getResource())) {
+			log.warn("Won't persist, group with uniqueId '" + group.getUniqueId() + "' on resource '" + group.getResource().getDisplayName() + "' already exists in repository!");
+			return;
+		}
+		
+		em.persist(group);
+		
+		
+		log.debug("Successfully persisted group!");
+	}
     
     public void removeGroup(ResourceGroup rg) {
         log.info("Removing group name '" + rg.getDisplayName() + "', on target: '" + rg.getResource().getDisplayName() + "' started, determining what to do...");
@@ -80,35 +141,36 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
                 log.info("Group exceeded the limit of reconcile processes group flagged as deleted in target which is '" + rg.getResource().getReconcilePolicy().getReconcilesGroupKeepsBeingDeletedBeforeRemoveGroup() + "' times, deleting group from repository!");
                 removeGroupEntityFromRepository(rg);
             } else {
-                updateGroupEntity(rg);
+            	updateGroup(rg);
             }
         } else {
             log.info("Not deleting group entity, only flagging group as deleted and incrementing reconcile group being deleted counter");
-            updateGroupEntity(rg);
+            updateGroup(rg);
         }
     }
     
-    public void persistGroup(ResourceGroup rg) {
-        log.info("Persisting a group name '" + rg.getDisplayName() + "', on target: '" + rg.getResource() + "' started, determining what to do...");
-        
-        /*
-        if (isGroupExistOnTarget(rg.getUniqueId(), rg.getResource())) {
-            log.info("Group already exists!, making sure group is not flagged as deleted, and reset reconciles group being deleted counter");
-            if (rg.isDeletedInResource()) {
-            	rg.setDeletedInResource(false);
-            	rg.setNumberOfReconcilesGroupKeepsBeingDeletedInResource(0);
-            	rg.setFirstTimeGroupBeingDeletedInResource(null);
-            }
-        } else {
-            log.info("Group does not exists in repository, persisting group...");
-            persistGroupEntityInRepository(rg);
-        }
-        */
-        persistGroupEntityInRepository(rg);
-    }
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     //used by reconcile
+    @Deprecated
     public void persistGroups(Collection<ResourceGroup> groupsToPersist) {
         for (ResourceGroup currTsg : groupsToPersist) {
             persistGroup(currTsg);
@@ -118,6 +180,7 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
     }
     
     //used by reconcile
+    @Deprecated
     public void removeGroups(Collection<ResourceGroup> groupsToRemove) {
         for (ResourceGroup currTsg : groupsToRemove) {
             removeGroup(currTsg);
@@ -126,7 +189,7 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
         em.flush();
     }
     
-    
+    @Deprecated
     public void mergeGroups(Collection<ResourceGroup> groupsToMerge) {
     	for (ResourceGroup currRG : groupsToMerge) {
     		em.merge(currRG);
@@ -170,24 +233,25 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
     
     //private, internal
     private void removeGroupEntityFromRepository(ResourceGroup rg) {
-        log.info("Removing group entity with name " + rg.getDisplayName() + ", on resource: " + rg.getResource().getDisplayName() + " from repository");
+        log.debug("Removing group entity with name " + rg.getDisplayName() + ", on resource: " + rg.getResource().getDisplayName() + " from repository");
         
         // Merge first, cannot remove detached entity
-        ResourceGroup mergedTsg = em.merge(rg);
-        long groupId = mergedTsg.getResourceGroupId();
+        //ResourceGroup mergedTsg = em.merge(rg);
+        //long groupId = mergedTsg.getResourceGroupId();
         //TODO: Remove association from roles/accounts too!
-        em.remove(mergedTsg);
+        em.remove(rg);
         
         //TODO: Specify some other better places constants such as table names
         //Remove MANY2MANY associations!
         log.debug("Deleting resource group associations...");
-        em.createNativeQuery("DELETE FROM VL_RESOURCE_GROUPS_TO_ROLES where RESOURCE_GROUP_ID = " + groupId).executeUpdate();
+        em.createNativeQuery("DELETE FROM VL_RESOURCE_GROUPS_TO_ROLES where RESOURCE_GROUP_ID = " + rg.getResourceGroupId()).executeUpdate();
         //em.createNativeQuery("DELETE FROM VL_ACCOUNTS_TO_TS_GRP where GROUP_ID = " + groupId).executeUpdate();
     }
     
-    
-    private void persistGroupEntityInRepository(ResourceGroup rg) {
-    	em.persist(rg);
+    public void updateGroup(ResourceGroup group) {
+        log.debug("Updating group unique id " + group.getUniqueId());
+        
+        em.merge(group);
     }
     
     
@@ -230,9 +294,7 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
     
     
     
-    
-    
-    
+    @Deprecated
     public ResourceGroup findGroupById(long groupId, boolean eagerly) {
         try {
             ResourceGroup tsg = (ResourceGroup) em.createNamedQuery("resourceGroup.findById")
@@ -253,6 +315,7 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
         }
     }
     
+    @Deprecated
     public ResourceGroup findGroupByUniqueId(String groupUniqueId, Resource resource) throws NoResultFoundException {
         try {
             return (ResourceGroup) em.createNamedQuery("resourceGroup.findByUniqueId")
@@ -267,16 +330,19 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
         }
     }
     
+    @Deprecated
     public Set<ResourceGroup> findGroupsOnResourceForUser(Resource ts, User user) {
         return null;
     }
     
+    @Deprecated
     public List<ResourceGroup> loadAllGroups(Resource ts) {
         return em.createNamedQuery("resourceGroup.findAllByResource")
             .setParameter("resource", ts)
             .getResultList();
     }
     
+    @Deprecated
     public ResourceGroup findGroupByDisplayName(String displayName, Resource resource) throws NoResultFoundException {
         try {
             return (ResourceGroup) em.createNamedQuery(
@@ -296,7 +362,7 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
         }
     }
     
-    
+    @Deprecated
     public Collection<ResourceGroup> findGroupsByStringForCertainTarget(String searchString, Resource resource) {
         return em.createNamedQuery("resourceGroup.findByString")
             .setHint("toplink.refresh", "true")
@@ -306,79 +372,48 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
     }
     
     
-    public boolean isGroupExistOnTarget(String uniqueId, Resource resource) {
-        log.debug("Checking whether group unique id: '" + uniqueId
-            + "' exist on Resource Name: '"
-            + resource.getDisplayName() + "' or not...");
-        Query q = em.createNamedQuery("resourceGroup.isGroupExistOnTarget")
-            .setParameter("uniqueId", uniqueId).setParameter("resource",
-            resource);
-        
-        Long num = (Long) q.getSingleResult();
-        
-        if (num == 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
     
     
+//    public void addMemberToGroup(ResourceGroup tsg, Account account) {
+//        ResourceGroup tsgLoaded = em.merge(tsg);
+//        
+//        if (tsgLoaded.isAccountMember(account)) {
+//            log.warn("Could not add account membership of account named: '" + account.getName() +"' to group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "', account is already a member of that group!");
+//        } else {
+//            log.warn("Successfully added add account membership of account named: '" + account.getName() +"' to group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "'");
+//            tsgLoaded.getMembers().add(account);
+//            updateGroupEntity(tsg);
+//        }
+//    }
     
-    public void updateGroupEntity(ResourceGroup tsg) {
-        log.info("Updating group name " + tsg.getDisplayName());
-        
-        em.merge(tsg);
-    }
-    
-    
-    
-    public void addMemberToGroup(ResourceGroup tsg, Account account) {
-        ResourceGroup tsgLoaded = em.merge(tsg);
-        
-        if (tsgLoaded.isAccountMember(account)) {
-            log.warn("Could not add account membership of account named: '" + account.getName() +"' to group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "', account is already a member of that group!");
-        } else {
-            log.warn("Successfully added add account membership of account named: '" + account.getName() +"' to group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "'");
-            tsgLoaded.getMembers().add(account);
-            updateGroupEntity(tsg);
-        }
-    }
-    
-    public void removeMemberFromGroup(ResourceGroup tsg, Account account) {
-        ResourceGroup tsgLoaded = em.merge(tsg);
-        
-        boolean isFound = false;
-        for (Account currAccount : tsgLoaded.getMembers()) {
-            if (currAccount.equals(account)) {
-                tsgLoaded.getMembers().remove(currAccount);
-                isFound = true;
-                break;
-            }
-        }
-        
-        if (!isFound) {
-            log.warn("Could not remove account membership of account named: '" + account.getName() +"' from group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "', account was not found as a member of this group!");
-        } else {
-            updateGroupEntity(tsg);
-            log.debug("Succesfully removed account membership of account named: '" + account.getName() +"' from group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "'");
-        }
-    }
+//    public void removeMemberFromGroup(ResourceGroup tsg, Account account) {
+//        ResourceGroup tsgLoaded = em.merge(tsg);
+//        
+//        boolean isFound = false;
+//        for (Account currAccount : tsgLoaded.getMembers()) {
+//            if (currAccount.equals(account)) {
+//                tsgLoaded.getMembers().remove(currAccount);
+//                isFound = true;
+//                break;
+//            }
+//        }
+//        
+//        if (!isFound) {
+//            log.warn("Could not remove account membership of account named: '" + account.getName() +"' from group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "', account was not found as a member of this group!");
+//        } else {
+//            updateGroupEntity(tsg);
+//            log.debug("Succesfully removed account membership of account named: '" + account.getName() +"' from group named: '" + tsg.getDisplayName() + "' of target name: '" + tsg.getResource().getDisplayName() + "'");
+//        }
+//    }
     
     
-    
+
+    @Deprecated
     public void setGroupAsActive(ResourceGroup tsg) {
         if (tsg.isDeletedInResource()) {
             tsg.setDeletedInResource(false);
         }
-        updateGroupEntity(tsg);
+        updateGroup(tsg);
     }
     
-    
-    
-    @Destroy @Remove
-    public void destroy() {
-        System.out.println("zZZZZZZZZZZZZZZZZ***************** DESTROYED!!!! " + this.toString());
-        
-    }
 }

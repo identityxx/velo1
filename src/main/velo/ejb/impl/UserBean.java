@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,17 +35,15 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.IgnoreDependency;
+import org.jboss.ejb3.annotation.IgnoreDependency;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.security.management.PasswordHash;
 
-import velo.actions.ResourceAccountActionInterface;
 import velo.common.EdmMessages;
 import velo.common.SysConf;
 import velo.contexts.OperationContext;
@@ -68,21 +65,19 @@ import velo.entity.BulkTask;
 import velo.entity.Capability;
 import velo.entity.CapabilityFolder;
 import velo.entity.CreateUserRequest;
-import velo.entity.EventDefinition;
 import velo.entity.IdentityAttribute;
-import velo.entity.PasswordPolicy;
 import velo.entity.PasswordPolicyContainer;
 import velo.entity.Position;
 import velo.entity.RequestAttribute;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.Role;
+import velo.entity.SystemEvent;
 import velo.entity.User;
 import velo.entity.UserIdentityAttribute;
 import velo.entity.UserRole;
-import velo.exceptions.ActionFailureException;
-import velo.exceptions.BulkActionsFactoryFailureException;
 import velo.exceptions.EntityAssociationException;
+import velo.exceptions.EventExecutionException;
 import velo.exceptions.ModifyAttributeFailureException;
 import velo.exceptions.NoResultFoundException;
 import velo.exceptions.NoUserIdentityAttributeFoundException;
@@ -90,7 +85,6 @@ import velo.exceptions.OperationException;
 import velo.exceptions.PasswordValidationException;
 import velo.exceptions.PersistEntityException;
 import velo.exceptions.ScriptInvocationException;
-import velo.exceptions.TaskCreationException;
 import velo.exceptions.UnsupportedAttributeTypeException;
 import velo.exceptions.UserAuthenticationException;
 import velo.exceptions.UserNameGenerationException;
@@ -113,9 +107,6 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	private final String table_user_role = "FROM VL_USER_ROLE";
 	
 	
-	// Constants
-	private static final String eventUserCreateName = "USER_CREATION";
-
 	private static Logger log = Logger.getLogger(UserBean.class.getName());
 
 	// private static Logger edmLogger =
@@ -142,6 +133,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@EJB
 	public AccountManagerLocal am;
 
+	@org.jboss.annotation.IgnoreDependency
 	@IgnoreDependency
 	@EJB
 	public RequestManagerLocal reqm;
@@ -149,6 +141,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@EJB
 	CommonUtilsManagerLocal cum;
 
+	@org.jboss.annotation.IgnoreDependency
 	@IgnoreDependency
 	@EJB
 	RoleManagerLocal rolem;
@@ -301,12 +294,19 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	public User findUser(String name) {
 		log.debug("Finding User in repository with name '" + name + "'");
+		
+		if (name == null) {
+			log.warn("Name was set to null, returning null.");
+			return null;
+		}
 
 		//user name might get out of a request which keeps the user name as string, thus, make sure the user name is always as uppercase
 		name = name.toUpperCase();
 		
 		try {
 			Query q = getEntityManager().createNamedQuery("user.findByName").setParameter("name",name);
+
+			
 			return (User) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
@@ -646,19 +646,19 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	//helper
 	private void invokeCreateUserEvent(User user) throws ScriptInvocationException {
-		EventDefinition ed = eventManager.find(eventUserCreateName);
-		//make sure that the event was found, otherwise throw an exception
-		if (ed == null) {
-			log.error("Could not find event definition '" + eventUserCreateName + "', skipping event response invocations...");
-			return;
-		}
 		OperationContext context = new OperationContext();
 		context.addVar("user", user);
 		context.addVar("userName", user.getName());
 		context.addVar("userIdAttrs", user.getUserIdentityAttributesAsMap());
 		
+		try {
+			eventManager.raiseSystemEvent(SystemEvent.EVENT_USER_CREATION, context);
+		} catch (EventExecutionException e) {
+			log.error("Could not raise '" + SystemEvent.EVENT_USER_CREATION + "' system event: " + e.getMessage());
+		}
+		
 		//eventManager.invokeEventDefinitionResponses(ed, context);
-		eventManager.invokeEvent(ed, context);
+		//eventManager.invokeEvent(ed, context);
 	}
 	
 	public Collection<User> findUsersToSync() {
@@ -672,8 +672,19 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		log.debug("Authenticating user: '" + username + "', with password: '"+ "*******" + "', from IP: " + ip);
 
 		// Query database to see if user exists.
-		try {
-			User user = findUserByName(username);
+		//try {
+			User user = findUser(username);
+	
+			if (user == null) {
+				String msg = "Could not authenticate user named: '" + username
+				+ "', user does not exist in repository!";
+				log.warn(msg);
+				// Log to DB
+				// edmLogger.warning(msg);
+				throw new UserAuthenticationException(msg);
+			}
+			
+			
 
 			if (user.isLocked()) {
 				String msg = "User named '" + username
@@ -751,14 +762,13 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		}
 				 */
 			}
-		} catch (NoResultFoundException nrfe) {
-			String msg = "Could not authenticate user named: '" + username
-			+ "', user does not exist in repository!";
-			log.warn(msg);
-			// Log to DB
-			// edmLogger.warning(msg);
-			throw new UserAuthenticationException(msg);
-		}
+	}
+	
+	
+	private void resetUserLockAndAuthFailureCounter(User user) {
+		user.setLocked(false);
+		user.setAuthFailureCounter(0);
+		updateUser(user);
 	}
 
 
@@ -1100,21 +1110,21 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			throw new PasswordValidationException(
 					"Users Password Policy was not set in system configuration!");
 		}
-		try {
+//		try {
 			// Try to load the specified users password policy
-			PasswordPolicy pp = passwordManager
-					.findPasswordPolicyByUniqueName(passPolicyUniqueName);
+//			PasswordPolicy pp = passwordManager
+//					.findPasswordPolicyByUniqueName(passPolicyUniqueName);
 
-			pp.validate(newPassword, user.getName());
+//			pp.validate(newPassword, user.getName());
 			// PasswordValidationException
 			user.setPassword(newPassword);
 			//user.encryptPassword();
 			updateUser(user);
-		} catch (NoResultFoundException ex) {
-			throw new PasswordValidationException(ex);
-		} /*catch (EncryptionException ex) {
-			throw new PasswordValidationException(ex);
-		}*/
+//		} catch (NoResultFoundException ex) {
+	//		throw new PasswordValidationException(ex);
+//		} /*catch (EncryptionException ex) {
+			//throw new PasswordValidationException(ex);
+		//}
 	}
 
 	@Deprecated
@@ -1314,6 +1324,15 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
 	@Deprecated
 	public void modifyUserAttribute(UserIdentityAttribute uia)
 			throws ModifyAttributeFailureException {
@@ -1362,6 +1381,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		 * .getUser(), tsaList);
 		 */
 
+	/*
 		Collection<Account> accountList = findAccountsByUserIdentityAttribute(uia);
 
 		log
@@ -1412,12 +1432,14 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 					+ ", for user: " + uia.getUser().getName()
 					+ " was failed to get modified";
 			/*cum.addEventLog("UserManagement", "FAILURE", "HIGH",messageSummary, ems.toString());*/
-
+/*
 			throw new ModifyAttributeFailureException(
 					"There was a failure while modifying User Attribute, please see EventLog for details.");
 		}
 	}
+	*/
 
+/*	
 	@Deprecated
 	public void modifyUserAttribute(UserIdentityAttribute uia,
 			Attribute newAttribute) throws ModifyAttributeFailureException {
@@ -1438,7 +1460,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		 * message: " + ave.getMessage()); }
 		 */
 
-	}
+	//}
 
 	@Deprecated
 	public BulkTask deleteUserBulkTask(User user) throws OperationException {
@@ -1502,6 +1524,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		return bt.getBulkTaskId();
 	}
 
+	/*
 	@Deprecated
 	public BulkTask disableUserBulkTask(User user) throws OperationException {
 		BulkTask bulkTask = BulkTask.factory("Disabling user name: "
@@ -1516,7 +1539,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 				 * currAccount.getName() + ", skipping account disable
 				 * operation...");
 				 */
-			} catch (TaskCreationException tce) {
+			/*} catch (TaskCreationException tce) {
 				// If one task was failed to be created, then delete the
 				// bulkTask and throw an exception
 				tm.deleteBulkTask(bulkTask);
@@ -1531,7 +1554,10 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		return bulkTask;
 	}
-
+*/
+	
+	
+	/*
 	@Deprecated
 	public Long disableUser(User user) throws OperationException {
 		log.info("Disabling accounts associated with user '" + user.getName()
@@ -1546,7 +1572,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		return bt.getBulkTaskId();
 	}
+	*/
 
+	/*
 	@Deprecated
 	public BulkTask enableUserBulkTask(User user) throws OperationException {
 		BulkTask bulkTask = BulkTask.factory("Enabling user name: "
@@ -1560,7 +1588,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 				 * log.warn("Couldnt enable account name: " +
 				 * currAccount.getName() + ", skipping account enable
 				 * operation...");
-				 */
+				 *//*
 			} catch (TaskCreationException tce) {
 				throw new OperationException(
 						"Could not enable accounts associated with user '"
@@ -1571,8 +1599,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		}
 
 		return bulkTask;
-	}
+	}*/
 
+	/*
 	@Deprecated
 	public Long enableUser(User user) throws OperationException {
 		log.info("Enabling accounts associated with user '" + user.getName()
@@ -1587,7 +1616,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		tm.persistBulkTask(bt);
 		return bt.getBulkTaskId();
 	}
+	*/
 
+	/*
 	@Deprecated
 	public BulkTask userAccountsResetPasswordBulkTask(User user, String password)
 			throws OperationException, PasswordValidationException {
@@ -1612,7 +1643,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		return bulkTask;
 	}
+	*/
 
+	/*
 	@Deprecated
 	public Long userAccountsResetPassword(User user, String password)
 			throws OperationException, PasswordValidationException {
@@ -1624,8 +1657,10 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		// Persist the bulk task
 		tm.persistBulkTask(bt);
 		return bt.getBulkTaskId();
-	}
+	}*/
 
+	
+	/*
 	@Deprecated
 	public BulkTask accountsResetPasswordForPasswordPolicyContainerBulkTask(
 			User user, PasswordPolicyContainer ppc, List<Account> accounts,
@@ -1677,7 +1712,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 
 		return bt;
 	}
+	*/
 
+	/*
 	@Deprecated
 	public Long accountsResetPasswordForPasswordPolicyContainer(User user,
 			PasswordPolicyContainer ppc, List<Account> accounts, String password)
@@ -1689,7 +1726,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		getEntityManager().flush();
 
 		return bt.getBulkTaskId();
-	}
+	}*/
 
 
 	@Deprecated
@@ -2051,12 +2088,6 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		}
 	}
 
-	@Deprecated
-	private void resetUserLockAndAuthFailureCounter(User user) {
-		user.setLocked(false);
-		user.setAuthFailureCounter(0);
-		updateUser(user);
-	}
 
 	@Deprecated
 	private User touchUserReferences(User user) {

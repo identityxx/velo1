@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="bootstrap"/>
 	<classpathentry kind="lib" path="lib/hibernate-validator.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-commons-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-entitymanager.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-seam.jar" sourcepath="lib/src/jboss-seam-sources.jar"/>
@@ -49,9 +48,9 @@
 	<classpathentry kind="lib" path="lib/commons-email-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/groovy-all.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient.jar"/>
+<<<<<<< HEAD:.classpath
 	<classpathentry kind="lib" path="C:/Data/Apps/jbdevstudio/jboss-eap/jboss-as/client/jboss-annotations-ejb3.jar"/>
 	<classpathentry kind="lib" path="lib/velowingwapi.jar"/>
-	<classpathentry kind="lib" path="lib/quartz.jar"/>
 	<classpathentry kind="lib" path="lib/ldap2_7_2.jar"/>
 	<classpathentry kind="lib" path="lib/password1_4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-dbutils-1.1.jar"/>
@@ -70,6 +69,12 @@
 	<classpathentry kind="lib" path="lib/xmlwriter-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/sqlbuilder-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jcifs-1.2.18.jar"/>
-	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/jbossws-native-core.jar"/>
+	<classpathentry kind="lib" path="lib/jbossws-native-core.jar"/>
+	<classpathentry kind="lib" path="C:/data/apps/jboss-4.2.3.GA/client/jboss-annotations-ejb3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jboss-Embedded"/>
+	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/groovy-engine.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/smooks1.1.2"/>
+	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/jboss-logging-spi.jar"/>
+	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/velowingwapi.jar"/>
 	<classpathentry kind="output" path="test-build"/>
 </classpath>

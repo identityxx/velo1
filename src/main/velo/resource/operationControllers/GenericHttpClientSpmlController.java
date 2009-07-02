@@ -38,6 +38,8 @@ import org.openspml.v2.msg.spmlsuspend.SuspendRequest;
 
 import velo.action.ResourceOperation;
 import velo.adapters.GenericHttpClientAdapter;
+import velo.collections.Accounts;
+import velo.collections.ResourceGroups;
 import velo.contexts.OperationContext;
 import velo.entity.ResourceTask;
 import velo.entity.ResourceTypeOperation;
@@ -62,6 +64,11 @@ public class GenericHttpClientSpmlController extends SpmlResourceOperationContro
 	public GenericHttpClientSpmlController() {
 		
 	}
+	
+	public Accounts listAllIdentities(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
+	
 	
 	public void init(OperationContext context) {
 		//needed by all methods
@@ -343,7 +350,33 @@ public class GenericHttpClientSpmlController extends SpmlResourceOperationContro
 	
 
 	
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesIncrementally(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		return null;
+	}
+
+	@Override
+	//TODO: Implement!
+	public Accounts listIdentitiesFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
 	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupsFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	@Override
+	//TODO: Implement!
+	public ResourceGroups listGroupMembershipFull(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
+		throw new OperationException("Not supported yet");
+	}
+	
+	
+	
+	@Deprecated
 	public void resourceFetchActiveDataOffline(ResourceOperation ro, ResourceTask resourceTask) throws OperationException {
 		throw new OperationException("This operation is currently not supported for this resource type!");
 	}
