@@ -123,6 +123,7 @@ public class ApprovalNodesManager {
 			return null;
 		}
 		
+		processInstance.getContextInstance().setVariable("rejectionComment", wfActiveApprovalComment);
 		addComment(wfActiveApprovalComment);
 		facesMessages.addFromResourceBundle(FacesMessage.SEVERITY_INFO,"ss.workflow.task.message.successfulyRejectedTask",loggedUser.getFullName());
 		return "/ss/Home.xhtml";

@@ -28,6 +28,7 @@ import org.jboss.seam.annotations.Name;
 
 import velo.ejb.interfaces.ApproversGroupManagerLocal;
 import velo.entity.ApproversGroup;
+import velo.entity.User;
 
 @Stateless()
 @Name("approversGroupManager")
@@ -54,5 +55,20 @@ public class ApproversGroupBean implements ApproversGroupManagerLocal {
 			log.debug("Could not find any Approvers Group for unique name '" + uniqueName + "', returning null.");
 			return null;
 		}
+	}
+	
+	public ApproversGroup findApproversGroupEagerly(String uniqueName) {
+		ApproversGroup ag = findApproversGroup(uniqueName);
+		
+		if (ag != null) {
+			ag.getApprovers().size();
+			for (User currApprover : ag.getApprovers()) {
+				currApprover.touchCollections();
+			}
+			
+			ag.getRoleApproversGroups().size();
+		}
+		
+		return ag;
 	}
 }

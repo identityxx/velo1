@@ -30,4 +30,5 @@ import velo.entity.EmailTemplate;
 @Local
 public interface ApproversGroupManagerLocal {
 	public ApproversGroup findApproversGroup(String uniqueName);
+	public ApproversGroup findApproversGroupEagerly(String uniqueName);
 }

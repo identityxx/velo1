@@ -134,6 +134,8 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	private boolean delAccountIfLastRoleRefToThisResourceIsRevoked = true; 
 	
 	private String configuration;
+	
+	private int daysToRevokeAccount;
 
 	/**
 	 * The corresponding resource type entity
@@ -622,8 +624,16 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	public void setConfiguration(String configuration) {
 		this.configuration = configuration;
 	}
-
 	
+	@Column(name = "DAYS_TO_REVOKE_ACCOUNT", nullable = false)
+	public int getDaysToRevokeAccount() {
+		return daysToRevokeAccount;
+	}
+
+	public void setDaysToRevokeAccount(int daysToRevokeAccount) {
+		this.daysToRevokeAccount = daysToRevokeAccount;
+	}
+
 	/**
 	 * @return the gateway
 	 */

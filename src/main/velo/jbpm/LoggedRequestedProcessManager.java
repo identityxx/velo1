@@ -104,6 +104,44 @@ public class LoggedRequestedProcessManager
 	   return piList;
    }
    
+   @Transactional
+   public List<ProcessInstance> getLoggedUserNotFinishedAndFinishedRequestedProcessListAsRequestDelegator(Integer previousDays)
+   {
+	   if ( Actor.instance().getId() == null ) return null;
+
+	   List<ProcessInstance> piList = new ArrayList<ProcessInstance>();
+	   
+	   
+	   previousDays = previousDays * -1;
+	   Calendar c = Calendar.getInstance();
+	   c.add(Calendar.DAY_OF_YEAR, previousDays);
+	   
+	   
+	   //not allowed to do loggedUser for Application scope
+	   //List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND (vi.processInstance.end = null OR vi.processInstance.end >= :endDate) AND vi.processInstance.isSuspended = 0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requesterUserName").setParameter("varValue", loggedUser.getName()).setParameter("endDate", c.getTime()).list();
+	   List<StringInstance> l = ManagedJbpmContext.instance().getSession().createQuery("select vi from org.jbpm.context.exe.variableinstance.StringInstance vi WHERE vi.name = :varName AND vi.value = :varValue AND (vi.processInstance.end = null OR vi.processInstance.end >= :endDate) AND vi.processInstance.isSuspended = 0 ORDER BY vi.processInstance.end,vi.processInstance.id DESC").setParameter("varName","requestDelegatorUserName").setParameter("varValue", Actor.instance().getId()).setParameter("endDate", c.getTime()).list();
+	   
+	   for (StringInstance si : l) {
+		   piList.add(si.getProcessInstance());
+	   }
+	   
+	   
+	   return piList;
+   }   
+   
+   @Transactional
+   public List<ProcessInstance> getLoggedUserNotFinishedAndFinishedRequestedProcessListAsRequesterAndAsRequestDelegator(Integer previousDays)
+   {
+	   if ( Actor.instance().getId() == null ) return null;
+
+	   List<ProcessInstance> piList = new ArrayList<ProcessInstance>();
+	   
+	   piList.addAll(getLoggedUserNotFinishedAndFinishedRequestedProcessList(previousDays));	   
+	   piList.addAll(getLoggedUserNotFinishedAndFinishedRequestedProcessListAsRequestDelegator(previousDays));	   
+	   
+	   return piList;
+   }   
+
    
    private List<TaskInstance> getTaskInstanceList(String actorId)
    {

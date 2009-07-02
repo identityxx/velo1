@@ -35,8 +35,6 @@ import javax.ejb.Timer;
 import javax.ejb.TimerService;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.jms.BytesMessage;
 import javax.jms.DeliveryMode;
 import javax.jms.MessageProducer;
@@ -48,25 +46,17 @@ import javax.jms.QueueSession;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
 
 import org.apache.log4j.Logger;
-import org.hibernate.FlushMode;
-import org.hibernate.Session;
 import org.jboss.annotation.IgnoreDependency;
 import org.jboss.annotation.ejb.TransactionTimeout;
-//import org.jboss.tm.TransactionManagerFactory;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
+
 import velo.common.SysConf;
 import velo.contexts.OperationContext;
 import velo.ejb.interfaces.AdapterManagerLocal;
@@ -114,6 +104,8 @@ import velo.exceptions.ScriptInvocationException;
 })*/
         
         @Stateless()
+        @AutoCreate
+        @Name("taskManager")
         //@TransactionManagement(TransactionManagementType.BEAN)
         public class TaskBean implements TaskManagerLocal, TaskManagerRemote {
     /**

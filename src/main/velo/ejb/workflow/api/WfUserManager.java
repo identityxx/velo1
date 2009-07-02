@@ -1,5 +1,11 @@
 package velo.ejb.workflow.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.faces.application.FacesMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -10,6 +16,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.log.Log;
 
 import velo.ejb.interfaces.IdentityAttributeManagerLocal;
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.IdentityAttribute;
 import velo.entity.User;
 
@@ -24,6 +31,9 @@ public class WfUserManager {
 	
 	@In(create=true)
 	IdentityAttributeManagerLocal identityAttributeManager;
+
+	@In(create=true)
+	UserManagerLocal userManager;	
 	
 	String manager; 
 	String identifier;
@@ -248,6 +258,94 @@ public class WfUserManager {
 		
 	}
 	
+	public List<User> getUsersManagedBy(User user) {
+		
+		String identifierIA = getIdentifierIAName();
+		String managerIA = getManagerIAName();
+		
+		if (!(user.isUserAttributeExists(identifierIA))) {
+			log.error("The identifier IA #0 for the user #1 doesn't exist, returning null", identifierIA, user.getName());
+			return null;
+		}
+		
+		if (!(user.getUserIdentityAttribute(identifierIA).isFirstValueIsNotNullAndNotEmpty())) {
+			log.error("The identifier IA #0 for the user #1 doesn't exist, returning null", identifierIA, user.getName());
+			return null;
+		}
+
+		List<User> users = new ArrayList<User>();
+		
+		// Define a map for the search
+		Map<String,String> userAttr = new HashMap<String,String>();
+		
+		// Fill the map with the values to search, the identity attribute to search in and it's value
+		userAttr.put(managerIA, user.getUserIdentityAttribute(identifierIA).getFirstValueAsString());
+
+		// Run the search
+		users = userManager.findUsers(userAttr, false);
+
+		return users;
+	}
+	
+	// Returns a list of all users (With a drilldown by recursion) managed by a certain manager
+	public List<User> getAllUsersManagedBy(User user, int level) {
+
+		if (level == 0) return null;
+		
+		List<User> tempUsers;
+		List<User> tmpUsers = new ArrayList<User>();
+		List<User> etmpUsers = new ArrayList<User>();
+
+		// First get all users that are directly managed by the manager and with a 'Status' IA equals to '0'
+		tempUsers = getUsersManagedBy(user);
+
+		if (tempUsers == null || tempUsers.isEmpty()) {
+			return null;
+		}	
+
+		// Recursively iterate on every user and add his managed users to the list
+		for (User u : tempUsers) {
+			tmpUsers = getAllUsersManagedBy(u, level-1);
+			if (tmpUsers != null)
+				etmpUsers.addAll(tmpUsers);
+		}
+
+		tempUsers.addAll(etmpUsers);
+		
+		return tempUsers;
+	}	
+	
+	// Gets a manager which identity attribute is equal to a certain value (recursively)
+	public User getManagerByIA(String user, String iA, String value) {
+		List<String> values = new ArrayList<String>();
+		values.add(value);
+		return getManagerByIA(user, iA, values);
+	}
+	
+	// Gets a manager which identity attribute is equal to a certain values (recursively)
+	public User getManagerByIA(String user, String iA, List<String> values) {
+
+		log.info("Getting the manager of #0 by the IA '#1' with the value #2.", user, iA, values);
+		
+		if (values == null || values.isEmpty())
+			return null;
+		
+		User manager = getManagerForUser(user);
+		while (manager != null) {
+			if (manager.isUserAttributeExists(iA) &&
+				manager.getUserIdentityAttribute(iA).isFirstValueIsNotNullAndNotEmpty())
+					for (String value : values)
+						if (manager.getUserIdentityAttribute(iA).getFirstValueAsString().equals(value)) {
+							log.info("The manager found is #0.", manager.getName());
+							return manager;
+						}
+		
+			manager = getManagerForUser(manager.getName());
+		}
+
+		log.info("Manager was not found, returning null.");
+		return null;
+	}	
 	
 	
 	//FIXME: DUPLICATED FROM USERBEAN

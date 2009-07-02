@@ -1408,7 +1408,13 @@ import velo.tools.FileUtils;
     }
     
     
-    
+    public void touchCollections() {
+    	for (UserIdentityAttribute currUIA : getUserIdentityAttributes()) {
+    		currUIA.getValues().size();
+    	}
+    	
+    	getUserRoles().size();
+    }
     
     
     
