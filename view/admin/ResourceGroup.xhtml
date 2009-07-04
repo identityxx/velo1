@@ -58,18 +58,35 @@
         <div style="clear:both"/>
         
     </rich:panel>
-    
+    <rich:spacer width="1" height="15"/>
     <rich:panel>
-        <f:facet name="header">Roles the gResource Group is associated with:</f:facet>
+        <f:facet name="header">Accounts members of this group</f:facet>
+        	<div class="results" id="membersListDiv">
+            	<h:dataTable id="memberList" 
+					var="currMember"
+					value="#{velo:setAsList(resourceGroupHome.instance.members)}" 
+					rendered="#{not empty resourceGroupHome.instance.members}">
+						<h:column>
+							<s:link view="/admin/Account.xhtml" value="#{currMember.account.name}">
+							<f:param name="accountId" value="#{currMember.account.accountId}"/>
+						</s:link>
+						</h:column>
+				</h:dataTable>
+       		</div>
+        
+    </rich:panel>
+    <rich:spacer width="1" height="15"/>
+    <rich:panel>
+        <f:facet name="header">Roles associated this Group</f:facet>
         	<div class="results" id="roleListDiv">
             	<h:dataTable id="roleList" 
 					var="currRole"
 					value="#{velo:setAsList(resourceGroupHome.instance.roles)}" 
 					rendered="#{not empty resourceGroupHome.instance.roles}">
 						<h:column>
-							<s:link view="/admin/Position.xhtml" value="#{currRole.name}">
-							<f:param name="positionId" value="#{currRole.roleId}"/>
-						</s:link>
+							<s:link view="/admin/Role.xhtml" value="#{currRole.name}">
+								<f:param name="roleId" value="#{currRole.roleId}"/>
+							</s:link>
 						</h:column>
 				</h:dataTable>
        		</div>

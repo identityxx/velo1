@@ -18,22 +18,24 @@ public class ResourceGroups extends HashSet<ResourceGroup> implements Cloneable,
 	
 	
 	public void addGroup(String uniqueId, String displayName, String description, Resource resource) {
-		ResourceGroup rg = ResourceGroup.factory(uniqueId, displayName, description, resource);
+		ResourceGroup rg = ResourceGroup.factory(uniqueId, displayName, description, null, resource);
 		add(rg);
 	}
 
+	
 	public void addGroup(Map map, Resource resource) throws LoadGroupByMapException {
-		ResourceGroup rg = ResourceGroup.factory(null, null, null, resource);
+		ResourceGroup rg = ResourceGroup.factory(null, null, null,null,resource);
 		rg.load(map, resource);
 		add(rg);
 	}
 	
 	
-	
+	//used for reconcile group membership to import group membership, mainly used by the controllers
 	public void addGroupMembership(Map map, Resource resource) throws LoadGroupByMapException {
 		//Expecting at least to have the group_unique_id and account_name available here
 		
 		String groupUniqueIdFieldName = "group_unique_id";
+		String groupTypeFieldName = "group_type";
 		String accountNameFieldName = "account_name";
 			
 			
@@ -45,7 +47,11 @@ public class ResourceGroups extends HashSet<ResourceGroup> implements Cloneable,
 			throw new LoadGroupByMapException("Could not find '" + accountNameFieldName + "' for group to be loaded for the following map entry: ' " + map + "'");
 		}
 		
-		/*
+		if (!map.containsKey(groupTypeFieldName)) {
+			throw new LoadGroupByMapException("Could not find '" + groupTypeFieldName + "' for group member be loaded for the following map entry: ' " + map + "'");
+		}
+		
+		/*Has to be taken care in reconcile to simplify the loading data from resource/files
 		ResourceGroup rg = resource.findGroup((String)map.get("group_unique_id"));
 		if (rg == null) {
 			//resource group does not exist, skipping...
@@ -53,15 +59,17 @@ public class ResourceGroups extends HashSet<ResourceGroup> implements Cloneable,
 		}
 		*/
 		
+		
 		Account acc = Account.factory((String)map.get(accountNameFieldName), resource);
 		ResourceGroup group = getByUniqueId((String)(map.get(groupUniqueIdFieldName)));
 		
+		//If group already in the list, just add a new member, otherwise create a new group
 		if (group != null) {
 			if (!group.isMemberExistByName(acc)) {
 				group.getMembers().add(new ResourceGroupMember(acc,group));
 			}
 		} else {
-			group = ResourceGroup.factory((String)(map.get(groupUniqueIdFieldName)), null, null, resource);
+			group = ResourceGroup.factory((String)(map.get(groupUniqueIdFieldName)), null, null,(String)(map.get(groupTypeFieldName)),resource);
 			group.getMembers().add(new ResourceGroupMember(acc,group));
 			
 			add(group);

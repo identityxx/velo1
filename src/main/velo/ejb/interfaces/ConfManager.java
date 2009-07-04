@@ -35,15 +35,6 @@ public interface ConfManager {
 	//public void generateUsersLocalPasswordsEncryptionKey() throws OperationException;
 	
 	
-	
-	
-	//individual imports
-	public void importReconcileEvents();
-	public void importReadyActions();
-	public void importSystemEvents();
-	
-	
-	
 	public void syncResourceTypes();
 	public boolean isInitialDataImported();
     public void persistInitialtData();
@@ -56,5 +47,13 @@ public interface ConfManager {
     public void syncResourceTypeAttributes() throws OperationException;
 	@Deprecated
     public void syncResourceActionDefinitions();
+	
+	
+	
+	
+	
+	public void syncReconcileEvents();
+	public void syncSystemEvents();
+	public void syncReadyActions();
     
 }

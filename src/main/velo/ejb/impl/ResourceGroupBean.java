@@ -38,6 +38,7 @@ import velo.ejb.interfaces.ResourceGroupManagerLocal;
 import velo.ejb.interfaces.ResourceGroupManagerRemote;
 import velo.entity.Resource;
 import velo.entity.ResourceGroup;
+import velo.entity.ResourceGroupMember;
 import velo.entity.User;
 import velo.exceptions.NoResultFoundException;
 
@@ -124,7 +125,7 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
 	}
     
     public void removeGroup(ResourceGroup rg) {
-        log.info("Removing group name '" + rg.getDisplayName() + "', on target: '" + rg.getResource().getDisplayName() + "' started, determining what to do...");
+        log.info("Removing group name '" + rg.getDisplayName() + "', from resource: '" + rg.getResource().getDisplayName() + "' started, determining what to do...");
         
         //If group was not marked yet as deleted, then add the first time group was deleted to current date.
         if (rg.isDeletedInResource()) {
@@ -148,9 +149,17 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
             updateGroup(rg);
         }
     }
-    
    
+    public void persistMember(ResourceGroupMember groupMember) {
+    	log.trace("Persisting group member for group '" + groupMember.getResourceGroup().getUniqueId() + "', of resource '" + groupMember.getResourceGroup().getResource().getDisplayName() + "'");
+		em.persist(groupMember);
+    }
     
+    public void removeGroupMember(ResourceGroupMember groupMember) {
+        log.info("Removing member name '" + groupMember.getAccount().getName() + "', from group: '" + groupMember.getResourceGroup().getUniqueId() + "'");
+        
+        em.remove(groupMember);
+    }
     
     
     

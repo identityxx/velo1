@@ -105,7 +105,8 @@ import velo.exceptions.LoadGroupByMapException;
 	/**
 	 * Group's type
 	 */
-	private String type = "generic";
+	//private String type = "generic";
+	private String type;
 
 	/**
 	 * The Target System the group is related to
@@ -375,13 +376,14 @@ import velo.exceptions.LoadGroupByMapException;
 
 
 
-	public static ResourceGroup factory(String uniqueId, String displayName, String description,Resource resource) {
+	public static ResourceGroup factory(String uniqueId, String displayName, String description, String type, Resource resource) {
 		ResourceGroup rg = new ResourceGroup();
 
 		rg.setDisplayName(displayName);
 		rg.setUniqueId(uniqueId);
 		rg.setDescription(description);
 		rg.setResource(resource);
+		rg.setType(type);
 		rg.setCreationDate(new Date());
 
 		return rg;
@@ -410,11 +412,17 @@ import velo.exceptions.LoadGroupByMapException;
 				throw new LoadGroupByMapException(
 				"'uniqueId' is a must and does not exist in MAP!");
 			}
-
-			if (map.containsKey("type")) {
-				this.setType((String) map.get("type"));
+			
+			if (((String) map.get("unique_id").toString() == null)) {
+				throw new LoadGroupByMapException(
+				"'type' is a must and does not exist in MAP!");
 			}
 
+//			if (map.containsKey("type")) {
+//				this.setType((String) map.get("type"));
+//			}
+
+			this.setType((String) map.get("type"));
 			this.setDisplayName((String) map.get("display_name"));
 			this.setUniqueId((String) map.get("unique_id").toString());
 			this.setDescription((String) map.get("description"));

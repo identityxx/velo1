@@ -244,8 +244,7 @@ public class ReconcileAccountsProcess {
 					if (currRA == null) {
 						//should never happen as attribute had not to be loaded at all.
 						String err = "Could not find corresponding Resource Attribute (definition!) to compare active attribute named '" + currAttribute.getUniqueName() + "' for account name '" + currExistedActiveAccount.getName() + "(" + currExistedActiveAccount.getResource().getDisplayName() + ")'";
-						//log.info(err);
-						rps.addLog(EventLogLevel.WARN,err);
+						log.trace(err);
 						continue;
 					}
 					

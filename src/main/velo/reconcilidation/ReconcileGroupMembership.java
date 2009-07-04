@@ -70,7 +70,7 @@ public class ReconcileGroupMembership {
 	 *            The resource entity to reconcile accounts for
 	 * @throws ReconcileAccountsException
 	 */
-	public void reconcileGroupsByresource(Resource resource) throws ReconcileGroupsException {
+	public void reconcileGroupsByResource(Resource resource) throws ReconcileGroupsException {
 		try {
 			// --Fetch the list of accounts to reconcile from the last updated sync file
 			

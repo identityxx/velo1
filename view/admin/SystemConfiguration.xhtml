@@ -101,9 +101,9 @@
 	<rich:tab id="systemDataImports" label="System Data Imports">
 		<h:form>
 			<h:panelGrid columns="1">
-                <h:commandButton action="#{confActions.importReconcileEvents}" value="Import Reconcile Events"/>
-                <h:commandButton action="#{confActions.importSystemEvents}" value="Import System Events"/>
-                <h:commandButton action="#{confActions.importReadyActions}" value="Import Ready Actions"/>
+                <h:commandButton action="#{confActions.syncReconcileEvents}" value="Sync Reconcile Events"/>
+                <h:commandButton action="#{confActions.syncSystemEvents}" value="Sync System Events"/>
+                <h:commandButton action="#{confActions.syncReadyActions}" value="Sync Ready Actions"/>
 	       </h:panelGrid>
 		</h:form>
 	</rich:tab>

@@ -271,7 +271,12 @@ import velo.tasks.TaskExecuter;
         	taskExecutionOnly(task);
         	task.setLastExecutionDate(new Date());
         	indicateTaskExecutionSuccess(task);
+        	/*
         }catch (TaskExecutionException e) {
+        	task.setLastExecutionDate(new Date());
+        	indicateTaskExecutionFailure(task, e.getMessage());
+        */
+        }catch(Exception e) {
         	task.setLastExecutionDate(new Date());
         	indicateTaskExecutionFailure(task, e.getMessage());
         }
@@ -298,8 +303,10 @@ import velo.tasks.TaskExecuter;
     
     public void indicateTaskExecutionFailure(Task task, String errorMsg) {
         log.warn("Indicating task execution failure for task ID: " + task.getTaskId());
-        task.addLog("ERROR", errorMsg, null);
         setTaskStatus(TaskStatus.FATAL_ERROR, task);
+        //must be after 'setTaskStatus', otherwise it prints the log twice, probably because the manual transaction management
+        //of the 'setTaskStatus'
+        task.addLog("ERROR", errorMsg, null);
         
         //invoke event
         //EventDefinition ed = eventManager.find(eventTaskFailure);

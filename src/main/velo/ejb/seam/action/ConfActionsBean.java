@@ -38,6 +38,7 @@ import org.quartz.Scheduler;
 import velo.common.SysConf;
 import velo.ejb.interfaces.ConfManagerLocal;
 import velo.exceptions.OperationException;
+import velo.exceptions.SynchronizationException;
 
 @Stateful
 @Name("confActions")
@@ -122,20 +123,34 @@ public class ConfActionsBean implements ConfActions {
 	
 	
 	
-	//individual imports
-	public void importReconcileEvents() {
-		confManager.importReconcileEvents();
-		facesMessages.add("Successfully imported reconcile events!");
+	
+	
+	public void syncReconcileEvents() {
+		try {
+			confManager.syncReconcileEvents();
+			facesMessages.add("Successfully synchronized reconcile events!");
+		} catch (SynchronizationException e) {
+			facesMessages.add("Could not synchronize reconcile events: " + e.getMessage());
+		}
 	}
 	
-	public void importSystemEvents() {
-		confManager.importSystemEvents();
-		facesMessages.add("Successfully imported system events!");
+	
+	public void syncSystemEvents() {
+		try {
+			confManager.syncSystemEvents();
+			facesMessages.add("Successfully synchronized system events!");
+		} catch (SynchronizationException e) {
+			facesMessages.add("Could not synchronize system events: " + e.getMessage());
+		}
 	}
 	
-	public void importReadyActions() {
-		confManager.importReadyActions();
-		facesMessages.add("Successfully imported ready actions!");
+	public void syncReadyActions() {
+		try {
+			confManager.syncReadyActions();
+			facesMessages.add("Successfully synchronized ready actions!");
+		} catch (SynchronizationException e) {
+			facesMessages.add("Could not synchronize ready actions: " + e.getMessage());
+		}
 	}
 	
 	

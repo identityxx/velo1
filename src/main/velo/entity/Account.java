@@ -820,7 +820,8 @@ public class Account extends AccountSkeletal {
 	/**
 	 * Import active attributes by map, this will create an 'active attribute' per entry in the map, with setting the value(s) too
 	 * 
-	 * <note>Mainly used by JDBC adapter, hopefully DBUtils keys are column's names in lowercase, better to handle names case depends whether the resource is case sensitive or not</note> 
+	 * <note>Mainly used by JDBC adapter, hopefully DBUtils keys are column's names in lowercase, better to handle names case depends whether the resource is case sensitive or not</note>
+	 * <note>Ignore 
 	 * @param map A map contains all the attributes->values where a value can be a collection or value or a single value
 	 * 
 	 * @throws ObjectsConstructionException
@@ -830,7 +831,6 @@ public class Account extends AccountSkeletal {
 		while (it.hasNext()) {
 			Map.Entry pairs = (Map.Entry) it.next();
 			
-			//only add active if RA is not flagged as persistence
 			//'addActiveAttribute' already take care of setting the key in the appropriate case
 			addActiveAttribute(factoryActiveAttribute((String)pairs.getKey(), pairs.getValue()));
 		}
@@ -841,6 +841,12 @@ public class Account extends AccountSkeletal {
 	}
 	
 	
+	/**
+	 * Init the account by the loaded active attributes
+	 * Expecting the map to be loaded by {@link #loadActiveAttributesByMap(Map)}, which handles key names in the right case
+	 * 
+	 * @throws ObjectsConstructionException 
+	 */
 	public void initFullAccountByLoadedActiveAttributes() throws ObjectsConstructionException {
 		if (!isActiveAttributesLoaded()) {
 			throw new ObjectsConstructionException("Active attributes were not loaded!");
@@ -885,12 +891,12 @@ public class Account extends AccountSkeletal {
 
 		Set<String> persistenceAttrsNames = new HashSet<String>(); 
 		//required for the new created accounts via reconcile/or anything else
-		for (Attribute currAA : getActiveAttributes().values()) {
+		for (Map.Entry<String,Attribute> currAA : getActiveAttributes().entrySet()) {
 			//if resource is case sensitive, will search in case sensitive, otherwise will search case ignorance in mind 
-			ResourceAttribute currRA = getResource().getResourceAttribute(currAA.getUniqueName());
+			ResourceAttribute currRA = getResource().getResourceAttribute(currAA.getValue().getUniqueName());
 
 			if (currRA == null) {
-				log.info("No resource attribute was found for recieved attribute '" + currAA.getUniqueName() + "' while loading account by map.");
+				log.debug("No resource attribute was found for recieved attribute '" + currAA.getValue().getUniqueName() + "' while loading account by map.");
 				
 				//FIXME: shell we clean it from the active attributes or not?
 				continue;
@@ -900,15 +906,15 @@ public class Account extends AccountSkeletal {
 			if (currRA.isPersistence()) {
 				AccountAttribute currAccountAttribute;
 				try {
-					currAccountAttribute = AccountAttribute.factory(currRA,this,currAA);
+					currAccountAttribute = AccountAttribute.factory(currRA,this,currAA.getValue());
 					getAccountAttributes().add(currAccountAttribute);
 				} catch (AttributeSetValueException e) {
 					//THROW OUT AN EXCEPTION, A VALUE COULD NOT BE SET.
 					throw new ObjectsConstructionException(e.getMessage());
 				}
 				
-				//remove it from active (case here does not matter as it's just used down below to remove the attribute from map in exact key name)
-				persistenceAttrsNames.add(currAA.getUniqueName());
+				//remove it from active (case matters, set the key name, not the attr's uniqueName) 
+				persistenceAttrsNames.add(currAA.getKey());
 			}
 			//Attribute is not persistence, keep it as active, do nothing.
 			else {
@@ -916,13 +922,10 @@ public class Account extends AccountSkeletal {
 			}
 		}
 		
-		
 		for (String attrUniqueNameToRemoveFromActive : persistenceAttrsNames) {
 			getActiveAttributes().remove(attrUniqueNameToRemoveFromActive);
 		}
 	}
-	
-	
 	
 	
 	

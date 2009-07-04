@@ -11,6 +11,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import velo.actions.Action;
+import velo.entity.annotations.UniqueColumnForSync;
 
 /**
  * @author Asaf Shakarchi
@@ -60,6 +61,7 @@ public abstract class PersistenceAction extends Action {
 		
 	}
 	
+	@UniqueColumnForSync
 	@Column(name="NAME", nullable=false, unique=true)
 	public String getName() {
 		return name;

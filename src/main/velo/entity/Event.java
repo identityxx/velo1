@@ -22,9 +22,11 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
+import org.jboss.seam.annotations.Synchronized;
 
 import velo.actions.Action;
 import velo.entity.LogEntry.EventLogLevel;
+import velo.entity.annotations.UniqueColumnForSync;
 import velo.exceptions.EventResponseException;
 import velo.exceptions.action.ActionExecutionException;
 
@@ -157,7 +159,8 @@ public class Event extends Action implements Serializable {
 		this.eventResponses = eventResponses;
 	}
 
-	@Column(name="UNIQUE_NAME", nullable=false, unique=false)
+	@UniqueColumnForSync
+	@Column(name="UNIQUE_NAME", nullable=false, unique=true)
 	public String getUniqueName() {
 		return uniqueName;
 	}

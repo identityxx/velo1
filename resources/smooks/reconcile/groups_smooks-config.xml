@@ -8,9 +8,9 @@ xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">
     Wire in the "accounts" beans.
     -->
     <jb:bindings beanId="reconGroups" class="velo.collections.ResourceGroups" createOnElement="groups">
-        <jb:value property="resourceUniqueName" data="identities/@resource_unique_id" />
-        <jb:value property="fetchType" data="identities/@fetch_type" />
-        <jb:value property="creationDate" decoder="Date" data="identities/@creation_date">
+        <jb:value property="resourceUniqueName" data="groups/@resource_unique_id" />
+        <jb:value property="fetchType" data="groups/@fetch_type" />
+        <jb:value property="creationDate" decoder="Date" data="groups/@creation_date">
 			<jb:decodeParam name="format">MM/dd/yyyy HH:mm:ss</jb:decodeParam>
 		</jb:value>
 		
@@ -27,5 +27,16 @@ xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">
     	<jb:value property="displayName" data="group/@display_name" />
     	<jb:value property="description" data="group/@description" />
     </jb:bindings>
+    
+    <g:groovy executeOnElement="group">
+             <g:script>
+                 <!--
+                 def grp = getBean("group");
+                 grp.setCreationDate(new Date());
+                 
+                 grp.setResource(getBean('resourceObject'));
+                 -->
+             </g:script>
+	</g:groovy> 
     
 </smooks-resource-list>

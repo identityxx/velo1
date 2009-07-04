@@ -710,7 +710,7 @@ public class ActiveDirecotryRemoteSpmlResourceOperationController extends
 
 //				try {
 					ResourceGroup currRG = ResourceGroup.factory(uniqueId,
-							displayName, description, getResource());
+							displayName, description, "SECURITY", getResource());
 					activeGroups.add(currRG);
 				//} catch (ObjectFactoryException e) {
 //					log

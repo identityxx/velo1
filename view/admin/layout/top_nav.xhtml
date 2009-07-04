@@ -140,7 +140,7 @@
                 </rich:menuItem>
             </rich:dropDownMenu>
             
-            <rich:dropDownMenu id="root_requests" value="Requests" rendered="#{s:hasRole('view_requests')}">
+            <rich:dropDownMenu id="root_requests" value="Requests" rendered="false">
                 <rich:menuItem id="requests_pending_approval_request_list" submitMode="server" value="Pending Approval Requests" action="/admin/RequestList.xhtml?status=PENDING_APPROVAL">
                     <s:conversationPropagation type="none" />
                 </rich:menuItem>

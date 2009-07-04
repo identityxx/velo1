@@ -38,9 +38,11 @@ public class AddAccountToRepository extends ReadyAction {
 		Account account = (Account)getContext().get("account");
 		
 		
-		System.out.println("!!!!!!!!!!!!!!: " + account.getNameInRightCase());
-		for (AccountAttribute currAtt : account.getAccountAttributes()) {
-			System.out.println("currAttr: '" + currAtt.getAsStandardAttribute().getDisplayable());
+		if (log.isTraceEnabled()) {
+			log.trace("Account to add to repository: " + account.getNameInRightCase());
+			for (AccountAttribute currAtt : account.getAccountAttributes()) {
+				log.trace("\tAttr of account: '" + currAtt.getAsStandardAttribute().getDisplayable());
+			}
 		}
 		
 		getAPI().getAccountManager().persistAccount(account);

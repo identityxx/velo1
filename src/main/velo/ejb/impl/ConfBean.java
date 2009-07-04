@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -81,7 +82,9 @@ import velo.entity.Attribute.AttributeDataTypes;
 import velo.entity.GuiAttribute.AttributeVisualRenderingType;
 import velo.entity.ResourceAttributeBase.SourceTypes;
 import velo.entity.ResourceType.ResourceControllerType;
+import velo.entity.annotations.UniqueColumnForSync;
 import velo.exceptions.OperationException;
+import velo.exceptions.SynchronizationException;
 import velo.tools.FileUtils;
 
 /**
@@ -117,12 +120,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	public Set<Object> userContainers = new HashSet<Object>();
 	public Set<Object> resourceTypeAttributes = new HashSet<Object>();
 	public Set<Object> resourceGlobalOperations = new HashSet<Object>();
-
-	
 	//reconcile related
 	public Set<Object> reconcileTargetPolicies = new LinkedHashSet<Object>();	
 	public Set<Object> reconcileEvents = new LinkedHashSet<Object>();
-	
 	//actions
 	public Set<Object> readyActions = new LinkedHashSet<Object>();
 	
@@ -191,62 +191,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	
 	
 	
-	//INDIVIDUAL CONTENT
-	public void importReconcileEvents() {
-		initReconcileEvents();
-		persistEntities(reconcileEvents);
-	}
-	
-	public void importSystemEvents() {
-		initSystemEvents();
-		persistEntities(systemEvents);
-	}
-	
-	public void importReadyActions() {
-		initReadyActions();
-		persistEntities(readyActions);
-	}
-	
-
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	public void generateResourcePrincipalsEncryptionKey() throws OperationException {
-		String fileName = SysConf.getSysConf().getString(
-		"system.directory.system_conf")
-		+ "/"
-		+ SysConf.VELO_KEYS_DIR
-		+ "/"
-		+ SysConf.getSysConf().getString(
-		"system.files.targets_principals_encryption_key");
-		
-		
-		
-		log.debug("Key file name to be generated: " + fileName);
-		String keyString = EncryptionUtils.generateKey();
-
-		File f = new File(fileName);
-		if (!f.isFile()) {
-			try {
-				f.createNewFile();
-				FileUtils.setContents(f, keyString);
-			} catch (IOException ex) {
-				throw new OperationException(
-						"Could not create key generation file for file name: '"
-						+ fileName + "', due to: " + ex);
-			}
-		} else {
-			throw new OperationException("Could not create key generation file for file name: '" + fileName + "', file already exists.");
-		}
-		
-		log.info("Successfully generated resource principals encryption key.");
-	}
 
 
 
@@ -293,7 +239,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 
 
-
+	//TODO This is a bad way :/
 	public boolean isInitialDataImported() {
 		Query q = em.createNamedQuery("resourceType.findAll");
 
@@ -302,6 +248,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 
 	public void persistInitialtData() {
+		//TODO: Generic initInitialData, Should splitted to inidividual initals
 		initInitialData();
 
 		/*
@@ -328,8 +275,6 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		em.flush();
 		persistEntities(passwordPolicyContainers);
 		em.flush();
-		persistEntities(systemEvents);
-		em.flush();
 		persistEntities(users);
 		em.flush();
 		persistEntities(userContainers);
@@ -338,8 +283,19 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		em.flush();
 		persistEntities(reconcileEvents);
 		em.flush();
-		persistEntities(readyActions);
+		
+		
+		
+		//--------------------------------------//
+		//This is the new method for synchronizing amount of entities that can be changed often
+		syncReconcileEvents();
 		em.flush();
+		syncSystemEvents();
+		em.flush();
+		syncReadyActions();
+		em.flush();
+		
+		
 		
 		//TODO: generate keys
 	}
@@ -383,9 +339,6 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	// PRIVATE
 	//existence
 	public void initInitialData() {
-		entityUniqueKeyVars.put(ResourceType.class, "uniqueName");
-
-
 		//ACCOUNTS & ACCESS
 		//GLOBAL LIST OF resource operation definitions (not related to any resource type or resource!)
 		ResourceGlobalOperation rodAddAccount = new ResourceGlobalOperation("ADD_ACCOUNT","Add Account","Add a new account",true);
@@ -1474,17 +1427,18 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		resourceTypeAttributes.add(ADDNattr2);
 
 
-
-
 		
 		
 		//call inits
 		initReconcileEvents();
 		initSystemEvents();
-		initReadyActions();
+		//Sync method takes care of this initReadyActions();
 	}
 
-	//Individual inits
+	
+	
+	
+	//--==Individual inits==--
 	public void initReconcileEvents() {
 		//reconcile events
 		ReconcileEvent reIdentityConfirmed = new ReconcileEvent("IDENTITY_CONFIRMED", "Confirmed Identity", "An event that occurs whenever the identity was confirmed to be existed on the resource");
@@ -1536,11 +1490,16 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ReadyAction addAccountToRepositoryReadyAction = new ReadyAction("ADD_ACCOUNT_TO_REPOSITORY", "Add an account to Velo repository", "velo.actions.readyActions.AddAccountToRepository");
 		ReadyAction addResourceGroupToRepositoryReadyAction = new ReadyAction("ADD_RESOURCE_GROUP_TO_REPOSITORY", "Add a resource group to Velo repository", "velo.actions.readyActions.AddResourceGroupToRepository");
 		ReadyAction removeResourceGroupFromRepositoryReadyAction = new ReadyAction("REMOVE_RESOURCE_GROUP_FROM_REPOSITORY", "Remove a resource group from Velo repository", "velo.actions.readyActions.RemoveResourceGroupFromRepository");
+		ReadyAction updateRepoWithGroupMembershipAssociationReadyAction = new ReadyAction("UPDATE_REPO_WITH_GROUP_MEMBERSHIP_ASSOCIATION", "Update Repo With Grop Membership Association", "velo.actions.readyActions.UpdateRepoWithGroupMembershipAssociation");
+		ReadyAction updateRepoWithGroupMembershipDissociationReadyAction = new ReadyAction("UPDATE_REPO_WITH_GROUP_MEMBERSHIP_DISSOCIATION", "Update Repo With Grop Membership Dissociation", "velo.actions.readyActions.UpdateRepoWithGroupMembershipDissociation");
+		
 		
 		readyActions.add(removeAccountReadyAction);
 		readyActions.add(addAccountToRepositoryReadyAction);
 		readyActions.add(addResourceGroupToRepositoryReadyAction);
 		readyActions.add(removeResourceGroupFromRepositoryReadyAction);
+		readyActions.add(updateRepoWithGroupMembershipAssociationReadyAction);
+		readyActions.add(updateRepoWithGroupMembershipDissociationReadyAction);
 	}
 	
 	
@@ -1663,61 +1622,230 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 
 
 
+	public void generateResourcePrincipalsEncryptionKey() throws OperationException {
+		String fileName = SysConf.getSysConf().getString(
+		"system.directory.system_conf")
+		+ "/"
+		+ SysConf.VELO_KEYS_DIR
+		+ "/"
+		+ SysConf.getSysConf().getString(
+		"system.files.targets_principals_encryption_key");
+		
+		
+		
+		log.debug("Key file name to be generated: " + fileName);
+		String keyString = EncryptionUtils.generateKey();
+
+		File f = new File(fileName);
+		if (!f.isFile()) {
+			try {
+				f.createNewFile();
+				FileUtils.setContents(f, keyString);
+			} catch (IOException ex) {
+				throw new OperationException(
+						"Could not create key generation file for file name: '"
+						+ fileName + "', due to: " + ex);
+			}
+		} else {
+			throw new OperationException("Could not create key generation file for file name: '" + fileName + "', file already exists.");
+		}
+		
+		log.info("Successfully generated resource principals encryption key.");
+	}
 
 
 
+	
 
+	// HELPER
+	public Configuration getConf() {
+		return SysConf.getSysConf();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// SYNC OBJECTS
-	public void syncActionLanguages() throws OperationException {
-		log.info("Syncing Default Action Languages...");
-
+	}
+	
+	
+	public Resource getMockedJdbcResource() {
 		initInitialData();
+		
+		ResourceType jdbcResourceType = resourceTypes.get("JDBC");
+		Resource resource = new Resource();
+		resource.setResourceType(jdbcResourceType);
+		resource.setUniqueName("TESTAPP1");
+		resource.setDisplayName("test application 1");
+		resource.setDescription("A simple mysql test application 1");
+		resource.setConfiguration(jdbcResourceType.getConfigurationTemplate());
+		
+		resource.setConfiguration(resource.getConfiguration().replace("></host>", ">localhost</host>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></port>", ">3306</port>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></dbName>", ">testapp1</dbName>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></driverName>", ">org.gjt.mm.mysql.Driver</driverName>"));
+		resource.setConfiguration(resource.getConfiguration().replace("></urlTemplate>", ">jdbc:mysql://%h/%d</urlTemplate>"));
+		
+		ResourceAttribute ra1 = new ResourceAttribute(resource, "login_name", "Login Name", "Login Name",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ra1.setAccountId(true);
+		ResourceAttribute ra2 = new ResourceAttribute(resource, "first_name", "First Name", "First Name",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		ResourceAttribute ra3 = new ResourceAttribute(resource, "last_name", "Last Name", "Last",AttributeDataTypes.STRING,true,true,0,255,1,1);
+		resource.getResourceAttributes().add(ra1); resource.getResourceAttributes().add(ra2); resource.getResourceAttributes().add(ra3);
 
-		try {
-			mergeEntities(actionLanguages);
-		} catch (Exception e) {
-			throw new OperationException(e.toString());
+		ResourceAdmin ra = new ResourceAdmin();
+		ra.setUserName("testapp1");
+		ra.setPassword("252-120-0-170-195-49-100-85-192-87-223-195-176-96-83-223");
+		
+		resource.getResourceAdmins().add(ra);
+		return resource;
+	}
+	
+	
+	
+	
+	
+	
+	private void syncEntities(Set<Object> entities,Class clazzType) {
+		Method uniqueColumnForSyncMethod = getMethodAnnotatedWithUniqueColumnForSync(clazzType);
+		String uniqueColName = getBeanPropertyOfGetter(uniqueColumnForSyncMethod.getName());
+		
+		Iterator iter = entities.iterator();
+		while (iter.hasNext()) {
+			try {
+				Object currEntity = (Object)iter.next();
+				Object value = uniqueColumnForSyncMethod.invoke(currEntity);
+				
+				
+				Query q = generateCountQueryForSyncEntities(uniqueColName, clazzType);
+				q.setParameter(uniqueColName,value);
+				
+				Long amount = (Long)q.getSingleResult();
+				if (amount < 1) {
+					em.persist(currEntity);
+				}
+			} catch (Exception e) {
+				throw new SynchronizationException(e);
+			}
 		}
 	}
-
-
-
-	public void syncProductData(objectType objType) {
-		if (objType == objectType.RESOURCE_TYPE) {
-			//sync data
-		}
+	
+	private Query generateCountQueryForSyncEntities(String uniqueColumnName, Class clazzType) {
+		String NL = System.getProperty("line.separator");
+		
+		//Generate the alias
+		StringBuilder aliasBuilder = new StringBuilder();
+        for (char c : clazzType.getName().toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                aliasBuilder.append(Character.toLowerCase(c));
+            }
+        }
+        String alias = aliasBuilder.toString();
+        
+     
+        //Generate the query
+        //Check whether an object with the same unique value exists
+		StringBuilder results = new StringBuilder();
+        results.append("SELECT ");
+        results.append("COUNT(").append(alias).append(") ").append(NL);;
+        results.append("FROM ").append(ReadyAction.class.getName()).append(' ').append(alias).append(NL);
+        results.append("WHERE ").append(alias).append(".");
+        results.append(uniqueColumnName).append(" =:").append(uniqueColumnName);
+        
+        
+        Query q = em.createQuery(results.toString());
+        
+        
+        return q;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	
+	private Method getMethodAnnotatedWithUniqueColumnForSync(Class clazz) {
+		for (Method currMethod : clazz.getMethods()) {
+			if (currMethod.isAnnotationPresent(UniqueColumnForSync.class)) {
+				return currMethod;
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	
+	public void syncReconcileEvents() {
+		initReconcileEvents();
+		syncEntities(reconcileEvents,ReconcileEvent.class);
+	}
+	
+	public void syncSystemEvents() {
+		initSystemEvents();
+		syncEntities(systemEvents,SystemEvent.class);
+	}
+	
+	
+	public void syncReadyActions() {
+		initReadyActions();
+		syncEntities(readyActions,ReadyAction.class);
+	}
+	
+	private String getBeanPropertyOfGetter(String property) {
+        return property.substring(3, 4).toLowerCase() + property.substring(4, property.length());
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// DEPENDENT ON RESOURCE TYPES !
 	@Deprecated
 	public void syncResourceTypeAttributes() throws OperationException {
@@ -1754,18 +1882,30 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 			throw new OperationException(e.toString());
 		}
 	}
+	
+	@Deprecated
+	public void syncActionLanguages() throws OperationException {
+		log.info("Syncing Default Action Languages...");
 
-	// HELPER
-	public Configuration getConf() {
-		return SysConf.getSysConf();
+		initInitialData();
 
+		try {
+			mergeEntities(actionLanguages);
+		} catch (Exception e) {
+			throw new OperationException(e.toString());
+		}
+	}
+
+	@Deprecated
+	public void syncProductData(objectType objType) {
+		if (objType == objectType.RESOURCE_TYPE) {
+			//sync data
+		}
 	}
 
 
-
-
-
-
+	
+	@Deprecated
 	public void syncResourceTypes() {
 		initInitialData();
 		buildResourceTypes();
@@ -1784,8 +1924,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		}
 	}
 
-
-
+	@Deprecated
 	public void mergeEntities(Set<Object> entities) throws Exception {
 		log.debug("Syncing '" + entities.size() + "' entities...");
 		for (Object entity : entities) {
@@ -1808,15 +1947,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		}
 	}
 
-
-
-
-
-
-
-
-
 	// HELPER
+	@Deprecated
 	protected Long getIdAsLong(Object entity) throws Exception {
 		Method idMethod = findIdProperty(entity);
 
@@ -1839,10 +1971,12 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		}
 	}
 
+	@Deprecated
 	protected Method findIdProperty(Object entity) {
 		return findIdMethod(entity.getClass());
 	}
 
+	@Deprecated
 	protected Method findIdMethod(Class clazz) {
 		for (Class currClazz = clazz; !currClazz.equals(Object.class); currClazz = currClazz
 		.getSuperclass()) {
@@ -1858,8 +1992,6 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		return null;
 	}
 
-
-
 	private void persistEntities(Collection entities) {
 		for (Object entity : entities) {
 			log.info("PERSISTING obj: '" + entity + "' of CLASS: '" + entity.getClass().getName());
@@ -1869,60 +2001,10 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		em.flush();
 	}
 
-
-
-
+	@Deprecated
 	public void syncResourceActionDefinitions() {
 		em.createNativeQuery("TRUNCATE VL_RESOURCE_OPERATION_DEF").executeUpdate();
 
 		persistEntities(resourceGlobalOperations);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public Resource getMockedJdbcResource() {
-		initInitialData();
-		
-		ResourceType jdbcResourceType = resourceTypes.get("JDBC");
-		Resource resource = new Resource();
-		resource.setResourceType(jdbcResourceType);
-		resource.setUniqueName("TESTAPP1");
-		resource.setDisplayName("test application 1");
-		resource.setDescription("A simple mysql test application 1");
-		resource.setConfiguration(jdbcResourceType.getConfigurationTemplate());
-		
-		resource.setConfiguration(resource.getConfiguration().replace("></host>", ">localhost</host>"));
-		resource.setConfiguration(resource.getConfiguration().replace("></port>", ">3306</port>"));
-		resource.setConfiguration(resource.getConfiguration().replace("></dbName>", ">testapp1</dbName>"));
-		resource.setConfiguration(resource.getConfiguration().replace("></driverName>", ">org.gjt.mm.mysql.Driver</driverName>"));
-		resource.setConfiguration(resource.getConfiguration().replace("></urlTemplate>", ">jdbc:mysql://%h/%d</urlTemplate>"));
-		
-		ResourceAttribute ra1 = new ResourceAttribute(resource, "login_name", "Login Name", "Login Name",AttributeDataTypes.STRING,true,true,0,255,1,1);
-		ra1.setAccountId(true);
-		ResourceAttribute ra2 = new ResourceAttribute(resource, "first_name", "First Name", "First Name",AttributeDataTypes.STRING,true,true,0,255,1,1);
-		ResourceAttribute ra3 = new ResourceAttribute(resource, "last_name", "Last Name", "Last",AttributeDataTypes.STRING,true,true,0,255,1,1);
-		resource.getResourceAttributes().add(ra1); resource.getResourceAttributes().add(ra2); resource.getResourceAttributes().add(ra3);
-
-		ResourceAdmin ra = new ResourceAdmin();
-		ra.setUserName("testapp1");
-		ra.setPassword("252-120-0-170-195-49-100-85-192-87-223-195-176-96-83-223");
-		
-		resource.getResourceAdmins().add(ra);
-		return resource;
-	}
-
 }

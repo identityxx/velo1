@@ -115,7 +115,6 @@ import velo.exceptions.OperationException;
 import velo.exceptions.ReconcileAccountsException;
 import velo.exceptions.ReconcileGroupsException;
 import velo.exceptions.ResourceDescriptorException;
-import velo.exceptions.ScriptInvocationException;
 import velo.exceptions.UserAuthenticationException;
 import velo.processSummary.resourceReconcileSummary.ResourceReconcileSummary;
 import velo.query.Query;

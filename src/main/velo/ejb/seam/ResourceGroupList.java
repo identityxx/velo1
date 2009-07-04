@@ -31,8 +31,8 @@ import velo.entity.ResourceGroup;
 public class ResourceGroupList extends EntityQuery {
 
 	private static final String[] RESTRICTIONS = {
-			"lower(resourceGroup.uniqueId) like concat(lower(#{resourceGroupList.resourceGroup.uniqueId}),'%')",
-			"lower(resourceGroup.displayName) like concat(lower(#{resourceGroupList.resourceGroup.displayName}),'%')",
+			"lower(resourceGroup.uniqueId) like lower(#{resourceGroupList.resourceGroup.uniqueId})",
+			"lower(resourceGroup.displayName) like lower(#{resourceGroupList.resourceGroup.displayName})",
 			"lower(resourceGroup.description) like concat(lower(#{resourceGroupList.resourceGroup.description}),'%')",
 			"lower(resourceGroup.type) like concat(lower(#{resourceGroupList.resourceGroup.type}),'%')",
 			"lower(resourceGroup.resource.uniqueName) like lower(#{resourceGroupList.resourceUniqueName})"};

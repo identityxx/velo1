@@ -65,7 +65,11 @@
 								value="#{resourceGroupList.order=='uniqueId asc' ? 'uniqueId desc' : 'uniqueId asc'}" />
 						</s:link>
 					</f:facet>
-            		#{resourceGroup.uniqueId}
+					
+					<s:link view="/admin/#{empty from ? 'ResourceGroup' : from}.xhtml" value="#{resourceGroup.uniqueId}">
+						<f:param name="resourceGroupId" value="#{resourceGroup.resourceGroupId}" />
+					</s:link>
+            		
         		</h:column>
 				<h:column>
 					<f:facet name="header">

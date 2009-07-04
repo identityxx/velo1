@@ -112,6 +112,16 @@ public class ReconcileGroupMembershipProcess {
 					
 					ResourceGroup currRepoRG = findGroupInRepository(currActiveRG.getUniqueIdInRightCase(), full);
 					
+					//Verify whether group exist in resource
+					if (currRepoRG == null) {
+						log.info("Active group name '" + currActiveRG.getDisplayName() + "' does not exist in repository, skipping membership reconciliation for this group.");
+						continue;
+					}
+					
+					//add both groups (active/repo) to context
+					context.addVar("group",currActiveRG);
+					context.addVar("groupFromRepo",currRepoRG);
+					
 					//Reconcile group's members
 					Map<String,ResourceGroupMember> currActiveRGMembers = currActiveRG.getMembersAsMap();
 					Map<String,ResourceGroupMember> currRepoRGMembers = currRepoRG.getMembersAsMap();
@@ -120,21 +130,33 @@ public class ReconcileGroupMembershipProcess {
 						if (!currRepoRGMembers.containsKey(currActiveMember.getKey())) {
 							//NEW MEMBERSHIP!
 							
+							
+							/*Managed by ready action
 							//add the group to the entity
 							//find the corresponding account on repo
 							Account accToBeMember = getAccountManager().findAccount(currActiveMember.getKey(),resource);
 							if (accToBeMember == null) {
 								rps.addLog(EventLogLevel.ERROR,"Could not add member name '" + currActiveMember.getKey() + "' as account in corresponding name was not found in repository!");
 							} else {
-								ResourceGroupMember newMemberEntity = new ResourceGroupMember(accToBeMember,currRepoRG);
-								currRepoRG.getMembers().add(newMemberEntity);
-								getEntityManager().persist(newMemberEntity);
-								wasRepoGroupModified = true;
+								//handeled in ready action
+								//ResourceGroupMember newMemberEntity = new ResourceGroupMember(accToBeMember,currRepoRG);
+								//currRepoRG.getMembers().add(newMemberEntity);
+								//getEntityManager().persist(newMemberEntity);
 								
+								wasRepoGroupModified = true;
+								context.addVar("accountToBeMember",accToBeMember);
 								//log.info("Raising 'GROUP_MEMBER_ASSOCIATED' event for resource group unique id '" + newCreatedAccount.getNameInRightCase() + "'");
 								rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_ASSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currActiveMember.getKey(), "A new identity named '" + currActiveMember.getKey() + "' was associated to group '" + currActiveRG.getUniqueId() + "'");
 								getEventManager().raiseReconcileEvent(GROUP_MEMBER_ASSOCIATED_EVENT, getResource().getReconcilePolicy(), context);
 							}
+							*/
+							
+							wasRepoGroupModified = true;
+							context.addVar("accountNameAssociated",currActiveMember.getKey());
+							rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_ASSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currActiveMember.getKey(), "A new identity named '" + currActiveMember.getKey() + "' was associated to group '" + currActiveRG.getUniqueId() + "'");
+							getEventManager().raiseReconcileEvent(GROUP_MEMBER_ASSOCIATED_EVENT, getResource().getReconcilePolicy(), context);
+							//cleanup context
+							context.removeVar("accountNameAssociated");
 						}
 					}
 					
@@ -143,20 +165,26 @@ public class ReconcileGroupMembershipProcess {
 						if (!currActiveRGMembers.containsKey(currRepoMember.getKey())) {
 							//REMOVED MEMBERSHIP!
 							//log.info("Raising 'GROUP_MEMBER_DISSOCIATE' event for account name '" + newCreatedAccount.getNameInRightCase() + "'");
+							context.addVar("memberDissociated",currRepoMember.getValue());
 							rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_DISSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currRepoMember.getKey(), "A new identity named '" + currRepoMember.getKey() + "' was dissociated from group '" + currRepoRG.getUniqueIdInRightCase() + "'");
 							getEventManager().raiseReconcileEvent(GROUP_MEMBER_DISSOCIATED_EVENT, getResource().getReconcilePolicy(), context);
+							wasRepoGroupModified = true;
+							//Managed by ready action
+							//currRepoRG.getMembers().remove(currRepoMember.getValue());
+							//getEntityManager().remove(currRepoMember.getValue());
 							
-							currRepoRG.getMembers().remove(currRepoMember.getValue());
-							getEntityManager().remove(currRepoMember.getValue());
+							context.removeVar("memberDissociated");
 						}
 					}
 					
 					
 					if (wasRepoGroupModified) {
-						getEntityManager().merge(currRepoRG);
-						
+						//getEntityManager().merge(currRepoRG);
 						//generic event!
 						//set new / removed members into context
+						
+						//TODO: Raise generic event, should support all members removed/new assigned
+						wasRepoGroupModified = false;
 					}
 				} else {
 					log.debug("Active group '" + currActiveRG.getUniqueIdInRightCase() + "' was -not found- in Velo repo. (skipping group...[will be reconciled after group reconciliation])");

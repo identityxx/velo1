@@ -37,6 +37,7 @@ import velo.entity.ReconcileProcessSummary;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceGroup;
+import velo.entity.ResourceGroupMember;
 import velo.entity.ResourceReconcileTask;
 import velo.entity.ResourceTypeOperation;
 import velo.entity.ReconcileProcessSummary.ReconcileProcesses;
@@ -339,8 +340,8 @@ public class ReconcileDataImportManager {
 				throw new DataTransformException(e.getMessage());
 			}
 			ExecutionContext executionContext = smooks.createExecutionContext();
-			executionContext.setAttribute("resource", resource);
 			JavaResult result = new JavaResult();
+			result.getResultMap().put("resourceObject", resource);
 
 			//byte[] messageIn = StreamUtils.readStream(new FileInputStream("velo/reconciliation/utils/testapp1_identities.xml"));
 			//smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
@@ -444,6 +445,7 @@ public class ReconcileDataImportManager {
 
 
 		try {
+			
 			IWindowsGatewayApi iface = factoryWindowsGateway(resource, null, null, null, vdcp);
 			String gzippedBase64Data = iface.performOperation("LIST_GROUPMEMBERSHIP_ALL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
 			log.trace("Size of gzipped base64 data: " + gzippedBase64Data.length());
@@ -458,7 +460,7 @@ public class ReconcileDataImportManager {
 
 			String fileName = resource.factorySyncFileName();
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			//OutputStream out = new FileOutputStream(fileName);
+			//OutputStream out = new FileOutputStream("c:/users/asaf/temp/lalala.xml");
 			//byte[] buf = new byte[2051648];  //size can be changed according to programmer's need.
 			byte[] buf = new byte[gzippedBase64Data.length()*1000];
 			int len;
@@ -471,7 +473,8 @@ public class ReconcileDataImportManager {
 
 
 			ByteArrayInputStream baisClear = new ByteArrayInputStream(out.toByteArray());
-
+			//ByteArrayInputStream baisClear = null;
+			
 			log.debug("---START of accounts recived from Gateway!");
 			//log.debug(out);
 			log.debug("---END of accounts recived from Gateway!");
@@ -479,26 +482,33 @@ public class ReconcileDataImportManager {
 
 			Smooks smooks = null;
 			try {
-				smooks = new Smooks("velo/reconciliation/utils/group-membership_smooks-config.xml");
+				smooks = new Smooks("META-INF/smooks/reconcile/groups_membership_smooks-config.xml");
 			} catch (SAXException e) {
 				throw new DataTransformException(e.getMessage());
 			}
 			ExecutionContext executionContext = smooks.createExecutionContext();
-			executionContext.setAttribute("resource", resource);
 			JavaResult result = new JavaResult();
-
+			result.getResultMap().put("resourceObject", resource);
+			
 			//byte[] messageIn = StreamUtils.readStream(new FileInputStream("velo/reconciliation/utils/testapp1_identities.xml"));
 			//smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
 			smooks.filter(new StreamSource(baisClear), result, executionContext);
 
-			ResourceGroups groups =  (ResourceGroups) result.getBean("reconGroups");
+			ResourceGroups groups =  (ResourceGroups) result.getBean("reconGroupsMembership");
 
+			for (ResourceGroup rg : groups) {
+				/*System.out.println("Printing members for group name: '" + rg.getUniqueIdInRightCase() + "', type: '" + rg.getType() + "'");*/
+				for (ResourceGroupMember currRGM : rg.getMembers()) {
+					System.out.println("\tMember name: '" + currRGM.getAccount().getNameInRightCase() + "'");
+				}
+			}
 
-			//Hack, as smooks's conf does not support setting resource on the fly 
+			//Hack, as smooks's conf does not support setting resource on the fly
+			/*Already done in smooks
 			for (ResourceGroup currGRP : groups) {
 				currGRP.setResource(resource);
 			}
-
+			 */
 
 			//ResourceGroups groups = importGroupsByDigester(new File(fileName), resource);
 

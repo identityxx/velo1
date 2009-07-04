@@ -15,32 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package velo.ejb.seam.action;
+package velo.exceptions;
 
-import javax.ejb.Local;
-
-import org.apache.commons.configuration.Configuration;
-
-@Local
-public interface ConfActions {
-	public void saveSysConf();
-	public String importInitialData();
-	public Configuration getVeloConfig();
-	public void generateResourcePrincipalsEncryptionKey();
-	//public void generateUsersLocalPasswordsEncryptionKey();
-	public String importTestData();
+/**
+ * An exception for synchronization problems occurs
+ *  
+ * @author Asaf Shakarchi
+ */
+public class SynchronizationException extends RuntimeException{
+	private static final long serialVersionUID = 1987305452306161213L;
 	
+	public SynchronizationException(String msg) {
+		super(msg);
+	}
 	
-	//Sync default data
-	public void syncReadyActions();
-	public void syncSystemEvents();
-	public void syncReconcileEvents();
-	
-	
-	
-	public void destroy();
-	
-	
-	
-	public void test();
+	public SynchronizationException(Throwable e) {
+		super(e);
+	}
 }

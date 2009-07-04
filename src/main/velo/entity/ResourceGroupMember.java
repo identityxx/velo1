@@ -55,4 +55,16 @@ public class ResourceGroupMember {
 	public ResourceGroup getResourceGroup() {
 		return primaryKey.getResourceGroup();
 	}
+	
+	
+	
+	//Used by smooks for imports
+	public void initMemberData(String accountName, String groupUniqueId, String groupDisplayName, String groupDescription, String groupType, Resource resource) {
+		Account acc = Account.factory(accountName,resource);
+		ResourceGroup group = ResourceGroup.factory(groupUniqueId, groupDisplayName, groupDescription, groupType, resource);
+		
+		
+		setAccount(acc);
+		setResourceGroup(group);
+	}
 }

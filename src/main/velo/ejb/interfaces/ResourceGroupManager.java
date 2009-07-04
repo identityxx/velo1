@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import velo.entity.Account;
 import velo.entity.Resource;
 import velo.entity.ResourceGroup;
+import velo.entity.ResourceGroupMember;
 import velo.entity.User;
 import velo.exceptions.NoResultFoundException;
 
@@ -38,8 +38,8 @@ public interface ResourceGroupManager {
 	public void persistGroup(ResourceGroup group);
 	public void removeGroup(ResourceGroup rg);
 	public void updateGroup(ResourceGroup group);
-	
-	
+	public void persistMember(ResourceGroupMember groupMember);
+	public void removeGroupMember(ResourceGroupMember groupMember);
 	
 	
 	
