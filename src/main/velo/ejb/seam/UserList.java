@@ -23,14 +23,21 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 
+import org.jboss.seam.Component;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.framework.EntityQuery;
 
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.User;
+import velo.exceptions.OperationException;
 import velo.validators.Generic;
 
 @Name("userList")
 public class UserList extends EntityQuery {
+	@In
+	UserManagerLocal userManager;
+	
 	
 	/*
 	private String[] RESTRICTIONS = {
@@ -61,15 +68,14 @@ public class UserList extends EntityQuery {
 		RESTRICTIONS.add("lower(user.name) like concat(trim(lower(#{userList.userName})),'%')");
 		
 		
-		
 		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (!Generic.isNotEmptyAndNotNull(getLastName())) ) {
-			query = "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
+			query = "select user from User user, IN(user.localUserAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
 			RESTRICTIONS.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
 		} else if ( (!Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
-			query = "select user from User user, IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+			query = "select user from User user, IN(user.localUserAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
 			RESTRICTIONS.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
 		} else if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (Generic.isNotEmptyAndNotNull(getLastName())) ) {
-			query = "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
+			query = "select user from User user, IN(user.localUserAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.localUserAttributes) uiaLN, IN(uiaLN.values) uiaValLN";
 			
 			
 			RESTRICTIONS.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
@@ -177,7 +183,20 @@ public class UserList extends EntityQuery {
 	}
 	
 	
-	
+	@Override
+	public List<User> getResultList() {
+		List<User> users = super.getResultList();
+		for (User currUser : users) {
+			try {
+				UserManagerLocal userManager1 = (UserManagerLocal)Component.getInstance("userManager");
+				userManager1.loadUserAttributes(currUser);
+			} catch (OperationException e) {
+				getFacesMessages().add(e.getMessage());
+			}
+		}
+		
+		return users;
+	}
 	
 	
 	

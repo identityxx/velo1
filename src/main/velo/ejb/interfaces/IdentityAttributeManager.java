@@ -18,6 +18,8 @@
 package velo.ejb.interfaces;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import velo.entity.IdentityAttribute;
 import velo.entity.IdentityAttributeSource;
@@ -39,7 +41,7 @@ public interface IdentityAttributeManager {
 	
 	public IdentityAttribute getManagerIdentityAttribute();
 	public IdentityAttribute getIdentifierIdentityAttribute();
-	
+	public List<IdentityAttribute> findIdentityAttribues(Set<String> identityAttributesUniqueNames);
 	
 	
 	

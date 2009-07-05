@@ -505,6 +505,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	
 	//compare value as UPPERCASE (non-case sensitive)
+	@Deprecated
 	public User findUser(String identityAttributeUniqueName, String value) {
 		String query = "SELECT DISTINCT vl_user.* FROM VL_USER vl_user,VL_IDENTITY_ATTRIBUTE ia, VL_USER_IDENTITY_ATTRIBUTE uia,"
 			+ "VL_USER_IDENTITY_ATTR_VALUE uiav WHERE"
@@ -560,72 +561,171 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			return null;
 		}
 		
-		Map<String,String> treeMap = new TreeMap<String,String>();
-		for (Map.Entry<String,String> currEntry : ias.entrySet()) {
-			treeMap.put(currEntry.getKey(), currEntry.getValue());
+		//Load IAs entities
+		log.debug("Loading Identity Attributes entities with amount '" + ias.size() + "'");
+		List<IdentityAttribute> iaEntities = identityAttributeManager.findIdentityAttribues(ias.keySet());
+		
+		Map<String,IdentityAttribute> allIdentityAttributesEntities = new HashMap<String,IdentityAttribute>();
+		for (IdentityAttribute currIA : iaEntities) {
+			allIdentityAttributesEntities.put(currIA.getUniqueName().toUpperCase(), currIA);
 		}
 		
+		log.debug("Successfully loaded Identity Attributes entities with amount '" + iaEntities.size() + "'");
+		
+		if (iaEntities.size() != ias.size()) {
+			throw new RuntimeException("The specified identity attributes names are not equal to the amount of loaded Identity Attributes entities!");
+		}
+		
+
+		
+		//Treeset for keepting the right order.
+		Map<String,String> treeMapOfLocalIdentityAttributes = new TreeMap<String,String>();
+		//for (Map.Entry<String,String> currEntry : ias.entrySet()) {
+		for (IdentityAttribute currIA : iaEntities) {
+			if (currIA.getSource() == IdentityAttributeSources.LOCAL) {
+				treeMapOfLocalIdentityAttributes.put(currIA.getUniqueName().toUpperCase(), ias.get(currIA.getUniqueName().toUpperCase()));
+			}
+		}
+		log.debug("Constructed a Map(tree) of local identity attributes with amount '" + treeMapOfLocalIdentityAttributes.size());
+		
+		Map<String,String> treeMapOfRAIdentityAttributes = new TreeMap<String,String>();
+		for (IdentityAttribute currIA : iaEntities) {
+			if (currIA.getSource() == IdentityAttributeSources.RESOURCE_ATTRIBUTE) {
+				treeMapOfRAIdentityAttributes.put(currIA.getUniqueName().toUpperCase(), ias.get(currIA.getUniqueName().toUpperCase()));
+			}
+		}
+		log.debug("Constructed a Map(tree) of resource_attribute identity attributes with amount '" + treeMapOfRAIdentityAttributes.size());
 		
 		
 		
-		StringBuilder query = new StringBuilder("select user FROM User user");
+		String uiaPrefix = "uia";
+		String uiaValPrefix = "uiaVal";
+		String accAttrPrefix = "accAttr";
+		String accAttrValPrefix = "accAttrVal";
+		
+		
+		StringBuilder query = new StringBuilder("select user FROM User user, Account account, IN (user.accounts) userAccount");
 		int i=0;
 		String uiaVarName;
 		String uiaValVarName;
-		for (Map.Entry<String,String> currEntry : treeMap.entrySet()) {
+		for (Map.Entry<String,String> currEntry : treeMapOfLocalIdentityAttributes.entrySet()) {
 			i++;
-			uiaVarName = "uia" + i;
-			uiaValVarName = "uiaVal" + i;
-			query.append(", IN(user.userIdentityAttributes) " + uiaVarName + ", IN(" + uiaVarName + ".values) " + uiaValVarName);
+			uiaVarName = uiaPrefix + i;
+			uiaValVarName = uiaValPrefix + i;
+			query.append(", IN(user.localUserAttributes) " + uiaVarName + ", IN(" + uiaVarName + ".values) " + uiaValVarName);
+		}
+		
+		
+		String accAttrVarName;
+		String accAttrValVarName;
+		i=0;
+		for (Map.Entry<String,String> currEntry : treeMapOfRAIdentityAttributes.entrySet()) {
+			i++;
+			accAttrVarName = accAttrPrefix + i;
+			accAttrValVarName = accAttrValPrefix + i;
+			query.append(", IN(account.accountAttributes) " + accAttrVarName + ", IN(" + accAttrVarName + ".values) " + accAttrValVarName);
 		}
 		
 		
 		query.append(" WHERE ( ");
-		String iaContent;
-		String iaValueContent;
+		String uiaContent;
+		String uiaValueContent;
 		i=0;
-		for (Map.Entry<String,String> currEntry : treeMap.entrySet()) {
+		for (Map.Entry<String,String> currEntry : treeMapOfLocalIdentityAttributes.entrySet()) {
 			i++;
-			uiaVarName = "uia" + i;
-			uiaValVarName = "uiaVal" + i;
-			iaContent = ":"+uiaVarName+"_Content";
-			iaValueContent = ":"+uiaValVarName+"_Content";
-			query.append("(" + uiaVarName + ".identityAttribute.uniqueName = " + iaContent + " AND ");
+			uiaVarName = uiaPrefix + i;
+			uiaValVarName = uiaValPrefix + i;
+			uiaContent = ":"+uiaVarName+"_Content";
+			uiaValueContent = ":"+uiaValVarName+"_Content";
+			query.append("(" + uiaVarName + ".identityAttribute = " + uiaContent + " AND ");
 			query.append(caseSensitive ? "" : "UPPER(");
 			query.append(uiaValVarName + ".valueString");
 			query.append(caseSensitive ? "" : ")");
 			
 			if (wildCardSearch) {
-				query.append(" like " + iaValueContent + ")");
+				query.append(" like " + uiaValueContent + ")");
 			} else {
-				query.append(" = " + iaValueContent + ")");
+				query.append(" = " + uiaValueContent + ")");
 			}
 			
-			if (i < treeMap.size()) query.append(" AND ");
+			if (i < treeMapOfLocalIdentityAttributes.size()) query.append(" AND ");
+		}
+		
+		
+		if (treeMapOfRAIdentityAttributes.size() > 0) {
+			query.append(" AND ");
+		}
+		
+		
+		String accAttrContent;
+		String accAttrValueContent;
+		i=0;
+		for (Map.Entry<String,String> currEntry : treeMapOfRAIdentityAttributes.entrySet()) {
+			i++;
+			accAttrVarName = accAttrPrefix + i;
+			accAttrValVarName = accAttrValPrefix + i;
+			accAttrContent = ":"+accAttrVarName+"_Content";
+			accAttrValueContent = ":"+accAttrValVarName+"_Content";
+			query.append("(" + accAttrVarName + ".resourceAttribute = " + accAttrContent + " AND ");
+			query.append(caseSensitive ? "" : "UPPER(");
+			query.append(accAttrValVarName + ".valueString");
+			query.append(caseSensitive ? "" : ")");
+			
+			if (wildCardSearch) {
+				query.append(" like " + accAttrValueContent + ")");
+			} else {
+				query.append(" = " + accAttrValueContent + ")");
+			}
+			
+			if (i < treeMapOfRAIdentityAttributes.size()) query.append(" AND ");
 		}
 		
 		query.append(" )");
 		
+		
+		
+		
+		
+		
+		log.debug("Generated query is: " + query.toString());
+		
 		Query q = getEntityManager().createQuery(query.toString());
 		i = 0;
-		for (Map.Entry<String,String> currEntry : treeMap.entrySet()) {
+		for (Map.Entry<String,String> currEntry : treeMapOfLocalIdentityAttributes.entrySet()) {
 			i++;
-			iaContent = "uia" + i + "_Content";
-			iaValueContent = "uiaVal" + i + "_Content";
+			uiaContent = uiaPrefix + i + "_Content";
+			uiaValueContent = uiaValPrefix + i + "_Content";
 			
-			log.trace("Attaching value of parameter name " + iaContent + " to value: '" + currEntry.getKey() + "'");
-			log.trace("Attaching value of parameter name " + iaValueContent + " to value: '" + currEntry.getValue() + "'");
+			log.trace("Attaching value of parameter name " + allIdentityAttributesEntities.get(currEntry.getKey()).getUniqueName().toUpperCase() + " to value: '" + currEntry.getKey() + "'");
+			log.trace("Attaching value of parameter name " + uiaValueContent + " to value: '" + currEntry.getValue() + "'");
 			
-			q.setParameter(iaContent, currEntry.getKey());
-			q.setParameter(iaValueContent, caseSensitive ? currEntry.getValue() : currEntry.getValue().toUpperCase());
+			//q.setParameter(uiaContent, currEntry.getKey());
+			q.setParameter(uiaContent, allIdentityAttributesEntities.get(currEntry.getKey().toUpperCase()));
+			q.setParameter(uiaValueContent, caseSensitive ? currEntry.getValue() : currEntry.getValue().toUpperCase());
 		}
+		
+		
+		//SET RESOURCE ATTRIBUTE AS THE ENTITY ITSELF NOT THE UNIQUE NAME OF IT!
+		i = 0;
+		for (Map.Entry<String,String> currEntry : treeMapOfRAIdentityAttributes.entrySet()) {
+			i++;
+			accAttrContent = accAttrPrefix + i + "_Content";
+			accAttrValueContent = accAttrValPrefix + i + "_Content";
+			
+			log.trace("Attaching value of parameter name " + accAttrContent + " to value: '" + currEntry.getKey() + "'");
+			log.trace("Attaching value of parameter name " + accAttrValueContent + " to value: '" + currEntry.getValue() + "'");
+			
+			//q.setParameter(accAttrContent, currEntry.getKey());
+			q.setParameter(accAttrContent, allIdentityAttributesEntities.get(currEntry.getKey().toUpperCase()).getResourceAttributeSource());
+			q.setParameter(accAttrValueContent, caseSensitive ? currEntry.getValue() : currEntry.getValue().toUpperCase());
+		}
+		
 		
 		
 		if (maxResults != 0) {
 			q.setMaxResults(maxResults);
 		}
 		
-		log.debug("Generated query is: " + query.toString());
 		
 		log.debug("Performing query against repository and getting result...");
 		

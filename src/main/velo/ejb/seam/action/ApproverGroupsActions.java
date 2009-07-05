@@ -1,9 +1,10 @@
 package velo.ejb.seam.action;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.faces.application.FacesMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -13,9 +14,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
 
+import velo.ejb.interfaces.ResourceManagerLocal;
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.ejb.seam.ApproversGroupHome;
 import velo.ejb.seam.ApproversGroupList;
 import velo.entity.ApproversGroup;
+import velo.entity.Resource;
+import velo.entity.ResourceAttribute;
 import velo.entity.User;
 
 @Name("approverGroupsActions")
@@ -32,6 +37,12 @@ public class ApproverGroupsActions {
 	
 	@In
 	FacesMessages facesMessages;
+	
+	@In
+	UserManagerLocal userManager;
+	
+	@In
+	ResourceManagerLocal resourceManager;
 	
 	private User newMember;
 	
@@ -82,6 +93,67 @@ public class ApproverGroupsActions {
 		}
 	}
 
+	public void bla2() {
+		/*
+		System.out.println("!!!!!!!!!!!!!!!!!!!!");
+		Map<String,String> a = new HashMap<String,String>();
+		a.put("FIRST_NAME","first1");
+		a.put("LAST_NAME","LOVELY");
+		List<User> users = userManager.findUsers(a, false, false, 0);
+		System.out.println("!!!!!!!!!!!USERS: " + users.size());
+		
+		for (User currUser : users) {
+			System.out.println("User name: " + currUser.getName());
+		}
+		*/
+		
+
+		/*Works
+		String a = "select user FROM User user, IN(user.localUserAttributes) uia1, IN (uia1.values) uiaVal1, IN(user.localUserAttributes) uia2, IN(uia2.values) uiaVal2 WHERE ( (uia1.identityAttribute.uniqueName = :uia1UniqueName AND UPPER(uiaVal1.valueString) = :uia1ValContent) AND (uia2.identityAttribute.uniqueName = :uia2UniqueName AND UPPER(uiaVal2.valueString) = :uia2ValContent) )";
+		Query q = entityManager.createQuery(a);
+		q.setParameter("uia1UniqueName","FIRST_NAME");
+		q.setParameter("uia1ValContent","first1");
+		q.setParameter("uia2UniqueName","LAST_NAME");
+		q.setParameter("uia2ValContent","last1");
+		*/
+		
+		String a = "select user FROM User user,Account account, IN(user.localUserAttributes) uia1," +
+				" IN (uia1.values) uiaVal1, IN(account.accountAttributes) accAttr1, IN(accAttr1.values) accAttrVal1, " +
+				"IN (user.accounts) userAccount " +
+				"WHERE ( (uia1.identityAttribute.uniqueName = :uia1UniqueName " +
+				"AND UPPER(uiaVal1.valueString) = :uia1ValContent) " +
+				"AND (accAttr1.resourceAttribute = :accAttr1 " +
+				"AND UPPER(accAttrVal1.valueString) = :accAttrVal1Content) ) AND userAccount = account";
+		
+		
+		Resource r = resourceManager.findResourceEagerly("TESTAPP1");
+		ResourceAttribute raLastName = r.getResourceAttribute("last_name");
+		ResourceAttribute raStatus = r.getResourceAttribute("status");
+		
+		Query q = entityManager.createQuery(a);
+		q.setParameter("uia1UniqueName","FIRST_NAME");
+		q.setParameter("uia1ValContent","first1");
+		
+		q.setParameter("accAttr1",raLastName);
+		q.setParameter("accAttrVal1Content","last1");
+		
+		
+		List<User> users = q.getResultList();
+		
+		
+		System.out.println("USERS!!!!!!!!!!!!!: " + users.size());
+		for (User currUser : users) {
+			System.out.println("LALALA USER: " + currUser.getName());
+		}
+	}
+	
+	public void bla1() {
+		Map<String,String> a = new HashMap<String,String>();
+		a.put("FIRST_NAME","first1");
+		a.put("LAST_NAME","last1");
+		List<User> users = userManager.findUsers(a, false, false, 0);
+		System.out.println("!!!!!!!!!!!USERS: " + users.size());
+	}
 
 	public User getNewMember() {
 		return newMember;

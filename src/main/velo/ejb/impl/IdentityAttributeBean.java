@@ -18,6 +18,8 @@
 package velo.ejb.impl;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -26,6 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.Name;
 
@@ -114,6 +117,28 @@ public class IdentityAttributeBean implements IdentityAttributeManagerLocal,Iden
 			log.info("getManagerIdentityAttribute method did not result any identity attribute that reprsents an identifier., returning null.");
 			return null;
 		}
+	}
+	
+	
+	public List<IdentityAttribute> findIdentityAttribues(Set<String> identityAttributesUniqueNames) {
+		StringBuilder query = new StringBuilder("select ia FROM IdentityAttribute ia WHERE ");
+		
+		for (int i=0; i<identityAttributesUniqueNames.size();i++) {
+			if (i>0) {
+				query.append(" OR ");
+			}
+			query.append("ia.uniqueName = :param"+i);
+		}
+
+		Query q = em.createQuery(query.toString());
+		int i=0;
+		for (String currIAUniqueName : identityAttributesUniqueNames) {
+			q.setParameter("param"+i,currIAUniqueName);
+			i++;
+		}
+		
+		
+		return q.getResultList();
 	}
     
     

@@ -80,6 +80,7 @@ import velo.entity.User;
 import velo.entity.UserContainer;
 import velo.entity.Attribute.AttributeDataTypes;
 import velo.entity.GuiAttribute.AttributeVisualRenderingType;
+import velo.entity.IdentityAttribute.IdentityAttributeSources;
 import velo.entity.ResourceAttributeBase.SourceTypes;
 import velo.entity.ResourceType.ResourceControllerType;
 import velo.entity.annotations.UniqueColumnForSync;
@@ -1035,6 +1036,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		firstName.setVisibleInRequest(true);
 		firstName.setVisibleInUserList(true);
 		firstName.setIdentityAttributesGroup(iagGeneric);
+		firstName.setSource(IdentityAttributeSources.LOCAL);
 
 		IdentityAttribute lastName = new IdentityAttribute();
 		//lastName.setIdentityAttributeId(new Long(1));
@@ -1052,7 +1054,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		lastName.setVisibleInRequest(true);
 		lastName.setVisibleInUserList(true);
 		lastName.setIdentityAttributesGroup(iagGeneric);
-
+		lastName.setSource(IdentityAttributeSources.LOCAL);
 
 		IdentityAttribute title = new IdentityAttribute();
 		//lastName.setIdentityAttributeId(new Long(1));
@@ -1070,7 +1072,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		title.setVisibleInRequest(true);
 		title.setVisibleInUserList(false);
 		title.setIdentityAttributesGroup(iagGeneric);
-
+		title.setSource(IdentityAttributeSources.LOCAL);
 
 		IdentityAttribute emailAddressIA = new IdentityAttribute();
 		//lastName.setIdentityAttributeId(new Long(1));
@@ -1088,7 +1090,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		emailAddressIA.setVisibleInRequest(true);
 		emailAddressIA.setVisibleInUserList(true);
 		emailAddressIA.setIdentityAttributesGroup(iagGeneric);
-
+		emailAddressIA.setSource(IdentityAttributeSources.LOCAL);
+		
+		
 		IdentityAttribute departmentIA = new IdentityAttribute();
 		departmentIA.setDisplayName("Department");
 		departmentIA.setDataType(AttributeDataTypes.STRING);
@@ -1104,8 +1108,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		departmentIA.setVisibleInRequest(true);
 		departmentIA.setVisibleInUserList(true);
 		departmentIA.setIdentityAttributesGroup(iagGeneric);
-
-
+		departmentIA.setSource(IdentityAttributeSources.LOCAL);
+		
+		
 		IdentityAttribute mobileIA = new IdentityAttribute();
 		mobileIA.setDisplayName("Mobile");
 		mobileIA.setDataType(AttributeDataTypes.STRING);
@@ -1121,6 +1126,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		mobileIA.setVisibleInRequest(true);
 		mobileIA.setVisibleInUserList(true);
 		mobileIA.setIdentityAttributesGroup(iagGeneric);
+		mobileIA.setSource(IdentityAttributeSources.LOCAL);
 
 
 		IdentityAttribute companyIA = new IdentityAttribute();
@@ -1138,8 +1144,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		companyIA.setVisibleInRequest(true);
 		companyIA.setVisibleInUserList(true);
 		companyIA.setIdentityAttributesGroup(iagGeneric);
-
-
+		companyIA.setSource(IdentityAttributeSources.LOCAL);
+		
 		identityAttributes.add(firstName);
 		identityAttributes.add(lastName);
 		identityAttributes.add(title);
@@ -1744,7 +1750,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		StringBuilder results = new StringBuilder();
         results.append("SELECT ");
         results.append("COUNT(").append(alias).append(") ").append(NL);;
-        results.append("FROM ").append(ReadyAction.class.getName()).append(' ').append(alias).append(NL);
+        results.append("FROM ").append(clazzType.getName()).append(' ').append(alias).append(NL);
         results.append("WHERE ").append(alias).append(".");
         results.append(uniqueColumnName).append(" =:").append(uniqueColumnName);
         
@@ -1787,10 +1793,6 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 	private String getBeanPropertyOfGetter(String property) {
         return property.substring(3, 4).toLowerCase() + property.substring(4, property.length());
     }
-	
-	
-	
-	
 	
 	
 	
