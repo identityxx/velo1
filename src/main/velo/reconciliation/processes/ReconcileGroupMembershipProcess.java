@@ -22,6 +22,7 @@ import velo.entity.ReconcileProcessSummary;
 import velo.entity.Resource;
 import velo.entity.ResourceGroup;
 import velo.entity.ResourceGroupMember;
+import velo.entity.SystemEvent;
 import velo.entity.LogEntry.EventLogLevel;
 import velo.entity.ReconcileProcessSummary.ReconcileProcesses;
 import velo.entity.ReconcileProcessSummaryEvent.ReconcileProcessSummaryEventEntityType;
@@ -204,7 +205,7 @@ public class ReconcileGroupMembershipProcess {
 			getReconcileManager().persistReconcileProcessSummary(rps);
 
 			//EXECUTE POST EVENT
-			getEventManager().raiseSystemEvent("RESOURCE_RECONCILIATION_POST", context);
+			getEventManager().raiseSystemEvent(SystemEvent.EVENT_RESOURCE_RECONCILIATION_POST, context);
 
 			context.clear();
 			log.info("Finished successfully the resource group membership reconciliation process for resource '" + getResource().getDisplayName() + "' in '" + globalSW.getTime()/1000 + "' seconds.");

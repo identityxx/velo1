@@ -401,16 +401,16 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
     //hopefully always invoked with an object that was created via "factoryUser"
 	public void persistUserEntity(User user) throws PersistEntityException {
 		try {
-			invokeCreateUserEvent(user);
+			invokeCreateUserEvent(user,true);
+			//persist user anyway, events should not cause user persistancy to fail, this is too risky
+			//what for? should be done using User.factoryUser (always should go thorugh factory!!!)
+			user.setCreationDate(new Date());
+			getEntityManager().persist(user);
+			invokeCreateUserEvent(user,false);
 		} catch (ScriptInvocationException e) {
-			log.error(e.toString());
+			//log.error(e.toString());
+			throw new PersistEntityException(e);
 		}
-		//persist user anyway, events should not cause user persistancy to fail, this is too risky
-
-		//what for? should be done using User.factoryUser (always should go thorugh factory!!!)
-		user.setCreationDate(new Date());
-		
-		getEntityManager().persist(user);
 	}
 	
 	public Long getCreatedUsersAmount(Date from, Date to) {
@@ -647,16 +647,24 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	
 	
 	//helper
-	private void invokeCreateUserEvent(User user) throws ScriptInvocationException {
+	private void invokeCreateUserEvent(User user, boolean pre) throws ScriptInvocationException {
 		OperationContext context = new OperationContext();
 		context.addVar("user", user);
 		context.addVar("userName", user.getName());
 		context.addVar("userIdAttrs", user.getUserIdentityAttributesAsMap());
 		
-		try {
-			eventManager.raiseSystemEvent(SystemEvent.EVENT_USER_CREATION, context);
-		} catch (EventExecutionException e) {
-			log.error("Could not raise '" + SystemEvent.EVENT_USER_CREATION + "' system event: " + e.getMessage());
+		if (pre) {
+			try {
+				eventManager.raiseSystemEvent(SystemEvent.EVENT_PRE_USER_CREATION, context);
+			} catch (EventExecutionException e) {
+				log.error("Could not raise '" + SystemEvent.EVENT_PRE_USER_CREATION + "' system event: " + e.getMessage());
+			}
+		}else {
+			try {
+				eventManager.raiseSystemEvent(SystemEvent.EVENT_POST_USER_CREATION, context);
+			} catch (EventExecutionException e) {
+				log.error("Could not raise '" + SystemEvent.EVENT_POST_USER_CREATION + "' system event: " + e.getMessage());
+			}
 		}
 		
 		//eventManager.invokeEventDefinitionResponses(ed, context);

@@ -32,4 +32,8 @@ public class PersistEntityException extends EdmException{
 	public PersistEntityException(String msg) {
 		super("Cannot persist an entity into Database, failure message: " + msg);
 	}
+	
+	public PersistEntityException(Throwable t) {
+		super(t);
+	}
 }

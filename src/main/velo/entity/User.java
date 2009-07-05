@@ -1435,7 +1435,12 @@ import velo.tools.FileUtils;
     	getUserRoles().size();
     }
     
-    
+    public static User factory(String userName, boolean disabled, boolean locked, UserSourceTypes sourceType) {
+    	User user = new User(userName, disabled, locked, sourceType);
+    	user.setCreationDate(new Date());
+    	
+    	return user;
+	}
     
     
     

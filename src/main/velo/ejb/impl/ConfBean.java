@@ -1492,7 +1492,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ReadyAction removeResourceGroupFromRepositoryReadyAction = new ReadyAction("REMOVE_RESOURCE_GROUP_FROM_REPOSITORY", "Remove a resource group from Velo repository", "velo.actions.readyActions.RemoveResourceGroupFromRepository");
 		ReadyAction updateRepoWithGroupMembershipAssociationReadyAction = new ReadyAction("UPDATE_REPO_WITH_GROUP_MEMBERSHIP_ASSOCIATION", "Update Repo With Grop Membership Association", "velo.actions.readyActions.UpdateRepoWithGroupMembershipAssociation");
 		ReadyAction updateRepoWithGroupMembershipDissociationReadyAction = new ReadyAction("UPDATE_REPO_WITH_GROUP_MEMBERSHIP_DISSOCIATION", "Update Repo With Grop Membership Dissociation", "velo.actions.readyActions.UpdateRepoWithGroupMembershipDissociation");
-		
+		ReadyAction addAccountAndUserToRepositoryReadyAction = new ReadyAction("ADD_ACCOUNT_AND_USER_TO_REPOSITORY", "Add an Account & User to Repository", "velo.actions.readyActions.AddAccountAndUserToRepository");
+
 		
 		readyActions.add(removeAccountReadyAction);
 		readyActions.add(addAccountToRepositoryReadyAction);
@@ -1500,6 +1501,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		readyActions.add(removeResourceGroupFromRepositoryReadyAction);
 		readyActions.add(updateRepoWithGroupMembershipAssociationReadyAction);
 		readyActions.add(updateRepoWithGroupMembershipDissociationReadyAction);
+		readyActions.add(addAccountAndUserToRepositoryReadyAction);
 	}
 	
 	

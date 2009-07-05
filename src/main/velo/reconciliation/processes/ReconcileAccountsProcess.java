@@ -32,6 +32,7 @@ import velo.entity.ReconcileProcessSummary;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.SequencedAction;
+import velo.entity.SystemEvent;
 import velo.entity.User;
 import velo.entity.LogEntry.EventLogLevel;
 import velo.entity.ReconcileProcessSummary.ReconcileProcesses;
@@ -409,7 +410,7 @@ public class ReconcileAccountsProcess {
 			getReconcileManager().persistReconcileProcessSummary(rps);
 			
 			//EXECUTE POST EVENT
-			getEventManager().raiseSystemEvent("RESOURCE_RECONCILIATION_POST", context);
+			getEventManager().raiseSystemEvent(SystemEvent.EVENT_RESOURCE_RECONCILIATION_POST, context);
 
 			
 			context.clear();
