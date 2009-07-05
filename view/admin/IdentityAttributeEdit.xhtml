@@ -161,6 +161,26 @@
 					</h:inputText>
 				</s:decorate>
 				
+				<s:decorate id="sourceDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Source</ui:define>
+					<h:selectOneMenu id="sourceType" value="#{identityAttributeHome.instance.source}" required="true">
+                		<s:selectItems value="#{identityAttributeSources}" var="s" label="#{s}" noSelectionLabel="-select-"/>
+						<s:convertEnum />
+						<a:support event="onchange" reRender="resourceAttributeSourceOutputPanel" ajaxSingle="true"/>
+					</h:selectOneMenu >
+				</s:decorate>
+				
+				
+				<a:outputPanel id="resourceAttributeSourceOutputPanel">
+				<s:decorate id="resourceAttributeSourceDecoration" template="layout/edit.xhtml" rendered="#{identityAttributeHome.instance.source eq 'RESOURCE_ATTRIBUTE'}">
+					<ui:define name="label">Resource Attribute</ui:define>
+					<h:selectOneMenu id="resourceAttribute" value="#{identityAttributeHome.instance.resourceAttributeSource}" required="true">
+                		<s:selectItems value="#{guiResourceAttributes}" var="ra" label="#{ra.displayName} (#{ra.resource.displayName})" noSelectionLabel="-select-" />
+                		<s:convertEntity/>
+            		</h:selectOneMenu>
+				</s:decorate>
+				</a:outputPanel>
+				
 				
 				<div style="clear: both"><span class="required">*</span>
 				required fields</div>

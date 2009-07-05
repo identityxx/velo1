@@ -204,6 +204,8 @@ public class UserManageActionsBean implements UserManageActions {
 		
 		//important no? userHome.getEntityManager().refresh(userHome.getInstance());
 		
+		
+		//FIXME: Never use queries directly, always pass through EJBs.
 		Query groupsQuery = entityManager.createNamedQuery("identityAttributesGroup.findAllVisible");
 		List<IdentityAttributesGroup> rr = groupsQuery.getResultList();
 		for (IdentityAttributesGroup currG : rr) {

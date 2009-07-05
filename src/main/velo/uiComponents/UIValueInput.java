@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import velo.entity.UserIdentityAttributeValue;
 import velo.entity.GuiAttribute.AttributeVisualRenderingType;
+import velo.entity.IdentityAttribute.IdentityAttributeSources;
 
 public class UIValueInput extends UIInput {
 //public class UIValueInput extends UIInput {
@@ -74,24 +75,37 @@ public class UIValueInput extends UIInput {
         if (this.getChildCount() < 1) {
             // Only add child component if it's not already in the view tree
             
-        	UIInput child = null;
             if (uiav.getUserIdentityAttribute().getIdentityAttribute().getVisualRenderingType() == AttributeVisualRenderingType.SELECTBOX) {
                 //HtmlSelectOneListbox child = (HtmlSelectOneListbox) this.getFacesContext()
-            	child = (HtmlSelectOneListbox) this.getFacesContext()
-                    .getApplication().createComponent(
-                    HtmlSelectOneListbox.COMPONENT_TYPE);
-                
-                child.setId(this.getId() + "_child");
+            	
+            	HtmlSelectOneListbox childSelectOneListBox = (HtmlSelectOneListbox) this.getFacesContext()
+                .getApplication().createComponent(
+                HtmlSelectOneListbox.COMPONENT_TYPE);
+
+            	
+            	childSelectOneListBox.setId(this.getId() + "_child");
 
                 //System.out.println("Adding children component...with ID: " + child.getId());
                 //uiav.getUserIdentityAttribute().getIdentityAttribute().updateInputJsfComponent(child);
                 
-                this.getChildren().add(child);
+            	if (uiav.getUserIdentityAttribute().getIdentityAttribute().getSource() != IdentityAttributeSources.LOCAL) {
+            		childSelectOneListBox.setDisabled(true);
+            	}
+            	
+                this.getChildren().add(childSelectOneListBox);
                 
             } else if(uiav.getUserIdentityAttribute().getIdentityAttribute().getVisualRenderingType() == AttributeVisualRenderingType.INPUT) {
                 //HtmlInputText child = (HtmlInputText) this.getFacesContext().getApplication().createComponent(HtmlInputText.COMPONENT_TYPE);
-            	child = (HtmlInputText) this.getFacesContext().getApplication().createComponent(HtmlInputText.COMPONENT_TYPE);
-                child.setId(this.getId() + "_child1");
+            	HtmlInputText childInputText = (HtmlInputText) this.getFacesContext().getApplication().createComponent(HtmlInputText.COMPONENT_TYPE);
+            	childInputText.setId(this.getId() + "_child1");
+
+            	
+            	if (uiav.getUserIdentityAttribute().getIdentityAttribute().getSource() != IdentityAttributeSources.LOCAL) {
+            		childInputText.setDisabled(true);
+            	}
+            	
+            	this.getChildren().add(childInputText);
+
             }
             
             
@@ -107,7 +121,7 @@ public class UIValueInput extends UIInput {
             */
             
             
-            this.getChildren().add(child);
+            //this.getChildren().add(child);
             //TODO: Add validators!
             //log.trace("Child validators: " + child.getValidators());
         }

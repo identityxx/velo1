@@ -27,7 +27,9 @@ import org.jboss.seam.framework.EntityHome;
 import org.jboss.seam.log.Log;
 import org.jboss.seam.security.management.PasswordHash;
 
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.User;
+import velo.exceptions.OperationException;
 
 @Name("userHome")
 public class UserHome extends EntityHome<User> {
@@ -35,8 +37,8 @@ public class UserHome extends EntityHome<User> {
 	@In
 	FacesMessages facesMessages;
 	
-	//@In
-	//UserManagerLocal userManager;
+	@In
+	UserManagerLocal userManager;
 	
 	@Logger
 	private Log log;
@@ -70,6 +72,17 @@ public class UserHome extends EntityHome<User> {
 	}
 
 	public User getInstance() {
+		if (!super.getInstance().getLoaded()) {
+			userManager.setEntityManager(getEntityManager());
+			try {
+				userManager.loadUserAttributes(super.getInstance());
+			} catch (OperationException e) {
+				log.error(e.getMessage());
+				getFacesMessages().add(e.getMessage());
+				return null;
+			}
+		}
+		
 		return super.getInstance();
 	}
 	

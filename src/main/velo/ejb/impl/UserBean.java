@@ -61,6 +61,7 @@ import velo.ejb.interfaces.TaskManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
 import velo.ejb.interfaces.UserManagerRemote;
 import velo.entity.Account;
+import velo.entity.AccountAttribute;
 import velo.entity.BulkTask;
 import velo.entity.Capability;
 import velo.entity.CapabilityFolder;
@@ -76,6 +77,8 @@ import velo.entity.SystemEvent;
 import velo.entity.User;
 import velo.entity.UserIdentityAttribute;
 import velo.entity.UserRole;
+import velo.entity.IdentityAttribute.IdentityAttributeSources;
+import velo.exceptions.AttributeSetValueException;
 import velo.exceptions.EntityAssociationException;
 import velo.exceptions.EventExecutionException;
 import velo.exceptions.ModifyAttributeFailureException;
@@ -307,14 +310,62 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		
 		try {
 			Query q = getEntityManager().createNamedQuery("user.findByName").setParameter("name",name);
-
+			User user = (User) q.getSingleResult();
 			
-			return (User) q.getSingleResult();
+			try {
+				loadUserAttributes(user);
+				
+				return user;
+			} catch (OperationException e) {
+				log.error("Error while loading attributes of user '" + user.getName() + "': " + e.getMessage());
+				return null;
+			}
 		}
 		catch (javax.persistence.NoResultException e) {
 			log.debug("Found user did not result any user for name '" + name + "', returning null.");
 			return null;
 		}
+	}
+	
+	public void loadUserAttributes(User user) throws OperationException {
+		if (user.getLoaded()) {
+			//throw new OperationException("User '" + user.getName() + "' was already flagged as loaded.");
+			return;
+		}
+
+		//Load identity attributes of user
+		Collection<IdentityAttribute> allActiveIAs = identityAttributeManager.findAllActive();
+		for (IdentityAttribute currIA : allActiveIAs) {
+			if (currIA.getSource().equals(IdentityAttributeSources.RESOURCE_ATTRIBUTE)) {
+				//Find whether user has an account for this resource
+				Account accOnResource = user.getAccountOnResource(currIA.getResourceAttributeSource().getResource().getUniqueName());
+				
+				if (accOnResource == null) {
+					log.debug("Could not load Identity attribute '" + currIA.getUniqueName() + "' with source type 'RESOURCE_ATTRIBUTE' since user '" + user.getName() + "' has no account on resource '" + currIA.getResourceAttributeSource().getResource().getUniqueName() + "'");
+					continue;
+				}
+				
+				//Get the account attribute!
+				AccountAttribute currAA = accOnResource.getAccountAttribute(currIA.getResourceAttributeSource());
+				if (currAA == null) {
+					log.debug("Could not load Identity attribute '" + currIA.getUniqueName() + "' with source type 'RESOURCE_ATTRIBUTE' for user '" + user.getName() + "', since found account '" +accOnResource.getName() + "' has no account attribute for resource attribute '" + currIA.getResourceAttributeSource().getDisplayName() + "'");  
+					continue;
+				}
+				
+				//Argh, factory creates one value by default
+				UserIdentityAttribute uia = UserIdentityAttribute.factory(currIA, user);
+				uia.getValues().clear();
+				
+				try {
+					uia.importValues(currAA.getAsStandardAttribute().getValues());
+					user.getDynamicUserAttributes().add(uia);
+				} catch (AttributeSetValueException e) {
+					throw new OperationException("Could not load user attribute '" + currIA.getUniqueName() + "' due to: '" + e.getMessage());
+				}
+			}
+		}
+		
+		user.setLoaded(true);
 	}
 	
 	public User findUserEagerly(String name) {

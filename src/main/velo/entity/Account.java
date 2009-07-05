@@ -232,6 +232,17 @@ public class Account extends AccountSkeletal {
 		return null;
 	}
 	
+	@Transient
+	public AccountAttribute getAccountAttribute(ResourceAttribute ra) {
+		for (AccountAttribute currAA : getAccountAttributes()) {
+			if (currAA.getResourceAttribute().equals(ra)) {
+				return currAA;
+			}
+		}
+		
+		return null;
+	}
+	
 
 	@OneToMany(mappedBy="primaryKey.account",cascade = CascadeType.ALL)
 	public Set<ResourceGroupMember> getGroupMembership() {

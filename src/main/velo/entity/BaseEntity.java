@@ -41,9 +41,9 @@ public abstract class BaseEntity implements Serializable {
 	private Date lastUpdateDate;
 	
 	/**
-	 * Whether the entity was loaded by the JPA or not. 
+	 * Whether the entity was loaded by the JPA with attributes or not (set by 'userBean.findUser'/any other methods that loads attributes properly from all sources) 
 	 */
-	private boolean isLoaded;
+	private Boolean loaded = new Boolean(false);
 
 	
 	
@@ -86,19 +86,19 @@ public abstract class BaseEntity implements Serializable {
 	}
 
 	/**
-	 * @param isLoaded the isLoaded to set
+	 * @param loaded the loaded to set
 	 */
 	@Transient
-	public void setLoaded(boolean isLoaded) {
-		this.isLoaded = isLoaded;
+	public void setLoaded(Boolean loaded) {
+		this.loaded = loaded;
 	}
 
 	/**
-	 * @return the isLoaded
+	 * @return the loaded
 	 */
 	@Transient
-	public boolean isLoaded() {
-		return isLoaded;
+	public Boolean getLoaded() {
+		return loaded;
 	}
 
 	public void copyValues(Object entity) {

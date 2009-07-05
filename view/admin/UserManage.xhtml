@@ -35,8 +35,9 @@
 									<h:outputText value="&#160;&#160;" rendered="#{!currUserIdentityAttribute.identityAttribute.required}"/>
 									<h:outputText value="#{currUserIdentityAttribute.identityAttribute.displayName}" />
 									<c:forEach items="#{currUserIdentityAttribute.values}" var="value">
-										<s:decorate id="uiav_id_#{currUserIdentityAttribute.identityAttribute.identityAttributeId}Decoration" template="layout/edit.xhtml">
-											<velo:valueInput id="uiav_id_#{currUserIdentityAttribute.identityAttribute.identityAttributeId}" value="#{value.value}" valueObject="#{value}" />
+										<s:decorate id="uiav_id_#{currUserIdentityAttribute.identityAttribute.uniqueName}Decoration" template="layout/edit.xhtml">
+											<!-- Disabled wont work here as 'valueInput' creates sub element, it handeled in component itself-->
+											<velo:valueInput id="uiav_id_#{currUserIdentityAttribute.identityAttribute.uniqueName}" value="#{value.value}" valueObject="#{value}"/>
 										</s:decorate>
 									</c:forEach>
 								</h:panelGrid>

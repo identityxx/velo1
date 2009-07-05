@@ -20,6 +20,7 @@ package velo.ejb.seam;
 import javax.persistence.EntityManager;
 
 import org.jboss.seam.annotations.End;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
@@ -27,6 +28,8 @@ import org.jboss.seam.framework.EntityHome;
 
 import velo.entity.IdentityAttribute;
 import velo.entity.IdentityAttributeSource;
+import velo.entity.Attribute.AttributeDataTypes;
+import velo.entity.IdentityAttribute.IdentityAttributeSources;
 
 @Name("identityAttributeHome")
 public class IdentityAttributeHome extends EntityHome<IdentityAttribute> {
@@ -74,4 +77,10 @@ public class IdentityAttributeHome extends EntityHome<IdentityAttribute> {
 		getInstance().getSources().remove(ias);
 		entityManager.remove(ias);
 	}
+	
+	
+	@Factory("identityAttributeSources")
+	public IdentityAttributeSources[] getIdentityAttributeSources() {
+		return IdentityAttributeSources.values();
+	}	
 }

@@ -77,6 +77,8 @@ public interface UserManager {
 	
 	public User findUser(String name);
 	
+	public void loadUserAttributes(User user) throws OperationException;
+	
 	public User findUserEagerly(String name);
 	
 	/**

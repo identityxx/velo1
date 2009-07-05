@@ -76,13 +76,13 @@ public class AccountTools extends ResourceActionTools {
      * @return Returns the user entity object.
      */
     public User getUser() {
-        if (!user.isLoaded()) {
+        if (!user.getLoaded()) {
             try {
                 Context ic = new InitialContext();
                 //Must be remote since it could be executed in server agents
                 UserManagerRemote userManager = (UserManagerRemote) ic.lookup("velo/UserBean/remote");
                 
-                return userManager.reloadUser(user,true);
+                return userManager.findUser(user.getName());
             } catch (NamingException ne) {
                 System.out.println("Couldnt load user!: " + ne);
                 return null;

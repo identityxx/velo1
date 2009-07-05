@@ -26,6 +26,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,6 +41,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.validator.NotNull;
 import org.jboss.seam.annotations.Name;
 
 import velo.attributeValidators.AttributeValidatorInterface;
@@ -79,6 +82,10 @@ import velo.scripting.ScriptFactory;
     
     private static final long serialVersionUID = 1987305452306161213L;
     
+    public enum IdentityAttributeSources {
+    	LOCAL,RESOURCE_ATTRIBUTE
+    }
+    
     /**
      The ID of the Identity Attribute
      */
@@ -97,6 +104,11 @@ import velo.scripting.ScriptFactory;
     private boolean manager;
     
     private boolean identifier;
+    
+    private IdentityAttributeSources source;
+    
+    //only available in case source is RESOURCE_ATTRIBUTE
+    private ResourceAttribute resourceAttributeSource;
     
     private Set<UserIdentityAttribute> userIdentityAttributes;
     
@@ -245,6 +257,28 @@ import velo.scripting.ScriptFactory;
 
 	public void setIdentifier(boolean identifier) {
 		this.identifier = identifier;
+	}
+	
+	
+	//FIXME: How come in mysql the column us created as nullable?!
+	@Column(name="SOURCE", nullable=false)
+	@Enumerated(EnumType.STRING)
+	public IdentityAttributeSources getSource() {
+		return source;
+	}
+
+	public void setSource(IdentityAttributeSources source) {
+		this.source = source;
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "SOURCE_RESOURCE_ATTRIBUTE_ID", nullable = true, unique = false)
+	public ResourceAttribute getResourceAttributeSource() {
+		return resourceAttributeSource;
+	}
+
+	public void setResourceAttributeSource(ResourceAttribute resourceAttributeSource) {
+		this.resourceAttributeSource = resourceAttributeSource;
 	}
 
 	@Transient

@@ -138,7 +138,7 @@ import velo.tools.FileUtils;
     /**
      * Get a collection of UserIdentityAttributes related to this user
      */
-    private Set<UserIdentityAttribute> userIdentityAttributes = new HashSet<UserIdentityAttribute>();
+    private Set<UserIdentityAttribute> localUserAttributes = new HashSet<UserIdentityAttribute>();
     
     //(Moved to 'UserRole' entity) private Collection<Role> roles;
     
@@ -220,8 +220,7 @@ import velo.tools.FileUtils;
     private Set<UserJournalingEntry> journaling;
     
     
-    //Transients
-    
+    //--Transients--
     //This is a transient and is set only for the the JSF INPUT components generation purpose for the web GUI
     private Collection<IdentityAttributesGroup> userIdentityAttributesGroups;
     //private HtmlDataTable jsfUserIdentityAttributeGroupsInputFields;
@@ -230,6 +229,7 @@ import velo.tools.FileUtils;
     private Set<UserRole> userRolesToRevoke;
     private Set<Role> rolesToAssign;
     private List<ApproversGroup> approversGroups;
+    private Set<UserIdentityAttribute> dynamicUserAttributes = new HashSet<UserIdentityAttribute>();
     
     private Date expirationDate;
     
@@ -313,18 +313,18 @@ import velo.tools.FileUtils;
     }
     
     /**
-     * Set the UserIdentityAttributes list related to this user
-     * @param userIdentityAttributes The User Identity Attribute list to set
+     * Set the localUserAttributes list related to this user
+     * @param localUserAttributes The local User Attribute list to set
      */
-    public void setUserIdentityAttributes(
-            Set<UserIdentityAttribute> userIdentityAttributes) {
-        this.userIdentityAttributes = userIdentityAttributes;
+    public void setLocalUserAttributes(
+            Set<UserIdentityAttribute> localUserAttributes) {
+        this.localUserAttributes = localUserAttributes;
     }
     
     
     /**
-     * Get the UserIdentityAttributes list related to this user
-     * @return The UserIdentityAttributes list related to this user
+     * Get the localUserAttributes list related to this user
+     * @return The localUserAttributes list related to this user
      */
     //@OneToMany(cascade = CascadeType.ALL, mappedBy="user", fetch=FetchType.LAZY) (WAS EAGER)
     
@@ -333,9 +333,33 @@ import velo.tools.FileUtils;
     //@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     //holy crap, lets try
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    public Set<UserIdentityAttribute> getUserIdentityAttributes() {
-        return userIdentityAttributes;
+    public Set<UserIdentityAttribute> getLocalUserAttributes() {
+        return localUserAttributes;
     }
+    
+    
+    @Transient
+    public Set<UserIdentityAttribute> getUserIdentityAttributes() {
+    	Map<String,UserIdentityAttribute> mapOfUIAs = new HashMap<String,UserIdentityAttribute>();
+
+    	for (UserIdentityAttribute currUIALocal : getDynamicUserAttributes()) {
+    		mapOfUIAs.put(currUIALocal.getIdentityAttribute().getUniqueName(),currUIALocal);
+    	}
+    	
+    	for (UserIdentityAttribute currUIA : getLocalUserAttributes()) {
+    		if (mapOfUIAs.containsKey(currUIA.getIdentityAttribute().getUniqueName())) {
+    			log.warn("User '" + getName() + "' has already identity attribute '" + currUIA.getIdentityAttribute().getUniqueName() + "' loaded dynamically, local won't be loaded...");
+    		} else {
+    			mapOfUIAs.put(currUIA.getIdentityAttribute().getUniqueName(),currUIA);
+    		}
+    	}
+    	
+    	
+    	Set<UserIdentityAttribute> set = new HashSet<UserIdentityAttribute>(mapOfUIAs.values());
+    	
+    	return set;
+    }
+    
     
     /**
      * Set the roles collection that assigned to the user
@@ -884,7 +908,7 @@ import velo.tools.FileUtils;
         UserIdentityAttribute foundUIA = null;
         
         for (UserIdentityAttribute currUia : getUserIdentityAttributes()) {
-            if ( currUia.getIdentityAttribute().getIdentityAttributeId().equals(ia.getIdentityAttributeId())) {
+        	if ( currUia.getIdentityAttribute().equals(ia)) {
                 foundUIA = currUia;
                 break;
             }
@@ -911,6 +935,7 @@ import velo.tools.FileUtils;
     
     
     //used by gui, invoked: getUserIdentityAttributeForGui
+    //Loads all User Identity Attributes for the specified User Identity Attribute Group
     public Set<UserIdentityAttribute> getUserIdentityAttributesForIdentityAttributesGroup(
 			IdentityAttributesGroup identityAttributesGroup, User user) {
 
@@ -955,6 +980,7 @@ import velo.tools.FileUtils;
 	}
     
     @Transient
+    //Invoked by the GUI when managing user, loading all attributes per group
 	public Set<IdentityAttributesGroup> getIdentityAttributesGroupsForUser(
 			Set<IdentityAttributesGroup> identityAttributesGroups) {
 		for (IdentityAttributesGroup currGroup : identityAttributesGroups) {
@@ -1141,16 +1167,34 @@ import velo.tools.FileUtils;
         return null;
     }
 	
+    @Transient
+    public Set<UserIdentityAttribute> getDynamicUserAttributes() {
+		return dynamicUserAttributes;
+	}
+
+	public void setDynamicUserAttributes(
+			Set<UserIdentityAttribute> dynamicUserAttributes) {
+		this.dynamicUserAttributes = dynamicUserAttributes;
+	}
 	
-    
-    
-    
-    
-    
-    
-    
-    
-    //used by request/gui to factory a new user based on attributes
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	//used by request/gui to factory a new user based on attributes
     public void load(Collection<UserIdentityAttribute> userIdentityAttributes, String userName) throws ObjectFactoryException {
     	log.debug("Factoring User entity based on the specified user identity attributes with attrs amount '" + userIdentityAttributes.size() + "'");
     	for (UserIdentityAttribute currUIA : userIdentityAttributes) {
@@ -1223,7 +1267,7 @@ import velo.tools.FileUtils;
     
     public void cleanReferences() {
         accounts = null;
-        userIdentityAttributes = null;
+        localUserAttributes = null;
         positions = null;
         capabilityFolders = null;
         userRoles = null;
