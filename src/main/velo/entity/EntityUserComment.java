@@ -41,7 +41,9 @@ public abstract class EntityUserComment extends BaseEntity implements Serializab
 	/**
 	 * @return the comment
 	 */
-	@Column(name="COMMENT")
+	//'COMMENT' is a unique identifier in Oracle
+	//@Column(name="COMMENT")
+	@Column(name="COMMENT_MSG")
 	public String getComment() {
 		return comment;
 	}

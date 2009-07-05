@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "VL_REC_PROCESS_SUMMARY_EVENT")
-@SequenceGenerator(name="ReconcileProcessSummaryEventIdSeq",sequenceName="REC_PROCESS_SUMMARY_EVENT_ID_SEQ")
+@SequenceGenerator(name="ReconcileProcessSummaryEventIdSeq",sequenceName="REC_PROCESS_SUM_EVENT_ID_SEQ")
 public class ReconcileProcessSummaryEvent {
 	public enum ReconcileProcessSummaryEvents {
 		IDENTITY_CONFIRMED, IDENTITY_REMOVED, IDENTITY_UNASSIGNED, IDENTITY_UNMATCHED, IDENTITY_MODIFIED, 
@@ -59,7 +59,7 @@ public class ReconcileProcessSummaryEvent {
 
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO,generator="ReconcileProcessSummaryEventIdSeq")
-    @Column(name="REC_PROCESS_SUMMARY_EVENT_ID")
+    @Column(name="REC_PROCESS_SUM_EVENT_ID")
 	public Long getReconcileProcessSummaryEventId() {
 		return reconcileProcessSummaryEventId;
 	}

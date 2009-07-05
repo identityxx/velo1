@@ -42,7 +42,9 @@ public class LogEntry {
 		this.message = message;
 	}
 	
-	@Column(name="LEVEL")
+	//Level is a unique identifier in Oracle
+	//@Column(name="LEVEL")
+	@Column(name="LOG_LEVEL")
     @Enumerated(EnumType.STRING)
 	public EventLogLevel getLevel() {
 		return level;
