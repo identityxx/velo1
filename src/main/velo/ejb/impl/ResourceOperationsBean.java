@@ -90,12 +90,15 @@ import velo.ejb.interfaces.ResourceManagerLocal;
 import velo.ejb.interfaces.ResourceOperationsManagerLocal;
 import velo.ejb.interfaces.ResourceOperationsManagerRemote;
 import velo.ejb.interfaces.TaskManagerLocal;
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.Account;
+import velo.entity.AccountAttribute;
 import velo.entity.Attribute;
 import velo.entity.Resource;
 import velo.entity.ResourceAttribute;
 import velo.entity.ResourceGlobalOperation;
 import velo.entity.ResourceGroup;
+import velo.entity.ResourceGroupMember;
 import velo.entity.ResourceReconcileSummaryEntity;
 import velo.entity.ResourceTask;
 import velo.entity.ResourceTypeOperation;
@@ -106,10 +109,10 @@ import velo.entity.Task;
 import velo.entity.User;
 import velo.entity.ResourceType.ResourceControllerType;
 import velo.exceptions.AdapterException;
+import velo.exceptions.AttributeSetValueException;
 import velo.exceptions.AuthenticationFailureException;
 import velo.exceptions.FactoryException;
 import velo.exceptions.FactoryNativeResourceControllerException;
-import velo.exceptions.NoResultFoundException;
 import velo.exceptions.ObjectsConstructionException;
 import velo.exceptions.OperationException;
 import velo.exceptions.ReconcileAccountsException;
@@ -160,6 +163,9 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 	
 	@EJB
 	AccountManagerLocal accountManager;
+	
+	@EJB
+	UserManagerLocal userManager;
 	
 	@EJB
 	EventManagerLocal eventManager;
@@ -1319,6 +1325,51 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		context.addVar("attrs", attrsMap, PhaseRelevance.ALL);
 		
 		
+		//Factory an account object
+		Account accToPersist = Account.factory(accountName, resource);
+		//FIXME: Is it correct to perform that here or better in resource.getManagedAttributesAsMap?
+		for (Map.Entry<String,ResourceAttribute> currRA : attrsMap.entrySet()) {
+			if ( (currRA.getValue().isPersistence()) && (currRA.getValue().getValues().size() > 0) )  {
+				AccountAttribute currAccountAttribute;
+				try {
+					currAccountAttribute = AccountAttribute.factory(currRA.getValue(),accToPersist,currRA.getValue());
+					accToPersist.getAccountAttributes().add(currAccountAttribute);
+				} catch (AttributeSetValueException e) {
+					throw new OperationException(e);
+				}
+			} else {
+				//we don't care about active attributes as we just need this for persistence
+			}
+		}
+		//Assoc the account to the user
+		String userName = getRepositoryUserNameReferenceFromAddRequest(request);
+		if (userName != null) {
+			User user = userManager.findUser(userName);
+			if (user != null) {
+				accToPersist.setUser(user);
+			}
+		}
+		
+		
+		//Factory groups
+		List<String> groupsStringsToAdd = SpmlUtils.getGroupsToAssign(request,resource.getUniqueName());
+		//load the groups from the repository as the 'type' of the group is needed in the context
+		//(sucks: could not find a way to store the group type within the standard SPML V2 spec)
+		//But anyway required for group membership insertion too
+		List<ResourceGroup> groupEntitiesToAdd = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToAdd, resource);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//----EXPERIMENTAL----
 		if (spmlTask.getWorkflowProcessId() != null) {
 			//load process ID and set into the context.
@@ -1346,17 +1397,6 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		              try { ctx.close(); } catch (NamingException e) {}
 		           }
 		        }
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				
 				//Session session = (Session) em.getDelegate();
 				//FullTextHibernateSessionProxy hem = (FullTextHibernateSessionProxy)em.getDelegate();
@@ -1416,10 +1456,12 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		//context.addVar("tools", tools);
 		//----EXPERIMENTAL----
 		
+		
+		
+		
 		log.trace("Factoring ResourceOperation object...");
 		ResourceOperation ro = resource.factoryResourceOperation(context, spmlTask.getResourceTypeOperation());
 		ro.setResource(resource);
-		
 		
 		//gateway
 		if (resource.getResourceType().isGatewayRequired()) {
@@ -1427,112 +1469,105 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 			//TODO: Support Linux gateway as well
 			executeOperationExecutionPhaseViaWindowsGateway(resource,spmlTask.getResourceTypeOperation(),request, ro);
 			
-			
 			//TODO: Support Group membership persistance in the repository
 			//---Everything passed ok, perform repository modifications---
 			//Persist the account in repository
+//			try {
+				//accountManager.persistAccount(request.getPsoID().getID(), resource.getUniqueName(), getRepositoryUserNameReferenceFromAddRequest(request));
+				
+				
+//			} catch (NoResultFoundException e) {
+//				throw new OperationException("Could not persist the account entity in the repository: " + e.toString());
+//			}
+		} else {
+			SpmlResourceOperationController roc = null;
 			try {
-				accountManager.persistAccount(request.getPsoID().getID(), resource.getUniqueName(), getRepositoryUserNameReferenceFromAddRequest(request));
-			} catch (NoResultFoundException e) {
-				throw new OperationException("Could not persist the account entity in the repository: " + e.toString());
+				roc = factoryNativeController(spmlTask, context, resource, ro);
+			} catch (FactoryNativeResourceControllerException e) {
+				throw new OperationException(e.toString());
 			}
-			
-			return;
-		}
 		
+			log.trace("Initialized operation context variables, dump of context: " + context.toString());
 		
-		SpmlResourceOperationController roc = null;
-		try {
-			roc = factoryNativeController(spmlTask, context, resource, ro);
-		} catch (FactoryNativeResourceControllerException e) {
-			throw new OperationException(e.toString());
-		}
-		
-		
-		log.trace("Initialized operation context variables, dump of context: " + context.toString());
-		
-		boolean invocationStatus;
+			boolean invocationStatus;
 
 		
-		//TODO: Add validation for all operations! not just add!
-		//perform VALIDATION execution
-		invocationStatus = ro.validateActionOperation();
-		if (!invocationStatus) {
-			log.error("VALIDATE phase invocation has failed, indication the whole process as a failure...");
-			throw new OperationException("VALIDATE invocation has failed: " + ro.getErrorMessage());
-		}
-		
-		//perform PRE execution
-		log.trace("Started invocation of ResourceOperation...");
-		
-		
-		invocationStatus = ro.preActionOperation();
-		if (!invocationStatus) {
-			log.error("PreExecution invocation failed, indication the whole process as a failure...");
-			throw new OperationException("PreAction invocation has failed: " + ro.getErrorMessage());
-		}
-		
-		//EXECUTION
-		try {
-			roc.performOperation(spmlTask, ro, request);
-		}
-		catch (OperationException e) {
-			throw e;
-		}
-		//END OF EXECUTION PHASE VIA CONTROLLER
-		
-
-		
-		//Perform POST operation actions
-		invocationStatus = ro.postActionOperation();
-		if (!invocationStatus) {
-			log.error("PostExecution invocation failed, indication the whole process as a failure...");
-			throw new OperationException("PostAction invocation has failed: " + ro.getErrorMessage());
-		}
-		
-		
-		//---Everything passed ok, perform repository modifications---
-		//Persist the account in repository
-		try {
-			accountManager.persistAccount(request.getPsoID().getID(), resource.getUniqueName(), getRepositoryUserNameReferenceFromAddRequest(request));
-		} catch (NoResultFoundException e) {
-			throw new OperationException("Could not persist the account entity in the repository: " + e.toString());
-		}
-		
-		
-		
-		
-		//If this is an SPML GROUP controller type then handle group membership here
-		if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_ACCESS_GROUPS) {
-			if (!resource.getResourceType().isGatewayRequired()) {
-				GroupMembershipSpmlResourceOpreationController groupableROC = (GroupMembershipSpmlResourceOpreationController)roc;
-				
-				
-				//Now handle group membership insertion
-				List<String> groupsStringsToAdd = roc.getGroupsToAssign(request,resource.getUniqueName());
-				
-				
-				//load the groups from the repository as the 'type' of the group is needed in the context
-				//(sucks: could not find a way to store the group type within the standard SPML V2 spec)
-				List<ResourceGroup> groupEntitiesToAdd = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToAdd, resource); 
-				
-				
-				log.debug("Account should be a memmber of groups amount '" + groupsStringsToAdd.size() + "', performing add group membership operation");
-				ResourceTypeOperation rto = ro.getResource().getResourceType().findResourceTypeOperation(ADD_GROUP_MEMBERSHIP_OPERATION_UNIQUE_NAME);
-				ResourceOperation groupMembershipResourceOperation = ResourceOperation.Factory(ro.getResource(), context, rto);
-				
-				try {
-					groupableROC.performOperationAddGroupMembership(spmlTask, groupMembershipResourceOperation, request, groupEntitiesToAdd);
-					
-					//success, persist the group membership in repository
-					//TODO: persist the group membership in repository
-				}
-				catch (OperationException e) {
-					throw e;
-				}
+			//TODO: Add validation for all operations! not just add!
+			//perform VALIDATION execution
+			invocationStatus = ro.validateActionOperation();
+			if (!invocationStatus) {
+				log.error("VALIDATE phase invocation has failed, indication the whole process as a failure...");
+				throw new OperationException("VALIDATE invocation has failed: " + ro.getErrorMessage());
 			}
-		} else if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_GENERIC) {
-			//TODO: PERSIST GROUP MEMBERSHIP IN REPOSITORY!
+		
+			//perform PRE execution
+			log.trace("Started invocation of ResourceOperation...");
+		
+		
+			invocationStatus = ro.preActionOperation();
+			if (!invocationStatus) {
+				log.error("PreExecution invocation failed, indication the whole process as a failure...");
+				throw new OperationException("PreAction invocation has failed: " + ro.getErrorMessage());
+			}
+		
+			//EXECUTION
+			try {
+				roc.performOperation(spmlTask, ro, request);
+			}
+			catch (OperationException e) {
+				throw e;
+			}
+			//END OF EXECUTION PHASE VIA CONTROLLER
+		
+			//Perform POST operation actions
+			invocationStatus = ro.postActionOperation();
+			if (!invocationStatus) {
+				log.error("PostExecution invocation failed, indication the whole process as a failure...");
+				throw new OperationException("PostAction invocation has failed: " + ro.getErrorMessage());
+			}
+
+			//---Everything passed ok, perform repository modifications---
+			//Persist the account in repository
+			//try {
+			//accountManager.persistAccount(request.getPsoID().getID(), resource.getUniqueName(), getRepositoryUserNameReferenceFromAddRequest(request));
+			//accountManager.persistAccount(accToPersist);
+			//} catch (NoResultFoundException e) {
+			//throw new OperationException("Could not persist the account entity in the repository: " + e.toString());
+			//}
+		
+		
+			//If this is an SPML GROUP controller type then handle group membership here
+			if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_ACCESS_GROUPS) {
+				if (!resource.getResourceType().isGatewayRequired()) {
+					GroupMembershipSpmlResourceOpreationController groupableROC = (GroupMembershipSpmlResourceOpreationController)roc;
+				
+					log.debug("Account should be a memmber of groups amount '" + groupsStringsToAdd.size() + "', performing add group membership operation");
+					ResourceTypeOperation rto = ro.getResource().getResourceType().findResourceTypeOperation(ADD_GROUP_MEMBERSHIP_OPERATION_UNIQUE_NAME);
+					ResourceOperation groupMembershipResourceOperation = ResourceOperation.Factory(ro.getResource(), context, rto);
+				
+					try {
+						groupableROC.performOperationAddGroupMembership(spmlTask, groupMembershipResourceOperation, request, groupEntitiesToAdd);
+					}
+					catch (OperationException e) {
+						throw e;
+					}
+				}
+			} else if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_GENERIC) {
+				//nothing to do
+			}
+		}
+		
+		
+		//Either way, persist account with groups
+		//FIXME: Not sure whether we have in SPML_ACCESS_GROUP controller to persist group by group only if the controller returned true per group?
+		//If we got so far, that means we have created the account, then, persist it in DB.
+		accountManager.persistAccount(accToPersist);
+		//success, persist the group membership in repositor
+		for (ResourceGroup currGroupToAddToAccount : groupEntitiesToAdd) {
+			ResourceGroupMember rgm = new ResourceGroupMember(accToPersist,currGroupToAddToAccount);
+			currGroupToAddToAccount.getMembers().add(rgm);
+			accToPersist.getGroupMembership().add(rgm);
+			resourceGroupManager.persistMember(rgm);
 		}
 	}
 	
@@ -1562,6 +1597,13 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		ResourceOperation ro = resource.factoryResourceOperation(context, spmlTask.getResourceTypeOperation());
 		ro.setResource(resource);
 		
+		Map<String,List<String>> groups = SpmlUtils.getGroupMembershipToModify(request, resource.getUniqueName());
+		//Now handle group membership insertion
+		List<String> groupsStringsToAdd = groups.get("groupsToAssign");
+		List<String> groupsStringsToRemove = groups.get("groupsToRevoke");
+		
+		
+		
 		
 		//gateway
 		if (resource.getResourceType().isGatewayRequired()) {
@@ -1569,110 +1611,116 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 			//TODO: Support Linux gateway as well
 			executeOperationExecutionPhaseViaWindowsGateway(resource,spmlTask.getResourceTypeOperation(),request, ro);
 			
-			return;
-		}
-		
-		
-		
-		
-		SpmlResourceOperationController roc = null;
-		try {
-			roc = factoryNativeController(spmlTask, context, resource, ro);
-		} catch (FactoryNativeResourceControllerException e) {
-			throw new OperationException(e.toString());
-		}
-		
-		
-		boolean invocationStatus;
-		//perform execution
-		log.trace("Started invocation of ResourceOperation...");
-		
-		
-		invocationStatus = ro.preActionOperation();
-		if (!invocationStatus) {
-			log.error("PreExecution invocation failed, indication the whole process as a failure...");
-			throw new OperationException("PreAction invocation has failed: " + ro.getErrorMessage());
-		}
-		
-		
-		//EXECUTION
-		try {
-			roc.performOperation(spmlTask, ro, request);
-		}
-		catch (OperationException e) {
-			throw e;
-		}
-		//END OF EXECUTION PHASE VIA CONTROLLER
-
-		
-		//Perform POST operation actions
-		invocationStatus = ro.postActionOperation();
-		if (!invocationStatus) {
-			log.error("PostExecution invocation failed, indication the whole process as a failure...");
-			throw new OperationException("PostAction invocation has failed: " + ro.getErrorMessage());
-		}
-		
-		
-		//Perform POST operation actions
-		invocationStatus = ro.postActionOperation();
-		if (!invocationStatus) {
-			log.error("PostExecution invocation failed, indication the whole process as a failure...");
-			throw new OperationException("PostAction invocation has failed: " + ro.getErrorMessage());
-		}
-
-		//---Everything passed ok, perform repository modifications---
-		//?? nothing to do here currently.
-		
-		
-		
-		
-		
-		
-		
-		
-		//If this is an SPML GROUP controller type then handle group membership here
-		if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_ACCESS_GROUPS) {
-			if (!resource.getResourceType().isGatewayRequired()) {
-				GroupMembershipSpmlResourceOpreationController groupableROC = (GroupMembershipSpmlResourceOpreationController)roc;
-						
-				Map<String,List<String>> groups = SpmlUtils.getGroupMembershipToModify(request, resource.getUniqueName());
-				//Now handle group membership insertion
-				List<String> groupsStringsToAdd = groups.get("groupsToAssign");
-				List<String> groupsStringsToRemove = groups.get("groupsToRevoke");
-				log.debug("Account should BE A memmber of groups amount '" + groupsStringsToAdd.size() + "', membership should be removed from groups amount '" + groupsStringsToRemove.size() + "' performing add group membership operation");
-
-				
-				
-				//load the groups from the repository as the 'type' of the group is needed in the context
-				//(sucks: could not find a way to store the group type within the standard SPML V2 spec)
-				List<ResourceGroup> groupEntitiesToAdd = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToAdd, resource); 
-				List<ResourceGroup> groupEntitiesToRemove = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToRemove, resource);
-						
-				
-				
-				
-				ResourceTypeOperation rtoAddGrps = ro.getResource().getResourceType().findResourceTypeOperation(ADD_GROUP_MEMBERSHIP_OPERATION_UNIQUE_NAME);
-				ResourceOperation addGroupMembershipResourceOperation = ResourceOperation.Factory(ro.getResource(), context, rtoAddGrps);
-				ResourceTypeOperation rtoRemoveGrps = ro.getResource().getResourceType().findResourceTypeOperation(DELETE_GROUP_MEMBERSHIP_OPERATION_UNIQUE_NAME);
-				ResourceOperation removeGroupMembershipResourceOperation = ResourceOperation.Factory(ro.getResource(), context, rtoRemoveGrps);
-						
-				try {
-					groupableROC.performOperationAddGroupMembership(spmlTask, addGroupMembershipResourceOperation, (Request)request, groupEntitiesToAdd);
-					groupableROC.performOperationRemoveGroupMembership(spmlTask, removeGroupMembershipResourceOperation, request, groupEntitiesToRemove);
-				
-					//success, persist the group membership in repository
-					//TODO: persist the group membership in repository
-				}
-				catch (OperationException e) {
-					throw e;
-				}
+			
+		} else {
+			SpmlResourceOperationController roc = null;
+			try {
+				roc = factoryNativeController(spmlTask, context, resource, ro);
+			} catch (FactoryNativeResourceControllerException e) {
+				throw new OperationException(e.toString());
 			}
-		} else if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_GENERIC) {
-			//TODO: PERSIST GROUP MEMBERSHIP IN REPOSITORY!
+		
+			boolean invocationStatus;
+			//perform execution
+			log.trace("Started invocation of ResourceOperation...");
+		
+		
+			invocationStatus = ro.preActionOperation();
+			if (!invocationStatus) {
+				log.error("PreExecution invocation failed, indication the whole process as a failure...");
+				throw new OperationException("PreAction invocation has failed: " + ro.getErrorMessage());
+			}
+		
+			//EXECUTION
+			try {
+				roc.performOperation(spmlTask, ro, request);
+			}
+			catch (OperationException e) {
+				throw e;
+			}
+			//END OF EXECUTION PHASE VIA CONTROLLER
+
+			//Perform POST operation actions
+			invocationStatus = ro.postActionOperation();
+			if (!invocationStatus) {
+				log.error("PostExecution invocation failed, indication the whole process as a failure...");
+				throw new OperationException("PostAction invocation has failed: " + ro.getErrorMessage());
+			}
+		
+			//Perform POST operation actions
+			invocationStatus = ro.postActionOperation();
+			if (!invocationStatus) {
+				log.error("PostExecution invocation failed, indication the whole process as a failure...");
+				throw new OperationException("PostAction invocation has failed: " + ro.getErrorMessage());
+			}
+
+			//---Everything passed ok, perform repository modifications---
+			//?? nothing to do here currently.
+		
+		
+			//If this is an SPML GROUP controller type then handle group membership here
+			if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_ACCESS_GROUPS) {
+				if (!resource.getResourceType().isGatewayRequired()) {
+					GroupMembershipSpmlResourceOpreationController groupableROC = (GroupMembershipSpmlResourceOpreationController)roc;
+						
+					log.debug("Account should BE A memmber of groups amount '" + groupsStringsToAdd.size() + "', membership should be removed from groups amount '" + groupsStringsToRemove.size() + "' performing add group membership operation");
+
+				
+					//load the groups from the repository as the 'type' of the group is needed in the context
+					//(sucks: could not find a way to store the group type within the standard SPML V2 spec)
+					List<ResourceGroup> groupEntitiesToAdd = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToAdd, resource); 
+					List<ResourceGroup> groupEntitiesToRemove = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToRemove, resource);
+						
+					ResourceTypeOperation rtoAddGrps = ro.getResource().getResourceType().findResourceTypeOperation(ADD_GROUP_MEMBERSHIP_OPERATION_UNIQUE_NAME);
+					ResourceOperation addGroupMembershipResourceOperation = ResourceOperation.Factory(ro.getResource(), context, rtoAddGrps);
+					ResourceTypeOperation rtoRemoveGrps = ro.getResource().getResourceType().findResourceTypeOperation(DELETE_GROUP_MEMBERSHIP_OPERATION_UNIQUE_NAME);
+					ResourceOperation removeGroupMembershipResourceOperation = ResourceOperation.Factory(ro.getResource(), context, rtoRemoveGrps);
+						
+					try {
+						groupableROC.performOperationAddGroupMembership(spmlTask, addGroupMembershipResourceOperation, (Request)request, groupEntitiesToAdd);
+						groupableROC.performOperationRemoveGroupMembership(spmlTask, removeGroupMembershipResourceOperation, request, groupEntitiesToRemove);
+						//success, persist the group membership in repository
+						//TODO: persist the group membership in repository
+					}
+					catch (OperationException e) {
+						throw e;
+					}
+				}
+			} else if (resource.getResourceType().getResourceControllerType() == ResourceControllerType.SPML_GENERIC) {
+				//TODO: PERSIST GROUP MEMBERSHIP IN REPOSITORY!
+			}
 		}
 		
 		
 		
+		
+		
+		//FIXME: Not sure whether we have in SPML_ACCESS_GROUP controller to persist group by group only if the controller returned true per group?
+		//If we got so far, that means we have modify the members
+		List<ResourceGroup> groupEntitiesToAssoc = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToAdd, resource);
+		List<ResourceGroup> groupEntitiesToDissoc = resourceGroupManager.findResourceGroupsInRepository(groupsStringsToRemove, resource);
+		
+		//New members
+		for (ResourceGroup currGroupToAddToAccount : groupEntitiesToAssoc) {
+			ResourceGroupMember rgm = new ResourceGroupMember(accountToModify,currGroupToAddToAccount);
+			currGroupToAddToAccount.getMembers().add(rgm);
+			accountToModify.getGroupMembership().add(rgm);
+			resourceGroupManager.persistMember(rgm);
+		}
+		//Members to remove
+		for (ResourceGroup currGroupToDissocFromAccount : groupEntitiesToDissoc) {
+			Map<String,ResourceGroupMember> membersAsMap = currGroupToDissocFromAccount.getMembersAsMap();
+			
+			if (currGroupToDissocFromAccount.getMembersAsMap().containsKey(accountToModify.getNameInRightCase())) {
+				ResourceGroupMember groupMemberToRemove = membersAsMap.get(accountToModify.getNameInRightCase());
+				resourceGroupManager.removeGroupMember(groupMemberToRemove);
+			}
+		}
+			
+		
+		
+		
+		//TODO: What about attributes modifications?!!?
 	}
 	
 	
@@ -1698,10 +1746,11 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 	//helper
 	
 	
-	private String getRepositoryUserNameReferenceFromAddRequest(AddRequest request) throws NoResultFoundException {
+	private String getRepositoryUserNameReferenceFromAddRequest(AddRequest request) {
 		CapabilityData[] cDatas = request.getCapabilityData();
 		if (cDatas.length < 1) {
-			throw new NoResultFoundException("No capability datas were found in request!");
+			//throw new NoResultFoundException("No capability datas were found in request!");
+			return null;
 		}
 		
 		//expecting one capability data...
@@ -1718,7 +1767,8 @@ public class ResourceOperationsBean implements ResourceOperationsManagerLocal,Re
 		}
 		
 		if (!refFound) {
-			throw new NoResultFoundException("Could not find expected user in repository reference!");
+			//throw new NoResultFoundException("Could not find expected user in repository reference!");
+			return null;
 		}
 		
 		return userName;

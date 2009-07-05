@@ -54,7 +54,6 @@ public class SpmlTask extends ResourceTask implements Serializable {
     	spmlTask.setDescription(description);
     	spmlTask.setResourceUniqueName(resourceUniqueName);
     	spmlTask.setStatus(TaskStatus.PENDING);
-    	
     	return spmlTask;
     }
     

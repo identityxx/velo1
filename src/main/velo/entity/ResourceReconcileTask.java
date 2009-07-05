@@ -43,7 +43,6 @@ public class ResourceReconcileTask extends ResourceTask implements Serializable 
     	task.setDescription(description);
     	//stop using 'resource unique name'
     	task.setResourceUniqueName(resource.getUniqueName());
-    	task.setResource(resource);
     	task.setStatus(TaskStatus.PENDING);
     	
     	return task;

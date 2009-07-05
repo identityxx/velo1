@@ -47,7 +47,7 @@ import velo.exceptions.NoResultFoundException;
  
  @author Asaf Shakarchi
  */
-@EJB(name="resourceGroupBean", beanInterface=ResourceGroupManagerLocal.class)
+//@EJB(name="resourceGroupBean", beanInterface=ResourceGroupManagerLocal.class)
 @Stateless
 public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGroupManagerRemote {
     
@@ -226,7 +226,6 @@ public class ResourceGroupBean implements ResourceGroupManagerLocal, ResourceGro
     		query.append("(rg.uniqueId = '" + currGroupUniqueId + "')");
     		looper++;
     	}
-    	
     	
     	log.trace("Generated query to fetch the specified groups: " + query);
     	

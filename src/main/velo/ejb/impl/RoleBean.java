@@ -37,7 +37,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.AutoCreate;
@@ -45,7 +44,6 @@ import org.jboss.seam.annotations.Name;
 
 import velo.common.EdmMessages;
 import velo.common.SysConf;
-import velo.contexts.OperationContext;
 import velo.ejb.interfaces.AccountManagerLocal;
 import velo.ejb.interfaces.CommonUtilsManagerLocal;
 import velo.ejb.interfaces.EventManagerLocal;
@@ -74,9 +72,7 @@ import velo.exceptions.MergeEntityException;
 import velo.exceptions.NoResultFoundException;
 import velo.exceptions.OperationException;
 import velo.exceptions.PersistEntityException;
-import velo.exceptions.ScriptInvocationException;
 import velo.exceptions.ValidationException;
-import velo.scripting.GenericTools;
 
 /**
 A Stateless EJB bean for managing Roles
@@ -169,28 +165,8 @@ public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
     }
     
     
-    @Deprecated
-    public long modifyRolesOfUser(Set<Role> userRolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
-        //public long modifyRolesOfUser(Set<UserRole> userRolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
-    	//BulkTask bt = modifyRolesOfUserTasks(userRolesToRemove, rolesToAdd, user, true);
-    	BulkTask bt = modifyRolesOfUserTasks(userRolesToRemove, rolesToAdd, user);
-
-    	if (bt.getTasks().size() > 0) {
-    		return tm.persistBulkTask(bt);
-    	} else {
-    		return 0;
-    	}
-    }
-
-    @Deprecated
-    public void associateRoleToUser(Role role, User user) throws OperationException {
-    	Set<Role> rolesToAdd = new HashSet<Role>();
-    	rolesToAdd.add(role);
-    	//modifyRolesOfUser(new HashSet<UserRole>(), rolesToAdd, user);
-    	modifyRolesOfUser(new HashSet<Role>(), rolesToAdd, user);
-    }
-        
     
+    //This method is invoked via admin's gui
     public BulkTask modifyDirectUserRoles(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
     	return modifyDirectUserRoles(rolesToRemove, rolesToAdd, user, null,true);
     }
@@ -198,6 +174,11 @@ public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
     public BulkTask modifyDirectUserRoles(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user, Date tasksExpectedExecutionDate, boolean persistBulkTask) throws OperationException {
     	Long id;
     	BulkTask bt = modifyRolesOfUserTasks(rolesToRemove, rolesToAdd, user);
+    	
+    	for (Task currTask : bt.getTasks()) {
+    		SpmlTask currST = (SpmlTask)currTask;
+    		System.out.println("!!!!!!!!!!!!" + currST.getResourceUniqueName() + ", '" + currST.getDescription());
+    	}
     	
     	if (persistBulkTask) {
     		if (bt.getTasks().size() > 0) {
@@ -281,48 +262,7 @@ public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
     }
     
     
-    /**
-    - Perform roles modification for a certain user
-     */
-    //public BulkTask modifyRolesOfUserTasks(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user, boolean modifyEntities) throws OperationException {
-    @Deprecated
-    public BulkTask modifyRolesOfUserTasksAA(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
-    	return null;
-    	
-    	/*
-		try {
-			Query q = em.createNamedQuery("role.findByName").setParameter("name","ROLE-0");
-			
-			//return (Role) q.getSingleResult();
-			
-			log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + q.getSingleResult());
-			return null;
-		}
-		catch (javax.persistence.NoResultException e) {
-			log.debug("FindRole method did not result any role for name '" + "AA" + "', returning null.");
-			return null;
-		}
-		catch (Exception ex){
-			log.debug("The generic exception was caught : " + ex.toString());
-			return null;
-		}
-		*/
-		
-		/*
-    	log.info("!!!!!!!!!!!!!!!!! LOG (A)");
-    	if (!em.isOpen()) {
-    		log.info("!!!!!!!!!!!!!!!!!!!!!! EM IS CLOSED!!!!!!");
-    	} else {
-    		log.info("!!!!!!!!!!!!!!!!!!!!!! EM IS OPEN!!!!!!");
-    	}
-    	user = em.find(User.class, user.getUserId());
-    	log.info("!!!!!!!!!!!!!!!!! LOG (B)");
-    	BulkTask bulkTask = BulkTask.factory("User roles modification for User '" + user.getName() + "'");
-    	
-    	return bulkTask;
-    	*/
-    }
-    
+   
     
     //The working one :)
     public BulkTask modifyRolesOfUserTasks(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
@@ -625,7 +565,7 @@ public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
         			}
         			
         			
-        			//create the ADD task
+        			//create the ADD ACCOUNT task
         			accountSpmlTaskPerResource = resourceOperationManager.createAddAccountRequestForUserTask(currResource, user, resourceGroupsOfCurrentResourceToPassToRequestForInsertion, rolesToAddPerResource.get(currResource.getResourceId()));
         			accountSpmlTaskPerResource.setBulkTask(bulkTask);
             		bulkTask.addTask(accountSpmlTaskPerResource);
@@ -1021,7 +961,6 @@ UserRole currUserRoleToRemove = new UserRole();
     
     
     
-    @Transient
     public boolean isResourceGroupAssignedByOtherRoles(ResourceGroup rg, Set<Role> excludedRoles, User user) {
         log.debug("Checking whether group with unique ID '" + rg.getUniqueId() + "', on Resource: '" + rg.getResource().getDisplayName() + "' for User: '" + user.getName() + "' is protected by user roles (except the specified excluded User Roles)");
 
@@ -1503,6 +1442,32 @@ UserRole currUserRoleToRemove = new UserRole();
     
     
     
+    
+    
+    
+    //-----------------DEPRECATED-----------------
+    
+    @Deprecated
+    public long modifyRolesOfUser(Set<Role> userRolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
+        //public long modifyRolesOfUser(Set<UserRole> userRolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
+    	//BulkTask bt = modifyRolesOfUserTasks(userRolesToRemove, rolesToAdd, user, true);
+    	BulkTask bt = modifyRolesOfUserTasks(userRolesToRemove, rolesToAdd, user);
+
+    	if (bt.getTasks().size() > 0) {
+    		return tm.persistBulkTask(bt);
+    	} else {
+    		return 0;
+    	}
+    }
+
+    @Deprecated
+    public void associateRoleToUser(Role role, User user) throws OperationException {
+    	Set<Role> rolesToAdd = new HashSet<Role>();
+    	rolesToAdd.add(role);
+    	//modifyRolesOfUser(new HashSet<UserRole>(), rolesToAdd, user);
+    	modifyRolesOfUser(new HashSet<Role>(), rolesToAdd, user);
+    }
+        
     
     /**
     - Make sure there is no conflict and the same role flagged to be added and removed together - if so throw an exception
@@ -2187,17 +2152,6 @@ UserRole currUserRoleToRemove = new UserRole();
 //JB        BulkTask bt = addRoleToUserBulkTask(roleToAdd, user, isDirect);
 //JB        em.persist(bt);
     }
-
-
-    
-
-
-    
-    
-    
-    
-    
-    
     
     //AAAAAAAAAAAAAAAAAAAAAAAAA
     /**
@@ -2742,6 +2696,47 @@ UserRole currUserRoleToRemove = new UserRole();
 
     
     
+    /**
+    - Perform roles modification for a certain user
+     */
+    //public BulkTask modifyRolesOfUserTasks(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user, boolean modifyEntities) throws OperationException {
+    @Deprecated
+    public BulkTask modifyRolesOfUserTasksAA(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {
+    	return null;
+    	
+    	/*
+		try {
+			Query q = em.createNamedQuery("role.findByName").setParameter("name","ROLE-0");
+			
+			//return (Role) q.getSingleResult();
+			
+			log.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + q.getSingleResult());
+			return null;
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.debug("FindRole method did not result any role for name '" + "AA" + "', returning null.");
+			return null;
+		}
+		catch (Exception ex){
+			log.debug("The generic exception was caught : " + ex.toString());
+			return null;
+		}
+		*/
+		
+		/*
+    	log.info("!!!!!!!!!!!!!!!!! LOG (A)");
+    	if (!em.isOpen()) {
+    		log.info("!!!!!!!!!!!!!!!!!!!!!! EM IS CLOSED!!!!!!");
+    	} else {
+    		log.info("!!!!!!!!!!!!!!!!!!!!!! EM IS OPEN!!!!!!");
+    	}
+    	user = em.find(User.class, user.getUserId());
+    	log.info("!!!!!!!!!!!!!!!!! LOG (B)");
+    	BulkTask bulkTask = BulkTask.factory("User roles modification for User '" + user.getName() + "'");
+    	
+    	return bulkTask;
+    	*/
+    }
     
     
     

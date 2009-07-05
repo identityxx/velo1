@@ -65,7 +65,7 @@ public class ReconcileDataImportManager {
 
 
 	public Accounts importIdentitiesFromResource(ResourceReconcileTask reconcileTask) throws DataTransformException {
-		Resource resource = reconcileTask.getResource();
+		Resource resource = ReadyActionAPI.getInstance().getResourceManager().findResource(reconcileTask.getResourceUniqueName());
 
 		log.debug("Importing all identities from resource '" + resource.getDisplayName() + "'");
 		stopWatch.start();
@@ -248,7 +248,7 @@ public class ReconcileDataImportManager {
 
 
 	public ResourceGroups importGroupsFromResource(ResourceReconcileTask reconcileTask) throws DataTransformException {
-		Resource resource = reconcileTask.getResource();
+		Resource resource = ReadyActionAPI.getInstance().getResourceManager().findResource(reconcileTask.getResourceUniqueName());
 
 		log.debug("Importing all identities from resource '" + resource.getDisplayName() + "'");
 		stopWatch.start();
@@ -391,7 +391,7 @@ public class ReconcileDataImportManager {
 
 
 	public ResourceGroups importGroupMembership(ResourceReconcileTask reconcileTask) throws DataTransformException {
-		Resource resource = reconcileTask.getResource();
+		Resource resource = ReadyActionAPI.getInstance().getResourceManager().findResource(reconcileTask.getResourceUniqueName());
 
 		log.debug("Importing all group membership from resource '" + resource.getDisplayName() + "'");
 		stopWatch.start();

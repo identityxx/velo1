@@ -1,6 +1,8 @@
 package velo.tasks.taskExecuters;
 
+import velo.actions.readyActions.ReadyActionAPI;
 import velo.collections.Accounts;
+import velo.entity.Resource;
 import velo.entity.ResourceReconcileTask;
 import velo.entity.Task;
 import velo.exceptions.DataTransformException;
@@ -22,7 +24,8 @@ public class ReconcileIdentitiesIncrementallyTaskExecuter implements TaskExecute
 		}
 		
 		ResourceReconcileTask rrTask = (ResourceReconcileTask)task;
-		process.setResource(rrTask.getResource());
+		Resource resource = ReadyActionAPI.getInstance().getResourceManager().findResource(rrTask.getResourceUniqueName());
+		process.setResource(resource);
 		
 		ReconcileDataImportManager importer = new ReconcileDataImportManager();
 		Accounts accs;

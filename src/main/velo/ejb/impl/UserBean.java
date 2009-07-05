@@ -161,6 +161,8 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	@EJB
 	ResourceManagerLocal resourceManager;
 	
+	@org.jboss.annotation.IgnoreDependency
+	@IgnoreDependency
 	@EJB
 	ResourceOperationsManagerLocal resourceOperationsManager;
 

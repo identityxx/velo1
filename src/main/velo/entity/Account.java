@@ -233,7 +233,7 @@ public class Account extends AccountSkeletal {
 	}
 	
 
-	@OneToMany(mappedBy="primaryKey.account")
+	@OneToMany(mappedBy="primaryKey.account",cascade = CascadeType.ALL)
 	public Set<ResourceGroupMember> getGroupMembership() {
 		return groupMembership;
 	}

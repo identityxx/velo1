@@ -120,19 +120,25 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 	
 	public void removeAccountEntity(String accountUniqueName, String resourceUniqueName) {
 		logger.debug("Removing account named '" + accountUniqueName + "', on resource unique name: '" + resourceUniqueName + "'");
-		Account account = (Account)em.createNamedQuery("account.findByName").setParameter("accountName", accountUniqueName).setParameter("resourceUniqueName", resourceUniqueName).getSingleResult();
+		//Account account = (Account)em.createNamedQuery("account.findByName").setParameter("accountName", accountUniqueName).setParameter("resourceUniqueName", resourceUniqueName).getSingleResult();
+		Account acc = findAccount(accountUniqueName, resourceUniqueName);
+		
+		if (acc != null) {
+			removeAccountEntity(acc);
+		}
+		
 		logger.debug("Successfully found account in repository, performing entity removal...");
-		removeAccountEntity(account);
 	}
 	
 	public void removeAccountEntity(Account account) {
 		logger.info("Removing account name " + account.getName());
 
+		/*
 		if (!em.contains(account)) {
 			// Merge first, cannot remove detached entity
 			account = em.merge(account);
 		}
-
+		*/
 		
 		// Clean Orphan group2accounts assocaitions
 		/*Irrelevant

@@ -29,7 +29,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class ResourceTask extends Task {
 	private String resourceUniqueName;
-	private Resource resource;
+	//private Resource resource;
 
 	// Holds a reference to the resource type operation
 	// required by the controller to determine all associated resource actions
@@ -72,15 +72,15 @@ public class ResourceTask extends Task {
 		this.resourceTypeOperation = resourceTypeOperation;
 	}
 	
-	@ManyToOne(optional=false)
-	@JoinColumn(name = "RESOURCE_ID", nullable = false)
-	public Resource getResource() {
-		return resource;
-	}
-
-	public void setResource(Resource resource) {
-		this.resource = resource;
-	}
+//	@ManyToOne(optional=false)
+//	@JoinColumn(name = "RESOURCE_ID", nullable = false)
+//	public Resource getResource() {
+//		return resource;
+//	}
+//
+//	public void setResource(Resource resource) {
+//		this.resource = resource;
+//	}
 	
 	
 	
@@ -93,7 +93,7 @@ public class ResourceTask extends Task {
 		rTask.setResourceUniqueName(resourceUniqueName);
 		rTask.setStatus(TaskStatus.PENDING);
 		rTask.setResourceTypeOperation(resourceTypeOperation);
-    	
+		
     	return rTask;
     }
 }
