@@ -673,13 +673,13 @@ public class UserManageActionsBean implements UserManageActions {
 			//(if the account is an old assoication, then nothing should occur, only a unneccessary update call
 //			accountManager.setEntityManager(entityManager);
 			
-			System.out.println("!!!!!!!!!!!!!!!!(1)");
+			///System.out.println("!!!!!!!!!!!!!!!!(1)");
 			Account loadedAccount = accountManager.findAccount(currDummyAcc.getName(), currDummyAcc.getResource().getUniqueName());
 			
 			//System.out.println("Loaded account : " + loadedAccount.toString() + ", named "+ loadedAccount.getName() );
-			System.out.println("!!!!!!!!!!!!!!!!(2)");
+			//System.out.println("!!!!!!!!!!!!!!!!(2)");
 			Account accountAssocToUser = user.getAccountOnTarget(currDummyAcc.getResource().getUniqueName());
-			System.out.println("!!!!!!!!!!!!!!!!(3)");
+			//System.out.println("!!!!!!!!!!!!!!!!(3)");
 			//if no account name was specified, then check whether the user had an account on the current iterated resource
 			//if so clean the assoication as it got cleaned.
 			

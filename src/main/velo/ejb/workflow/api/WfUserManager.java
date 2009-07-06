@@ -348,13 +348,20 @@ public class WfUserManager {
 	}	
 	
 	
-	//FIXME: DUPLICATED FROM USERBEAN
+	
+	//FIXME: DUPLICATED FROM USERBEAN -> 06/jul/09 - corrected, suspicious, why it was duplicated originally?
+ 		//Probably becauser userManager was not supporting Seam's entityManager delegation in the past
 	public User findUser(String userName) {
 		log.debug("Finding User in repository with name '" + userName + "'");
 
 		//user name might get out of a request which keeps the user name as string, thus, make sure the user name is always as uppercase
 		userName = userName.toUpperCase();
 		
+		
+		userManager.setEntityManager(entityManager);
+		return userManager.findUser(userName);
+		
+		/*
 		try {
 			Query q = entityManager.createNamedQuery("user.findByName").setParameter("name",userName);
 			return (User) q.getSingleResult();
@@ -363,11 +370,19 @@ public class WfUserManager {
 			log.debug("Found user did not result any user for name '" + userName + "', returning null.");
 			return null;
 		}
+		*/
 	}
 	
 	
-	//FIXME: DUPLICATED FROM USERBEAN
+	
+	
+	//FIXME: DUPLICATED FROM USERBEAN -> 06/jul/09 - corrected, suspicious, why it was duplicated originally?
+		//Probably becauser userManager was not supporting Seam's entityManager delegation in the past
 	public User findUser(String identityAttributeUniqueName, String value) {
+		userManager.setEntityManager(entityManager);
+		return userManager.findUser(identityAttributeUniqueName, value);
+		
+		/*
 		String query = "SELECT DISTINCT vl_user.* FROM VL_USER vl_user,VL_IDENTITY_ATTRIBUTE ia, VL_USER_IDENTITY_ATTRIBUTE uia,"
 			+ "VL_USER_IDENTITY_ATTR_VALUE uiav WHERE"
 			+ " uia.IDENTITY_ATTRIBUTE_ID = ia.IDENTITY_ATTRIBUTE_ID AND uia.USER_ID = vl_user.USER_ID"
@@ -387,6 +402,7 @@ public class WfUserManager {
 			log.warn("Cannot retrieve user for IA '" + identityAttributeUniqueName + "', with value '" + value + "': " + e.getMessage());
 			return null;
 		}
+		*/
 	}
 	
 	

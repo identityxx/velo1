@@ -504,9 +504,25 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	}
 	
 	
-	//compare value as UPPERCASE (non-case sensitive)
-	@Deprecated
+	//non-case sensitive
 	public User findUser(String identityAttributeUniqueName, String value) {
+		Map<String,String> findCrit = new HashMap<String,String>();
+		Query q = findUsersQuery(findCrit,false,false,0);
+		
+		try {
+			return (User) q.getSingleResult();
+		}
+		catch (javax.persistence.NoResultException e) {
+			log.debug("Could not find any User for IdentityAttribute name '" + identityAttributeUniqueName + "', with value '" + value + "'");
+			return null;
+		}
+		catch (javax.persistence.NonUniqueResultException e) {
+			log.warn("Cannot retrieve user for IA '" + identityAttributeUniqueName + "', with value '" + value + "': " + e.getMessage());
+			return null;
+		}
+
+		
+		/* OLD - before there was resource attribute as source of Identity Attributes
 		String query = "SELECT DISTINCT vl_user.* FROM VL_USER vl_user,VL_IDENTITY_ATTRIBUTE ia, VL_USER_IDENTITY_ATTRIBUTE uia,"
 			+ "VL_USER_IDENTITY_ATTR_VALUE uiav WHERE"
 			+ " uia.IDENTITY_ATTRIBUTE_ID = ia.IDENTITY_ATTRIBUTE_ID AND uia.USER_ID = vl_user.USER_ID"
@@ -526,6 +542,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			log.warn("Cannot retrieve user for IA '" + identityAttributeUniqueName + "', with value '" + value + "': " + e.getMessage());
 			return null;
 		}
+		*/
 	}
 	
 	
@@ -550,9 +567,17 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		return findUsers(ias, caseSensitive,false,0);
 	}
 	
+	
+	public List<User> findUsers(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
+		Query q = findUsersQuery(ias,caseSensitive,wildCardSearch,maxResults);
+		
+		return q.getResultList();
+	}
+	
+	
 	//TODO: Support case-sensitive for values
 	//TODO: Support data types (currently only STRING is supported)
-	public List<User> findUsers(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
+	private Query findUsersQuery(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
 		log.debug("Finding users based on Identity Attributes has started...");
 		log.debug("Amount of creteria Identity Attributes is '" + ias.size() + "'");
 		
@@ -769,7 +794,8 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			}
 		}
 		
-		return result;
+		//return result;
+		return q;
 	}
 	
 	//SEEK IN DIRECT ROLES / ROLES INHERITED FROM POSITIONS
