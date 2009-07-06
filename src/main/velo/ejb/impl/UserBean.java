@@ -652,7 +652,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		}
 		
 		
-		if (treeMapOfRAIdentityAttributes.size() > 0) {
+		if (treeMapOfLocalIdentityAttributes.size()>0 && treeMapOfRAIdentityAttributes.size() > 0) {
 			query.append(" AND ");
 		}
 		
@@ -667,6 +667,10 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			accAttrContent = ":"+accAttrVarName+"_Content";
 			accAttrValueContent = ":"+accAttrValVarName+"_Content";
 			query.append("(" + accAttrVarName + ".resourceAttribute = " + accAttrContent + " AND ");
+			
+			query.append(" " + accAttrVarName + ".resourceAttribute.resource = " + "account.resource AND ");
+			
+			
 			query.append(caseSensitive ? "" : "UPPER(");
 			query.append(accAttrValVarName + ".valueString");
 			query.append(caseSensitive ? "" : ")");
@@ -680,9 +684,10 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			if (i < treeMapOfRAIdentityAttributes.size()) query.append(" AND ");
 		}
 		
+		
+		query.append(" AND userAccount = account");
+		
 		query.append(" )");
-		
-		
 		
 		
 		

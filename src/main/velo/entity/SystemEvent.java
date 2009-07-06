@@ -21,8 +21,8 @@ import javax.persistence.Table;
 } )
 //@DiscriminatorValue("SYSTEM_EVENT")
 public class SystemEvent extends Event {
-	public static final String EVENT_PRE_USER_CREATION = "USER_CREATION";
-	public static final String EVENT_POST_USER_CREATION = "USER_CREATION";
+	public static final String EVENT_PRE_USER_CREATION = "USER_CREATION_PRE";
+	public static final String EVENT_POST_USER_CREATION = "USER_CREATION_POST";
 	public static final String EVENT_RESOURCE_RECONCILIATION_POST = "RESOURCE_RECONCILIATION_POST";
 	
 	
