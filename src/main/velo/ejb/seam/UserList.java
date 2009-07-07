@@ -33,11 +33,17 @@ import velo.entity.User;
 import velo.exceptions.OperationException;
 import velo.validators.Generic;
 
+/**
+ * Search users by criterias,
+ * The standard EntityQuery only supports user->fields but does not support search by Identity Attributes.
+ * 'Identity Attribute's searches delegates to UserManager.findUsers method.  
+ * @author asaf
+ *
+ */
 @Name("userList")
 public class UserList extends EntityQuery {
 	@In
 	UserManagerLocal userManager;
-	
 	
 	/*
 	private String[] RESTRICTIONS = {
@@ -63,11 +69,11 @@ public class UserList extends EntityQuery {
 		//setOrder("name");
 		
 		String query = null;
-		
+
 		RESTRICTIONS.clear();
 		RESTRICTIONS.add("lower(user.name) like concat(trim(lower(#{userList.userName})),'%')");
-		
-		
+
+		/*Was working when IA were not having sources (such as Resource Attribute)
 		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) && (!Generic.isNotEmptyAndNotNull(getLastName())) ) {
 			query = "select user from User user, IN(user.localUserAttributes) uiaFN, IN(uiaFN.values) uiaValFN";
 			RESTRICTIONS.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
@@ -84,7 +90,8 @@ public class UserList extends EntityQuery {
 		else {
 			query = "select user from User user";
 		}
-			
+		*/
+		query = "select user from User user";
 		
 		setRestrictionExpressionStrings(RESTRICTIONS);
 		return query;
@@ -120,17 +127,15 @@ public class UserList extends EntityQuery {
 	
 	
 	public List<User> userSearchByNameAutoComplete(Object suggest) {
-		getLog().debug("!!!Suggested: " + suggest);
+		getLog().trace("Input text for finding user auto complete: " + suggest);
 		
 		String pref = (String)suggest;
         //getUser().setName(pref);
 		userName = pref;
-		
-		initialize();
+		//initialize();
         
         List<User> users = getResultList();
-        
-        getLog().debug("!!Returned: " + users.size());
+        getLog().debug("Returned amount of users for userName auto complete : " + users.size());
         
         return users;
     }
@@ -216,11 +221,6 @@ public class UserList extends EntityQuery {
 	
 	
 	
-	
-	
-	
-	
-	
 	/*
 	public List<String> getRestrictionStrings() {
 		List<String> arr = Arrays.asList(RESTRICTIONS);
@@ -258,63 +258,6 @@ public class UserList extends EntityQuery {
 	}
 
 */
-	
-	
-	
-	
-
-	
-	/*WHEN MOVED TO SEAM 2.1
-	@Override
-	public List<String> getRestrictions() {
-		List<String> arr = Arrays.asList(RESTRICTIONS);
-		
-		ArrayList<String> a = new ArrayList<String>();
-		a.addAll(arr);
-		
-		//System.out.print("!!!!!!!!! IS FIRST NAME NULL? ");
-		if (Generic.isNotEmptyAndNotNull(getFirstName())) {
-			//System.out.println("!!!!!!!!! NO!!!! ");
-			a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) like concat('%',trim(lower(#{userList.firstName})),'%')");
-		} else {
-			//System.out.println("!!!!!!!!! YES!!!! ");
-		}
-		
-		//System.out.print("!!!!!!!!! IS LAST NAME NULL? ");
-		if (Generic.isNotEmptyAndNotNull(getLastName())) {
-			//System.out.println("!!!!!!!!! NO!!!! ");
-			a.add("uiaLN.identityAttribute.uniqueName = 'LAST_NAME' AND lower(uiaValLN.valueString) like concat('%',trim(lower(#{userList.lastName})),'%')");
-		} else {
-			//System.out.println("!!!!!!!!! YES!!!! ");
-		}
-		/*
-		if ( (Generic.isNotEmptyAndNotNull(getFirstName())) ) {
-			if (getFirstName().length() > 0) {
-				a.add("uiaFN.identityAttribute.uniqueName = 'FIRST_NAME' AND lower(uiaValFN.valueString) = #{userList.firstName}");
-			}
-		}
-		*/
-		/*
-		return a; 
-	}
-	*/
-	
-	
-	/*TEST
-	public List<User> getLol() {
-		String query = "select user from User user, IN(user.userIdentityAttributes) uiaFN, IN(uiaFN.values) uiaValFN,IN(user.userIdentityAttributes) uiaLN, IN(uiaLN.values) uiaValLN WHERE ((uiaFN.identityAttribute.uniqueName = :fnIAName) AND (lower(uiaValFN.valueString) like :fnUiaValue)) AND ((uiaLN.identityAttribute.uniqueName like :lnIAName) AND (lower(uiaValLN.valueString) like :lnUiaValue))";
-		
-		List<User> a = getEntityManager().createQuery(query).setParameter("fnIAName","FIRST_NAME").setParameter("fnUiaValue", "asaf").setParameter("lnIAName","LAST_NAME").setParameter("lnUiaValue", "shakarchi").getResultList();
-		
-		
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + a.size());
-		for (User currUser : a) {
-			System.out.println("!!!!!!!!!!!!: " + currUser.getName());
-		}
-		
-		return a;
-	}
-	*/
 	
 	
 	@PostConstruct

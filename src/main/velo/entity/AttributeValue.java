@@ -20,6 +20,7 @@ package velo.entity;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -260,6 +261,14 @@ public class AttributeValue extends BaseEntity implements Serializable {
 				case DATE: {
 					if (value instanceof Date) {
 						setValueDate((Date)value);
+					//Hack for Oracle timestamp :/
+					} else if (value instanceof oracle.sql.TIMESTAMP) {
+						oracle.sql.TIMESTAMP currDateVal = (oracle.sql.TIMESTAMP)value;
+						try {
+							setValueDate(currDateVal.dateValue());
+						} catch (SQLException e) {
+							throw new AttributeSetValueException("Could not set value type 'oracle.sql.TIMESTAMP' as Date due to: " + e.getMessage());
+						}
 					}
 					else {
 						throw new AttributeSetValueException("Could not set value '" + value  +"', datatype set to 'DATE' but value class is '" + value.getClass().getName() + "'");
@@ -287,6 +296,12 @@ public class AttributeValue extends BaseEntity implements Serializable {
 				log.trace("Integer type!");
 				setValueInt((Integer)value);
 			}
+			else if (value instanceof java.math.BigDecimal) {
+				log.trace("Big Decimal type! converting to long.");
+				java.math.BigDecimal bigDecValue = (java.math.BigDecimal)value;
+				//Safest to convert to long, 'longValueExact' will throw exception if data was lost.
+				setValueLong(bigDecValue.longValueExact());
+			}
 			else if (value instanceof Date) {
 				log.trace("Date type!");
 				setValueDate((Date)value);
@@ -298,10 +313,11 @@ public class AttributeValue extends BaseEntity implements Serializable {
 			else if (value instanceof Boolean) {
 				log.trace("Boolean type!");
 				setValueBoolean((Boolean)value);
-			}
+			} 
 			else {
 				log.warn("Could not set the value, the specified object of class type '" + value.getClass().getName() + "' is not supported!");
 				//throw new AttributeSetValueException("Cannot set value, specified object of class type '" + value.getClass().getName() + " is not supported.");
+				throw new AttributeSetValueException("Could not set value '" + value  +"', class type '" + value.getClass().getName() + "' could not be determined.");
 			}
 		}
 	}

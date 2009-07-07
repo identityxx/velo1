@@ -32,4 +32,8 @@ public class ObjectsConstructionException extends EdmException{
 	public ObjectsConstructionException(String msg) {
 		super(msg);
 	}
+	
+	public ObjectsConstructionException(Throwable e) {
+		super(e);
+	}
 }

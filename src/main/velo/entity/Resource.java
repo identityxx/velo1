@@ -754,6 +754,17 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	}
 	
 	@Transient
+	public Map<String,ResourceAttribute> getAttributesAsMap() {
+		Map<String,ResourceAttribute> map = new HashMap<String,ResourceAttribute>();
+		
+		for (ResourceAttribute currRA : getAttributes()) {
+			map.put(currRA.getUniqueNameInRightCase(),currRA);
+		}
+		
+		return map;
+	}
+	
+	@Transient
 	public List<ResourceAttribute> getAttributesToSync() {
 		log.debug("Getting attributes to synchronize for resource '" + getDisplayName() + "'");
 		

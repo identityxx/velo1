@@ -636,8 +636,13 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 		String accAttrPrefix = "accAttr";
 		String accAttrValPrefix = "accAttrVal";
 		
+		StringBuilder query = new StringBuilder("select user FROM User user");
 		
-		StringBuilder query = new StringBuilder("select user FROM User user, Account account, IN (user.accounts) userAccount");
+		if (treeMapOfRAIdentityAttributes.size() > 0) {
+			query.append(", Account account, IN (user.accounts) userAccount");
+		}
+		
+		
 		int i=0;
 		String uiaVarName;
 		String uiaValVarName;
@@ -717,8 +722,9 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			if (i < treeMapOfRAIdentityAttributes.size()) query.append(" AND ");
 		}
 		
-		
-		query.append(" AND userAccount = account");
+		if (treeMapOfRAIdentityAttributes.size() > 0) {
+			query.append(" AND userAccount = account");
+		}
 		
 		query.append(" )");
 		

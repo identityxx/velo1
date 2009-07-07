@@ -74,5 +74,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/smooks1.1.2"/>
 	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/jboss-logging-spi.jar"/>
 	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/velowingwapi.jar"/>
+	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/ojdbc14.jar"/>
 	<classpathentry kind="output" path="test-build"/>
 </classpath>
