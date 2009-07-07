@@ -42,8 +42,15 @@
                 </rich:suggestionbox>
             </s:decorate>
             
-            
-            <s:decorate template="layout/display.xhtml">
+            <div class="actionButtons">
+            	<h:commandButton id="searchByUserName" value="Search" action="/admin/UserList.xhtml"/>
+        	</div>
+        
+            <div style="clear: both"/>
+        </rich:simpleTogglePanel>
+        
+        <rich:simpleTogglePanel label="Advanced Search" switchType="ajax" rendered="false">
+        	<s:decorate template="layout/display.xhtml">
                 <ui:define name="label">First Name</ui:define>
                 <h:inputText id="firstName" value="#{userList.firstName}"/>
             </s:decorate>
@@ -53,16 +60,14 @@
                 <h:inputText id="lastName" value="#{userList.lastName}"/>
             </s:decorate>
             
-            <div style="clear: both"/>
-
-        </rich:simpleTogglePanel>
+            <h:commandButton id="search" value="Search" action="/admin/UserList.xhtml"/>
+		</rich:simpleTogglePanel>
+        
         
         <div class="actionButtons">
-            <h:commandButton id="search" value="Search" action="/admin/UserList.xhtml"/>
             
             <s:button id="createUserManually" value="Create User" action="/admin/UserCreateManuallyAttributes.xhtml" propagation="begin"/>
-        </div>
-        
+		</div>
     </h:form>
     
     <rich:panel>

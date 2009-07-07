@@ -838,12 +838,22 @@ public class Account extends AccountSkeletal {
 	 * @throws ObjectsConstructionException
 	 */
 	public void loadActiveAttributesByMap(Map map) throws ObjectsConstructionException {
+		//TODO:This can be cached on the entire account/resource level, as it's too heavy to re-calculate all resource attributes from all levels
+		Map<String,ResourceAttribute> ras = getResource().getAttributesAsMap();
+		
 		Iterator it = map.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pairs = (Map.Entry) it.next();
 			
+			String correspondRAUniqueName = null;
+			if (getResource().isCaseSensitive()) {
+				correspondRAUniqueName = (String)pairs.getKey();
+			} else {
+				correspondRAUniqueName = new String((String)pairs.getKey()).toUpperCase();
+			}
+			
 			//'addActiveAttribute' already take care of setting the key in the appropriate case
-			addActiveAttribute(factoryActiveAttribute((String)pairs.getKey(), pairs.getValue()));
+			addActiveAttribute(factoryActiveAttribute(ras.get(correspondRAUniqueName), (String)pairs.getKey(), pairs.getValue()));
 		}
 		
 		
@@ -991,16 +1001,21 @@ public class Account extends AccountSkeletal {
 	
 	/** 
 	 * Factory a active attribute
+	 * @param ra Corresponding ResourceAttribute, can be null if there isn't one. 
 	 * @param name The unique name of the attribute
 	 * @param value The value, can be any kind of primitive/object that represents a primitive, or a collection[any type] that contains primitives
 	 * @return
 	 * @throws ObjectsConstructionException
 	 */
-	public Attribute factoryActiveAttribute(String name, Object value) throws ObjectsConstructionException {
+	public Attribute factoryActiveAttribute(ResourceAttribute ra, String name, Object value) throws ObjectsConstructionException {
 		//validate whether there's an existence resource attribute defined for current iterated row
 		
 		//shouldnt be AccountAttribute at some point? (there's a lot of dependencies on 'Attribute' though)
 		Attribute attr = new Attribute();
+		
+		if (ra != null) {
+			attr.setDataType(ra.getDataType());
+		}
 		
 		//skip attribute if its name is null
 		if ((name == null)) {
@@ -1016,26 +1031,37 @@ public class Account extends AccountSkeletal {
 				if (value instanceof Collection) {
 					Collection valueCol = (Collection) value;
 					for (Object currValue : valueCol) {
-						attr.addValue(currValue);
+						AttributeValue av = new AttributeValue();
+						//For others that datatype was not available via RA, setValue will guess the value
+						av.setDataType(attr.getDataType());
+						//'setValue' will take care of identifying the rig
+						av.setValue(currValue);
+						attr.getValues().add(av);
 					}
 				} else {
-					//'addValue' will take care of identifying the right type
-					attr.addValue(value);
+					AttributeValue av = new AttributeValue();
+					//For others that datatype was not available via RA, setValue will guess the value
+					av.setDataType(attr.getDataType());
+					
+					//'setValue' will take care of identifying the rig
+					av.setValue(value);
+					attr.getValues().add(av);
 				}
 				
-				
-				//FIXME: Is this is right?
-				//set the attr type based on the first value type
-				if (attr.getFirstValue() != null) {
-					attr.setDataType(attr.getFirstValue().getDataType());
+				//TODO: Is it right?! set the attr type based on the first value type -ONLY- if there was no type specified by RA
+				if (attr.getDataType() == null) {
+					if (attr.getFirstValue() != null) {
+						attr.setDataType(attr.getFirstValue().getDataType());
+					}
 				}
 			}
 			else {
 				log.debug("Added an attribute with unique name '" + attr.getUniqueName() + " for account '" + getName() + "' that has -no- value...'");
 			}
 			
-		} catch (AttributeSetValueException asve) {
-			log.warn("Could not set value into current iterated attribute, skipping attribute,  failure message: " + asve.getMessage());
+		} catch (AttributeSetValueException e) {
+			log.warn("Could not set value into current iterated attribute, skipping attribute,  failure message: " + e.getMessage());
+			throw new ObjectsConstructionException(e);
 		}
 		
 		
