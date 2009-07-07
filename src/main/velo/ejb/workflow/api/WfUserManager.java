@@ -200,7 +200,15 @@ public class WfUserManager {
 			log.debug("Manager's IA was found with value: '#0'", managerDN);
 			
 			//now we have the manager's DN, lets get its user
-			User managerUser = findUser(getIdentifierIAName(), managerDN);
+			//User managerUser = findUser(getIdentifierIAName(), managerDN);
+			
+			Map<String,String> ias = new HashMap<String, String>();
+			ias.put(getIdentifierIAName(), managerDN);
+			List<User> managers = userManager.findUsers(ias, false);
+			log.error("!!!!!!!! SIZE OF LIST: #0", managers.size());
+			log.error("!!!!!!!! VALUES: #0", managers);
+			
+			User managerUser = managers.get(0);
 			
 			//manager's was not found!
 			if (managerUser == null) {
