@@ -382,6 +382,9 @@ public class Account extends AccountSkeletal {
 		if (!(obj != null && obj instanceof Account))
 			return false;
 		Account ent = (Account) obj;
+		
+		//We have generated accounts for reconcile comparations that does not have accountId yet, this can cause NPE
+		//when adding for example a new account to 'Accounts' that extends from HashSet. as Hashset invokes obj.equals
 		if (this.accountId.equals(ent.accountId))
 			return true;
 		return false;
@@ -853,7 +856,10 @@ public class Account extends AccountSkeletal {
 			}
 			
 			//'addActiveAttribute' already take care of setting the key in the appropriate case
-			addActiveAttribute(factoryActiveAttribute(ras.get(correspondRAUniqueName), (String)pairs.getKey(), pairs.getValue()));
+			Attribute attr = factoryActiveAttribute(ras.get(correspondRAUniqueName), (String)pairs.getKey(), pairs.getValue());
+			if (attr != null) {
+				addActiveAttribute(attr);
+			}
 		}
 		
 		
@@ -1008,6 +1014,19 @@ public class Account extends AccountSkeletal {
 	 * @throws ObjectsConstructionException
 	 */
 	public Attribute factoryActiveAttribute(ResourceAttribute ra, String name, Object value) throws ObjectsConstructionException {
+		if (value == null) {
+			log.info("Skipped factoring active attribute for value name '" + name + "' as its value is null.");
+			return null;
+		} else {
+			if (value instanceof String) {
+				String strVal = (String)value;
+				if (strVal.isEmpty()) {
+					log.info("Skipped factoring active attribute for value name '" + name + "' as its value is an empty string.");
+					return null;
+				}
+			}
+		}
+		
 		//validate whether there's an existence resource attribute defined for current iterated row
 		
 		//shouldnt be AccountAttribute at some point? (there's a lot of dependencies on 'Attribute' though)
