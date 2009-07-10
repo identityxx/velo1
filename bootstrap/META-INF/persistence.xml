@@ -10,11 +10,12 @@
       <jta-data-source>java:/veloDatasource</jta-data-source>
       <properties>
          <!--<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>-->
-         <property name="hibernate.hbm2ddl.auto" value="none"/>
+         <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
          <property name="hibernate.show_sql" value="false"/>
          <property name="hibernate.format_sql" value="true"/>
          <property name="jboss.entity.manager.factory.jndi.name" value="java:/veloEntityManagerFactory"/>
-         <property name="jboss.entity.manager.jndi.name" value="java:/veloDataSourceEM"/>
+         <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup" />
+         <!--<property name="jboss.entity.manager.jndi.name" value="java:/veloDataSourceEM"/>-->
       </properties>
    </persistence-unit>
     

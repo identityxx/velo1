@@ -45,7 +45,7 @@ public class AddAccountToRepository extends ReadyAction {
 			}
 		}
 		
-		getAPI().getAccountManager().persistAccount(account);
+		getAPI().getAccountManager().persistAccountViaReconcile(account);
 		
 		log.debug("Succesfully stored account in repository!");
 	}

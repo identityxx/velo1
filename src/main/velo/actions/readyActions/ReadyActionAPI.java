@@ -18,6 +18,7 @@ import velo.ejb.utils.JndiLookup;
  */
 public class ReadyActionAPI {
 	InitialContext ic = null;
+	//private AccountManagerLocal accountManagerLocal = null;
 	public static ReadyActionAPI instance = null;
 	boolean boostrapped = false;
 	
@@ -35,8 +36,13 @@ public class ReadyActionAPI {
 	
 	public AccountManagerLocal getAccountManager() {
 		try {
-			AccountManagerLocal accountManager = (AccountManagerLocal) getInitialContext().lookup(JndiLookup.getJNDILocalBeanName("AccountBean"));
-			return accountManager;
+//			if (accountManagerLocal == null) {
+//				accountManagerLocal = (AccountManagerLocal) getInitialContext().lookup(JndiLookup.getJNDILocalBeanName("AccountBean"));
+//			}
+//			
+//			return accountManagerLocal;
+			
+			return (AccountManagerLocal) getInitialContext().lookup(JndiLookup.getJNDILocalBeanName("AccountBean"));
 		} catch (NamingException e) {
 			//TODO: What to do here?
 			return null;			

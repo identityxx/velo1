@@ -923,7 +923,7 @@ public class Account extends AccountSkeletal {
 			ResourceAttribute currRA = getResource().getResourceAttribute(currAA.getValue().getUniqueName());
 
 			if (currRA == null) {
-				log.debug("No resource attribute was found for recieved attribute '" + currAA.getValue().getUniqueName() + "' while loading account by map.");
+				log.trace("No resource attribute was found for recieved attribute '" + currAA.getValue().getUniqueName() + "' while loading account by map.");
 				
 				//FIXME: shell we clean it from the active attributes or not?
 				continue;

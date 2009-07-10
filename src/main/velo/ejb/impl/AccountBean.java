@@ -169,6 +169,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		}
 	}
 	
+	//too expensive for reconcile.
 	public void persistAccount(String accountName, String resourceUniqueName, String userName) {
 		logger.debug("Persisting account '" + accountName + "', of resource '" + resourceUniqueName + ", associated to user '" + userName + "'");
 		
@@ -203,6 +204,22 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 		
 		em.persist(account);
 		
+		
+		//Keep audited account if set in configuration
+        boolean createAuditedAccount = SysConf.getSysConf().getBoolean("accounts.audit_accounts_permanently");
+        
+        if (createAuditedAccount) {
+            AuditedAccount aa = new AuditedAccount(account.getName(),account.getResource());
+            em.merge(aa);
+        }
+        
+		logger.debug("Successfully persisted account!");
+	}
+	
+	//without checking whether the account exist or not as it was already done before and is expensive
+	public void persistAccountViaReconcile(Account account) {
+		logger.debug("Persisting account '" + account.getName() + "', of resource '" + account.getResource().getDisplayName() + "'");
+		em.persist(account);
 		
 		//Keep audited account if set in configuration
         boolean createAuditedAccount = SysConf.getSysConf().getBoolean("accounts.audit_accounts_permanently");

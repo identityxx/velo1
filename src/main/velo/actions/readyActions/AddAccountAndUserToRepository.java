@@ -2,6 +2,8 @@ package velo.actions.readyActions;
 
 import org.apache.log4j.Logger;
 
+import velo.ejb.interfaces.AccountManagerLocal;
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.Account;
 import velo.entity.Resource;
 import velo.entity.User;
@@ -13,10 +15,15 @@ import velo.exceptions.action.ActionValidationException;
 /**
  * @author Asaf Shakarchi
  *
- * A ready action that adds a new account & matched user to the repository 
+ * A ready action that adds a new account & matched user to the repository
+ * 
+ *  TODO: This class is very expensive, too many invocations, for this action being involved for reconcile 
+ *  //when executed more than 1000-2000 times.
  */
 public class AddAccountAndUserToRepository extends ReadyAction {
 	private static Logger log = Logger.getLogger(AddAccountAndUserToRepository.class.getName());
+	private UserManagerLocal userManager = null;
+	private AccountManagerLocal accountManager = null;
 	
 	public void validate() throws ActionValidationException {
 		/*
@@ -35,6 +42,17 @@ public class AddAccountAndUserToRepository extends ReadyAction {
 		if (!getContext().isVarExists("account")) {
 			throw new ActionValidationException("Could not find 'account' entity in context.");
 		}
+		
+		//its important to fetch managers once, as an object of this class will be available for the whole reconciliation execution
+		//thus saving a lot of factoring per reconcile iteration.
+		
+		if (userManager == null) {
+			userManager = getAPI().getUserManager();
+		}
+		
+		if (accountManager == null) {
+			accountManager = getAPI().getAccountManager();
+		}
 	}
 	
 	public void execute() throws ActionExecutionException {
@@ -44,10 +62,20 @@ public class AddAccountAndUserToRepository extends ReadyAction {
 		
 		
 		log.debug("Adding account '" + accountName + "[" + resourceUniqueName + "] to repository!");
-		Resource resource = getAPI().getResourceManager().findResource(resourceUniqueName);
+		Resource resource = null;
+		
+		//Reconcile provides us in context a resource object.
+		if (getContext().isVarExists("resource")) {
+			resource = (Resource)getContext().get("resource");
+		}
+		
+		if (resource == null) {
+			getAPI().getResourceManager().findResource(resourceUniqueName);
+		}
 		if (resource == null) {
 			throw new ActionExecutionException("Could not find resource with unique name '" + accountName + "' for resource unique name '" + resourceUniqueName + "'");
 		}
+		
 		
 		if (getContext().isVarExists("matchedUser")) {
 			//Skip user creation as there's a matched user? this should never happen here
@@ -59,24 +87,28 @@ public class AddAccountAndUserToRepository extends ReadyAction {
 		if ( (getContext().isVarExists("account")) && getContext().get("account") instanceof Account) {
 			Account acc = (Account)getContext().get("account");
 
-			User matchedUser = getAPI().getUserManager().findUser(acc.getName());
+			//Query per iteration is very expensive, but no other option :/
+			//User matchedUser = getAPI().getUserManager().findUser(acc.getName());
+			Boolean matchedUser = getAPI().getUserManager().isUserExit(acc.getName());
 
-			if (matchedUser == null) {
+			if (!matchedUser) {
 				User user = User.factory(acc.getName(), false, false,UserSourceTypes.RECONCILE);
 				try {
-					getAPI().getUserManager().persistUserEntity(user);
+					userManager.persistUserEntity(user);
 					
 					acc.setUser(user);
 				} catch (PersistEntityException e) {
 					throw new ActionExecutionException("Could not persist user due to: " + e.getMessage());
 				}
+			} else {
+				
 			}
 			
-			getAPI().getAccountManager().persistAccount(acc);
+			accountManager.persistAccountViaReconcile(acc);
 		//add by 
 		} else {
 			//Account.factory(accountName, resource);
-			getAPI().getAccountManager().persistAccount(accountName, resourceUniqueName,matchedUserName);
+			accountManager.persistAccount(accountName, resourceUniqueName,matchedUserName);
 		}
 		
 		
