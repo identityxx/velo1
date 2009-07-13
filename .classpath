@@ -68,12 +68,14 @@
 	<classpathentry kind="lib" path="lib/sqlbuilder-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jcifs-1.2.18.jar"/>
 	<classpathentry kind="lib" path="lib/jbossws-native-core.jar"/>
-	<classpathentry kind="lib" path="C:/data/apps/jboss-4.2.3.GA/client/jboss-annotations-ejb3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jboss-Embedded"/>
-	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/groovy-engine.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/groovy-engine.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/smooks1.1.2"/>
-	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/jboss-logging-spi.jar"/>
-	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/velowingwapi.jar"/>
-	<classpathentry kind="lib" path="C:/data/dev/eclipse_workspace/velo/lib/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/jboss-logging-spi.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/velowingwapi.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/milyn-smooks-core-1.1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Apps/jbdevstudio/jboss-eap/jboss-as/client/jboss-annotations-ejb3.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/test/jboss-embedded-all.jar"/>
 	<classpathentry kind="output" path="test-build"/>
 </classpath>

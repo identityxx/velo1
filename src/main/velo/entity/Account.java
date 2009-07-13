@@ -385,6 +385,9 @@ public class Account extends AccountSkeletal {
 		
 		//We have generated accounts for reconcile comparations that does not have accountId yet, this can cause NPE
 		//when adding for example a new account to 'Accounts' that extends from HashSet. as Hashset invokes obj.equals
+		if (this.accountId == null) {
+			return false;
+		}
 		if (this.accountId.equals(ent.accountId))
 			return true;
 		return false;

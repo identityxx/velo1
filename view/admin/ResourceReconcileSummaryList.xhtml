@@ -92,12 +92,14 @@
             </f:facet>
             #{ps.processType}
         </h:column>
+        <!-- too expensive.
         <h:column>
             <f:facet name="header">
                 Amount of events
             </f:facet>
-            #{ps.events.size()}
+           {ps.events.size()}
         </h:column>
+         -->
         <h:column>
             <f:facet name="header">Action</f:facet>
             <s:link view="/admin/#{empty from ? 'ResourceReconcileSummary' : from}.xhtml" 

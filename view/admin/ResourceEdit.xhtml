@@ -84,6 +84,12 @@
 						value="#{resourceHome.instance.active}"></h:selectBooleanCheckbox>
 				</s:decorate>
 				
+				<s:decorate id="managedManuallyDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Managed manually?</ui:define>
+					<h:selectBooleanCheckbox title="Managed manually?"
+						value="#{resourceHome.instance.managedManually}"></h:selectBooleanCheckbox>
+				</s:decorate>
+
 				<s:decorate id="requestableBySelfServiceDecoration" template="layout/edit.xhtml">
 					<ui:define name="label">Can be requested by self service?</ui:define>
 					<h:selectBooleanCheckbox title="Active?"

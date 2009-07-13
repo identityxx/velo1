@@ -17,6 +17,7 @@
  */
 package velo.ejb.impl;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,8 +28,10 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 
 import velo.ejb.interfaces.ApproversGroupManagerLocal;
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.ApproversGroup;
 import velo.entity.User;
+import velo.exceptions.OperationException;
 
 @Stateless()
 @Name("approversGroupManager")
@@ -43,13 +46,27 @@ public class ApproversGroupBean implements ApproversGroupManagerLocal {
 	@PersistenceContext
 	public EntityManager em;
 	
+	@EJB
+	UserManagerLocal userManager;
 	
 	public ApproversGroup findApproversGroup(String uniqueName) {
 		log.debug("Finding Approvers Group in repository with unique name '" + uniqueName + "'");
 
 		try {
 			Query q = em.createNamedQuery("approversGroup.findByUniqueName").setParameter("uniqueName",uniqueName);
-			return (ApproversGroup) q.getSingleResult();
+			ApproversGroup ag = (ApproversGroup) q.getSingleResult();
+			
+			for (User currUser : ag.getApprovers()) {
+				try {
+					userManager.loadUserAttributes(currUser);
+				} catch (OperationException e) {
+					log.error("Failed to load attributes for user '" + currUser.getName() + "', while loading attributes for all users in approvers group '" + ag.getDisplayName() + "', returning null");
+					return null;
+				}
+			}
+			
+			
+			return ag;
 		}
 		catch (javax.persistence.NoResultException e) {
 			log.debug("Could not find any Approvers Group for unique name '" + uniqueName + "', returning null.");

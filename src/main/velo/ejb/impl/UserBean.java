@@ -507,6 +507,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	//non-case sensitive
 	public User findUser(String identityAttributeUniqueName, String value) {
 		Map<String,String> findCrit = new HashMap<String,String>();
+		findCrit.put(identityAttributeUniqueName, value);
 		Query q = findUsersQuery(findCrit,false,false,0);
 		
 		try {
@@ -571,13 +572,30 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	public List<User> findUsers(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
 		Query q = findUsersQuery(ias,caseSensitive,wildCardSearch,maxResults);
 		
-		return q.getResultList();
+		List<User> users = q.getResultList();
+		
+		for (User currUser : users) {
+			  try {
+				loadUserAttributes(currUser);
+			} catch (OperationException e) {
+				log.error("Could not load the user " + currUser.getName() +" identity attributes, error message: " + e.getMessage());
+			}
+		}
+		
+		return users;
 	}
 	
 	
 	//TODO: Support case-sensitive for values
 	//TODO: Support data types (currently only STRING is supported)
-	private Query findUsersQuery(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
+	private Query findUsersQuery(Map<String,String> identityAttributes, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
+
+		Map<String,String> ias = new HashMap<String,String>();
+		
+		for (Map.Entry<String,String> currEntry : identityAttributes.entrySet()) {
+			ias.put(currEntry.getKey().toUpperCase(), currEntry.getValue());
+		}
+
 		log.debug("Finding users based on Identity Attributes has started...");
 		log.debug("Amount of creteria Identity Attributes is '" + ias.size() + "'");
 		

@@ -201,7 +201,7 @@ public class WfUserManager {
 			
 			//now we have the manager's DN, lets get its user
 			User managerUser = findUser(getIdentifierIAName(), managerDN);
-			
+
 			//manager's was not found!
 			if (managerUser == null) {
 				log.debug("Manager's user was NOT found for DN '#0'!",  managerDN);
