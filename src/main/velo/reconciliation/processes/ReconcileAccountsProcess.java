@@ -166,13 +166,13 @@ public class ReconcileAccountsProcess {
 
 				Integer diff = null;
 				if (activeAmount > repoAmount) {
-					diff = 100-(activeAmount-repoAmount) / activeAmount * 100;
+					diff = (activeAmount-repoAmount) / activeAmount * 100;
 				} else {
-					diff = 100-(repoAmount-activeAmount) / repoAmount * 100;
+					diff = (repoAmount-activeAmount) / repoAmount * 100;
 				}
 				
 				if (diff > allowedDiffInPercentages) { 
-					throw new ReconcileProcessException("Sanity check failure: Accounts difference between repository and resource is higher than '" + allowedDiffInPercentages + "%, (which is '" + diff + "'%), accounts in repo: '" + repoAmount + "', while active amount is: '" + activeIdentities.size() + "'");
+					throw new ReconcileProcessException("Sanity check failure: Accounts difference between repository and resource is higher than '" + allowedDiffInPercentages + "%, (which is '" + diff + "'%), accounts in repo: '" + repoAmount + "', while active amount is: '" + activeAmount + "'");
 				}
 			} else {
 				log.debug("Skipping sanity checks for incremental process.");

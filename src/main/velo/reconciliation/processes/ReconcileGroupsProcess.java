@@ -112,9 +112,9 @@ public class ReconcileGroupsProcess {
 
 				Integer diff = null;
 				if (activeAmount > repoAmount) {
-					diff = 100-(activeAmount-repoAmount) / activeAmount * 100;
+					diff = (activeAmount-repoAmount) / activeAmount * 100;
 				} else {
-					diff = 100-(repoAmount-activeAmount) / repoAmount * 100;
+					diff = (repoAmount-activeAmount) / repoAmount * 100;
 				}
 				
 				if (diff > allowedDiffInPercentages) { 

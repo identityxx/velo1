@@ -6,14 +6,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.jboss.seam.annotations.AutoCreate;
+import org.jboss.seam.annotations.Name;
 
 import velo.ejb.interfaces.ActionManagerLocal;
 import velo.entity.ActionLanguage;
 import velo.entity.PersistenceAction;
 import velo.entity.ReadyAction;
+import velo.entity.SequencedAction;
 import velo.entity.WorkflowScriptedAction;
 
 @Stateless
+@AutoCreate
+@Name("actionManager")
 public class ActionBean implements ActionManagerLocal {
 	private static Logger log = Logger.getLogger(ActionBean.class.getName());
 	
@@ -33,15 +38,15 @@ public class ActionBean implements ActionManagerLocal {
 		}
 	}
 	
-	public PersistenceAction findPersistenceAction(String name) {
-		log.debug("Finding Persistence Action with name '" + name + "'");
+	public SequencedAction findSequencedAction(String name) {
+		log.debug("Finding Sequenced Action with name '" + name + "'");
 
 		try {
-			Query q = em.createNamedQuery("persistenceAction.findByName").setParameter("name",name);
-			return (WorkflowScriptedAction) q.getSingleResult();
+			Query q = em.createNamedQuery("sequencedAction.findByName").setParameter("name",name);
+			return (SequencedAction) q.getSingleResult();
 		}
 		catch (javax.persistence.NoResultException e) {
-			log.debug("'Could not find any persistence action with name '" + name + "', returning null.");
+			log.debug("'Could not find any sequence action with name '" + name + "', returning null.");
 			return null;
 		}
 	}
@@ -59,7 +64,7 @@ public class ActionBean implements ActionManagerLocal {
 		}
 	}
 	
-	public void persistAction(PersistenceAction action) {
+	public void persistAction(SequencedAction action) {
 		em.persist(action);
 	}
 }

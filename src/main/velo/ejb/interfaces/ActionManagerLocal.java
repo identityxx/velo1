@@ -20,9 +20,8 @@ package velo.ejb.interfaces;
 import javax.ejb.Local;
 
 import velo.entity.ActionLanguage;
-import velo.entity.PersistenceAction;
 import velo.entity.ReadyAction;
-import velo.entity.WorkflowScriptedAction;
+import velo.entity.SequencedAction;
 
 /**
  * A local interface for Action Bean
@@ -32,7 +31,7 @@ import velo.entity.WorkflowScriptedAction;
 @Local
 public interface ActionManagerLocal {
 	public ReadyAction findReadyAction(String name);
-	public PersistenceAction findPersistenceAction(String name);
-	public void persistAction(PersistenceAction action);
+	public SequencedAction findSequencedAction(String name);
+	public void persistAction(SequencedAction action);
 	public ActionLanguage findActionLanguage(String name);
 }

@@ -12,17 +12,17 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
 
 import velo.contexts.OperationContext;
 import velo.ejb.interfaces.ActionManagerLocal;
-import velo.entity.PersistenceAction;
-import velo.entity.WorkflowScriptedAction;
+import velo.entity.SequencedAction;
 import velo.exceptions.action.ActionExecutionException;
 
 @Name("wfProecssTools")
 public class WfProcessTools {
-	@In
+	@In(create=true)
 	ActionManagerLocal actionManager;
 	
 	@In
 	ProcessInstance processInstance;
+
 	
 	public List<Comment> getProcessComments(ProcessInstance pi) {
 		List<Comment> comments = new ArrayList<Comment>();
@@ -38,15 +38,16 @@ public class WfProcessTools {
 	
 	public String invokeAction(String actionUniqueName) throws ActionExecutionException {
 		//find the action in the DB
-		PersistenceAction action = actionManager.findPersistenceAction(actionUniqueName);
+		SequencedAction action = actionManager.findSequencedAction(actionUniqueName);
 		
 		if (action == null) {
 			throw new ActionExecutionException("Could not find action name '" + actionUniqueName + "' in repository");
 		}
+		
 		//FIXME: Currently limited to workflow actions only, what about Ready Actions?
-		if (!(action instanceof WorkflowScriptedAction)) {
-			throw new ActionExecutionException("Action name '" + actionUniqueName + "' was found but is not a Workflow Scripted Action!");
-		}
+//		if (!(action instanceof WorkflowScriptedAction)) {
+//			throw new ActionExecutionException("Action name '" + actionUniqueName + "' was found but is not a Workflow Scripted Action!");
+//		}
 		
 		
 		OperationContext context = new OperationContext();
@@ -57,9 +58,9 @@ public class WfProcessTools {
 		action.setContext(context);
 		//invoke the action
 		action._execute();
-		
-		if ( (action.getContext().isVarExists("outcome")) && ((String)action.getContext().getVars().get("outcome").getValue()).length() >0) {
-			return (String)action.getContext().getVars().get("outcome").getValue();
+
+		if (action.getContext().isVarExists("outcome")) {
+			return String.valueOf(action.getContext().getVars().get("outcome").getValue());
 		} else {
 			return null;
 		}
