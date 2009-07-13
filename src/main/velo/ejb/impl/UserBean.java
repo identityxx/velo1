@@ -572,7 +572,17 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 	public List<User> findUsers(Map<String,String> ias, boolean caseSensitive, boolean wildCardSearch, int maxResults) {
 		Query q = findUsersQuery(ias,caseSensitive,wildCardSearch,maxResults);
 		
-		return q.getResultList();
+		List<User> users = q.getResultList();
+		
+		for (User currUser : users) {
+			  try {
+				loadUserAttributes(currUser);
+			} catch (OperationException e) {
+				log.error("Could not load the user " + currUser.getName() +" identity attributes, error message: " + e.getMessage());
+			}
+		}
+		
+		return users;
 	}
 	
 	

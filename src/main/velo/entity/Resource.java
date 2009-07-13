@@ -142,6 +142,8 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 	
 	private int daysToRevokeAccount;
 
+	private boolean managedManually;
+	
 	/**
 	 * The corresponding resource type entity
 	 */
@@ -652,6 +654,15 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 
 	public void setDaysToRevokeAccount(int daysToRevokeAccount) {
 		this.daysToRevokeAccount = daysToRevokeAccount;
+	}	
+
+	@Column(name = "MANAGED_MANUALLY", nullable = false)
+	public boolean isManagedManually() {
+		return managedManually;
+	}
+
+	public void setManagedManually(boolean managedManually) {
+		this.managedManually = managedManually;
 	}
 
 	/**

@@ -118,7 +118,7 @@ public class ReconcileProcessSummary implements Serializable {
 		this.successfullyFinished = successfullyFinished;
 	}
 	
-	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "reconcileProcessSummary", fetch = FetchType.EAGER)
+	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "reconcileProcessSummary", fetch = FetchType.LAZY)
 	public Set<ReconcileProcessSummaryLog> getLogs() {
 		return logs;
 	}
@@ -127,7 +127,7 @@ public class ReconcileProcessSummary implements Serializable {
 		this.logs = logs;
 	}
 
-	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "reconcileProcessSummary", fetch = FetchType.EAGER)
+	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "reconcileProcessSummary", fetch = FetchType.LAZY)
 	public Set<ReconcileProcessSummaryEvent> getEvents() {
 		return events;
 	}
