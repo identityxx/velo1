@@ -100,11 +100,32 @@
 					<h:selectBooleanCheckbox id="deleteGroupAfterReconcileProcessesNumberExceeded" value="#{reconcileResourcePolicyHome.instance.deleteGroupAfterReconcileProcessesNumberExceeded}"/>
 				</s:decorate>
 				
-				<div style="clear: both"><span class="required">*</span>
-				required fields</div>
+				<div style="clear: both"></div>
 
 				</rich:panel>
 				
+				<rich:panel>
+					<f:facet name="header">Sanity Checks</f:facet>
+					<s:decorate id="sanityCheckDiffPercentagesOfIdentitiesDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Allowed Difference of Identities (in Percentages)</ui:define>
+					<h:inputText id="sanityCheckDiffPercentagesOfIdentities" required="true" size="3" maxlength="3"
+						value="#{reconcileResourcePolicyHome.instance.sanityCheckDiffPercentagesOfIdentities}">
+						<a:support event="onblur" reRender="sanityCheckDiffPercentagesOfIdentitiesDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+					</s:decorate>
+					<s:decorate id="sanityCheckDiffPercentagesOfGroupsDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Allowed Difference of Groups (in Percentages)</ui:define>
+					<h:inputText id="sanityCheckDiffPercentagesOfGroups" required="true" size="3" maxlength="3"
+						value="#{reconcileResourcePolicyHome.instance.sanityCheckDiffPercentagesOfGroups}">
+						<a:support event="onblur" reRender="sanityCheckDiffPercentagesOfGroupsDecoration"
+							bypassUpdates="true" />
+					</h:inputText>
+					</s:decorate>
+					
+					<div style="clear: both"><span class="required">*</span>
+				required fields</div>
+				</rich:panel>
 				
 				
 				

@@ -103,6 +103,28 @@ public class ReconcileGroupsProcess {
 			}
 
 
+			
+			//Perform sanity checks for full process
+			if (full) {
+				int activeAmount = activeResourceGroups.size();
+				int repoAmount = allGroupsInRepositoryForResource.size();
+				Integer allowedDiffInPercentages = resource.getReconcilePolicy().getSanityCheckDiffPercentagesOfGroups();
+
+				Integer diff = null;
+				if (activeAmount > repoAmount) {
+					diff = 100-(activeAmount-repoAmount) / activeAmount * 100;
+				} else {
+					diff = 100-(repoAmount-activeAmount) / repoAmount * 100;
+				}
+				
+				if (diff > allowedDiffInPercentages) { 
+					throw new ReconcileProcessException("Sanity check failure: Groups difference between repository and resource is higher than '" + allowedDiffInPercentages + "%, (which is '" + diff + "'%), groups in repo: '" + repoAmount + "', while active amount is: '" + activeResourceGroups.size() + "'");
+				}
+			} else {
+				log.debug("Skipping sanity checks for incremental process.");
+			}
+			
+			
 
 			subStopWatch.start();
 			log.debug("(START): Iterating over recieved active groups, determining whether each exists in repository or not.");

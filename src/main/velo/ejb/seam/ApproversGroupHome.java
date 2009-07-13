@@ -22,14 +22,20 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 
+import velo.ejb.interfaces.UserManagerLocal;
 import velo.entity.ApproversGroup;
+import velo.entity.User;
+import velo.exceptions.OperationException;
 
 @Name("approversGroupHome")
 public class ApproversGroupHome extends EntityHome<ApproversGroup> {
 
 	@In
 	FacesMessages facesMessages;
-	
+
+	@In
+	UserManagerLocal userManager;
+
 	public void setApproversGroupId(Long id) {
 		setId(id);
 	}
@@ -54,5 +60,29 @@ public class ApproversGroupHome extends EntityHome<ApproversGroup> {
 
 	public ApproversGroup getDefinedInstance() {
 		return isIdDefined() ? getInstance() : null;
+	}
+
+
+	@Override
+	public ApproversGroup getInstance() {
+		//Can't use isManaged as it'll involve getInstance()
+		
+		
+		if (getEntityManager().contains( super.getInstance()) && super.getInstance().getApprovers() != null) {
+			userManager.setEntityManager(getEntityManager());
+
+			try {
+				for (User currApprover : super.getInstance().getApprovers()) {
+					userManager.loadUserAttributes(currApprover);
+				}
+
+			} catch (OperationException e) {
+				getLog().error(e.getMessage());
+				getFacesMessages().add(e.getMessage());
+				return null;
+			}
+		}
+
+		return super.getInstance();
 	}
 }

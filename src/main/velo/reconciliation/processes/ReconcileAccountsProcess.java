@@ -128,7 +128,6 @@ public class ReconcileAccountsProcess {
 			IDENTITY_MODIFIED_EVENT = getEventManager().findReconcileEvent(ReconcileEvent.IDENTITY_MODIFIED_EVENT_NAME);
 			IDENTITY_ATTRIBUTE_MODIFIED_EVENT = getEventManager().findReconcileEvent(ReconcileEvent.IDENTITY_ATTRIBUTE_MODIFIED_EVENT_NAME);
 			IDENTITY_REMOVED_EVENT = getEventManager().findReconcileEvent(ReconcileEvent.IDENTITY_REMOVED_EVENT_NAME);
-
 			
 			//Initialize a SET that will contain all accounts that were inserted
 			Set<Account> createdActiveIdentities = new HashSet<Account>();
@@ -159,6 +158,27 @@ public class ReconcileAccountsProcess {
 			}
 			
 			
+			//Perform sanity checks of the amounts for full only
+			if (full) {
+				int activeAmount = activeIdentities.size();
+				int repoAmount = allAccountsInRepositoryForResource.size();
+				Integer allowedDiffInPercentages = resource.getReconcilePolicy().getSanityCheckDiffPercentagesOfIdentities();
+
+				Integer diff = null;
+				if (activeAmount > repoAmount) {
+					diff = 100-(activeAmount-repoAmount) / activeAmount * 100;
+				} else {
+					diff = 100-(repoAmount-activeAmount) / repoAmount * 100;
+				}
+				
+				if (diff > allowedDiffInPercentages) { 
+					throw new ReconcileProcessException("Sanity check failure: Accounts difference between repository and resource is higher than '" + allowedDiffInPercentages + "%, (which is '" + diff + "'%), accounts in repo: '" + repoAmount + "', while active amount is: '" + activeIdentities.size() + "'");
+				}
+			} else {
+				log.debug("Skipping sanity checks for incremental process.");
+			}
+			
+			
 			
 			SequencedAction correlationRule = resource.getReconcilePolicy().getCorrelationRule();
 			SequencedAction confirmationRule = resource.getReconcilePolicy().getConfirmationRule();
@@ -185,7 +205,6 @@ public class ReconcileAccountsProcess {
 			subStopWatch.stop();
 			log.debug("(FINISHED): Iterating over recieved active identities, determining whether each exists in repository or not in '" + subStopWatch.getTime() / 1000 + "' seconds.");
 			subStopWatch.reset();
-			
 			
 			
 			//Raising new created event per created account

@@ -94,7 +94,8 @@ import org.jboss.seam.annotations.Name;
         
         
         
-        
+        private Integer sanityCheckDiffPercentagesOfIdentities;
+        private Integer sanityCheckDiffPercentagesOfGroups;
         
         
         
@@ -586,4 +587,23 @@ import org.jboss.seam.annotations.Name;
 			this.autoCorrelateAccountIfMatchedToUser = autoCorrelateAccountIfMatchedToUser;
 		}
 		
+		@Column(name = "SC_DIFF_PERCENTS_OF_IDENTITIES",nullable=false)
+		public Integer getSanityCheckDiffPercentagesOfIdentities() {
+			return sanityCheckDiffPercentagesOfIdentities;
+		}
+
+		public void setSanityCheckDiffPercentagesOfIdentities(
+				Integer sanityCheckDiffPercentagesOfIdentities) {
+			this.sanityCheckDiffPercentagesOfIdentities = sanityCheckDiffPercentagesOfIdentities;
+		}
+
+		@Column(name = "SC_DIFF_PERCENTS_OF_GROUPS",nullable=false)
+		public Integer getSanityCheckDiffPercentagesOfGroups() {
+			return sanityCheckDiffPercentagesOfGroups;
+		}
+
+		public void setSanityCheckDiffPercentagesOfGroups(
+				Integer sanityCheckDiffPercentagesOfGroups) {
+			this.sanityCheckDiffPercentagesOfGroups = sanityCheckDiffPercentagesOfGroups;
+		}
     }
