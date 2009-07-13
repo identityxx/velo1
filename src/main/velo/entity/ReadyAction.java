@@ -20,6 +20,8 @@ import velo.patterns.Factory;
 public class ReadyAction extends SequencedAction {
 	private String readyActionDefClassName;
 	
+	private velo.actions.readyActions.ReadyAction factoredReadyAction;
+	
 	public ReadyAction(String name, String description, String readyActionDefClassName) {
 		super(name,description,true,true,0);
 		setReadyActionDefClassName(readyActionDefClassName);
@@ -32,13 +34,18 @@ public class ReadyAction extends SequencedAction {
 	@Override
 	public void execute() throws ActionExecutionException {
 		try {
-			velo.actions.readyActions.ReadyAction ra;
-			ra = factoryReadyAction();
-			ra.setContext(getContext());
-			ra._execute();
+			if (factoredReadyAction == null) {
+				//velo.actions.readyActions.ReadyAction ra;
+				factoredReadyAction = factoryReadyAction();
+				factoredReadyAction.setContext(getContext());
+			}
+			
+			//execute the action
+			factoredReadyAction._execute();
 		} catch (FactoryException e) {
 			throw new ActionExecutionException(e.getMessage());
 		}
+		
 	}
 
 	@Column(name="READY_ACTION_DEF_CLASS_NAME",nullable=false)

@@ -138,6 +138,16 @@ public class ReconcileAccountsProcess {
 				subStopWatch.start();
 				log.debug("(START) Loading all accounts from repository (in full reconcile identities process only) one time only...");
 				allAccountsInRepositoryForResource = resource.getAccountsAsMap();
+				
+				for (Map.Entry<String,Account> currAccEntryMap : allAccountsInRepositoryForResource.entrySet()) {
+					//System.out.println(currAccEntryMap.getValue().getAccountAttributes().size());
+					for (AccountAttribute currAA : currAccEntryMap.getValue().getAccountAttributes()) {
+						currAA.getValues();
+						//System.out.println(currAA.getValues().size());
+					}
+				}
+				
+				
 				allAccountsNamesInRepositoryForResourceForRemoval = new HashSet<String>();
 				for (Account currAccount : allAccountsInRepositoryForResource.values()) {
 					allAccountsNamesInRepositoryForResourceForRemoval.add(currAccount.getNameInRightCase());
@@ -490,12 +500,6 @@ public class ReconcileAccountsProcess {
 		//Otherwise, in incremental, can look directly in DB.
 		if (full) {
 			if (allAccountsInRepositoryForResource == null) {
-				StopWatch sw = new StopWatch();
-				sw.start();
-				log.debug("(START) Loading all accounts from repository (in full reconcile identities process) one time only...");
-				allAccountsInRepositoryForResource = resource.getAccountsAsMap();
-				log.debug("(FINISHED) Loading all accounts from repository (in full reconcile identities process) one time only (with amount '" + allAccountsInRepositoryForResource.size() +"') in '" + sw.getTime()/1000 + "' seconds.");
-				sw.stop();
 			}
 		
 			//the map keys are the account names in the right case, thus check containsKey in the right case

@@ -73,6 +73,7 @@ public interface AccountManager {
 	public void persistAccount(String accountName, String resourceName, String userName);
 	public void persistAccount(Account accountToPersist);
 	public void updateAccount(Account account);
+	public void persistAccountViaReconcile(Account account);
 	
     //public boolean isAccountExists(String accountName,String uniqueResourceName);
 	public boolean isAccountExists(String accountName,Resource resource);

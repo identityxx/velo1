@@ -1,0 +1,659 @@
+/*C3*/SET SCHEMA PUBLIC
+CONNECT USER SA
+/*C4*/SET SCHEMA PUBLIC
+CONNECT USER SA
+SET AUTOCOMMIT FALSE
+INSERT INTO JBM_DUAL VALUES(1)
+COMMIT
+DELETE FROM JBM_COUNTER WHERE NAME='MESSAGE_ID'
+INSERT INTO JBM_COUNTER VALUES('MESSAGE_ID',1880064)
+COMMIT
+DELETE FROM JBM_COUNTER WHERE NAME='CHANNEL_ID'
+INSERT INTO JBM_COUNTER VALUES('CHANNEL_ID',4590)
+COMMIT
+DELETE FROM JBM_COUNTER WHERE NAME='TRANSACTION_ID'
+INSERT INTO JBM_COUNTER VALUES('TRANSACTION_ID',470016)
+COMMIT
+SET AUTOCOMMIT TRUE
+alter table RECONCILE_EVENT_RESPONSE drop constraint FK14F41597C0DCA5C0
+alter table RECONCILE_EVENT_RESPONSE drop constraint FK14F4159789609E88
+alter table SYSTEM_EVENT_RESPONSE drop constraint FK7342E876C0DCA5C0
+alter table VL_ACCOUNT drop constraint FK862BB184C3F961A9
+alter table VL_ACCOUNT drop constraint FK862BB184E0125749
+alter table VL_ACCOUNTS_TO_RESOURCE_GRPS drop constraint FK7AF0D5EBF4A1E2FD
+alter table VL_ACCOUNTS_TO_RESOURCE_GRPS drop constraint FK7AF0D5EB6A7B6C8F
+alter table VL_ACCOUNTS_TO_RESOURCE_GRPS drop constraint FK7AF0D5EBD9C6D86B
+alter table VL_ACCOUNTS_TO_USER_ROLES drop constraint FKC5F9F47D47EF3840
+alter table VL_ACCOUNTS_TO_USER_ROLES drop constraint FKC5F9F47DD9C6D86B
+alter table VL_ACCOUNT_ATTRIBUTE drop constraint FK400F5181D9C6D86B
+alter table VL_ACCOUNT_ATTRIBUTE drop constraint FK400F5181C2CC34EE
+alter table VL_ACCOUNT_ATTRIBUTE_VALUE drop constraint FKE08969136FD2AEAE
+alter table VL_ACTION drop constraint FKBA090BDF7B447D7
+alter table VL_ACTION drop constraint FKBA090BDF3DB9E300
+alter table VL_ACTION drop constraint FKBA090BDF8734385F
+alter table VL_ACTION drop constraint FKBA090BDF72416B96
+alter table VL_ACTION drop constraint FKBA090BDFE0125749
+alter table VL_ACTION_LANGS_TO_TASK_DEFS drop constraint FKA8C004FE72416B96
+alter table VL_ACTION_LANGS_TO_TASK_DEFS drop constraint FKA8C004FEC4F28814
+alter table VL_ACTION_SCRIPT drop constraint FKF6D36D2B1BE2EFE
+alter table VL_ACTION_SCRIPT drop constraint FKF6D36D2B72416B96
+alter table VL_APPROVERS_TO_APPROVERS_GRPS drop constraint FK6F585C09F6B24C6F
+alter table VL_APPROVERS_TO_APPROVERS_GRPS drop constraint FK6F585C09CF2C138C
+alter table VL_AUDITED_ACCOUNT drop constraint FK929360DFE0125749
+alter table VL_BULK_TASK drop constraint FK61F31249935A652B
+alter table VL_BULK_TASK_LOG drop constraint FK324B1C2E91A081EE
+alter table VL_CAPS_TO_CAPS_FOLDERS drop constraint FK25ED0A164F4E6B49
+alter table VL_CAPS_TO_CAPS_FOLDERS drop constraint FK25ED0A1620DBBD1A
+alter table VL_ENTITY_JOURNALING drop constraint FKB4DA29DE9817956D
+alter table VL_ENTITY_JOURNALING drop constraint FKB4DA29DE3D42594D
+alter table VL_ENTITY_JOURNALING drop constraint FKB4DA29DE62F030D
+alter table VL_ENTITY_JOURNALING drop constraint FKB4DA29DE6A022BA0
+alter table VL_EVENT_LOG_DATA_ENTRY drop constraint FKB909F1C674420581
+alter table VL_EVENT_RESPONSE drop constraint FK2201C50F48769D6E
+alter table VL_EVENT_RESPONSE drop constraint FK2201C50FDAC3A58B
+alter table VL_FORM drop constraint FK4C63F4AD935A652B
+alter table VL_GRPS_TO_RS_GRP_CONTAINERS drop constraint FK9D403EE8830C5A9
+alter table VL_GRPS_TO_RS_GRP_CONTAINERS drop constraint FK9D403EE955C000E
+alter table VL_IDENTITY_ATTRIBUTE drop constraint FKB19C24643316C25D
+alter table VL_IDENTITY_ATTRIBUTE_SOURCE drop constraint FKF8BC3C565C43F8E
+alter table VL_IDENTITY_ATTRIBUTE_SOURCE drop constraint FKF8BC3C5626262A1D
+alter table VL_PASSWORD_POLICY_CONTAINER drop constraint FK9F80C66FC574D360
+alter table VL_POSITION_ROLE drop constraint FK407EE0031ECE9DC9
+alter table VL_POSITION_ROLE drop constraint FK407EE003CF327D69
+alter table VL_POS_TO_REQUESTS drop constraint FK24A2BF4FD27C704
+alter table VL_POS_TO_REQUESTS drop constraint FK24A2BF4CF327D69
+alter table VL_READY_ACTION drop constraint FKF3065B5B3CA4EAC5
+alter table VL_RECONCILE_EVENT drop constraint FK792032A0DAC3A58B
+alter table VL_RECONCILE_POLICY drop constraint FKBD4BE5CC3630F381
+alter table VL_RECONCILE_POLICY drop constraint FKBD4BE5CC37A0F535
+alter table VL_RECONCILE_POLICY drop constraint FKBD4BE5CC5B58848
+alter table VL_RECONCILE_USERS_POLICY drop constraint FKBE6CFC839004CD25
+alter table VL_REC_PROCESS_SUMMARY drop constraint FK4CAE98BEE0125749
+alter table VL_REC_PROCESS_SUMMARY_EVENT drop constraint FK2E4D6FB959920D29
+alter table VL_REC_PROCESS_SUMMARY_LOG drop constraint FKAE44602359920D29
+alter table VL_REQUEST drop constraint FKDA719E6F8AF4649
+alter table VL_REQUEST drop constraint FKDA719E61ECE9DC9
+alter table VL_REQUEST drop constraint FKDA719E69F6B7246
+alter table VL_REQUEST drop constraint FKDA719E6E0125749
+alter table VL_REQUEST drop constraint FKDA719E68C8463E6
+alter table VL_REQUESTED_POSITION drop constraint FK5C7DCF23935A652B
+alter table VL_REQUESTED_POSITION drop constraint FK5C7DCF23CF327D69
+alter table VL_REQUEST_ACCOUNT drop constraint FKCC2890B4935A652B
+alter table VL_REQUEST_ATTRIBUTE drop constraint FKD1F52763935A652B
+alter table VL_REQUEST_ATTRIBUTE_VALUE drop constraint FKF53BCD75C5FE5B6A
+alter table VL_REQUEST_LOG drop constraint FK4F480D4B935A652B
+alter table VL_REQUEST_ROLE drop constraint FK99BC572F935A652B
+alter table VL_REQUEST_USER_COMMENT drop constraint FKCC261F84935A652B
+alter table VL_REQUEST_USER_COMMENT drop constraint FKCC261F84C3F961A9
+alter table VL_RESOURCE drop constraint FKAA58877789609E88
+alter table VL_RESOURCE drop constraint FKAA5887778EB42F4C
+alter table VL_RESOURCE drop constraint FKAA5887772399B646
+alter table VL_RESOURCE drop constraint FKAA588777442A7F07
+alter table VL_RESOURCE drop constraint FKAA588777CB8D33D8
+alter table VL_RESOURCE drop constraint FKAA5887777D87CD0B
+alter table VL_RESOURCES_TO_ROLES drop constraint FKB5D3B8FC1ECE9DC9
+alter table VL_RESOURCES_TO_ROLES drop constraint FKB5D3B8FCE0125749
+alter table VL_RESOURCE_ADMIN drop constraint FK2E6D4067E0125749
+alter table VL_RESOURCE_ATTRIBUTE drop constraint FKBB0B93B42399B646
+alter table VL_RESOURCE_ATTRIBUTE drop constraint FKBB0B93B45C43F8E
+alter table VL_RESOURCE_ATTRIBUTE drop constraint FKBB0B93B4E0125749
+alter table VL_RESOURCE_GROUP drop constraint FK2EC83397E0125749
+alter table VL_RESOURCE_GROUPS_TO_ROLES drop constraint FK32BD1C1ECE9DC9
+alter table VL_RESOURCE_GROUPS_TO_ROLES drop constraint FK32BD1C955C000E
+alter table VL_RESOURCE_GROUP_MEMBER drop constraint FK6ABF6042D9C6D86B
+alter table VL_RESOURCE_GROUP_MEMBER drop constraint FK6ABF6042955C000E
+alter table VL_RESOURCE_TYPE_OPERATION drop constraint FKBBD2504AAF860348
+alter table VL_RESOURCE_TYPE_OPERATION drop constraint FKBBD2504A2399B646
+alter table VL_RF_APPROVERS_GROUP drop constraint FK7E76E52CCF2C138C
+alter table VL_RF_APPROVERS_GROUP drop constraint FK7E76E52CF818434B
+alter table VL_ROLE drop constraint FK4C69685F7A79ADA9
+alter table VL_ROLES_FOLDER drop constraint FK7148333971E58D1
+alter table VL_ROLES_TO_ROLES_FOLDERS drop constraint FK9A9C184A1ECE9DC9
+alter table VL_ROLES_TO_ROLES_FOLDERS drop constraint FK9A9C184A63948E66
+alter table VL_ROLE_APPROVERS_GROUP drop constraint FK7344292E1ECE9DC9
+alter table VL_ROLE_APPROVERS_GROUP drop constraint FK7344292ECF2C138C
+alter table VL_ROLE_RESOURCE_ATTRIBUTE drop constraint FK90B99B6B1ECE9DC9
+alter table VL_ROLE_RESOURCE_ATTRIBUTE drop constraint FK90B99B6BE636C73A
+alter table VL_ROLE_RESOURCE_ATTRIBUTE drop constraint FK90B99B6BC2CC34EE
+alter table VL_SCHED_TRIGGERS_TO_JOBDEFS drop constraint FK172C077AD520F605
+alter table VL_SCHED_TRIGGERS_TO_JOBDEFS drop constraint FK172C077AF66F40D2
+alter table VL_SCRIPTED_ACTION drop constraint FKD965E9E23CA4EAC5
+alter table VL_SYSTEM_ER_SCRIPTED_ACTION drop constraint FK56EBE1A06AAB77AA
+alter table VL_SYSTEM_EVENT drop constraint FK6B8D9B53DAC3A58B
+alter table VL_TASK drop constraint FK4C6A1D6E2875082F
+alter table VL_TASK drop constraint FK4C6A1D6E91A081EE
+alter table VL_TASK drop constraint FK4C6A1D6E935A652B
+alter table VL_TASK drop constraint FK4C6A1D6E7B447D7
+alter table VL_TASK drop constraint FK4C6A1D6EC13F46D5
+alter table VL_TASK drop constraint FK4C6A1D6EE0125749
+alter table VL_TASK drop constraint FK4C6A1D6E29008C57
+alter table VL_TASK drop constraint FK4C6A1D6E43C5C195
+alter table VL_TASK_DEPENDENCY drop constraint FK779DE6BC711D4F69
+alter table VL_TASK_DEPENDENCY drop constraint FK779DE6BC4AE2B8BC
+alter table VL_TASK_LOG drop constraint FKA64E0CD3711D4F69
+alter table VL_USER drop constraint FK4C6AD3B49004CD25
+alter table VL_USER drop constraint FK4C6AD3B4217B6A2D
+alter table VL_USER drop constraint FK4C6AD3B436B8EF94
+alter table VL_USER drop constraint FK4C6AD3B4D2257867
+alter table VL_USERS_TO_CAPABILITIES drop constraint FK88051DA4F4E6B49
+alter table VL_USERS_TO_CAPABILITIES drop constraint FK88051DAC3F961A9
+alter table VL_USERS_TO_CAP_FOLDERS drop constraint FKE132A774C3F961A9
+alter table VL_USERS_TO_CAP_FOLDERS drop constraint FKE132A7742BD47754
+alter table VL_USERS_TO_POSITIONS drop constraint FK3B4314A6CF327D69
+alter table VL_USERS_TO_POSITIONS drop constraint FK3B4314A6C3F961A9
+alter table VL_USER_IDENTITY_ATTRIBUTE drop constraint FKEAFF0EA6C3F961A9
+alter table VL_USER_IDENTITY_ATTRIBUTE drop constraint FKEAFF0EA65C43F8E
+alter table VL_USER_IDENTITY_ATTR_VALUE drop constraint FK9B7E06993DB8050F
+alter table VL_USER_ROLE drop constraint FK2CEA8E211ECE9DC9
+alter table VL_USER_ROLE drop constraint FK2CEA8E21C3F961A9
+drop table RECONCILE_EVENT_RESPONSE if exists
+drop table SYSTEM_EVENT_RESPONSE if exists
+drop table VL_ACCOUNT if exists
+drop table VL_ACCOUNTS_TO_RESOURCE_GRPS if exists
+drop table VL_ACCOUNTS_TO_USER_ROLES if exists
+drop table VL_ACCOUNT_ATTRIBUTE if exists
+drop table VL_ACCOUNT_ATTRIBUTE_VALUE if exists
+drop table VL_ACTION if exists
+drop table VL_ACTION_DEF if exists
+drop table VL_ACTION_LANGS_TO_TASK_DEFS if exists
+drop table VL_ACTION_LANGUAGE if exists
+drop table VL_ACTION_SCRIPT if exists
+drop table VL_APPROVERS_GROUP if exists
+drop table VL_APPROVERS_TO_APPROVERS_GRPS if exists
+drop table VL_AUDITED_ACCOUNT if exists
+drop table VL_BULK_TASK if exists
+drop table VL_BULK_TASK_LOG if exists
+drop table VL_CAPABILITY if exists
+drop table VL_CAPABILITY_FOLDER if exists
+drop table VL_CAPS_TO_CAPS_FOLDERS if exists
+drop table VL_EMAIL_TEMPLATE if exists
+drop table VL_ENTITY_JOURNALING if exists
+drop table VL_EVENTA if exists
+drop table VL_EVENT_DEFINITION if exists
+drop table VL_EVENT_LOG_DATA_ENTRY if exists
+drop table VL_EVENT_LOG_ENTRY if exists
+drop table VL_EVENT_RESPONSE if exists
+drop table VL_FORM if exists
+drop table VL_GATEWAY if exists
+drop table VL_GRPS_TO_RS_GRP_CONTAINERS if exists
+drop table VL_IDENTITY_ATTRIBUTE if exists
+drop table VL_IDENTITY_ATTRIBUTES_GROUP if exists
+drop table VL_IDENTITY_ATTRIBUTE_SOURCE if exists
+drop table VL_PASSWORD_POLICY if exists
+drop table VL_PASSWORD_POLICY_CONTAINER if exists
+drop table VL_POSITION if exists
+drop table VL_POSITION_ROLE if exists
+drop table VL_POS_TO_REQUESTS if exists
+drop table VL_READY_ACTION if exists
+drop table VL_RECONCILE_AUDIT_POLICY if exists
+drop table VL_RECONCILE_EVENT if exists
+drop table VL_RECONCILE_POLICY if exists
+drop table VL_RECONCILE_USERS_POLICY if exists
+drop table VL_REC_PROCESS_SUMMARY if exists
+drop table VL_REC_PROCESS_SUMMARY_EVENT if exists
+drop table VL_REC_PROCESS_SUMMARY_LOG if exists
+drop table VL_REQUEST if exists
+drop table VL_REQUESTED_POSITION if exists
+drop table VL_REQUEST_ACCOUNT if exists
+drop table VL_REQUEST_ATTRIBUTE if exists
+drop table VL_REQUEST_ATTRIBUTE_VALUE if exists
+drop table VL_REQUEST_LOG if exists
+drop table VL_REQUEST_ROLE if exists
+drop table VL_REQUEST_USER_COMMENT if exists
+drop table VL_RESOURCE if exists
+drop table VL_RESOURCES_TO_ROLES if exists
+drop table VL_RESOURCE_ADMIN if exists
+drop table VL_RESOURCE_ATTRIBUTE if exists
+drop table VL_RESOURCE_GLOBAL_OPER if exists
+drop table VL_RESOURCE_GROUP if exists
+drop table VL_RESOURCE_GROUPS_TO_ROLES if exists
+drop table VL_RESOURCE_GROUP_CONTAINER if exists
+drop table VL_RESOURCE_GROUP_MEMBER if exists
+drop table VL_RESOURCE_TYPE if exists
+drop table VL_RESOURCE_TYPE_OPERATION if exists
+drop table VL_RF_APPROVERS_GROUP if exists
+drop table VL_ROLE if exists
+drop table VL_ROLES_FOLDER if exists
+drop table VL_ROLES_TO_ROLES_FOLDERS if exists
+drop table VL_ROLE_APPROVERS_GROUP if exists
+drop table VL_ROLE_RESOURCE_ATTRIBUTE if exists
+drop table VL_SCHEDULER_JOB_DEF if exists
+drop table VL_SCHEDULER_TRIGGER if exists
+drop table VL_SCHED_TRIGGERS_TO_JOBDEFS if exists
+drop table VL_SCRIPTED_ACTION if exists
+drop table VL_SYSTEM_ER_SCRIPTED_ACTION if exists
+drop table VL_SYSTEM_EVENT if exists
+drop table VL_TASK if exists
+drop table VL_TASKS_QUEUE if exists
+drop table VL_TASK_DEFINITION if exists
+drop table VL_TASK_DEPENDENCY if exists
+drop table VL_TASK_LOG if exists
+drop table VL_USER if exists
+drop table VL_USERS_TO_CAPABILITIES if exists
+drop table VL_USERS_TO_CAP_FOLDERS if exists
+drop table VL_USERS_TO_POSITIONS if exists
+drop table VL_USER_CONTAINER if exists
+drop table VL_USER_IDENTITY_ATTRIBUTE if exists
+drop table VL_USER_IDENTITY_ATTR_VALUE if exists
+drop table VL_USER_ROLE if exists
+drop table VL_WORKFLOW_PROCESS_DEF if exists
+drop table VL_XML_OBJECT if exists
+create table RECONCILE_EVENT_RESPONSE (EVENT_RESPONSE_ID bigint not null, RECONCILE_POLICY_ID bigint not null, primary key (EVENT_RESPONSE_ID))
+create table SYSTEM_EVENT_RESPONSE (EVENT_RESPONSE_ID bigint not null, primary key (EVENT_RESPONSE_ID))
+create table VL_ACCOUNT (ACCOUNT_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, NAME varchar(255) not null, USER_ID bigint, RESOURCE_ID bigint, primary key (ACCOUNT_ID))
+create table VL_ACCOUNTS_TO_RESOURCE_GRPS (ACCOUNT_ID bigint not null, GROUP_ID bigint not null, primary key (ACCOUNT_ID, GROUP_ID))
+create table VL_ACCOUNTS_TO_USER_ROLES (USER_ROLE_ID bigint not null, ACCOUNT_ID bigint not null, primary key (USER_ROLE_ID, ACCOUNT_ID))
+create table VL_ACCOUNT_ATTRIBUTE (ACCOUNT_ATTRIBUTE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, RESOURCE_ATTRIBUTE_ID bigint not null, ACCOUNT_ID bigint not null, primary key (ACCOUNT_ATTRIBUTE_ID))
+create table VL_ACCOUNT_ATTRIBUTE_VALUE (ACCOUNT_ATTRIBUTE_VALUE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DATA_TYPE varchar(255) not null, VALUE_BOOLEAN bit, VALUE_DATA timestamp, VALUE_INT integer, VALUE_LONG bigint, VALUE_STRING varchar(255), ACCOUNT_ATTRIBUTE_ID bigint not null, primary key (ACCOUNT_ATTRIBUTE_VALUE_ID))
+create table VL_ACTION (CLASS_TYPE varchar(31) not null, ACTION_DEFINITION_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, CONTENT longvarchar, DESCRIPTION varchar(255) not null, ACTIVE bit not null, SEQUENCE integer, SHOW_STOPPER bit not null, INVOKE_PHASE varchar(255), EXECUTION_TIME_DIFFERENCE integer, PERSISTENCE bit, ACTION_LANGUAGE_ID bigint not null, RESOURCE_TYPE_OPERATION_ID bigint, RESOURCE_ATTRIBUTE_ID bigint, RESOURCE_ID bigint, EVENT_DEFINITION_ID bigint, primary key (ACTION_DEFINITION_ID))
+create table VL_ACTION_DEF (ID bigint generated by default as identity (start with 1), ACTIVE bit not null, CREATION_DATE timestamp, DESCRIPTION varchar(255), LAST_EXECUTION_DATE timestamp, NAME varchar(255) not null, SEQUENCE integer not null, SHOW_STOPPER bit not null, primary key (ID), unique (NAME))
+create table VL_ACTION_LANGS_TO_TASK_DEFS (TASK_DEFINITION_ID bigint not null, ACTION_LANGUAGE_ID bigint not null)
+create table VL_ACTION_LANGUAGE (ACTION_LANGUAGE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255) not null, NAME varchar(255) not null, primary key (ACTION_LANGUAGE_ID))
+create table VL_ACTION_SCRIPT (ID bigint generated by default as identity (start with 1), ACTIVE bit, CONTENT longvarchar, invokePhase varchar(255), SEQUENCE integer, SHOW_STOPPER bit, TITLE varchar(255), ACTION_LANGUAGE_ID bigint not null, SCRIPTED_ACTION_ID bigint not null, primary key (ID))
+create table VL_APPROVERS_GROUP (APPROVERS_GROUP_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, assignmentType varchar(255), DESCRIPTION varchar(255) not null, DISPLAY_NAME varchar(50) not null, TYPE varchar(255), UNIQUE_NAME varchar(50) not null, primary key (APPROVERS_GROUP_ID), unique (DISPLAY_NAME), unique (UNIQUE_NAME))
+create table VL_APPROVERS_TO_APPROVERS_GRPS (APPROVERS_GROUP_ID bigint not null, APPROVER_ID bigint not null)
+create table VL_AUDITED_ACCOUNT (AUDITED_ACCOUNT_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, NAME varchar(255) not null, RESOURCE_ID bigint, primary key (AUDITED_ACCOUNT_ID))
+create table VL_BULK_TASK (BULK_TASK_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), WORKFLOW_PROCESS_ID bigint, REQUEST_ID bigint, primary key (BULK_TASK_ID))
+create table VL_BULK_TASK_LOG (BULK_TASK_LOG_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, DETAILED_MESSAGE longvarchar, SEVERITY varchar(255), SUMMARY_MESSAGE longvarchar, BULK_TASK_ID bigint not null, primary key (BULK_TASK_LOG_ID))
+create table VL_CAPABILITY (CAPABILITY_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255) not null, NAME varchar(255) not null, primary key (CAPABILITY_ID))
+create table VL_CAPABILITY_FOLDER (CAPABILITY_FOLDER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, UNIQUE_NAME varchar(255) not null, primary key (CAPABILITY_FOLDER_ID), unique (UNIQUE_NAME))
+create table VL_CAPS_TO_CAPS_FOLDERS (CAPABILITY_FOLDER_ID bigint not null, CAPABILITY_ID bigint not null)
+create table VL_EMAIL_TEMPLATE (EMAIL_TEMPLATE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, CONTENT longvarchar, DELETABLE bit, DESCRIPTION varchar(255) not null, NAME varchar(255) not null, RECIPIENTS_EMAIL_ADDRESSES varchar(255), SUBJECT varchar(255) not null, primary key (EMAIL_TEMPLATE_ID))
+create table VL_ENTITY_JOURNALING (ENTITY_TYPE varchar(31) not null, ENTITY_JOURNALING_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DETAILED_MESSAGE varchar(255), SUMMARY_MESSAGE varchar(255) not null, ACTION_TYPE varchar(255), ENTITY_ROLE_ID bigint, PERFORMED_BY_USER_ID bigint, ENTITY_POSITION_ID bigint, ENTITY_USER_ID bigint, primary key (ENTITY_JOURNALING_ID))
+create table VL_EVENTA (EVENT_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, DESCRIPTION varchar(255) not null, DISPLAY_NAME varchar(255) not null, LAST_UPDATE_DATE timestamp, UNIQUE_NAME varchar(255) not null, primary key (EVENT_ID))
+create table VL_EVENT_DEFINITION (EVENT_DEFINITION_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, UNIQUE_NAME varchar(255) not null, primary key (EVENT_DEFINITION_ID), unique (UNIQUE_NAME))
+create table VL_EVENT_LOG_DATA_ENTRY (EVENT_LOG_DATA_ENTRY_ID bigint generated by default as identity (start with 1), NAME varchar(50), VALUE varchar(255), EVENT_LOG_ENTRY_ID bigint not null, primary key (EVENT_LOG_DATA_ENTRY_ID))
+create table VL_EVENT_LOG_ENTRY (EVENT_LOG_ENTRY_ID bigint generated by default as identity (start with 1), CATEGORY varchar(255), CREATION_DATE timestamp, KEYWORDS varchar(255), EVENT_LEVEL varchar(255), MESSAGE varchar(255) not null, MODULE_NAME varchar(255), SERVER varchar(255), primary key (EVENT_LOG_ENTRY_ID))
+create table VL_EVENT_RESPONSE (EVENT_RESPONSE_ID bigint generated by default as identity (start with 1), ASYNC_EXECUTION bit not null, CREATION_DATE timestamp, EVENT_ID bigint, ACTION_ID bigint not null, primary key (EVENT_RESPONSE_ID))
+create table VL_FORM (FORM_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, FORM_KEY bigint, REQUEST_ID bigint, primary key (FORM_ID))
+create table VL_GATEWAY (GATEWAY_TYPE varchar(31) not null, GATEWAY_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, UNIQUE_NAME varchar(255) not null, HOSTNAME varchar(255) not null, PORT integer not null, primary key (GATEWAY_ID), unique (UNIQUE_NAME))
+create table VL_GRPS_TO_RS_GRP_CONTAINERS (RESOURCE_GROUP_CONTAINER_ID bigint not null, RESOURCE_GROUP_ID bigint not null, primary key (RESOURCE_GROUP_CONTAINER_ID, RESOURCE_GROUP_ID))
+create table VL_IDENTITY_ATTRIBUTE (IDENTITY_ATTRIBUTE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DATA_TYPE varchar(255) not null, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, MANAGED bit not null, MAX_LENGTH integer not null, MAX_VALUES integer not null, MIN_LENGTH integer not null, MIN_VALUES integer not null, REGEXP_VALIDATION_STRING varchar(255), REQUIRED bit not null, UNIQUE_NAME varchar(255) not null, DISPLAY_PRIORITY integer not null, VISUAL_RENDERING_TYPE varchar(255) not null, USER_IDENTIFIER bit not null, MANAGER bit not null, REQUIRED_IN_REQUEST bit not null, SYNCHRONIZE bit not null, VISIBLE_IN_REQUEST bit not null, VISIBLE_IN_USER_LIST bit not null, IDENTITY_ATTRIBUTES_GROUP_ID bigint not null, primary key (IDENTITY_ATTRIBUTE_ID))
+create table VL_IDENTITY_ATTRIBUTES_GROUP (IDENTITY_ATTRIBUTES_GROUP_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255) not null, DISPLAY_PRIORITY integer not null, NAME varchar(40) not null, VISIBLE bit not null, primary key (IDENTITY_ATTRIBUTES_GROUP_ID))
+create table VL_IDENTITY_ATTRIBUTE_SOURCE (TYPE varchar(31) not null, IDENTITY_ATTRIBUTE_SOURCE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(250) not null, SEQUENCE integer not null, SYNC_BY_TSA_POLICY varchar(255), TS_ATTRIBUTE_ID bigint not null, IDENTITY_ATTRIBUTE_ID bigint not null, primary key (IDENTITY_ATTRIBUTE_SOURCE_ID))
+create table VL_PASSWORD_POLICY (PASSWORD_POLICY_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, allowSequences bit not null, DESCRIPTION varchar(255), DISPLAY_NAME varchar(40) not null, MAX_FAILURES_BEFORE_LOCK integer not null, MAX_LENGTH integer not null, MIN_LENGTH integer not null, MIN_NUMERIC_CHARS integer not null, MIN_SPECIAL_CHARS integer not null, NOT_ALLOWED_CHARS varchar(255), PWD_MAY_CONTAIN_ACCOUNT_NAME bit not null, REG_EXP varchar(255), SPECIAL_CHARS varchar(255), UNIQUE_NAME varchar(40) not null, primary key (PASSWORD_POLICY_ID))
+create table VL_PASSWORD_POLICY_CONTAINER (PASSWORD_POLICY_CONTAINER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DISPLAY_NAME varchar(40) not null, UNIQUE_NAME varchar(40) not null, PASSWORD_POLICY_ID bigint not null, primary key (PASSWORD_POLICY_CONTAINER_ID), unique (UNIQUE_NAME))
+create table VL_POSITION (POSITION_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DELETED bit not null, DISABLED bit not null, DISPLAY_NAME varchar(255) not null, UNIQUE_IDENTIFIER varchar(255) not null, UNIQUE_ORG_UNIT_ID varchar(255), primary key (POSITION_ID))
+create table VL_POSITION_ROLE (CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), EXPIRATION_TIME timestamp, POSITION_ID bigint, ROLE_ID bigint, primary key (POSITION_ID, ROLE_ID))
+create table VL_POS_TO_REQUESTS (REQUEST_ID bigint not null, POSITION_ID bigint not null, primary key (REQUEST_ID, POSITION_ID))
+create table VL_READY_ACTION (READY_ACTION_DEF_CLASS_NAME varchar(255) not null, ID bigint not null, primary key (ID))
+create table VL_RECONCILE_AUDIT_POLICY (RECONCILE_AUDIT_POLICY_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, GROUP_CREATED_EVENT bit not null, GROUP_MEMBER_ASSOC_EVENT bit not null, GROUP_MEMBER_DESSOC_EVENT bit not null, GROUP_MODIFIED_EVENT bit not null, GROUP_REMOVED_EVENT bit not null, IDENTITY_ATTR_MODIFIED_EVENT bit not null, IDENTITY_CONFIRMED_EVENT bit not null, IDENTITY_MODIFIED_EVENT bit not null, IDENTITY_REMOVED_EVENT bit not null, IDENTITY_UNASSIGNED_EVENT bit not null, IDENTITY_UNMATCHED_EVENT bit not null, NAME varchar(255) not null, primary key (RECONCILE_AUDIT_POLICY_ID), unique (NAME))
+create table VL_RECONCILE_EVENT (EVENT_ID bigint not null, primary key (EVENT_ID))
+create table VL_RECONCILE_POLICY (RECONCILE_POLICY_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, ACTIVATE_CORRELATION_RULE bit not null, ACTIVATE_RECONCILE_SUMMARIES bit not null, CORRELATE_ACC_MATCHED_TO_USER bit not null, CONFIRMED_ACCT_ATTR_EVENT varchar(255), CONFIRMED_ACCT_EVENT_ACTION varchar(255), DEL_GRP_AFTER_RECS_EXCEEDED bit not null, DELETED_ACCT_EVENT_ACTION varchar(255), NAME varchar(40) not null, RECORRELATE_ORPHAN_IDENTITIES bit not null, RECONCILE_ACCOUNTS bit not null, RECONCILE_GROUP_MEMBERSHIP bit not null, RECONCILE_GROUPS bit not null, RECS_GRP_BEING_DEL_B4_DEL_GRP integer not null, UNASIGNED_ACCT_EVENT_ACTION varchar(255), UNMATCHED_ACCT_ATTR_EVENT varchar(255), UNMATCHED_ACCT_EVENT_ACTION varchar(255), CORRELATION_RULE_ACTION_ID bigint, CONFIRMATION_RULE_ACTION_ID bigint, RECONCILE_AUDIT_POLICY_ID bigint not null, primary key (RECONCILE_POLICY_ID))
+create table VL_RECONCILE_USERS_POLICY (RECONCILE_USERS_POLICY_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, ACTIVE bit not null, DEL_USER_IN_SRC_EVENT_ACTION varchar(255) not null, DISPLAY_NAME varchar(40) not null, NEW_USER_IN_SRC_EVENT_ACTION varchar(255) not null, PRIORITY integer, UNIQUE_NAME varchar(40) not null, SOURCE_RESOURCE_ID bigint not null, primary key (RECONCILE_USERS_POLICY_ID))
+create table VL_REC_PROCESS_SUMMARY (REC_PROCESS_SUMMARY_ID bigint generated by default as identity (start with 1), END_DATE timestamp, KEYWORDS varchar(255), PROCESS_TYPE varchar(255), START_DATE timestamp, SUCCESSFULLY_FINISHED bit not null, RESOURCE_ID bigint not null, primary key (REC_PROCESS_SUMMARY_ID))
+create table VL_REC_PROCESS_SUMMARY_EVENT (REC_PROCESS_SUMMARY_EVENT_ID bigint generated by default as identity (start with 1), ENTITY_NAME varchar(255), ENTITY_TYPE varchar(255), EVENT varchar(255), MESSAGE longvarchar, SEVERITY varchar(255), REC_PROCESS_SUMMARY_ID bigint not null, primary key (REC_PROCESS_SUMMARY_EVENT_ID))
+create table VL_REC_PROCESS_SUMMARY_LOG (REC_PROCESS_SUMMARY_LOG_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LEVEL varchar(255), MESSAGE longvarchar not null, SERVER varchar(255), REC_PROCESS_SUMMARY_ID bigint not null, primary key (REC_PROCESS_SUMMARY_LOG_ID))
+create table VL_REQUEST (REQUEST_TYPE_CLASS varchar(31) not null, REQUEST_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, BUSINESS_PROCESS_NAME varchar(255), IN_BUSINESS_PROCESS bit not null, IN_PROCESS bit not null, NOTES varchar(255), PROCESSED bit not null, PROCESSED_TIME timestamp, STATUS varchar(255), SUCCESSFULLY_PROCESSED bit not null, TAGS longvarbinary, USER_NAME varchar(255), REVOKE_ROLES_IF_ACCT_PROTECTED bit, ACCESS_EXP_DATE_AMOUNT integer, ACCESS_EXP_DATE_AMOUNT_TYPE varchar(255), DESCRIPTION varchar(255), EXPIRATION_ACCESS_DATE timestamp, GRANT_ACCESS_DATE timestamp, GRANT_ACCESS_IMMEDIATELY bit, REASON varchar(255), INHERITED_BY_POSITION bit, SUGGESTED_USER_NAME varchar(255), REQUESTED_ACCESS_FOR_USER_ID bigint, USER_THAT_HAS_MY_ACCESS_ID bigint, REQUESTER_USER_ID bigint, ROLE_ID bigint, RESOURCE_ID bigint, primary key (REQUEST_ID))
+create table VL_REQUESTED_POSITION (CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, ACTION_TYPE varchar(255), POSITION_ID bigint, REQUEST_ID bigint, primary key (POSITION_ID, REQUEST_ID))
+create table VL_REQUEST_ACCOUNT (REQUESTED_ACCOUNT_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, ACCOUNT_NAME varchar(255), ACCOUNT_OPERATION varchar(255), EXPECTED_EXECUTION_DATE timestamp, RESOURCE_NAME varchar(255), REQUEST_ID bigint not null, primary key (REQUESTED_ACCOUNT_ID))
+create table VL_REQUEST_ATTRIBUTE (REQUEST_ATTRIBUTE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DATA_TYPE varchar(255) not null, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, MANAGED bit not null, MAX_LENGTH integer not null, MAX_VALUES integer not null, MIN_LENGTH integer not null, MIN_VALUES integer not null, REGEXP_VALIDATION_STRING varchar(255), REQUIRED bit not null, UNIQUE_NAME varchar(255) not null, DISPLAY_PRIORITY integer not null, VISUAL_RENDERING_TYPE varchar(255) not null, REQUEST_ID bigint not null, primary key (REQUEST_ATTRIBUTE_ID))
+create table VL_REQUEST_ATTRIBUTE_VALUE (REQUEST_ATTRIBUTE_VALUE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DATA_TYPE varchar(255) not null, VALUE_BOOLEAN bit, VALUE_DATA timestamp, VALUE_INT integer, VALUE_LONG bigint, VALUE_STRING varchar(255), REQUEST_ATTRIBUTE_ID bigint not null, primary key (REQUEST_ATTRIBUTE_VALUE_ID))
+create table VL_REQUEST_LOG (REQUEST_LOG_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, DETAILED_MESSAGE longvarchar, SEVERITY varchar(255), SUMMARY_MESSAGE longvarchar, REQUEST_ID bigint not null, primary key (REQUEST_LOG_ID))
+create table VL_REQUEST_ROLE (REQUEST_ROLE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, NAME varchar(255), REQUEST_ID bigint not null, primary key (REQUEST_ROLE_ID))
+create table VL_REQUEST_USER_COMMENT (REQUEST_USER_COMMENT_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, COMMENT varchar(255), REQUEST_ID bigint not null, USER_ID bigint, primary key (REQUEST_USER_COMMENT_ID))
+create table VL_RESOURCE (RESOURCE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, IS_ACTIVE bit not null, AUTO_FETCH bit not null, CASE_SENSITIVE bit not null, CONFIGURATION longvarchar not null, DEL_ACC_WHEN_LAST_ROLE_REVOKED bit not null, DESCRIPTION varchar(255) not null, DISPLAY_NAME varchar(255) not null, MAX_ALLOWED_ACCTS_PER_USER integer not null, REQUESTABLE_BY_SELF_SERVICE bit not null, IS_SCRIPTED bit not null, UNIQUE_NAME varchar(255) not null, PASSWORD_POLICY_CONTAINER_ID bigint not null, GATEWAY_ID bigint, RESOURCE_TYPE_ID bigint not null, APPROVERS_GROUP_OWNER_ID bigint, RECONCILE_POLICY_ID bigint not null, TASKS_QUEUE_ID bigint, primary key (RESOURCE_ID), unique (DISPLAY_NAME), unique (UNIQUE_NAME))
+create table VL_RESOURCES_TO_ROLES (ROLE_ID bigint not null, RESOURCE_ID bigint not null)
+create table VL_RESOURCE_ADMIN (RESOURCE_ADMIN_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, PASSWORD varchar(100) not null, PRIORITY integer not null, USER_NAME varchar(50) not null, RESOURCE_ID bigint not null, primary key (RESOURCE_ADMIN_ID))
+create table VL_RESOURCE_ATTRIBUTE (OVERRIDE_LEVEL varchar(31) not null, RESOURCE_ATTRIBUTE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DATA_TYPE varchar(255) not null, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, MANAGED bit not null, MAX_LENGTH integer not null, MAX_VALUES integer not null, MIN_LENGTH integer not null, MIN_VALUES integer not null, REGEXP_VALIDATION_STRING varchar(255), REQUIRED bit not null, UNIQUE_NAME varchar(255) not null, ACCOUNT_ID bit not null, OVERRIDDEN bit not null, PASSWORD_ATTRIBUTE bit not null, PERSISTENCE bit not null, PRIORITY integer not null, SOURCE_TYPE varchar(255), STORE_LOCALLY bit not null, SYNCED bit not null, IDENTITY_ATTRIBUTE_ID bigint, RESOURCE_TYPE_ID bigint, RESOURCE_ID bigint, primary key (RESOURCE_ATTRIBUTE_ID))
+create table VL_RESOURCE_GLOBAL_OPER (RESOURCE_GLOBAL_OPER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, UNIQUE_NAME varchar(255) not null, MUST bit not null, primary key (RESOURCE_GLOBAL_OPER_ID), unique (UNIQUE_NAME))
+create table VL_RESOURCE_GROUP (RESOURCE_GROUP_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DELETED_IN_RESOURCE bit not null, DESCRIPTION longvarchar, DISPLAY_NAME varchar(255) not null, FIRST_TIME_GRP_BEING_DEL_IN_RS timestamp, MANAGED bit not null, NUM_OF_REC_GRP_KEEPS_DEL_IN_TS integer not null, TYPE varchar(255) not null, UNIQUE_ID varchar(255), RESOURCE_ID bigint not null, primary key (RESOURCE_GROUP_ID))
+create table VL_RESOURCE_GROUPS_TO_ROLES (ROLE_ID bigint not null, RESOURCE_GROUP_ID bigint not null, primary key (RESOURCE_GROUP_ID, ROLE_ID))
+create table VL_RESOURCE_GROUP_CONTAINER (RESOURCE_GROUP_CONTAINER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), NAME varchar(255), primary key (RESOURCE_GROUP_CONTAINER_ID))
+create table VL_RESOURCE_GROUP_MEMBER (ACCOUNT_ID bigint, RESOURCE_GROUP_ID bigint, primary key (ACCOUNT_ID, RESOURCE_GROUP_ID))
+create table VL_RESOURCE_TYPE (RESOURCE_TYPE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, CONFIGURATION_TEMPLATE longvarchar not null, GATEWAY_REQUIRED bit not null, RESOURCE_CONTROLLER_CLASS_NAME varchar(255) not null, RESOURCE_CONTROLLER_TYPE varchar(255), IS_SCRIPTED bit not null, UNIQUE_NAME varchar(255) not null, primary key (RESOURCE_TYPE_ID), unique (UNIQUE_NAME))
+create table VL_RESOURCE_TYPE_OPERATION (RESOURCE_TYPE_OPERATION_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, MUST_ATTACH_ACTN_TO_POST_PHASE bit, MUST_ATTACH_ACTN_TO_PRE_PHASE bit, MUST_ATTACH_ACTN_TO_VALD_PHASE bit, RESOURCE_TYPE_ID bigint not null, RESOURCE_GLOBAL_OPER_ID bigint not null, primary key (RESOURCE_TYPE_OPERATION_ID))
+create table VL_RF_APPROVERS_GROUP (CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, APPROVAL_LEVEL integer not null, DESCRIPTION varchar(255), TYPE varchar(255), ROLESFOLDER_ID bigint, APPROVERS_GROUP_ID bigint, primary key (APPROVERS_GROUP_ID, ROLESFOLDER_ID))
+create table VL_ROLE (ROLE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, ACTIVE_ACCESS_SYNC bit not null, DESCRIPTION varchar(255) not null, DISABLED bit not null, EXPOSED_TO_SELF_SERVICE bit not null, INFO1 varchar(255), INFO2 varchar(255), INFO3 varchar(255), NAME varchar(255) not null, WORKFLOW_PROCESS_DEF_ID bigint, primary key (ROLE_ID), unique (NAME))
+create table VL_ROLES_FOLDER (ROLES_FOLDER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DISPLAY_NAME varchar(255) not null, UNIQUE_NAME varchar(255) not null, info1 varchar(255), info2 varchar(255), info3 varchar(255), TYPE varchar(255), PARENT_ROLES_FOLDER_ID bigint, primary key (ROLES_FOLDER_ID), unique (UNIQUE_NAME))
+create table VL_ROLES_TO_ROLES_FOLDERS (ROLES_FOLDER_ID bigint not null, ROLE_ID bigint not null)
+create table VL_ROLE_APPROVERS_GROUP (CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, APPROVAL_LEVEL integer not null, DESCRIPTION varchar(255), TYPE varchar(255), APPROVERS_GROUP_ID bigint, ROLE_ID bigint, primary key (APPROVERS_GROUP_ID, ROLE_ID))
+create table VL_ROLE_RESOURCE_ATTRIBUTE (ROLE_RESOURCE_ATTR_TYPE varchar(31) not null, CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), PRIORITY integer not null, VALUE varchar(255), ROLE_ID bigint, RESOURCE_ATTRIBUTE_ID bigint, ACTION_RULE_ID bigint, primary key (RESOURCE_ATTRIBUTE_ID, ROLE_ID))
+create table VL_SCHEDULER_JOB_DEF (SCHEDULER_JOB_DEFINITION_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, ACTIVE bit not null, DESCRIPTION varchar(255) not null, DISPLAY_NAME varchar(255) not null, DURABLE bit not null, JOB_CLASS varchar(255) not null, RECOVERY_REQUESTING bit not null, STATEFUL bit not null, UNIQUE_NAME varchar(255) not null, VOLATILITY bit not null, primary key (SCHEDULER_JOB_DEFINITION_ID))
+create table VL_SCHEDULER_TRIGGER (TRIGGER_TYPEA varchar(31) not null, SCHEDULER_TRIGGER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, ACTIVE bit not null, DESCRIPTION varchar(255) not null, DISPLAY_NAME varchar(255) not null, MIS_FIRE_INSTRUCTION integer, TRIGGER_TYPE varchar(255), UNIQUE_NAME varchar(40) not null, VOLATILITY bit, CRON_EXPRESSION varchar(255) not null, REPEAT_COUNT integer not null, REPEAT_INTERVAL bigint not null, START_TIME timestamp, STOP_TIME timestamp, primary key (SCHEDULER_TRIGGER_ID), unique (DISPLAY_NAME))
+create table VL_SCHED_TRIGGERS_TO_JOBDEFS (SCHEDULER_JOB_DEFINITION_ID bigint not null, SCHEDULER_TRIGGER_ID bigint not null, primary key (SCHEDULER_JOB_DEFINITION_ID, SCHEDULER_TRIGGER_ID))
+create table VL_SCRIPTED_ACTION (SCRIPTED_ACTION_TYPE varchar(255) not null, ID bigint not null, primary key (ID))
+create table VL_SYSTEM_ER_SCRIPTED_ACTION (ID bigint not null, primary key (ID))
+create table VL_SYSTEM_EVENT (EVENT_ID bigint not null, primary key (EVENT_ID))
+create table VL_TASK (CLASS_TYPE varchar(31) not null, TASK_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, BODY longvarchar, DELETED bit, DESCRIPTION varchar(255), EXPECTED_EXECUTION_DATE timestamp, FAILURE_COUNTS integer, IN_PROCESS bit, EXECUTION_DATE timestamp, STATUS varchar(255), TASK_EXECUTER_CLASS_NAME varchar(255), WORKFLOW_PROCESS_ID bigint, RESOURCE_UNIQUE_NAME varchar(255), SERIALIZED_CONTEXT longvarchar, EVENT_RESPONSE_ID bigint, RESOURCE_ID bigint not null, RESOURCE_TYPE_OPERATION_ID bigint, TASK_REF_ID bigint, REQUEST_ID bigint, BULK_TASK_ID bigint, REQUEST_REF_ID bigint, USER_REF_ID bigint, primary key (TASK_ID))
+create table VL_TASKS_QUEUE (TASKS_QUEUE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DESTINATION_QUEUE_NAME varchar(40) not null, DISPLAY_NAME varchar(40) not null, primary key (TASKS_QUEUE_ID))
+create table VL_TASK_DEFINITION (TASK_DEFINITION_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, CLASS_NAME varchar(255), DELETE_TASK_AFTER_EXECUTION bit not null, DESCRIPTION varchar(255) not null, EXEC_MODE varchar(255) not null, EXECUTION_LIMIT bigint not null, FAILURE_RETRIES integer not null, NAME varchar(40) not null, IS_SCRIPTED bit not null, IS_SUSPENDABLE bit not null, primary key (TASK_DEFINITION_ID))
+create table VL_TASK_DEPENDENCY (TASK_ID bigint not null, DEPEND_ON_TASK_ID bigint not null, primary key (TASK_ID, DEPEND_ON_TASK_ID))
+create table VL_TASK_LOG (TASK_LOG_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, DETAILED_MESSAGE longvarchar, SEVERITY varchar(255), SUMMARY_MESSAGE longvarchar, TASK_ID bigint not null, primary key (TASK_LOG_ID))
+create table VL_USER (USER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, AUTH_FAILURE_COUNTER integer not null, IS_AUTH_VIA_LOCAL_PASSWORD bit not null, CREATED_BY_RECONCILE bit not null, CREATED_BY_REQUEST bit not null, CREATED_MANUALLY bit not null, DELETED bit not null, DISABLED bit not null, EXPIRATION_DATE timestamp, LOCKED bit not null, NAME varchar(100) not null, PASSWORD varchar(255), IS_PROTECTED bit not null, SOURCE_TYPE varchar(255), SYNC_IDENTITY_ATTRIBUTES bit not null, DELEGATOR_USER_ID bigint, USER_CONTAINER_ID bigint, SOURCE_RESOURCE_ID bigint, REQUEST_DELEGATOR_GROUP_ID bigint, primary key (USER_ID), unique (NAME))
+create table VL_USERS_TO_CAPABILITIES (CAPABILITY_ID bigint not null, USER_ID bigint not null, primary key (CAPABILITY_ID, USER_ID))
+create table VL_USERS_TO_CAP_FOLDERS (USER_ID bigint not null, CAP_FOLDER_ID bigint not null)
+create table VL_USERS_TO_POSITIONS (USER_ID bigint not null, POSITION_ID bigint not null, primary key (POSITION_ID, USER_ID))
+create table VL_USER_CONTAINER (USER_CONTAINER_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255), DISPLAY_NAME varchar(40) not null, UNIQUE_NAME varchar(40) not null, primary key (USER_CONTAINER_ID), unique (UNIQUE_NAME))
+create table VL_USER_IDENTITY_ATTRIBUTE (USER_IDENTITY_ATTRIBUTE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, IDENTITY_ATTRIBUTE_ID bigint not null, USER_ID bigint not null, primary key (USER_IDENTITY_ATTRIBUTE_ID))
+create table VL_USER_IDENTITY_ATTR_VALUE (USER_IDENTITY_ATTR_VALUE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DATA_TYPE varchar(255) not null, VALUE_BOOLEAN bit, VALUE_DATA timestamp, VALUE_INT integer, VALUE_LONG bigint, VALUE_STRING varchar(255), USER_IDENTITY_ATTRIBUTE_ID bigint not null, primary key (USER_IDENTITY_ATTR_VALUE_ID))
+create table VL_USER_ROLE (USER_ROLE_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, EXPIRATION_DATE timestamp, INHERITED bit, ROLE_ID bigint not null, USER_ID bigint not null, primary key (USER_ROLE_ID))
+create table VL_WORKFLOW_PROCESS_DEF (WORKFLOW_PROCESS_DEF_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, DESCRIPTION varchar(255) not null, IMAGE longvarbinary not null, PROCESS_DEF_ENGINE_KEY varchar(255) not null, UNIQUE_NAME varchar(255) not null, VERSION integer not null, primary key (WORKFLOW_PROCESS_DEF_ID))
+create table VL_XML_OBJECT (TYPE varchar(31) not null, XML_OBJECT_ID bigint generated by default as identity (start with 1), CREATION_DATE timestamp, LAST_UPDATE_DATE timestamp, XML longvarchar, clazz varchar(255), primary key (XML_OBJECT_ID))
+alter table RECONCILE_EVENT_RESPONSE add constraint FK14F41597C0DCA5C0 foreign key (EVENT_RESPONSE_ID) references VL_EVENT_RESPONSE
+alter table RECONCILE_EVENT_RESPONSE add constraint FK14F4159789609E88 foreign key (RECONCILE_POLICY_ID) references VL_RECONCILE_POLICY
+alter table SYSTEM_EVENT_RESPONSE add constraint FK7342E876C0DCA5C0 foreign key (EVENT_RESPONSE_ID) references VL_EVENT_RESPONSE
+alter table VL_ACCOUNT add constraint FK862BB184C3F961A9 foreign key (USER_ID) references VL_USER
+alter table VL_ACCOUNT add constraint FK862BB184E0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_ACCOUNTS_TO_RESOURCE_GRPS add constraint FK7AF0D5EBF4A1E2FD foreign key (GROUP_ID) references VL_RESOURCE_GROUP
+alter table VL_ACCOUNTS_TO_RESOURCE_GRPS add constraint FK7AF0D5EB6A7B6C8F foreign key (ACCOUNT_ID) references VL_AUDITED_ACCOUNT
+alter table VL_ACCOUNTS_TO_RESOURCE_GRPS add constraint FK7AF0D5EBD9C6D86B foreign key (ACCOUNT_ID) references VL_ACCOUNT
+alter table VL_ACCOUNTS_TO_USER_ROLES add constraint FKC5F9F47D47EF3840 foreign key (USER_ROLE_ID) references VL_USER_ROLE
+alter table VL_ACCOUNTS_TO_USER_ROLES add constraint FKC5F9F47DD9C6D86B foreign key (ACCOUNT_ID) references VL_ACCOUNT
+alter table VL_ACCOUNT_ATTRIBUTE add constraint FK400F5181D9C6D86B foreign key (ACCOUNT_ID) references VL_ACCOUNT
+alter table VL_ACCOUNT_ATTRIBUTE add constraint FK400F5181C2CC34EE foreign key (RESOURCE_ATTRIBUTE_ID) references VL_RESOURCE_ATTRIBUTE
+alter table VL_ACCOUNT_ATTRIBUTE_VALUE add constraint FKE08969136FD2AEAE foreign key (ACCOUNT_ATTRIBUTE_ID) references VL_ACCOUNT_ATTRIBUTE
+alter table VL_ACTION add constraint FKBA090BDF7B447D7 foreign key (RESOURCE_TYPE_OPERATION_ID) references VL_RESOURCE_TYPE_OPERATION
+alter table VL_ACTION add constraint FKBA090BDF3DB9E300 foreign key (EVENT_DEFINITION_ID) references VL_EVENT_DEFINITION
+alter table VL_ACTION add constraint FKBA090BDF8734385F foreign key (RESOURCE_ATTRIBUTE_ID) references VL_RESOURCE_ATTRIBUTE
+alter table VL_ACTION add constraint FKBA090BDF72416B96 foreign key (ACTION_LANGUAGE_ID) references VL_ACTION_LANGUAGE
+alter table VL_ACTION add constraint FKBA090BDFE0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_ACTION_LANGS_TO_TASK_DEFS add constraint FKA8C004FE72416B96 foreign key (ACTION_LANGUAGE_ID) references VL_ACTION_LANGUAGE
+alter table VL_ACTION_LANGS_TO_TASK_DEFS add constraint FKA8C004FEC4F28814 foreign key (TASK_DEFINITION_ID) references VL_TASK_DEFINITION
+alter table VL_ACTION_SCRIPT add constraint FKF6D36D2B1BE2EFE foreign key (SCRIPTED_ACTION_ID) references VL_SCRIPTED_ACTION
+alter table VL_ACTION_SCRIPT add constraint FKF6D36D2B72416B96 foreign key (ACTION_LANGUAGE_ID) references VL_ACTION_LANGUAGE
+alter table VL_APPROVERS_TO_APPROVERS_GRPS add constraint FK6F585C09F6B24C6F foreign key (APPROVER_ID) references VL_USER
+alter table VL_APPROVERS_TO_APPROVERS_GRPS add constraint FK6F585C09CF2C138C foreign key (APPROVERS_GROUP_ID) references VL_APPROVERS_GROUP
+alter table VL_AUDITED_ACCOUNT add constraint FK929360DFE0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_BULK_TASK add constraint FK61F31249935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_BULK_TASK_LOG add constraint FK324B1C2E91A081EE foreign key (BULK_TASK_ID) references VL_BULK_TASK
+alter table VL_CAPS_TO_CAPS_FOLDERS add constraint FK25ED0A164F4E6B49 foreign key (CAPABILITY_ID) references VL_CAPABILITY
+alter table VL_CAPS_TO_CAPS_FOLDERS add constraint FK25ED0A1620DBBD1A foreign key (CAPABILITY_FOLDER_ID) references VL_CAPABILITY_FOLDER
+alter table VL_ENTITY_JOURNALING add constraint FKB4DA29DE9817956D foreign key (ENTITY_ROLE_ID) references VL_ROLE
+alter table VL_ENTITY_JOURNALING add constraint FKB4DA29DE3D42594D foreign key (ENTITY_USER_ID) references VL_USER
+alter table VL_ENTITY_JOURNALING add constraint FKB4DA29DE62F030D foreign key (ENTITY_POSITION_ID) references VL_POSITION
+alter table VL_ENTITY_JOURNALING add constraint FKB4DA29DE6A022BA0 foreign key (PERFORMED_BY_USER_ID) references VL_USER
+alter table VL_EVENT_LOG_DATA_ENTRY add constraint FKB909F1C674420581 foreign key (EVENT_LOG_ENTRY_ID) references VL_EVENT_LOG_ENTRY
+alter table VL_EVENT_RESPONSE add constraint FK2201C50F48769D6E foreign key (ACTION_ID) references VL_ACTION_DEF
+alter table VL_EVENT_RESPONSE add constraint FK2201C50FDAC3A58B foreign key (EVENT_ID) references VL_EVENTA
+alter table VL_FORM add constraint FK4C63F4AD935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_GRPS_TO_RS_GRP_CONTAINERS add constraint FK9D403EE8830C5A9 foreign key (RESOURCE_GROUP_CONTAINER_ID) references VL_RESOURCE_GROUP_CONTAINER
+alter table VL_GRPS_TO_RS_GRP_CONTAINERS add constraint FK9D403EE955C000E foreign key (RESOURCE_GROUP_ID) references VL_RESOURCE_GROUP
+alter table VL_IDENTITY_ATTRIBUTE add constraint FKB19C24643316C25D foreign key (IDENTITY_ATTRIBUTES_GROUP_ID) references VL_IDENTITY_ATTRIBUTES_GROUP
+alter table VL_IDENTITY_ATTRIBUTE_SOURCE add constraint FKF8BC3C565C43F8E foreign key (IDENTITY_ATTRIBUTE_ID) references VL_IDENTITY_ATTRIBUTE
+alter table VL_IDENTITY_ATTRIBUTE_SOURCE add constraint FKF8BC3C5626262A1D foreign key (TS_ATTRIBUTE_ID) references VL_RESOURCE_ATTRIBUTE
+alter table VL_PASSWORD_POLICY_CONTAINER add constraint FK9F80C66FC574D360 foreign key (PASSWORD_POLICY_ID) references VL_PASSWORD_POLICY
+alter table VL_POSITION_ROLE add constraint FK407EE0031ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_POSITION_ROLE add constraint FK407EE003CF327D69 foreign key (POSITION_ID) references VL_POSITION
+alter table VL_POS_TO_REQUESTS add constraint FK24A2BF4FD27C704 foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_POS_TO_REQUESTS add constraint FK24A2BF4CF327D69 foreign key (POSITION_ID) references VL_POSITION
+alter table VL_READY_ACTION add constraint FKF3065B5B3CA4EAC5 foreign key (ID) references VL_ACTION_DEF
+alter table VL_RECONCILE_EVENT add constraint FK792032A0DAC3A58B foreign key (EVENT_ID) references VL_EVENTA
+alter table VL_RECONCILE_POLICY add constraint FKBD4BE5CC3630F381 foreign key (RECONCILE_AUDIT_POLICY_ID) references VL_RECONCILE_AUDIT_POLICY
+alter table VL_RECONCILE_POLICY add constraint FKBD4BE5CC37A0F535 foreign key (CONFIRMATION_RULE_ACTION_ID) references VL_ACTION_DEF
+alter table VL_RECONCILE_POLICY add constraint FKBD4BE5CC5B58848 foreign key (CORRELATION_RULE_ACTION_ID) references VL_ACTION_DEF
+alter table VL_RECONCILE_USERS_POLICY add constraint FKBE6CFC839004CD25 foreign key (SOURCE_RESOURCE_ID) references VL_RESOURCE
+alter table VL_REC_PROCESS_SUMMARY add constraint FK4CAE98BEE0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_REC_PROCESS_SUMMARY_EVENT add constraint FK2E4D6FB959920D29 foreign key (REC_PROCESS_SUMMARY_ID) references VL_REC_PROCESS_SUMMARY
+alter table VL_REC_PROCESS_SUMMARY_LOG add constraint FKAE44602359920D29 foreign key (REC_PROCESS_SUMMARY_ID) references VL_REC_PROCESS_SUMMARY
+alter table VL_REQUEST add constraint FKDA719E6F8AF4649 foreign key (REQUESTED_ACCESS_FOR_USER_ID) references VL_USER
+alter table VL_REQUEST add constraint FKDA719E61ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_REQUEST add constraint FKDA719E69F6B7246 foreign key (USER_THAT_HAS_MY_ACCESS_ID) references VL_USER
+alter table VL_REQUEST add constraint FKDA719E6E0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_REQUEST add constraint FKDA719E68C8463E6 foreign key (REQUESTER_USER_ID) references VL_USER
+alter table VL_REQUESTED_POSITION add constraint FK5C7DCF23935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_REQUESTED_POSITION add constraint FK5C7DCF23CF327D69 foreign key (POSITION_ID) references VL_POSITION
+alter table VL_REQUEST_ACCOUNT add constraint FKCC2890B4935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_REQUEST_ATTRIBUTE add constraint FKD1F52763935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_REQUEST_ATTRIBUTE_VALUE add constraint FKF53BCD75C5FE5B6A foreign key (REQUEST_ATTRIBUTE_ID) references VL_REQUEST_ATTRIBUTE
+alter table VL_REQUEST_LOG add constraint FK4F480D4B935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_REQUEST_ROLE add constraint FK99BC572F935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_REQUEST_USER_COMMENT add constraint FKCC261F84935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_REQUEST_USER_COMMENT add constraint FKCC261F84C3F961A9 foreign key (USER_ID) references VL_USER
+alter table VL_RESOURCE add constraint FKAA58877789609E88 foreign key (RECONCILE_POLICY_ID) references VL_RECONCILE_POLICY
+alter table VL_RESOURCE add constraint FKAA5887778EB42F4C foreign key (TASKS_QUEUE_ID) references VL_TASKS_QUEUE
+alter table VL_RESOURCE add constraint FKAA5887772399B646 foreign key (RESOURCE_TYPE_ID) references VL_RESOURCE_TYPE
+alter table VL_RESOURCE add constraint FKAA588777442A7F07 foreign key (PASSWORD_POLICY_CONTAINER_ID) references VL_PASSWORD_POLICY_CONTAINER
+alter table VL_RESOURCE add constraint FKAA588777CB8D33D8 foreign key (APPROVERS_GROUP_OWNER_ID) references VL_APPROVERS_GROUP
+alter table VL_RESOURCE add constraint FKAA5887777D87CD0B foreign key (GATEWAY_ID) references VL_GATEWAY
+alter table VL_RESOURCES_TO_ROLES add constraint FKB5D3B8FC1ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_RESOURCES_TO_ROLES add constraint FKB5D3B8FCE0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_RESOURCE_ADMIN add constraint FK2E6D4067E0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_RESOURCE_ATTRIBUTE add constraint FKBB0B93B42399B646 foreign key (RESOURCE_TYPE_ID) references VL_RESOURCE_TYPE
+alter table VL_RESOURCE_ATTRIBUTE add constraint FKBB0B93B45C43F8E foreign key (IDENTITY_ATTRIBUTE_ID) references VL_IDENTITY_ATTRIBUTE
+alter table VL_RESOURCE_ATTRIBUTE add constraint FKBB0B93B4E0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_RESOURCE_GROUP add constraint FK2EC83397E0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_RESOURCE_GROUPS_TO_ROLES add constraint FK32BD1C1ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_RESOURCE_GROUPS_TO_ROLES add constraint FK32BD1C955C000E foreign key (RESOURCE_GROUP_ID) references VL_RESOURCE_GROUP
+alter table VL_RESOURCE_GROUP_MEMBER add constraint FK6ABF6042D9C6D86B foreign key (ACCOUNT_ID) references VL_ACCOUNT
+alter table VL_RESOURCE_GROUP_MEMBER add constraint FK6ABF6042955C000E foreign key (RESOURCE_GROUP_ID) references VL_RESOURCE_GROUP
+alter table VL_RESOURCE_TYPE_OPERATION add constraint FKBBD2504AAF860348 foreign key (RESOURCE_GLOBAL_OPER_ID) references VL_RESOURCE_GLOBAL_OPER
+alter table VL_RESOURCE_TYPE_OPERATION add constraint FKBBD2504A2399B646 foreign key (RESOURCE_TYPE_ID) references VL_RESOURCE_TYPE
+alter table VL_RF_APPROVERS_GROUP add constraint FK7E76E52CCF2C138C foreign key (APPROVERS_GROUP_ID) references VL_APPROVERS_GROUP
+alter table VL_RF_APPROVERS_GROUP add constraint FK7E76E52CF818434B foreign key (ROLESFOLDER_ID) references VL_ROLES_FOLDER
+alter table VL_ROLE add constraint FK4C69685F7A79ADA9 foreign key (WORKFLOW_PROCESS_DEF_ID) references VL_WORKFLOW_PROCESS_DEF
+alter table VL_ROLES_FOLDER add constraint FK7148333971E58D1 foreign key (PARENT_ROLES_FOLDER_ID) references VL_ROLES_FOLDER
+alter table VL_ROLES_TO_ROLES_FOLDERS add constraint FK9A9C184A1ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_ROLES_TO_ROLES_FOLDERS add constraint FK9A9C184A63948E66 foreign key (ROLES_FOLDER_ID) references VL_ROLES_FOLDER
+alter table VL_ROLE_APPROVERS_GROUP add constraint FK7344292E1ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_ROLE_APPROVERS_GROUP add constraint FK7344292ECF2C138C foreign key (APPROVERS_GROUP_ID) references VL_APPROVERS_GROUP
+alter table VL_ROLE_RESOURCE_ATTRIBUTE add constraint FK90B99B6B1ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_ROLE_RESOURCE_ATTRIBUTE add constraint FK90B99B6BE636C73A foreign key (ACTION_RULE_ID) references VL_ACTION
+alter table VL_ROLE_RESOURCE_ATTRIBUTE add constraint FK90B99B6BC2CC34EE foreign key (RESOURCE_ATTRIBUTE_ID) references VL_RESOURCE_ATTRIBUTE
+alter table VL_SCHED_TRIGGERS_TO_JOBDEFS add constraint FK172C077AD520F605 foreign key (SCHEDULER_JOB_DEFINITION_ID) references VL_SCHEDULER_JOB_DEF
+alter table VL_SCHED_TRIGGERS_TO_JOBDEFS add constraint FK172C077AF66F40D2 foreign key (SCHEDULER_TRIGGER_ID) references VL_SCHEDULER_TRIGGER
+alter table VL_SCRIPTED_ACTION add constraint FKD965E9E23CA4EAC5 foreign key (ID) references VL_ACTION_DEF
+alter table VL_SYSTEM_ER_SCRIPTED_ACTION add constraint FK56EBE1A06AAB77AA foreign key (ID) references VL_SCRIPTED_ACTION
+alter table VL_SYSTEM_EVENT add constraint FK6B8D9B53DAC3A58B foreign key (EVENT_ID) references VL_EVENTA
+alter table VL_TASK add constraint FK4C6A1D6E2875082F foreign key (EVENT_RESPONSE_ID) references VL_ACTION
+alter table VL_TASK add constraint FK4C6A1D6E91A081EE foreign key (BULK_TASK_ID) references VL_BULK_TASK
+alter table VL_TASK add constraint FK4C6A1D6E935A652B foreign key (REQUEST_ID) references VL_REQUEST
+alter table VL_TASK add constraint FK4C6A1D6E7B447D7 foreign key (RESOURCE_TYPE_OPERATION_ID) references VL_RESOURCE_TYPE_OPERATION
+alter table VL_TASK add constraint FK4C6A1D6EC13F46D5 foreign key (USER_REF_ID) references VL_USER
+alter table VL_TASK add constraint FK4C6A1D6EE0125749 foreign key (RESOURCE_ID) references VL_RESOURCE
+alter table VL_TASK add constraint FK4C6A1D6E29008C57 foreign key (REQUEST_REF_ID) references VL_REQUEST
+alter table VL_TASK add constraint FK4C6A1D6E43C5C195 foreign key (TASK_REF_ID) references VL_TASK
+alter table VL_TASK_DEPENDENCY add constraint FK779DE6BC711D4F69 foreign key (TASK_ID) references VL_TASK
+alter table VL_TASK_DEPENDENCY add constraint FK779DE6BC4AE2B8BC foreign key (DEPEND_ON_TASK_ID) references VL_TASK
+alter table VL_TASK_LOG add constraint FKA64E0CD3711D4F69 foreign key (TASK_ID) references VL_TASK
+alter table VL_USER add constraint FK4C6AD3B49004CD25 foreign key (SOURCE_RESOURCE_ID) references VL_RESOURCE
+alter table VL_USER add constraint FK4C6AD3B4217B6A2D foreign key (DELEGATOR_USER_ID) references VL_USER
+alter table VL_USER add constraint FK4C6AD3B436B8EF94 foreign key (USER_CONTAINER_ID) references VL_USER_CONTAINER
+alter table VL_USER add constraint FK4C6AD3B4D2257867 foreign key (REQUEST_DELEGATOR_GROUP_ID) references VL_APPROVERS_GROUP
+alter table VL_USERS_TO_CAPABILITIES add constraint FK88051DA4F4E6B49 foreign key (CAPABILITY_ID) references VL_CAPABILITY
+alter table VL_USERS_TO_CAPABILITIES add constraint FK88051DAC3F961A9 foreign key (USER_ID) references VL_USER
+alter table VL_USERS_TO_CAP_FOLDERS add constraint FKE132A774C3F961A9 foreign key (USER_ID) references VL_USER
+alter table VL_USERS_TO_CAP_FOLDERS add constraint FKE132A7742BD47754 foreign key (CAP_FOLDER_ID) references VL_CAPABILITY_FOLDER
+alter table VL_USERS_TO_POSITIONS add constraint FK3B4314A6CF327D69 foreign key (POSITION_ID) references VL_POSITION
+alter table VL_USERS_TO_POSITIONS add constraint FK3B4314A6C3F961A9 foreign key (USER_ID) references VL_USER
+alter table VL_USER_IDENTITY_ATTRIBUTE add constraint FKEAFF0EA6C3F961A9 foreign key (USER_ID) references VL_USER
+alter table VL_USER_IDENTITY_ATTRIBUTE add constraint FKEAFF0EA65C43F8E foreign key (IDENTITY_ATTRIBUTE_ID) references VL_IDENTITY_ATTRIBUTE
+alter table VL_USER_IDENTITY_ATTR_VALUE add constraint FK9B7E06993DB8050F foreign key (USER_IDENTITY_ATTRIBUTE_ID) references VL_USER_IDENTITY_ATTRIBUTE
+alter table VL_USER_ROLE add constraint FK2CEA8E211ECE9DC9 foreign key (ROLE_ID) references VL_ROLE
+alter table VL_USER_ROLE add constraint FK2CEA8E21C3F961A9 foreign key (USER_ID) references VL_USER
+SET AUTOCOMMIT FALSE
+INSERT INTO VL_IDENTITY_ATTRIBUTES_GROUP VALUES(1,NULL,NULL,'Generic Attributes',0,'Generic',TRUE)
+INSERT INTO VL_IDENTITY_ATTRIBUTE VALUES(1,NULL,NULL,'STRING','Employee English Last Name','Last Name',TRUE,255,1,1,1,NULL,TRUE,'LAST_NAME',1,'INPUT',FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,1)
+INSERT INTO VL_IDENTITY_ATTRIBUTE VALUES(2,NULL,NULL,'STRING','Email Address','Email Address',TRUE,255,1,1,1,NULL,FALSE,'EMAIL',10,'INPUT',FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,1)
+INSERT INTO VL_IDENTITY_ATTRIBUTE VALUES(3,NULL,NULL,'STRING','The company of the user','Company',TRUE,255,1,1,1,NULL,FALSE,'COMPANY',20,'INPUT',FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,1)
+INSERT INTO VL_IDENTITY_ATTRIBUTE VALUES(4,NULL,NULL,'STRING','User Department','Department',TRUE,255,1,1,1,NULL,FALSE,'DEPARTMENT',15,'INPUT',FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,1)
+INSERT INTO VL_IDENTITY_ATTRIBUTE VALUES(5,NULL,NULL,'STRING','User Mobile Number','Mobile',TRUE,30,1,1,1,NULL,FALSE,'MOBILE',20,'INPUT',FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,1)
+INSERT INTO VL_IDENTITY_ATTRIBUTE VALUES(6,NULL,NULL,'STRING','Employee Title','Title',TRUE,255,1,1,1,NULL,FALSE,'TITLE',5,'INPUT',FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,1)
+INSERT INTO VL_IDENTITY_ATTRIBUTE VALUES(7,NULL,NULL,'STRING','Employee English First Name','First Name',TRUE,255,1,1,1,NULL,TRUE,'FIRST_NAME',1,'INPUT',FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,1)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(1,NULL,NULL,'Fetch Active Data from resource offline','Resource Fetch Active Data Offline','RESOURCE_FETCH_ACTIVE_DATA_OFFLINE',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(2,NULL,NULL,'A full resource identities reconciliation process.','Full Resource Identities Reconciliation','RESOURCE_IDENTITIES_RECONCILIATION_FULL',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(3,NULL,NULL,'Suspend an existence account','Suspend Account','SUSPEND_ACCOUNT',TRUE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(4,NULL,NULL,'Remove account association from an access group','Delete Group Membership','DELETE_GROUP_MEMBERSHIP',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(5,NULL,NULL,'A resource reconciliation process.','Resource Reconciliation','RESOURCE_RECONCILIATION',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(6,NULL,NULL,'A full resource groups reconciliation process.','Full Resource Groups Reconciliation','RESOURCE_GROUPS_RECONCILIATION_FULL',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(7,NULL,NULL,'Associate an account to an access group','Add Group Membership','ADD_GROUP_MEMBERSHIP',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(8,NULL,NULL,'An incremental resource identities reconciliation process.','Incremental Resource Identities Reconciliation','RESOURCE_IDENTITIES_RECONCILIATION_INCREMENTAL',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(9,NULL,NULL,'A full resource group membership reconciliation process.','Full Resource Group Membership Reconciliation','RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_FULL',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(10,NULL,NULL,'Add a new access group','Add Group','ADD_GROUP',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(11,NULL,NULL,'Add a new account','Add Account','ADD_ACCOUNT',TRUE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(12,NULL,NULL,'Modify access and attributes of an existence account','Modify Account','MODIFY_ACCOUNT',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(13,NULL,NULL,'Delete an existence access group','Delete Group','DELETE_GROUP',FALSE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(14,NULL,NULL,'Delete an existence account','Delete an account','DELETE_ACCOUNT',TRUE)
+INSERT INTO VL_RESOURCE_GLOBAL_OPER VALUES(15,NULL,NULL,'Resume an existence account','Resume Account','RESUME_ACCOUNT',TRUE)
+INSERT INTO VL_RESOURCE_TYPE VALUES(1,NULL,NULL,'<?xml version="1.0" encoding="UTF-8"?>\u000a<resource-descriptor>\u000a\u0009<!--Adapter configuration, any adapter has these configuration parameters-->\u000a\u0009<adapter>\u000a\u0009\u0009<className desc="Adapter Class Name">velo.adapters.JdbcAdapter</className>\u000a\u0009\u0009<maxActive desc="Max Active Workers">4</maxActive>\u000a\u0009\u0009<maxIdle desc="Max Idle Workers">2</maxIdle>\u000a\u0009\u0009<maxWait desc="Max Worker Waiting Time in ms">1000</maxWait>\u000a\u0009\u0009<minEvictableIdleTimeMillis desc="Minimum Evictable Idle time in MS">30000</minEvictableIdleTimeMillis>\u000a\u0009</adapter>\u000a\u0009\u000a\u0009<!-- Specific attributes relevant to the specified adapter-->\u000a\u0009<specific>\u000a\u0009\u0009<host desc="Host Name"></host>\u000a\u0009\u0009<port desc="Port"></port>\u000a\u0009\u0009<dbName desc="Database Name"></dbName>\u000a\u0009\u0009<driverName desc="Driver name"></driverName>\u000a\u0009\u0009<urlTemplate desc="Url Template"></urlTemplate>\u000a\u0009\u0009<query-timeout desc="Query timeout">30</query-timeout>\u000a\u0009</specific>\u000a</resource-descriptor>\u000a',FALSE,'velo.resource.operationControllers.JdbcSpmlResourceOperationController',NULL,TRUE,'JDBC')
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(1,NULL,NULL,FALSE,TRUE,FALSE,1,3)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(2,NULL,NULL,FALSE,TRUE,FALSE,1,10)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(3,NULL,NULL,FALSE,TRUE,FALSE,1,7)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(4,NULL,NULL,FALSE,TRUE,FALSE,1,13)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(5,NULL,NULL,FALSE,FALSE,FALSE,1,12)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(6,NULL,NULL,FALSE,FALSE,FALSE,1,9)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(7,NULL,NULL,FALSE,FALSE,FALSE,1,6)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(8,NULL,NULL,FALSE,TRUE,FALSE,1,14)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(9,NULL,NULL,FALSE,TRUE,FALSE,1,4)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(10,NULL,NULL,FALSE,TRUE,FALSE,1,11)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(11,NULL,NULL,FALSE,FALSE,FALSE,1,8)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(12,NULL,NULL,FALSE,TRUE,FALSE,1,15)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(13,NULL,NULL,FALSE,FALSE,FALSE,1,2)
+INSERT INTO VL_RESOURCE_TYPE VALUES(2,NULL,NULL,'<?xml version="1.0" encoding="UTF-8"?>\u000a<resource-descriptor>\u000a\u0009<adapter>\u000a\u0009\u0009<className desc="Adapter Class Name" disabled="true">velo.adapters.ActiveDirectoryAdapter</className>\u000a        <maxActive desc="Max Active Workers">4</maxActive>\u000a        <maxIdle desc="Max Idle Workers">2</maxIdle>\u000a        <maxWait desc="Max Worker Waiting Time in ms">1000</maxWait>\u000a        <minEvictableIdleTimeMillis desc="Minimum Evictable Idle time in MS">30000</minEvictableIdleTimeMillis>\u000a\u0009</adapter>\u000a\u0009\u000a\u0009<!-- Specific attributes relevant to this target system descriptor type-->\u000a\u0009<specific>\u000a\u0009\u0009<host desc="Host Name"></host>\u000a\u0009\u0009<port desc="Port">636</port>\u000a\u0009\u0009<protocol desc="Protocol">ssl</protocol>\u000a\u0009\u0009<base-dn desc="Base DN (for all operations)"></base-dn>\u000a\u0009\u0009<groups-base-dn desc="Groups base DN (for searches/default creation path)"></groups-base-dn>\u000a\u0009\u0009<accounts-base-dn desc="Accounts Base DN (for sync porpuses)"></accounts-base-dn>\u000a\u0009\u0009<accounts-default-context-dn desc="Accounts default creation context"></accounts-default-context-dn>\u000a\u0009\u0009<ssl-key-store desc="SSL Key Store path"></ssl-key-store>\u000a\u0009\u0009<ssl-trust-store desc="SSL Trust store path"></ssl-trust-store>\u000a\u0009\u0009<ssl-key-store-password desc="SSL Keystore Password"></ssl-key-store-password>\u000a\u0009\u0009<authentication desc="Authentication scheme">simple</authentication>\u000a\u0009</specific>\u000a</resource-descriptor>\u000a',FALSE,'velo.resource.operationControllers.ActiveDirecotryRemoteSpmlResourceOperationController',NULL,FALSE,'Remote Active-Directory')
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',1,NULL,NULL,'STRING','SAM Account Name','SAM Account Name',TRUE,255,1,1,1,NULL,TRUE,'sAMAccountName',TRUE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,7,2,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',2,NULL,NULL,'STRING','Common Name','Common Name',TRUE,255,1,1,1,NULL,TRUE,'cn',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,7,2,NULL)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(14,NULL,NULL,FALSE,FALSE,FALSE,2,15)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(15,NULL,NULL,FALSE,FALSE,FALSE,2,8)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(16,NULL,NULL,FALSE,FALSE,FALSE,2,9)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(17,NULL,NULL,FALSE,FALSE,FALSE,2,11)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(18,NULL,NULL,FALSE,FALSE,FALSE,2,14)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(19,NULL,NULL,FALSE,FALSE,FALSE,2,7)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(20,NULL,NULL,FALSE,FALSE,FALSE,2,2)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(21,NULL,NULL,FALSE,FALSE,FALSE,2,4)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(22,NULL,NULL,FALSE,FALSE,FALSE,2,13)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(23,NULL,NULL,FALSE,FALSE,FALSE,2,12)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(24,NULL,NULL,FALSE,FALSE,FALSE,2,6)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(25,NULL,NULL,FALSE,FALSE,FALSE,2,3)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(26,NULL,NULL,FALSE,FALSE,FALSE,2,10)
+INSERT INTO VL_RESOURCE_TYPE VALUES(3,NULL,NULL,'<XML>',FALSE,'velo.resource.operationControllers.HttpClientSpmlResourceOperationController',NULL,TRUE,'HTTP-Client')
+INSERT INTO VL_RESOURCE_TYPE VALUES(4,NULL,NULL,'<XML>',FALSE,'velo.resource.operationControllers.TelnetSpmlResourceOperationController',NULL,TRUE,'Generic Scripted Telnet')
+INSERT INTO VL_RESOURCE_TYPE VALUES(5,NULL,NULL,'<?xml version="1.0" encoding="UTF-8"?><resource-descriptor><adapter><className desc="Adapter Class Name" disabled="true">velo.adapters.ActiveDirectoryAdapter</className><maxActive desc="Max Active Workers">4</maxActive><maxIdle desc="Max Idle Workers">2</maxIdle><maxWait desc="Max Worker Waiting Time in ms">1000</maxWait><minEvictableIdleTimeMillis desc="Minimum Evictable Idle time in MS">30000</minEvictableIdleTimeMillis></adapter><!-- Specific attributes relevant to this target system descriptor type--><specific><domain desc="Domain Name"></domain><base-dn desc="Base DN (for all operations)"></base-dn><groups-base-dn desc="Groups base DN (for searches/default creation path)"></groups-base-dn><accounts-base-dn desc="Accounts Base DN (for sync porpuses)"></accounts-base-dn><accounts-default-context-dn desc="Accounts default creation context"></accounts-default-context-dn><authenticationType desc="Authentication Type">simple</authenticationType></specific></resource-descriptor>',TRUE,'velo.wingw.WindowsGateway.controllers.NativeActiveDirectoryController','SPML_GENERIC',FALSE,'NATIVE_ACTIVE_DIRECTORY')
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',3,NULL,NULL,'STRING','Description','Description',TRUE,255,1,1,1,NULL,FALSE,'description',FALSE,FALSE,FALSE,FALSE,0,'NONE',FALSE,FALSE,NULL,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',4,NULL,NULL,'STRING','User Principal Name','User Principal Name',TRUE,255,1,1,1,NULL,FALSE,'userPrincipalName',FALSE,FALSE,FALSE,FALSE,0,'NONE',FALSE,FALSE,NULL,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',5,NULL,NULL,'STRING','The Proxy Addresses of the mailbox','Proxy Addresses',TRUE,255,1,1,1,NULL,FALSE,'proxyAddresses',FALSE,FALSE,FALSE,FALSE,0,'NONE',FALSE,FALSE,NULL,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',6,NULL,NULL,'STRING','Surname','Surname',TRUE,255,1,1,1,NULL,FALSE,'sn',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,1,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',7,NULL,NULL,'STRING','Title','Title',TRUE,255,1,1,1,NULL,FALSE,'title',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,6,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',8,NULL,NULL,'STRING','Department','Department',TRUE,255,1,1,1,NULL,FALSE,'department',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,4,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',9,NULL,NULL,'STRING','Common Name','Common Name',TRUE,255,1,1,1,NULL,TRUE,'cn',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,7,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',10,NULL,NULL,'STRING','The Exchange HomeMDB that will store the mailbox','Home Mdb',TRUE,255,1,1,1,NULL,FALSE,'homeMDB',FALSE,FALSE,FALSE,FALSE,0,'NONE',FALSE,FALSE,NULL,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',11,NULL,NULL,'STRING','SAM Account Name','SAM Account Name',TRUE,255,1,1,1,NULL,TRUE,'sAMAccountName',TRUE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,7,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',12,NULL,NULL,'STRING','Display Name','Display Name',TRUE,255,1,1,1,NULL,FALSE,'displayname',FALSE,FALSE,FALSE,FALSE,0,'NONE',FALSE,FALSE,NULL,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',13,NULL,NULL,'STRING','Company','Comapny',TRUE,255,1,1,1,NULL,FALSE,'company',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,3,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',14,NULL,NULL,'STRING','Given Name','Given Name',TRUE,255,1,1,1,NULL,FALSE,'givenname',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,7,5,NULL)
+INSERT INTO VL_RESOURCE_ATTRIBUTE VALUES('RESOURCE_TYPE',15,NULL,NULL,'STRING','Mobile','Mobile Number',TRUE,255,1,1,1,NULL,FALSE,'mobile',FALSE,FALSE,FALSE,FALSE,0,'IDENTITY_ATTRIBUTE',FALSE,FALSE,5,5,NULL)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(27,NULL,NULL,FALSE,FALSE,FALSE,5,12)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(28,NULL,NULL,FALSE,FALSE,FALSE,5,6)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(29,NULL,NULL,FALSE,FALSE,FALSE,5,4)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(30,NULL,NULL,FALSE,FALSE,FALSE,5,8)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(31,NULL,NULL,FALSE,FALSE,FALSE,5,9)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(32,NULL,NULL,FALSE,FALSE,FALSE,5,2)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(33,NULL,NULL,FALSE,FALSE,FALSE,5,13)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(34,NULL,NULL,FALSE,FALSE,FALSE,5,10)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(35,NULL,NULL,FALSE,FALSE,FALSE,5,7)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(36,NULL,NULL,FALSE,FALSE,FALSE,5,15)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(37,NULL,NULL,FALSE,FALSE,FALSE,5,11)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(38,NULL,NULL,FALSE,FALSE,FALSE,5,14)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(39,NULL,NULL,FALSE,FALSE,FALSE,5,3)
+INSERT INTO VL_RESOURCE_TYPE VALUES(6,NULL,NULL,'<?xml version="1.0" encoding="UTF-8"?>\u000a<resource-descriptor>\u000a<!--Adapter configuration, any adapter has these configuration parameters-->\u000a<adapter>\u000a<className desc="Adapter Class Name">velo.adapters.JdbcAdapter</className>\u000a<maxActive desc="Max Active Workers">4</maxActive>\u000a<maxIdle desc="Max Idle Workers">2</maxIdle>\u000a<maxWait desc="Max Worker Waiting Time in ms">1000</maxWait>\u000a<minEvictableIdleTimeMillis desc="Minimum Evictable Idle time in MS">30000</minEvictableIdleTimeMillis>\u000a</adapter>\u000a<!-- Specific attributes relevant to the specified adapter-->\u000a<specific>\u000a<host desc="Host Name"></host>\u000a<port desc="Port"></port>\u000a<dbName desc="Database Name"></dbName>\u000a<driverName desc="Driver name">driver:oracle.jdbc.driver.OracleDriver</driverName>\u000a<urlTemplate desc="Url Template">jdbc:oracle:thin:@%h:%p:%d</urlTemplate>\u000a<query-timeout desc="Query timeout">30</query-timeout>\u000a</specific>\u000a</resource-descriptor>',FALSE,'velo.resource.operationControllers.OracleServerSpmlController','SPML_GENERIC',FALSE,'Oracle Server')
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(40,NULL,NULL,FALSE,FALSE,FALSE,6,14)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(41,NULL,NULL,FALSE,FALSE,FALSE,6,13)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(42,NULL,NULL,FALSE,FALSE,FALSE,6,8)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(43,NULL,NULL,FALSE,FALSE,FALSE,6,3)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(44,NULL,NULL,FALSE,FALSE,FALSE,6,10)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(45,NULL,NULL,FALSE,FALSE,FALSE,6,9)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(46,NULL,NULL,FALSE,FALSE,FALSE,6,11)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(47,NULL,NULL,FALSE,FALSE,FALSE,6,7)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(48,NULL,NULL,FALSE,FALSE,FALSE,6,4)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(49,NULL,NULL,FALSE,FALSE,FALSE,6,2)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(50,NULL,NULL,FALSE,FALSE,FALSE,6,12)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(51,NULL,NULL,FALSE,FALSE,FALSE,6,6)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(52,NULL,NULL,FALSE,FALSE,FALSE,6,15)
+INSERT INTO VL_RESOURCE_TYPE VALUES(7,NULL,NULL,'<?xml version="1.0" encoding="UTF-8"?>\u000a<resource-descriptor>\u000a<adapter>\u000a<className desc="Adapter Class Name" disabled="true">velo.adapters.ActiveDirectoryAdapter</className>\u000a<maxActive desc="Max Active Workers">4</maxActive>\u000a<maxIdle desc="Max Idle Workers">2</maxIdle>\u000a<maxWait desc="Max Worker Waiting Time in ms">1000</maxWait>\u000a<minEvictableIdleTimeMillis desc="Minimum Evictable Idle time in MS">30000</minEvictableIdleTimeMillis>\u000a</adapter>\u000a<specific>\u000a<host desc="Host Name">\u000a</host>\u000a<port desc="Port">636</port>\u000a<protocol desc="The protocol used to connect to the directory (ssl/clear)">ssl</protocol>\u000a<ssl-key-store desc="SSL Key Store path">\u000a</ssl-key-store>\u000a<ssl-trust-store desc="SSL Trust store path">\u000a</ssl-trust-store>\u000a<ssl-key-store-password desc="SSL Keystore Password">\u000a</ssl-key-store-password>\u000a<group>\u000a<group-dn desc="This value is used in addition to the base DN when searching and loading groups, an example is ou=Groups. If no value is supplied, the subtree search will start from the base DN.">\u000a</group-dn>\u000a<group-object-class desc="The LDAP user object class typeto use when loading groups.">groupOfUniqueNames</group-object-class>\u000a<group-object-filter desc="The filter to use when searching group objects.">(objectclass=groupOfUniqueNames)</group-object-filter>\u000a<group-unique-name-attribute desc="The attribute field to use when loading the group unique name.">cn</group-unique-name-attribute>\u000a<group-display-name-attribute desc="The attribute field to use when loading the group display name.">cn</group-display-name-attribute>\u000a<group-description-attribute desc="The attribute field to use when loading the group description">description</group-description-attribute>\u000a<group-members-attribute desc="The attribute field to use when loading the group members.">uniqueMember</group-members-attribute>\u000a</group>\u000a<account>\u000a<account-dn desc="This value is used in addition to the base DN when searching and loading accounts, an example is ou=Users. If no value is supplied, the subtree search will start from the base DN.">\u000a</account-dn>\u000a<account-object-class desc="The LDAP account object class type o use when loading principals.">inetorgperson</account-object-class>\u000a<account-object-filter desc="The filter to use when searching user objects.">(objectclass=inetorgperson)</account-object-filter>\u000a<account-default-creation-dn desc="The value is used in addition to the base DN, this is the default account creation container. a value must be supplied.">\u000a</account-default-creation-dn>\u000a</account>\u000a</specific>\u000a</resource-descriptor>',FALSE,'velo.resource.operationControllers.GenericLdapResourceController','SPML_GENERIC',FALSE,'Generic LDAP')
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(53,NULL,NULL,FALSE,FALSE,FALSE,7,10)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(54,NULL,NULL,FALSE,FALSE,FALSE,7,6)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(55,NULL,NULL,FALSE,FALSE,FALSE,7,4)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(56,NULL,NULL,FALSE,FALSE,FALSE,7,15)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(57,NULL,NULL,FALSE,FALSE,FALSE,7,2)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(58,NULL,NULL,FALSE,FALSE,FALSE,7,8)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(59,NULL,NULL,FALSE,FALSE,FALSE,7,11)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(60,NULL,NULL,FALSE,FALSE,FALSE,7,7)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(61,NULL,NULL,FALSE,FALSE,FALSE,7,12)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(62,NULL,NULL,FALSE,FALSE,FALSE,7,9)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(63,NULL,NULL,FALSE,FALSE,FALSE,7,14)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(64,NULL,NULL,FALSE,FALSE,FALSE,7,3)
+INSERT INTO VL_RESOURCE_TYPE_OPERATION VALUES(65,NULL,NULL,FALSE,FALSE,FALSE,7,13)
+INSERT INTO VL_CAPABILITY_FOLDER VALUES(1,NULL,NULL,'Administrator Capabilities Folder','Administrator','ADMINISTRATOR')
+INSERT INTO VL_CAPABILITY VALUES(1,NULL,NULL,'admin super user capability','super_user')
+INSERT INTO VL_CAPABILITY VALUES(2,NULL,NULL,'Basic authentication capability','basic_auth')
+INSERT INTO VL_CAPABILITY VALUES(3,NULL,NULL,'Manage Users','manage_users')
+INSERT INTO VL_CAPABILITY VALUES(4,NULL,NULL,'Manage User Attributes','modify_user_attributes')
+INSERT INTO VL_CAPABILITY VALUES(5,NULL,NULL,'Enable Users','disable_users')
+INSERT INTO VL_CAPABILITY VALUES(6,NULL,NULL,'Delete Users','delete_users')
+INSERT INTO VL_CAPABILITY VALUES(7,NULL,NULL,'Enable Accounts','enable_accounts')
+INSERT INTO VL_CAPABILITY VALUES(8,NULL,NULL,'Disable Accounts','disable_accounts')
+INSERT INTO VL_CAPABILITY VALUES(9,NULL,NULL,'Modify User Roles','modify_user_roles')
+INSERT INTO VL_CAPABILITY VALUES(10,NULL,NULL,'View Requests','view_requests')
+INSERT INTO VL_CAPABILITY VALUES(11,NULL,NULL,'Assign users to capabilities','assign_users_to_capabilities')
+INSERT INTO VL_CAPABILITY VALUES(12,NULL,NULL,'Manage Resources','manage_resources')
+INSERT INTO VL_CAPABILITY VALUES(13,NULL,NULL,'Manage Resource Attributes','manage_resource_attributes')
+INSERT INTO VL_CAPABILITY VALUES(14,NULL,NULL,'Manage Identity Attributes','manage_identity_attributes')
+INSERT INTO VL_CAPABILITY VALUES(15,NULL,NULL,'Manage Identity Attribute Groups','manage_identity_attribute_groups')
+INSERT INTO VL_CAPABILITY VALUES(16,NULL,NULL,'Manage Capabilities','manage_capabilities')
+INSERT INTO VL_CAPABILITY VALUES(17,NULL,NULL,'Manage Resource Reconcile Policies','manage_resource_reconcile_policies')
+INSERT INTO VL_CAPABILITY VALUES(18,NULL,NULL,'Manage Email Templates','manage_email_templates')
+INSERT INTO VL_CAPABILITY VALUES(19,NULL,NULL,'Manage Tasks','manage_tasks')
+INSERT INTO VL_CAPABILITY VALUES(20,NULL,NULL,'Manage Bulk Tasks','manage_bulk_tasks')
+INSERT INTO VL_CAPABILITY VALUES(21,NULL,NULL,'Manage Event Responses','manage_event_responses')
+INSERT INTO VL_CAPABILITY VALUES(22,NULL,NULL,'Re-Queue Tasks','requeue_tasks')
+INSERT INTO VL_CAPABILITY VALUES(23,NULL,NULL,'Manage Password Synchronization Objects','manage_password_sync')
+INSERT INTO VL_CAPABILITY VALUES(24,NULL,NULL,'Approver','approver')
+INSERT INTO VL_CAPABILITY_FOLDER VALUES(2,NULL,NULL,'Standard User Capabilities Folder, any new user will be assigned to this capability folder automatically.','Standard User','STANDARD_USER')
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,1)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,2)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,3)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,4)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,5)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,6)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,7)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,8)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,9)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,10)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,11)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,12)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,13)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,14)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,15)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,16)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,17)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,18)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,19)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,20)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,21)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,22)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,23)
+INSERT INTO VL_CAPS_TO_CAPS_FOLDERS VALUES(1,24)
+INSERT INTO VL_RECONCILE_AUDIT_POLICY VALUES(1,NULL,NULL,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,'DEFAULT')
+INSERT INTO VL_RECONCILE_POLICY VALUES(1,NULL,NULL,FALSE,FALSE,FALSE,'NOTHING','NOTHING',TRUE,'REMOVE_ACCOUNT_FROM_IDM_REPOSITORY','Default',FALSE,FALSE,FALSE,FALSE,10,'CREATE_ACCOUNT_WITHOUT_ASSIGN_ACCOUNT_TO_MATCHED_USER','NOTHING','PERSIST_ACCOUNT_IN_IDM_REPOSITORY',NULL,NULL,1)
+INSERT INTO VL_PASSWORD_POLICY VALUES(1,NULL,NULL,TRUE,'Default Password Policy','Default Password Policy',5,10,6,1,0,NULL,TRUE,NULL,'!@#$%^&*(),~[]{}:><.;''','DEFAULT')
+INSERT INTO VL_PASSWORD_POLICY_CONTAINER VALUES(1,NULL,NULL,'Default Password Policy Container','Default Password Policy Container','DEFAULT',1)
+INSERT INTO VL_EVENTA VALUES(1,'2009-07-01 02:00:12.144000000','An event that occurs before a user was successfully created','User Creation - Pre',NULL,'USER_CREATION_PRE')
+INSERT INTO VL_SYSTEM_EVENT VALUES(1)
+INSERT INTO VL_EVENTA VALUES(2,'2009-07-01 02:00:12.144000000','An event that occurs after a user was successfully created','User Creation - Post',NULL,'USER_CREATION_POST')
+INSERT INTO VL_SYSTEM_EVENT VALUES(2)
+INSERT INTO VL_EVENTA VALUES(3,'2009-07-01 02:00:12.144000000','An event that occurs when task execution fails','Task Failure',NULL,'TASK_FAILURE')
+INSERT INTO VL_SYSTEM_EVENT VALUES(3)
+INSERT INTO VL_EVENTA VALUES(4,'2009-07-01 02:00:12.144000000','An event that occurs after resource reconciliation process is executed','Resource Reconciliation - Post',NULL,'RESOURCE_RECONCILIATION_POST')
+INSERT INTO VL_SYSTEM_EVENT VALUES(4)
+INSERT INTO VL_USER VALUES(1,NULL,NULL,0,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,NULL,FALSE,'ADMIN','AR5ezY858ZSM9sCNlUgJuA==',TRUE,NULL,TRUE,NULL,NULL,NULL,NULL)
+INSERT INTO VL_USERS_TO_CAP_FOLDERS VALUES(1,1)
+INSERT INTO VL_USER_CONTAINER VALUES(1,'2009-07-01 02:00:12.131000000',NULL,'All users associated to this container by default.','Default Container','Default')
+INSERT INTO VL_ACTION_LANGUAGE VALUES(1,NULL,NULL,'A simple XML action','XML')
+INSERT INTO VL_ACTION_LANGUAGE VALUES(2,NULL,NULL,'Groovy - An agile scripting language','groovy')
+INSERT INTO VL_EVENTA VALUES(5,'2009-07-01 02:00:12.131000000','An event that occurs whenever the identity was confirmed to be existed on the resource','Confirmed Identity',NULL,'IDENTITY_CONFIRMED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(5)
+INSERT INTO VL_EVENTA VALUES(6,'2009-07-01 02:00:12.131000000','An event that occures whenever an identity was removed on the resource','Removed Identity',NULL,'IDENTITY_REMOVED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(6)
+INSERT INTO VL_EVENTA VALUES(7,'2009-07-01 02:00:12.144000000','An event that occures whenever a new identity is discovered on the resource but has no matching owner.','Unmatched Identity',NULL,'IDENTITY_UNMATCHED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(7)
+INSERT INTO VL_EVENTA VALUES(8,'2009-07-01 02:00:12.144000000','An event that occures whenever a new identity is discovered on the resource with a matching owner.','Unassigned Identity',NULL,'IDENTITY_UNASSIGNED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(8)
+INSERT INTO VL_EVENTA VALUES(9,'2009-07-01 02:00:12.144000000','An event that occures whenever attributes of current existence identity were modified.','Modified Identity',NULL,'IDENTITY_MODIFIED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(9)
+INSERT INTO VL_EVENTA VALUES(10,'2009-07-01 02:00:12.144000000','An event that occures whenever a certain attribute of current existence identity was modified.','Modified Identity Attribute',NULL,'IDENTITY_ATTRIBUTE_MODIFIED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(10)
+INSERT INTO VL_EVENTA VALUES(11,'2009-07-01 02:00:12.144000000','An event that occures whenever a group was modified on the resource.','Modified Group',NULL,'GROUP_MODIFIED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(11)
+INSERT INTO VL_EVENTA VALUES(12,'2009-07-01 02:00:12.144000000','An event that occures whenever a new group was discovered on the resource.','Created Group',NULL,'GROUP_CREATED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(12)
+INSERT INTO VL_EVENTA VALUES(13,'2009-07-01 02:00:12.144000000','An event that occures whenever a group was removed from the resource.','Removed Group',NULL,'GROUP_REMOVED')
+INSERT INTO VL_RECONCILE_EVENT VALUES(13)

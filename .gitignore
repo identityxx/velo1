@@ -3,7 +3,7 @@ lib/test/**
 build-dev.properties
 build-prod.properties
 classes/**
-bootstrap/**
+#bootstrap/**
 dist/**
 exploded-archives/**
 hibernate-console.properties
