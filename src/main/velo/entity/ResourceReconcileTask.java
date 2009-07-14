@@ -88,5 +88,12 @@ public class ResourceReconcileTask extends ResourceTask implements Serializable 
     	return task;
     }
     
+    public static ResourceReconcileTask factoryReconcileGroupMembershipIncrementally(Resource resource, ResourceTypeOperation rto){
+    	ResourceReconcileTask task = factory(resource, "Incremental Reconcile Group Membership Reconciliation for resource '" + resource.getDisplayName() + "'.");
+    	task.setResourceTypeOperation(rto);
+    	task.setTaskExecuterClassName("velo.tasks.taskExecuters.ReconcileGroupMembershipIncrementalTaskExecuter");
+    	
+    	return task;
+    }
 	
 }

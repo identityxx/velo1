@@ -27,7 +27,7 @@ public interface ReconcileActions {
 	public void reconcileIdentityAttributes();
 	public void resourceReconcileGroupsFull();
 	public void resourceReconcileGroupMembershipFull();
-	
+	public void resourceReconcileGroupMembershipIncremental();
 	
 	public void reconcileAllResources();
 	public void reconcileResource();

@@ -16,7 +16,6 @@ import velo.ejb.interfaces.EventManagerLocal;
 import velo.ejb.interfaces.ReconcileManagerLocal;
 import velo.ejb.interfaces.ResourceGroupManagerLocal;
 import velo.ejb.utils.JndiLookup;
-import velo.entity.Account;
 import velo.entity.ReconcileEvent;
 import velo.entity.ReconcileProcessSummary;
 import velo.entity.Resource;
@@ -48,9 +47,9 @@ public class ReconcileGroupMembershipProcess {
 		execute(allActiveGroups, true);
 	}
 
-//	public void executeIncrementally(ResourceGroups incrementalActiveGroups) throws ReconcileProcessException {
-//		execute(incrementalActiveGroups, false);
-//	}
+	public void executeIncrementally(ResourceGroups incrementalActiveGroups) throws ReconcileProcessException {
+		execute(incrementalActiveGroups, false);
+	}
 
 
 	private void execute(ResourceGroups activeResourceGroups, boolean full) throws ReconcileProcessException {
@@ -62,7 +61,7 @@ public class ReconcileGroupMembershipProcess {
 			if (full) {
 				rps = new ReconcileProcessSummary(resource, ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_FULL);
 			} else {
-				rps = new ReconcileProcessSummary(resource, ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_FULL);
+				rps = new ReconcileProcessSummary(resource, ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_INCREMENTAL);
 			}
 			rps.start();
 

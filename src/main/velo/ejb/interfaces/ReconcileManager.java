@@ -47,6 +47,7 @@ public interface ReconcileManager {
 	public void reconcileIdentitiesFull(String resourceUniqueName, boolean async) throws OperationException;
 	public void reconcileGroupsFull(String resourceUniqueName, boolean async) throws OperationException;
 	public void reconcileGroupMembershipFull(String resourceUniqueName, boolean async) throws OperationException;
+	public void reconcileGroupMembershipIncremental(String resourceUniqueName, boolean async) throws OperationException;
 	public void persistReconcileProcessSummary(ReconcileProcessSummary reconcileProcessSummary);
 	public int deleteAllReconcileProcessSummaries(Date untilDate);
 	

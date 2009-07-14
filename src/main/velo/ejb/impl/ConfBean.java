@@ -373,6 +373,9 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		resourceGlobalOperations.add(rodResourceGroupsReconciliation);
 		ResourceGlobalOperation rodResourceGroupMembershipReconciliation = new ResourceGlobalOperation("RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_FULL","Full Resource Group Membership Reconciliation","A full resource group membership reconciliation process.", false);
 		resourceGlobalOperations.add(rodResourceGroupMembershipReconciliation);
+		ResourceGlobalOperation rodResourceGroupMembershipReconciliationIncr = new ResourceGlobalOperation("RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_INCREMENTAL","Incremental Resource Group Membership Reconciliation","An incremental resource group membership reconciliation process.", false);
+		resourceGlobalOperations.add(rodResourceGroupMembershipReconciliation);
+		resourceGlobalOperations.add(rodResourceGroupMembershipReconciliationIncr);
 		
 		
 		
@@ -722,6 +725,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		ResourceTypeOperation NADrtodResourceIdentitiesReconcileIncremental = new ResourceTypeOperation(rodResourceIdentitiesReconciliationIncremental, activeDirectoryDotNetType, false,false,false);
 		ResourceTypeOperation NADrtodResourceGroupsReconcileFull = new ResourceTypeOperation(rodResourceGroupsReconciliation, activeDirectoryDotNetType, false,false,false);
 		ResourceTypeOperation NADrtodResourceGroupMembershipReconcileFull = new ResourceTypeOperation(rodResourceGroupMembershipReconciliation, activeDirectoryDotNetType, false,false,false);
+		ResourceTypeOperation NADrtodResourceGroupMembershipReconcileIncr = new ResourceTypeOperation(rodResourceGroupMembershipReconciliationIncr, activeDirectoryDotNetType, false,false,false);
+		
 		
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodAddAccount);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodDelAccount);
@@ -738,7 +743,8 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceIdentitiesReconcileIncremental);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceGroupsReconcileFull);
 		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceGroupMembershipReconcileFull);
-
+		activeDirectoryDotNetType.getSupportedOperations().add(NADrtodResourceGroupMembershipReconcileIncr);
+		
 
 
 

@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
 import javax.xml.namespace.QName;
@@ -150,7 +152,7 @@ public class ReconcileDataImportManager {
 
 		try {
 			IWindowsGatewayApi iface = factoryWindowsGateway(resource, null, null, null, vdcp);
-			String gzippedBase64Data = iface.performOperation("LIST_IDENTITIES_ALL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
+			String gzippedBase64Data = iface.performOperation("LIST_IDENTITIES_FULL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
 			log.trace("Size of gzipped base64 data: " + gzippedBase64Data.length());
 
 			byte[] gzippedBase64Bytes = new byte[gzippedBase64Data.length()];
@@ -301,7 +303,7 @@ public class ReconcileDataImportManager {
 
 		try {
 			IWindowsGatewayApi iface = factoryWindowsGateway(resource, null, null, null, vdcp);
-			String gzippedBase64Data = iface.performOperation("LIST_GROUPS_ALL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
+			String gzippedBase64Data = iface.performOperation("LIST_GROUPS_FULL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
 			log.trace("Size of gzipped base64 data: " + gzippedBase64Data.length());
 
 			byte[] gzippedBase64Bytes = new byte[gzippedBase64Data.length()];
@@ -388,18 +390,43 @@ public class ReconcileDataImportManager {
 
 
 
-
-
 	public ResourceGroups importGroupMembership(ResourceReconcileTask reconcileTask) throws DataTransformException {
 		Resource resource = ReadyActionAPI.getInstance().getResourceManager().findResource(reconcileTask.getResourceUniqueName());
 
 		log.debug("Importing all group membership from resource '" + resource.getDisplayName() + "'");
 		stopWatch.start();
 
+
+		Date lastReconcileStartTime = null;
+		if (reconcileTask.getResourceTypeOperation().getResourceGlobalOperation().getUniqueName().equals("RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_INCREMENTAL")) {
+			ReconcileProcessSummary rps = ReadyActionAPI.getInstance().getResourceManager().findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_INCREMENTAL);
+			//might be null first time...
+			if (rps != null) {
+				lastReconcileStartTime = rps.getStartDate();
+			} else {
+				rps = ReadyActionAPI.getInstance().getResourceManager().findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_FULL);
+			
+				if (rps != null) {
+					lastReconcileStartTime = rps.getStartDate();
+				} else {
+					throw new DataTransformException("Group membership reconciliation was never executed for this resource, please execute full reconciliation first.");
+				}
+			}
+		}
+		
+		ReconcileProcesses processType = null;
+		if (reconcileTask.getResourceTypeOperation().getResourceGlobalOperation().getUniqueName().equals("RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_FULL")) {
+			processType = ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_FULL;
+		}
+		else if (reconcileTask.getResourceTypeOperation().getResourceGlobalOperation().getUniqueName().equals("RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_INCREMENTAL")) {
+			processType = ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_INCREMENTAL;
+		}
+
+		
 		if (resource.isAutoFetch()) {
 			log.debug("Resource 'Auto fetch' was set to -true-, fetching data directly from resource...");
 			if (resource.getResourceType().isGatewayRequired()) {
-				return importGroupMembersFromWindowsGateway(resource);
+				return importGroupMembersFromWindowsGateway(lastReconcileStartTime, resource, processType);
 			} else {
 				GroupMembershipSpmlResourceOpreationController roc = (GroupMembershipSpmlResourceOpreationController)resource.getResourceType().factoryResourceOperationsController();
 				if (roc == null) {
@@ -440,14 +467,37 @@ public class ReconcileDataImportManager {
 	
 	
 	
-	private ResourceGroups importGroupMembersFromWindowsGateway(Resource resource) throws DataTransformException {
+	private ResourceGroups importGroupMembersFromWindowsGateway(Date lastReconcileStartTime, Resource resource, ReconcileProcesses processType) throws DataTransformException {
+		log.debug("Import gorup membership via gateway has just started for resource name '" + resource.getDisplayName() + "'");
 		VeloDataContainerProxy vdcp = new VeloDataContainerProxy();
 
-
+		String lastRecStartTimeInRightFormat = null;
+		if (lastReconcileStartTime != null) {
+			String pattern = "MM/dd/yyyy HH:mm:ss";
+		    SimpleDateFormat format = new SimpleDateFormat(pattern);
+		    
+		    lastRecStartTimeInRightFormat = format.format(lastReconcileStartTime);
+		}
+		
+		if (lastRecStartTimeInRightFormat != null) {
+			vdcp.addAttribute("LAST-RECONCILE-DATETIME", lastRecStartTimeInRightFormat);
+			log.debug("Setting 'LAST-RECONCILE-DATETIME' with value: '" + lastRecStartTimeInRightFormat + "'");
+		}
+		
 		try {
 			
 			IWindowsGatewayApi iface = factoryWindowsGateway(resource, null, null, null, vdcp);
-			String gzippedBase64Data = iface.performOperation("LIST_GROUPMEMBERSHIP_ALL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
+			
+			String gzippedBase64Data = null;
+			if (processType == ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_FULL) {
+				gzippedBase64Data = iface.performOperation("LIST_GROUPMEMBERSHIP_FULL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
+			} else if (processType == ReconcileProcesses.RECONCILE_GROUP_MEMBERSHIP_INCREMENTAL) {
+				gzippedBase64Data = iface.performOperation("LIST_GROUPMEMBERSHIP_INCREMENTAL", resource.getResourceType().getResourceControllerClassName(), vdcp.factoryVeloDataContainer());
+			} else {
+				throw new DataTransformException("Cannot perform reconcile group membership, process type '" + processType + "' is not supported!");
+			}
+			
+			
 			log.trace("Size of gzipped base64 data: " + gzippedBase64Data.length());
 
 			byte[] gzippedBase64Bytes = new byte[gzippedBase64Data.length()];

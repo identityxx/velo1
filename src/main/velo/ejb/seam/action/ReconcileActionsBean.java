@@ -119,6 +119,19 @@ public class ReconcileActionsBean implements ReconcileActions {
 		}
 	}
 	
+	public void resourceReconcileGroupMembershipIncremental() {
+		try {
+			reconcileManager.reconcileGroupMembershipIncremental(resource.getUniqueName(),isExecuteProcessAsync());
+			
+			if(isExecuteProcessAsync()) {
+				facesMessages.add("Created a task to reconcile resource #0's group membership incrementally.",resource.getDisplayName());
+			} else {
+				facesMessages.add("Succesfully reconciled resource #0's group membership incrementally",resource.getDisplayName());
+			}
+		} catch (OperationException e) {
+			facesMessages.add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+		}
+	}
 	
 	
 	

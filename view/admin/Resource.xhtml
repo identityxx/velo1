@@ -151,7 +151,9 @@
 			<h:commandButton action="#{reconcileActions.resourceReconcileGroupsFull}"
                  value="Execute Resource Groups Reconciliation"/>
 			<h:commandButton action="#{reconcileActions.resourceReconcileGroupMembershipFull}"
-                 value="Execute Resource Group Membership Reconciliation"/>
+                 value="Execute Resource Group Membership Reconciliation Full"/>
+            <h:commandButton action="#{reconcileActions.resourceReconcileGroupMembershipIncremental}"
+                 value="Execute Resource Group Membership Reconciliation Incremental"/>
 			<h:selectBooleanCheckbox title="Execute Asynchroniously?" value="#{reconcileActions.executeProcessAsync}"/>
 			 
 <!--			<h:selectBooleanCheckbox title="Fetch Active Data?" -->

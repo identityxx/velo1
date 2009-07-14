@@ -41,7 +41,7 @@ import velo.entity.ReconcileProcessSummaryEvent.ReconcileProcessSummaryEvents;
 @SequenceGenerator(name="ReconcileProcessSummaryIdSeq",sequenceName="REC_PROCESS_SUMMARY_ID_SEQ")
 public class ReconcileProcessSummary implements Serializable {
 	public enum ReconcileProcesses {
-		RECONCILE_IDENTITIES_INCREMENTAL,RECONCILE_IDENTITIES_FULL, RECONCILE_GROUPS_FULL,RECONCILE_GROUP_MEMBERSHIP_FULL
+		RECONCILE_IDENTITIES_INCREMENTAL,RECONCILE_IDENTITIES_FULL, RECONCILE_GROUPS_FULL,RECONCILE_GROUP_MEMBERSHIP_FULL, RECONCILE_GROUP_MEMBERSHIP_INCREMENTAL
 	}
 	
 	private Long reconcileProcessSummaryId;

@@ -286,6 +286,32 @@ public class ReconcileBean implements ReconcileManagerLocal,
 		}
 	}
 	
+	public void reconcileGroupMembershipIncremental(String resourceUniqueName, boolean async) throws OperationException {
+		log.debug("Reconciling group membership INCREMENTAL process has requested.");
+		
+		Resource resource = resourceManager.findResource(resourceUniqueName);
+		if (resource == null) {
+			throw new OperationException("Full reconcile group membership operation is not supported(or does not exist) for resouce '" + resource.getDisplayName() + "'");
+		}
+		
+		//TODO: Remove this when offline fetch will be supported
+		resource.setAutoFetch(true);
+		
+		String operationUniqueName = "RESOURCE_GROUP_MEMBERSHIP_RECONCILIATION_INCREMENTAL";
+		ResourceTypeOperation rto = resource.getResourceType().findResourceTypeOperation(operationUniqueName);
+		if (rto == null) {
+			throw new OperationException("Incremental reconcile group membership operation is not supported(or does not exist) for resouce '" + resource.getDisplayName() + "'");
+		}
+		ResourceReconcileTask task = ResourceReconcileTask.factoryReconcileGroupMembershipIncrementally(resource, rto);
+		task.setAsync(async);
+		
+		try {
+			taskManager.executeTask(task);
+		} catch (TaskExecutionException e) {
+			throw new OperationException(e);
+		}
+	}
+	
 	
 	public void persistReconcileProcessSummary(ReconcileProcessSummary reconcileProcessSummary) {
 		em.persist(reconcileProcessSummary);
