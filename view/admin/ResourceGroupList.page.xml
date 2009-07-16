@@ -11,6 +11,7 @@
    <param name="order" value="#{resourceGroupList.order}"/>
    <param name="from"/>
    <param name="uniqueId" value="#{resourceGroupList.resourceGroup.uniqueId}"/>
+   <param name="description" value="#{resourceGroupList.resourceGroup.description}"/>
    <param name="displayName" value="#{resourceGroupList.resourceGroup.displayName}"/>
    <param name="resourceUniqueName" value="#{resourceGroupList.resourceUniqueName}"/>
 </page>

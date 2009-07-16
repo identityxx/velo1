@@ -43,6 +43,7 @@ public class SysConf {
 	private final static String VELO_SERVER_VERSION = "1.4GAb";
 	private final static String veloINIConfFileName = "velo_config.ini";
 	private final static String veloXMLConfFileName = "velo_config.xml";
+	private final static String veloXMLExtConfFileName = "velo_config_ext.xml";
 	private final static String VELO_CONF_DIR = "conf";
 	private final static String VELO_SYS_DIR = "velo_sys";
 	public final static String VELO_KEYS_DIR = "keys";
@@ -57,6 +58,10 @@ public class SysConf {
 
 	public static String getVeloXMLConfFileName() {
 		return getVeloHomeDir() + "/" + VELO_SYS_DIR + "/" + VELO_CONF_DIR + "/" + veloXMLConfFileName;
+	}
+	
+	public static String getVeloExtXMLConfFileName() {
+		return getVeloHomeDir() + "/" + VELO_SYS_DIR + "/" + VELO_CONF_DIR + "/" + veloXMLExtConfFileName;
 	}
 
 	public static String getVeloINIConfFileName() {
@@ -76,6 +81,11 @@ public class SysConf {
 		return System.getProperty("veloHomeDir") + "/" + VELO_WORKSPACE_DIR;
 	}
 
+	public static Configuration getInstance() {
+		return getSysConf();
+	}
+	
+	
 	/**
 	 * Returns a Configuration object for managing system configuration properties
 	 * @return Configuration object
@@ -114,14 +124,22 @@ public class SysConf {
 
 				String iniConfFile = getVeloINIConfFileName();
 				String xmlConfFile = getVeloXMLConfFileName();
+				String xmlConfExtFile = getVeloExtXMLConfFileName();
 
 
 				config.addConfiguration(new PropertiesConfiguration(iniConfFile));
 				XMLConfiguration xmlConf = new XMLConfiguration(xmlConfFile);
+				XMLConfiguration xmlExtConf = new XMLConfiguration(xmlConfExtFile);
 				xmlConf.setDelimiterParsingDisabled(true);
 				xmlConf.setListDelimiter("|".charAt(0));
 				xmlConf.setDelimiter("|".charAt(0));
+				
+				xmlExtConf.setDelimiterParsingDisabled(true);
+				xmlExtConf.setListDelimiter("|".charAt(0));
+				xmlExtConf.setDelimiter("|".charAt(0));
+				
 				config.addConfiguration(xmlConf);
+				config.addConfiguration(xmlExtConf);
 
 
 				//TODO: Fix this for JBOSS

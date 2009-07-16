@@ -34,7 +34,7 @@ public class ReconcileGroupMembershipIncrementalTaskExecuter implements TaskExec
 		}
 		
 		try {
-			process.executeFull(groups);
+			process.executeIncrementally(groups);
 		} catch (ReconcileProcessException e) {
 			throw new TaskExecutionException(e);
 		}

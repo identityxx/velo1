@@ -20,15 +20,21 @@
 				switchType="ajax">
 
 				<s:decorate template="layout/display.xhtml">
-					<ui:define name="label">Group Unique ID</ui:define>
-					<h:inputText id="uniqueId"
-						value="#{resourceGroupList.resourceGroup.uniqueId}" />
-				</s:decorate>
-
-				<s:decorate template="layout/display.xhtml">
 					<ui:define name="label">Display Name</ui:define>
 					<h:inputText id="displayName"
 						value="#{resourceGroupList.resourceGroup.displayName}" />
+				</s:decorate>
+				
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Description</ui:define>
+					<h:inputText id="description"
+						value="#{resourceGroupList.resourceGroup.description}" />
+				</s:decorate>
+				
+				<s:decorate template="layout/display.xhtml">
+					<ui:define name="label">Group Unique ID</ui:define>
+					<h:inputText id="uniqueId"
+						value="#{resourceGroupList.resourceGroup.uniqueId}" />
 				</s:decorate>
 				
 				<s:decorate template="layout/display.xhtml">
@@ -57,6 +63,7 @@
 				id="resourceGroupList" var="resourceGroup"
 				value="#{resourceGroupList.resultList}"
 				rendered="#{not empty resourceGroupList.resultList}">
+				<!--
 				<h:column>
 					<f:facet name="header">
 						<s:link styleClass="columnHeader"
@@ -71,6 +78,7 @@
 					</s:link>
             		
         		</h:column>
+        		-->
 				<h:column>
 					<f:facet name="header">
 						<s:link styleClass="columnHeader"
@@ -79,7 +87,10 @@
 								value="#{resourceGroupList.order=='displayName asc' ? 'displayName desc' : 'displayName asc'}" />
 						</s:link>
 					</f:facet>
-            		#{resourceGroup.displayName}
+					
+					<s:link view="/admin/#{empty from ? 'ResourceGroup' : from}.xhtml" value="#{resourceGroup.displayName}">
+						<f:param name="resourceGroupId" value="#{resourceGroup.resourceGroupId}" />
+					</s:link>
         		</h:column>
 				<h:column>
 					<f:facet name="header">

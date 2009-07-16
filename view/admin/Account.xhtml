@@ -83,16 +83,12 @@
         <f:facet name="header">Member in Groups (as in resource)</f:facet>
 		<rich:dataTable value="#{velo:setAsList(accountHome.instance.groupMembership)}" var="gm">
 			<rich:column>
-				<f:facet name="header">Group Unique Id</f:facet>
-				#{gm.resourceGroup.uniqueId}
+				<f:facet name="header">Display Name</f:facet>
+				#{gm.resourceGroup.displayName}
 			</rich:column>
 			<rich:column>
 				<f:facet name="header">Group Type</f:facet>
 				#{gm.resourceGroup.type}
-			</rich:column>
-			<rich:column>
-				<f:facet name="header">Display Name</f:facet>
-				#{gm.resourceGroup.displayName}
 			</rich:column>
 			<rich:column>
 				<f:facet name="header">Description</f:facet>

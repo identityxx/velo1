@@ -160,7 +160,7 @@ public class ReconcileGroupMembershipProcess {
 							Account accountInRepo = getAccountManager().findAccount(currActiveMember.getKey(), getResource());
 							context.addVar("account", accountInRepo);
 							
-							rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_ASSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currActiveMember.getKey(), "A new identity named '" + currActiveMember.getKey() + "' was associated to group '" + currActiveRG.getUniqueId() + "'");
+							rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_ASSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currActiveMember.getKey(), "A new identity named '" + currActiveMember.getKey() + "' was associated to group name '" + currRepoRG.getDisplayName() + "'");
 							getEventManager().raiseReconcileEvent(GROUP_MEMBER_ASSOCIATED_EVENT, getResource().getReconcilePolicy(), context);
 							//cleanup context
 							context.removeVar("accountNameAssociated");
@@ -173,7 +173,7 @@ public class ReconcileGroupMembershipProcess {
 							//REMOVED MEMBERSHIP!
 							//log.info("Raising 'GROUP_MEMBER_DISSOCIATE' event for account name '" + newCreatedAccount.getNameInRightCase() + "'");
 							context.addVar("memberDissociated",currRepoMember.getValue());
-							rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_DISSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currRepoMember.getKey(), "A new identity named '" + currRepoMember.getKey() + "' was dissociated from group '" + currRepoRG.getUniqueIdInRightCase() + "'");
+							rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_DISSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currRepoMember.getKey(), "An identity named '" + currRepoMember.getKey() + "' was dissociated from group name '" + currRepoRG.getDisplayName() + "'");
 							getEventManager().raiseReconcileEvent(GROUP_MEMBER_DISSOCIATED_EVENT, getResource().getReconcilePolicy(), context);
 							wasRepoGroupModified = true;
 							//Managed by ready action
@@ -195,7 +195,7 @@ public class ReconcileGroupMembershipProcess {
 					}
 				} else {
 					log.debug("Active group '" + currActiveRG.getUniqueIdInRightCase() + "' was -not found- in Velo repo. (skipping group...[will be reconciled after group reconciliation])");
-					rps.addLog(EventLogLevel.INFO, "Group '" + currActiveRG.getUniqueIdInRightCase() + "' was not found in Velo repo.");
+					rps.addLog(EventLogLevel.INFO, "Group '" + currActiveRG.getUniqueIdInRightCase() + "' ("+currActiveRG.getDisplayName() +") was not found in Velo repo.");
 				}
 			}
 			

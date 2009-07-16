@@ -158,7 +158,7 @@ public class ReconcileGroupsProcess {
 				context.addVar("groupUniqueId", newCreatedGroup.getUniqueIdInRightCase());
 
 				log.info("Raising 'GROUP_CREATED' event for group name '" + newCreatedGroup.getUniqueIdInRightCase() + "'");
-				rps.addEvent(ReconcileProcessSummaryEvents.GROUP_CREATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.GROUP, newCreatedGroup.getUniqueIdInRightCase(), "A new group named '" + newCreatedGroup.getUniqueIdInRightCase() + "' was discovered on resource.");
+				rps.addEvent(ReconcileProcessSummaryEvents.GROUP_CREATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.GROUP, newCreatedGroup.getUniqueIdInRightCase(), "A new group named '" + newCreatedGroup.getDisplayName() + "' was discovered on resource.");
 				getEventManager().raiseReconcileEvent(GROUP_CREATED_EVENT, getResource().getReconcilePolicy(), context);
 
 				//not really needed, just for safety
@@ -213,7 +213,7 @@ public class ReconcileGroupsProcess {
 				}
 
 				if (groupModified) {
-					rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MODIFIED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.GROUP, currExistGroup.getUniqueIdInRightCase(), "Group name '" + currExistGroup.getUniqueIdInRightCase() + "' was modified.");
+					rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MODIFIED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.GROUP, currExistGroup.getUniqueIdInRightCase(), "Group name '" + currExistGroup.getDisplayName() + "' was modified.");
 					getEventManager().raiseReconcileEvent(GROUP_MODIFIED_EVENT, getResource().getReconcilePolicy(), context);
 					getEntityManager().merge(correspondingRepoGroupToActiveGroup);
 				}
@@ -247,7 +247,7 @@ public class ReconcileGroupsProcess {
 					context.addVar("group",currGroupToBeRemoved);
 					context.addVar("groupUniqueId",currGroupToBeRemoved.getUniqueIdInRightCase());
 					getEventManager().raiseReconcileEvent(GROUP_REMOVED_EVENT, getResource().getReconcilePolicy(), context);
-					rps.addEvent(ReconcileProcessSummaryEvents.GROUP_REMOVED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.GROUP, currGroupToBeRemoved.getUniqueIdInRightCase(), "Group name '" + currGroupToBeRemoved.getUniqueIdInRightCase() + "' was removed from resource.");
+					rps.addEvent(ReconcileProcessSummaryEvents.GROUP_REMOVED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.GROUP, currGroupToBeRemoved.getUniqueIdInRightCase(), "Group name '" + currGroupToBeRemoved.getDisplayName() + "' was removed from resource.");
 				}
 				subStopWatch.stop();
 				log.info("(FINISHED) raising GROUP_REMOVED event for all removed groups (with amount '" + allGroupsNamesInRepositoryForResourceForRemoval.size() + "') in '" + subStopWatch.getTime()/1000 + "' seconds.");

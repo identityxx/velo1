@@ -456,6 +456,14 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 			//persist user anyway, events should not cause user persistancy to fail, this is too risky
 			//what for? should be done using User.factoryUser (always should go thorugh factory!!!)
 			user.setCreationDate(new Date());
+			
+			
+			
+			//encrypt password
+			if ( (user.getPassword() != null) && (user.getPassword().length() > 0) ) {
+				user.setPassword(PasswordHash.instance().generateSaltedHash(user.getPassword(), user.getName()));
+			}
+			
 			getEntityManager().persist(user);
 			invokeCreateUserEvent(user,false);
 		} catch (ScriptInvocationException e) {
