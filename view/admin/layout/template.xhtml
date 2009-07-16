@@ -54,18 +54,15 @@
     Powered by <a href="http://velo.safehaus.org">Velo</a>.
     An open source Identity Management solution.
     
-    <!-- 
-    <br/>
-    Conversation ID: {conversation.id}
-    <br/>
-    Nested?: {conversation.nested}
-    <br/>
-    Parent ID: {conversation.parentId}
-    <br/>
-    Root ID: {conversation.rootId}
-    <br/>
-    View ID: {conversation.viewId}
-     -->
+    
+    <h:panelGrid columns="1" rendered="false">
+    	Conversation ID: #{conversation.id}
+    	Nested?: #{conversation.nested}
+    	Is long running?: #{manager.instance().isLongRunningConversation()}
+    	Parent ID: #{conversation.parentId}
+    	Root ID: #{conversation.rootId}
+    	View ID: #{conversation.viewId}
+    </h:panelGrid>
   </div>
 
 </body>

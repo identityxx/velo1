@@ -53,6 +53,7 @@ import velo.ejb.seam.RequestList;
 import velo.ejb.seam.ResourceList;
 import velo.ejb.seam.TaskList;
 import velo.ejb.seam.UserList;
+import velo.ejb.seam.WorkflowProcessList;
 import velo.entity.Resource;
 import velo.entity.ResourceTask;
 import velo.entity.Task;
@@ -92,6 +93,9 @@ public class HomeActionsBean implements HomeActions {
 	@In(create=true, value="#{requestList}")
 	RequestList requestList;
 	
+	@In(create=true, value="#{workflowProcessList}")
+	WorkflowProcessList workflowProcessList;
+	
 	@In(create=true)
 	public SysConf sysConfManager;
 
@@ -107,6 +111,7 @@ public class HomeActionsBean implements HomeActions {
 		return failedTaskList;
     }
 	
+	@Deprecated
 	public RequestList getLastFailedRequests() {
 		requestList.setEjbql("select request from Request request WHERE (request.status = 'APPROVED') and (request.processed = 1) and (request.successfullyProcessed = 0) ORDER BY request.requestId DESC");
 		requestList.refresh();
@@ -116,6 +121,7 @@ public class HomeActionsBean implements HomeActions {
 		return requestList;
 	}
 
+	@Deprecated
 	public RequestList getLastRequestsWaitingForApproval() {
 		requestList.setEjbql("select request from Request request WHERE (request.status = 'PENDING_APPROVAL') ORDER BY request.requestId DESC");
 		requestList.refresh();
@@ -125,6 +131,7 @@ public class HomeActionsBean implements HomeActions {
 		return requestList;
 	}
 	
+	@Deprecated
 	public RequestList getLastApprovedRequests() {
 		requestList.setEjbql("select request from Request request WHERE (request.status = 'APPROVED') ORDER BY request.requestId DESC");
 		requestList.refresh();
@@ -133,6 +140,26 @@ public class HomeActionsBean implements HomeActions {
 		}
 		return requestList;
 	}
+	
+	
+	public WorkflowProcessList getLastProcessList() {
+		if (workflowProcessList.getMaxResults() > 20) {
+			workflowProcessList.setMaxResults(5);
+		}
+		
+		return workflowProcessList;
+	}
+	
+	public WorkflowProcessList getLastSuspendedProcessList() {
+		workflowProcessList.setEjbql(workflowProcessList.getEjbqlForLastSuspended());
+		
+		if (workflowProcessList.getMaxResults() > 20) {
+			workflowProcessList.setMaxResults(5);
+		}
+		
+		return workflowProcessList;
+	}
+	
 	
 	public UserList getLastCreatedUsers() {
 		UserList userList = new UserList();

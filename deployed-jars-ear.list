@@ -14,6 +14,12 @@ jboss-seam-remoting.jar
 jboss-seam-ui.jar
 jcommon-1.0.15.jar
 
+//poi
+poi-3.5-beta5.jar
+poi-ooxml-3.5-beta5.jar
+xmlbeans-2.3.0.jar
+ooxml-schemas-1.0.jar
+
 
 ecs-1.4.2.jar
 ganymed-ssh2-build210.jar

@@ -60,35 +60,33 @@
 				</rich:panel>
 				
 				<rich:panel bodyClass="inpanelBody">
-					<f:facet name="header"><h:outputText style="color:red;" value="Last Failed Requests"/></f:facet>
+					<f:facet name="header"><h:outputText style="color:red;" value="Last Created Processes"/></f:facet>
 					<h:form>
-					<rich:inputNumberSlider id="failedRequestsAmount" value="#{homeActions.lastFailedRequests.maxResults}">
+					<rich:inputNumberSlider id="lastCreatedProcessesAmount" value="#{homeActions.lastProcessList.maxResults}">
 						<f:validateLongRange minimum="0"/>
-						<a:support event="onchange" reRender="lastFailedRequestsPanel" bypassUpdates="false" />
+						<a:support event="onchange" reRender="lastProcessListPanel" bypassUpdates="false" />
 					</rich:inputNumberSlider>
 					</h:form>
-					<a:outputPanel id="lastFailedRequestsPanel">
-					<rich:dataTable id="lastFailedRequestsDT" var="lfr" value="#{homeActions.lastFailedRequests.resultList}" rendered="#{not empty homeActions.lastFailedRequests.resultList}">
+					<a:outputPanel id="lastProcessListPanel">
+					<rich:dataTable id="lastProcessListDT" var="p" value="#{homeActions.lastProcessList.resultList}" rendered="#{not empty homeActions.lastProcessList.resultList}">
         				<h:column>
             				<f:facet name="header">
             					ID
             				</f:facet>
-            				<s:link view="/admin/Request.xhtml" value="#{lfr.requestId}">
-								<f:param name="requestId" value="#{lfr.requestId}"/>
-							</s:link>
+            				#{p.id}
         				</h:column>
         				<h:column>
             				<f:facet name="header">
-            					Notes
+            					Type
             				</f:facet>
-						#{lfr.notes}            			
+							#{p.processDefinition.description}            			
         				</h:column>
         				<h:column>
             				<f:facet name="header">
-            					Creation Date
+            					Start Time
             				</f:facet>
-            		    <h:outputText value="#{lfr.creationDate}">
-                            <s:convertDateTime pattern="yyyy-MM-dd hh:mm:ss"/>
+            		    <h:outputText value="#{p.start}">
+                            <s:convertDateTime pattern="MM-dd-yyyy hh:mm:ss"/>
             		    </h:outputText>
         				</h:column>
         			</rich:dataTable>
@@ -96,75 +94,34 @@
 				</rich:panel>
 				
 				<rich:panel bodyClass="inpanelBody">
-					<f:facet name="header">Last Approved Requests</f:facet>
+					<f:facet name="header"><h:outputText style="color:red;" value="Last Suspended Processes"/></f:facet>
 					<h:form>
-					<rich:inputNumberSlider id="failedTaskAmount" value="#{homeActions.lastApprovedRequests.maxResults}">
+					<rich:inputNumberSlider id="lastSuspendedProcessesAmount" value="#{homeActions.lastSuspendedProcessList.maxResults}">
 						<f:validateLongRange minimum="0"/>
-						<a:support event="onchange" reRender="lastApprovedRequestsPanel" bypassUpdates="false" />
+						<a:support event="onchange" reRender="lastSuspendedProcessListPanel" bypassUpdates="false" />
 					</rich:inputNumberSlider>
 					</h:form>
-					<a:outputPanel id="lastApprovedRequestsPanel">
-					<rich:dataTable id="lastApprovedRequestsDataList" var="lar" value="#{homeActions.lastApprovedRequests.resultList}" rendered="#{not empty homeActions.lastApprovedRequests.resultList}">
+					<a:outputPanel id="lastSuspendedProcessListPanel">
+					<rich:dataTable id="lastSuspendedProcessListDT" var="p" value="#{homeActions.lastProcessList.resultList}" rendered="#{not empty homeActions.lastSuspendedProcessList.resultList}">
         				<h:column>
             				<f:facet name="header">
             					ID
             				</f:facet>
-            				<s:link view="/admin/Request.xhtml" value="#{lar.requestId}">
-								<f:param name="requestId" value="#{lar.requestId}"/>
-							</s:link>
+							<f:param name="processId" value="#{p.id}"/>
         				</h:column>
         				<h:column>
             				<f:facet name="header">
-            					Notes
+            					Type
             				</f:facet>
-						#{lar.notes}            			
+							#{p.processDefinition.description}            			
         				</h:column>
         				<h:column>
             				<f:facet name="header">
-            					Creation Date
+            					Start Time
             				</f:facet>
-            		    <h:outputText value="#{lar.creationDate}">
-                            <s:convertDateTime pattern="yyyy-MM-dd hh:mm:ss"/>
+            		    <h:outputText value="#{p.start}">
+                            <s:convertDateTime pattern="MM-dd-yyyy hh:mm:ss"/>
             		    </h:outputText>
-        				</h:column>
-        			</rich:dataTable>
-        			</a:outputPanel>
-				</rich:panel>
-				
-				<rich:panel bodyClass="inpanelBody">
-					<f:facet name="header">Last Requests Waiting for Approval</f:facet>
-					<s:link view="/admin/RequestList.seam" value="There are -#{homeActions.lastRequestsWaitingForApproval.resultCount}- request waiting for approval.">
-						<f:param name="status" value="PENDING_APPROVAL"/>
-					</s:link>
-					<h:form>
-					<rich:inputNumberSlider id="failedTaskAmount" value="#{homeActions.lastRequestsWaitingForApproval.maxResults}">
-						<f:validateLongRange minimum="0"/>
-						<a:support event="onchange" reRender="lastRequestsWaitingForApprovalListPanel" bypassUpdates="false" />
-					</rich:inputNumberSlider>
-					</h:form>
-					<a:outputPanel id="lastRequestsWaitingForApprovalListPanel">
-					<rich:dataTable id="lastRequestsWaitingForApproval" var="lrwfa" value="#{homeActions.lastRequestsWaitingForApproval.resultList}" rendered="#{not empty homeActions.lastRequestsWaitingForApproval.resultList}">
-        				<h:column>
-            				<f:facet name="header">
-            					ID
-            				</f:facet>
-            				<s:link view="/admin/Request.xhtml" value="#{lrwfa.requestId}">
-								<f:param name="requestId" value="#{lrwfa.requestId}"/>
-							</s:link>
-        				</h:column>
-        				<h:column>
-            				<f:facet name="header">
-            					Notes
-            				</f:facet>
-						#{lrwfa.notes}            			
-        				</h:column>
-        				<h:column>
-            				<f:facet name="header">
-            					Creation Date
-            				</f:facet>
-            			<h:outputText value="#{lrwfa.creationDate}">
-                            <s:convertDateTime pattern="yyyy-MM-dd hh:mm:ss"/>
-						</h:outputText>            			
         				</h:column>
         			</rich:dataTable>
         			</a:outputPanel>
@@ -212,7 +169,7 @@
 					<f:facet name="header">Task Amount (last day) per Resource</f:facet>
 					<s:graphicImage value="#{homeActions.chart}"/>
 					<h:form>
-					   <h:commandButton value="a" action="#{approverGroupsActions.bla1}"/>
+					   <!--<h:commandButton value="a" action="{approverGroupsActions.bla1}"/>-->
 					   <!--<h:commandButton value="a" action="{workflowProcessList.moo}"/>-->
 					</h:form>
 				</rich:panel>

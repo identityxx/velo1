@@ -40,7 +40,7 @@ import org.jboss.seam.annotations.Scope;
 @Scope(SESSION)
 @Name("sysConfManager")
 public class SysConf {
-	private final static String VELO_SERVER_VERSION = "1.4GAb";
+	private final static String VELO_SERVER_VERSION = "1.4GA";
 	private final static String veloINIConfFileName = "velo_config.ini";
 	private final static String veloXMLConfFileName = "velo_config.xml";
 	private final static String veloXMLExtConfFileName = "velo_config_ext.xml";

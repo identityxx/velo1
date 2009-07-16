@@ -25,6 +25,7 @@ import javax.ejb.Local;
 import velo.ejb.seam.RequestList;
 import velo.ejb.seam.TaskList;
 import velo.ejb.seam.UserList;
+import velo.ejb.seam.WorkflowProcessList;
 import velo.entity.Task;
 import velo.entity.User;
 
@@ -32,12 +33,21 @@ import velo.entity.User;
 public interface HomeActions {
 	public byte[] getChart();
 	public TaskList getFailedTaskList();
+	
+	@Deprecated
 	public RequestList getLastFailedRequests();
+	@Deprecated
 	public RequestList getLastRequestsWaitingForApproval();
+	@Deprecated
 	public RequestList getLastApprovedRequests();
+	
+	public WorkflowProcessList getLastProcessList();
+	public WorkflowProcessList getLastSuspendedProcessList();
+	
 	public UserList getLastCreatedUsers();
 	
 	public List<Task> getLastCreatedUsersAsList();
+	
 	
 	//@WebRemote
 	public String getArray();

@@ -31,11 +31,16 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Conversation;
+import org.jboss.seam.core.Manager;
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 
 @Name("workflowProcessList")
+@Scope(ScopeType.CONVERSATION)
 public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 	
 	@In
@@ -86,7 +91,12 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 
 	@Override
 	public Integer getMaxResults() {
-		return 25;
+		if (super.getMaxResults() != null) {
+			return super.getMaxResults();
+		}
+		else {
+			return 10;
+		}
 	}
 	
 
@@ -108,7 +118,9 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 	
 	@Override
 	public String getEjbql() {
-		setOrder("id DESC");
+		if (super.getEjbql() != null) {
+			return super.getEjbql();
+		}
 		
 		String query = EJBQL;
 		
@@ -127,7 +139,7 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 			RESTRICTIONS.add("pi.end is #{workflowProcessList.statusForWhereCondition}");
 		}
 		
-		System.out.println("!!!!!!: RESTRICTIONS SIZE: " + RESTRICTIONS.size());
+		//System.out.println("!!!!!!: RESTRICTIONS SIZE: " + RESTRICTIONS.size());
 		for (String currRes : RESTRICTIONS) {
 			System.out.println("Rest: " + currRes);
 		}
@@ -138,10 +150,15 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 		return query;
 	}
 	
+	//Used by HomeActionsBean
+	public String getEjbqlForLastSuspended() {
+		return "select pi from org.jbpm.graph.exe.ProcessInstance pi WHERE pi.isSuspended = 1";
+	}
+	
 	@Override
 	protected String getRenderedEjbql() {
 		String str = super.getRenderedEjbql();
-		System.out.println("!!!!!!!!!!!: " + str);
+		//System.out.println("!!!!!!!!!!!: " + str);
 		
 		return str;
 	}
@@ -149,6 +166,7 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 
 	@PostConstruct
     public void initialize() {
+		setOrder("id DESC");
 		//List l = getDyamicExpressions();
 		//l.addAll(Arrays.asList(RESTRICTIONS));
 		
@@ -308,22 +326,17 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 		this.status = status;
 	}
 	
-	
-	
-	public ProcessInstance getSelectedProcessInstance() {
-		return selectedProcessInstance;
-	}
-
 	public void setSelectedProcessInstance(ProcessInstance selectedProcessInstance) {
 		this.selectedProcessInstance = selectedProcessInstance;
 	}
 
 	@Begin
 	public String select() {
+		if (getDataModelSelection() != null)
 		setSelectedProcessInstance(getDataModelSelection());
 		return "/admin/Process.xhtml";
 		
-		//System.out.println("!!!!!!!!!!!!!!!!!!!!!!: " + getDataModelSelection().getId());
+		
 	}
 	
 	
@@ -352,7 +365,7 @@ public class WorkflowProcessList extends JbpmEntityQuery<ProcessInstance> {
 	
 	public void moo() {
 		org.hibernate.Query q = getSession().createQuery("select pi from org.jbpm.graph.exe.ProcessInstance pi WHERE pi.end is not null");
-		System.out.println("SIZE!!!!!!!!!!!!: " + q.list().size());
+		//System.out.println("SIZE!!!!!!!!!!!!: " + q.list().size());
 	}
 	
 }
