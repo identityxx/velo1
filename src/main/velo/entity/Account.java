@@ -486,6 +486,7 @@ public class Account extends AccountSkeletal {
 		//set a map with all other identityAttributes of the user
 		context.addVar("userIdAttrs", getUser().getUserIdentityAttributesAsMap());
 		context.addVar("userName", getUser().getName());
+		context.addVar("user", getUser());
 		context.addVar("resourceUniqueName", getResource().getUniqueName());
 		context.addVar("resourceDisplayName", getResource().getDisplayName());
 		context.addVar("attr", ra);

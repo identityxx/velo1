@@ -1175,6 +1175,24 @@ public class Resource extends BaseEntity implements Serializable, Cloneable {
 
 		return scriptResourceName;
 	}
+	
+	@Transient
+	public String getSyncDir() {
+		if (sysConf == null) {
+			sysConf = SysConf.getSysConf();
+		}
+
+		String syncDir = SysConf.getVeloWorkspaceDir()
+				+ "/"
+				+ sysConf.getString("system.directory.targets_files_dir")
+				+ "/"
+				+ this.getUniqueName().toLowerCase()
+				+ "/"
+				+ sysConf.getString("system.directory.sync_files_dir_per_ts");
+		
+		
+		return syncDir;
+	}
 
 	@Transient
 	public long countManagedResourceAttributes() {

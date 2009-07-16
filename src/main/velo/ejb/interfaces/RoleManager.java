@@ -69,7 +69,11 @@ public interface RoleManager {
 
 	//public long modifyRolesOfUser(Set<UserRole> userRolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException;
 	public long modifyRolesOfUser(Set<Role> userRolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException;
+	public BulkTask associateRoleToUser(String roleName, User user) throws OperationException;
+	public BulkTask dissociateRoleFromUser(String roleName, User user) throws OperationException;
 	
+	
+	@Deprecated
 	public void associateRoleToUser(Role role, User user) throws OperationException;
 	
 	public long revokeUserRole(UserRole userRole) throws OperationException;

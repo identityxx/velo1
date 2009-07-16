@@ -3,7 +3,9 @@ package velo.reconciliation.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -23,6 +25,7 @@ import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.payload.JavaResult;
 import org.openspml.v2.msg.spml.Request;
+import org.openspml.v2.util.FileUtil;
 import org.tempuri.IWindowsGatewayApi;
 import org.tempuri.WindowsGatewayApi;
 import org.xml.sax.SAXException;
@@ -160,8 +163,6 @@ public class ReconcileDataImportManager {
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(gzippedBase64Bytes);
 			GZIPInputStream gis = new GZIPInputStream(bais);
-			//OutputStream out = new FileOutputStream(activeDataFileName);
-
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			//byte[] buf = new byte[2051648];  //size can be changed according to programmer's need.
@@ -176,7 +177,20 @@ public class ReconcileDataImportManager {
 
 			ByteArrayInputStream baisClear = new ByteArrayInputStream(out.toByteArray());
 
-
+			
+			
+			//Dump to file
+			String fileName = resource.getSyncDir() + "/identities/" + resource.getUniqueName() + "-" + getDateForSyncFiles() + ".xml";
+			OutputStream fileOut = new FileOutputStream(fileName);
+			byte [] buffForFile = new byte[baisClear.available()];
+			int len1;
+			while ((len1 = baisClear.read(buffForFile)) > 0) {
+				fileOut.write(buffForFile, 0, len1);
+			}
+			fileOut.close();
+			baisClear.reset();
+			//--
+			
 			//log.debug("---START of accounts recived from Gateway!");
 			//log.debug(out);
 			//log.debug("---END of accounts recived from Gateway!");
@@ -213,7 +227,7 @@ public class ReconcileDataImportManager {
 				}
 
 				for (Attribute currAttr : currAcc.getActiveAttributes().values()) {
-					System.out.println("YEYYYYY: " + currAttr.getDisplayable());
+					//System.out.println("YEYYYYY: " + currAttr.getDisplayable());
 
 				}
 			}
@@ -314,7 +328,6 @@ public class ReconcileDataImportManager {
 			//OutputStream out = new FileOutputStream(activeDataFileName);
 
 
-			String fileName = resource.factorySyncFileName();
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			//OutputStream out = new FileOutputStream(fileName);
 			//byte[] buf = new byte[2051648];  //size can be changed according to programmer's need.
@@ -326,9 +339,23 @@ public class ReconcileDataImportManager {
 			gis.close();
 			out.close();
 
-
-
 			ByteArrayInputStream baisClear = new ByteArrayInputStream(out.toByteArray());
+			
+			
+			
+			//Dump to file
+			String fileName = resource.getSyncDir() + "/groups/" + resource.getUniqueName() + "-" + getDateForSyncFiles() + ".xml";
+			OutputStream fileOut = new FileOutputStream(fileName);
+			byte [] buffForFile = new byte[baisClear.available()];
+			int len1;
+			while ((len1 = baisClear.read(buffForFile)) > 0) {
+				fileOut.write(buffForFile, 0, len1);
+			}
+			fileOut.close();
+			baisClear.reset();
+			//--
+			
+			
 
 			log.debug("---START of accounts recived from Gateway!");
 			//log.debug(out);
@@ -508,7 +535,6 @@ public class ReconcileDataImportManager {
 			//OutputStream out = new FileOutputStream(activeDataFileName);
 
 
-			String fileName = resource.factorySyncFileName();
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			//OutputStream out = new FileOutputStream("c:/users/asaf/temp/lalala.xml");
 			//byte[] buf = new byte[2051648];  //size can be changed according to programmer's need.
@@ -523,7 +549,25 @@ public class ReconcileDataImportManager {
 
 
 			ByteArrayInputStream baisClear = new ByteArrayInputStream(out.toByteArray());
-			//ByteArrayInputStream baisClear = null;
+			
+			
+			
+			
+			//Dump to file
+			String fileName = resource.getSyncDir() + "/groups_membership/" + resource.getUniqueName() + "-" + getDateForSyncFiles() + ".xml";
+			OutputStream fileOut = new FileOutputStream(fileName);
+			byte [] buffForFile = new byte[baisClear.available()];
+			int len1;
+			while ((len1 = baisClear.read(buffForFile)) > 0) {
+				fileOut.write(buffForFile, 0, len1);
+			}
+			fileOut.close();
+			baisClear.reset();
+			//--
+			
+			
+			
+			
 			
 			log.debug("---START of accounts recived from Gateway!");
 			//log.debug(out);
@@ -721,5 +765,13 @@ public class ReconcileDataImportManager {
 			//throw new SyncListImporterException("Cannot import sync list file, an IO exception has occured, failed with message: " + ioe.getMessage());
 			throw new DataTransformException(e.getMessage());
 		}
+	}
+	
+	
+	private String getDateForSyncFiles() {
+		String pattern = "MM_dd_yyyy-HH_mm_ss";
+	    SimpleDateFormat format = new SimpleDateFormat(pattern);
+	    
+	    return format.format(new Date());
 	}
 }

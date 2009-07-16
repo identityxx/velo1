@@ -381,8 +381,10 @@ public class ReconcileAccountsProcess {
 				//Recorrelate existence orphan accounts if neccessary 
 				if ( (resource.getReconcilePolicy().isReCorrelateOrphanIdentities()) && (correlationRule != null) ) {
 					if (correspondingRepoAccountToActiveAccount.getUser() == null) {
-						//recorrelate account
-						User matchedUserEntity = getMatchedUserViaCorrelation(correspondingRepoAccountToActiveAccount,correlationRule, confirmationRule);
+						
+						
+						//recorrelate account (passing the active account as its active attributes are required
+						User matchedUserEntity = getMatchedUserViaCorrelation(currExistedActiveAccount,correlationRule, confirmationRule);
 						
 						if (matchedUserEntity != null) {
 							correspondingRepoAccountToActiveAccount.setUser(matchedUserEntity);

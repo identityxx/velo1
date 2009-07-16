@@ -165,6 +165,34 @@ public class RoleBean implements RoleManagerLocal, RoleManagerRemote {
     }
     
     
+    public BulkTask associateRoleToUser(String roleName, User user) throws OperationException {
+    	Role role = findRole(roleName);
+    	if (role == null) {
+    		throw new OperationException("Could not find role with name '" + roleName + "'");
+    	}
+    	
+    	Set<Role> rolesToAdd = new HashSet<Role>();
+    	Set<Role> rolesToRemove = new HashSet<Role>();
+    	rolesToAdd.add(role);
+    	
+    	
+    	return modifyDirectUserRoles(rolesToRemove,rolesToAdd,user);
+    }
+    
+    public BulkTask dissociateRoleFromUser(String roleName, User user) throws OperationException {
+    	Role role = findRole(roleName);
+    	if (role == null) {
+    		throw new OperationException("Could not find role with name '" + roleName + "'");
+    	}
+    	
+    	Set<Role> rolesToRemove = new HashSet<Role>();
+    	Set<Role> rolesToAdd = new HashSet<Role>();
+    	rolesToRemove.add(role);
+    	
+    	
+    	return modifyDirectUserRoles(rolesToRemove,rolesToAdd,user);
+    }
+    
     
     //This method is invoked via admin's gui
     public BulkTask modifyDirectUserRoles(Set<Role> rolesToRemove, Set<Role> rolesToAdd, User user) throws OperationException {

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
+import velo.actions.readyActions.ReadyActionAPI;
 import velo.collections.ResourceGroups;
 import velo.contexts.OperationContext;
 import velo.ejb.interfaces.AccountManagerLocal;
@@ -16,6 +17,7 @@ import velo.ejb.interfaces.EventManagerLocal;
 import velo.ejb.interfaces.ReconcileManagerLocal;
 import velo.ejb.interfaces.ResourceGroupManagerLocal;
 import velo.ejb.utils.JndiLookup;
+import velo.entity.Account;
 import velo.entity.ReconcileEvent;
 import velo.entity.ReconcileProcessSummary;
 import velo.entity.Resource;
@@ -71,6 +73,7 @@ public class ReconcileGroupMembershipProcess {
 			context.addVar("resourceUniqueName", getResource().getUniqueName());
 			context.addVar("resourceDisplayName", getResource().getDisplayName());
 			context.addVar("rps", rps);
+			context.addVar("veloAPI",ReadyActionAPI.getInstance());
 
 			//For efficiency, load ALL of the events once.
 			GROUP_MEMBER_ASSOCIATED_EVENT = getEventManager().findReconcileEvent(ReconcileEvent.GROUP_MEMBER_ASSOCIATED_EVENT_NAME);
@@ -153,13 +156,17 @@ public class ReconcileGroupMembershipProcess {
 							
 							wasRepoGroupModified = true;
 							context.addVar("accountNameAssociated",currActiveMember.getKey());
+
+							Account accountInRepo = getAccountManager().findAccount(currActiveMember.getKey(), getResource());
+							context.addVar("account", accountInRepo);
+							
 							rps.addEvent(ReconcileProcessSummaryEvents.GROUP_MEMBER_ASSOCIATED, ReconcileProcessSummaryEventSeverities.INFO, ReconcileProcessSummaryEventEntityType.IDENTITY, currActiveMember.getKey(), "A new identity named '" + currActiveMember.getKey() + "' was associated to group '" + currActiveRG.getUniqueId() + "'");
 							getEventManager().raiseReconcileEvent(GROUP_MEMBER_ASSOCIATED_EVENT, getResource().getReconcilePolicy(), context);
 							//cleanup context
 							context.removeVar("accountNameAssociated");
+							context.removeVar("account");
 						}
 					}
-					
 					
 					for (Map.Entry<String,ResourceGroupMember> currRepoMember : currRepoRGMembers.entrySet()) {
 						if (!currActiveRGMembers.containsKey(currRepoMember.getKey())) {
