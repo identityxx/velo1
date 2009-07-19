@@ -23,6 +23,7 @@ import org.apache.commons.configuration.Configuration;
 
 @Local
 public interface ConfActions {
+	public void refreshSysConf();
 	public void saveSysConf();
 	public String importInitialData();
 	public Configuration getVeloConfig();

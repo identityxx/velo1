@@ -27,7 +27,7 @@ public class WfProcessManager {
 	@In
 	FacesMessages facesMessages;
 	
-	@In
+	@In(required=false)
 	User loggedUser;
 	
 	@In(value="org.jboss.seam.bpm.jbpm")
@@ -56,8 +56,6 @@ public class WfProcessManager {
 		//TODO: What if a process was not associated to role?
 		String processDefinitionName = role.getWorkflowProcessDef().getUniqueName();
 
-		
-		
 		
 		
 		businessProcess.createProcess(processDefinitionName);

@@ -91,6 +91,13 @@
 		<h:commandButton id="updateSysConf" action="#{confActions.saveSysConf}" value="#{messages['global.buttons.update']}" styleClass="button" />
 	</h:form>
 	</rich:tab>
+	<rich:tab id="miscellaneous" label="Miscellaneous">
+		<h:form>
+	       <h:panelGrid columns="1">
+                <h:commandButton action="#{confActions.refreshSysConf}" value="Refresh System Configuration"/>
+	       </h:panelGrid>
+       </h:form>
+	</rich:tab>
 	<rich:tab id="encryptionKeys" label="Encryption Keys">
 	   <h:form>
 	       <h:panelGrid columns="1">

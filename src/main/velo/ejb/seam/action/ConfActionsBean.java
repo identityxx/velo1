@@ -56,6 +56,14 @@ public class ConfActionsBean implements ConfActions {
 	@EJB
 	public ConfManagerLocal confManager;
 
+	
+	public void refreshSysConf() {
+		SysConf.refresh();
+		
+		facesMessages.add("Successfully refreshed system configuration");
+	}
+	
+	
 	public void saveSysConf() {
 		try {
 			log.debug("START: SAVE XML METHOD");

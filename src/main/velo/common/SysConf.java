@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jgroups.SetStateEvent;
 
 /**
  * System Configuration manager Define all system confs of the system
@@ -156,6 +157,10 @@ public class SysConf {
 		
 		return staticConfig;
 
+	}
+	
+	public static void refresh() {
+		staticConfig = null;
 	}
 
 	@Factory("globalConf")

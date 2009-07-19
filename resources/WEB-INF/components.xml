@@ -35,6 +35,7 @@
     
     <persistence:managed-hibernate-session name="jbpmHibernateSessionFactory" auto-create="true"/>    
            
+	<transaction:ejb-transaction />
 
    <drools:rule-base name="securityRules">
       <drools:rule-files>

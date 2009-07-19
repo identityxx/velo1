@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="seamtestapp" default="deploy" basedir=".">
+<project name="velo-server" default="deploy" basedir=".">
 
         <!-- Give user a chance to override without editing this file or typing -D -->
         <property file="${basedir}/build.properties" />
