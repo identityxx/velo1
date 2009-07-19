@@ -1197,6 +1197,7 @@ public class ConfBean implements ConfManagerLocal, ConfManagerRemote {
 		reconcilePolicy
 		.setUnmatchedAccountEventAction("PERSIST_ACCOUNT_IN_IDM_REPOSITORY");
 		reconcilePolicy.setReconcileAuditPolicy(rap);
+		reconcilePolicy.setSanityCheckDiffPercentagesOfIdentities(100);
 		reconcileTargetPolicies.add(reconcilePolicy);
 
 		
