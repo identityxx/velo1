@@ -28,7 +28,7 @@ import org.apache.commons.cli.PosixParser;
 import velo.ejb.interfaces.ReconcileManagerRemote;
 import velo.ejb.interfaces.ResourceManagerRemote;
 import velo.entity.Resource;
-import velo.exceptions.TaskCreationException;
+import velo.exceptions.OperationException;
 
 public class ReconcileCli extends CliUtil {
 	
@@ -72,13 +72,20 @@ public class ReconcileCli extends CliUtil {
 				.hasArg()
 				.create("R") );
 		
-		//.withDescription( "Type the of the reconciliation: [full / without-fetch-active-data / only-fetch-active-data ]")
 		options.addOption( OptionBuilder.withLongOpt( "type" )
-				.withDescription( "Type the of the reconciliation: [full / without-fetch-active-data]")
+				.withDescription( "Type the of the reconciliation: [identities / groups / group_membership]")
 				.withValueSeparator( '=' )
 				.isRequired()
 				.hasArg()
 				.create("T") );
+		
+		//.withDescription( "Type the of the reconciliation: [full / without-fetch-active-data / only-fetch-active-data ]")
+		options.addOption( OptionBuilder.withLongOpt( "mode" )
+				.withDescription( "Type the of the reconciliation: [full / incremental]")
+				.withValueSeparator( '=' )
+				.isRequired()
+				.hasArg()
+				.create("M") );
 		
 		setOptions(options);
 	}
@@ -106,7 +113,8 @@ public class ReconcileCli extends CliUtil {
 			CommandLine line = parser.parse( getOptions(), args );
 			
 			String resName = line.getOptionValue("R");
-			String syncActiveData = line.getOptionValue("T");
+			String recType = line.getOptionValue("T");
+			String mode = line.getOptionValue("M");
 			System.out.println("Trying to execute Reconcile Process for resource name: '" + resName + "'");
 
 			Resource loadedResource = getResourceManager().findResource(resName);
@@ -117,28 +125,43 @@ public class ReconcileCli extends CliUtil {
 			}
 			
 			try {
-				if (syncActiveData.toLowerCase().equals("full")) {
-					getRecm().createReconcileResourceOperation(loadedResource,true);
+				Boolean full = null;
+				
+				if (mode.equals("full")) {
+					full = true; 
+				} else if (mode.equals("incremental") ) {
+					full = false;
+				} else {
+					System.err.println("Mode should be full/incremental.");
+					return;
 				}
-				else if (syncActiveData.toLowerCase().equals("without-fetch-active-data")){
-					getRecm().createReconcileResourceOperation(loadedResource,false);
+				
+				
+				if (recType.equals("identities")) {
+					if (mode.equals("full")) {
+						getRecm().reconcileIdentitiesFull(loadedResource.getUniqueName(),true);
+					}else {
+						getRecm().reconcileIdentitiesIncrementally(loadedResource.getUniqueName(),true);
+					}
+				}else if (recType.equals("groups")) {
+					getRecm().reconcileGroupsFull(loadedResource.getUniqueName(),true);
+				}else if (recType.equals("group_membership")) {
+					if (mode.equals("full")) {
+						getRecm().reconcileGroupMembershipFull(loadedResource.getUniqueName(),true);
+					}else {
+						getRecm().reconcileGroupMembershipIncremental(loadedResource.getUniqueName(),true);
+					}
+				} else {
+					System.err.println("Type should be identities/groups/group_membership");
+					return;
 				}
-				/*
-				else if (syncActiveData.toLowerCase().equals("only-fetch-active-data")) {
-					//JB?!?!? tsm.syncActiveData(tsName);
-				}
-				*/
-				else {
-					System.err.println( "Failed to execute,  The specified parameters were wrong.");
-					HelpFormatter formatter = new HelpFormatter();
-					formatter.printHelp( "reconcile", getOptions(), true );
-				}
-			} catch (TaskCreationException e) {
+
+			} catch (OperationException e) {
 					System.err.println( "Failed to execute: " + e.getMessage());
 					return;
 				}
 				
-				System.out.println("Sucessfully requrested reconciliation for Target System Name " + resName);
+				System.out.println("Sucessfully requrested reconciliation for Resource Name " + resName);
 				System.out.println("Please follow internal logs for detailed information.");
 			//}
 		/*
@@ -154,7 +177,7 @@ public class ReconcileCli extends CliUtil {
 		}
 		catch( ParseException exp ) {
 			// oops, something went wrong
-			System.err.println( "Failed to execute,  These parameters are must: " + exp.getMessage() );
+			System.err.println( "Failed to execute, these parameters are must: " + exp.getMessage() );
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp( "reconcile", getOptions(), true );
 		}

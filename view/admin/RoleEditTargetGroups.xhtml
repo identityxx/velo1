@@ -88,7 +88,7 @@
            			</h:column>
            			<h:column>
 	           			<f:facet name="header">Action</f:facet>
-           				<a:commandLink id="addGroupToAssignList" action="#{roleActions.addGroupToAssign(group)}" reRender="groupsToAssignCartPanel">
+           				<a:commandLink id="addGroupToAssignList" action="#{roleActions.addGroupToAssign(group)}" reRender="groupsToAssignCartPanel" disabled="#{!group.managed}">
            					<h:graphicImage url="../icons/action_add.gif"/>
            				</a:commandLink>
         			</h:column>
