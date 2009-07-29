@@ -7,6 +7,7 @@ import velo.ejb.interfaces.AccountManagerLocal;
 import velo.ejb.interfaces.ReconcileManagerLocal;
 import velo.ejb.interfaces.ResourceGroupManagerLocal;
 import velo.ejb.interfaces.ResourceManagerLocal;
+import velo.ejb.interfaces.ResourceOperationsManagerLocal;
 import velo.ejb.interfaces.RoleManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
 import velo.ejb.interfaces.WorkflowManagerLocal;
@@ -103,6 +104,16 @@ public class ReadyActionAPI {
 	public RoleManagerLocal getRoleManager() {
 		try {
 			RoleManagerLocal manager = (RoleManagerLocal) getInitialContext().lookup(JndiLookup.getJNDILocalBeanName("RoleBean"));
+			return manager;
+		} catch (NamingException e) {
+			//TODO: What to do here?
+			return null;			
+		}
+	}
+	
+	public ResourceOperationsManagerLocal getResourceOperationManager() {
+		try {
+			ResourceOperationsManagerLocal manager = (ResourceOperationsManagerLocal) getInitialContext().lookup(JndiLookup.getJNDILocalBeanName("ResourceOperationsBean"));
 			return manager;
 		} catch (NamingException e) {
 			//TODO: What to do here?
