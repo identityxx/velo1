@@ -104,18 +104,26 @@ public class ReconcileDataImportManager {
 						log.debug("Finished importing accounts for FULL RECONCILIATION PROCESS in '" + stopWatch.getTime()/1000 + "' seconds.");
 						return roc.listIdentitiesFull(ro, reconcileTask);
 					}else if (reconcileTask.getResourceTypeOperation().getResourceGlobalOperation().getUniqueName().equals("RESOURCE_IDENTITIES_RECONCILIATION_INCREMENTAL")) {
-						ReconcileProcessSummary rps = ReadyActionAPI.getInstance().getResourceManager().findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses.RECONCILE_IDENTITIES_INCREMENTAL);
+						ReconcileProcessSummary rps_inc = ReadyActionAPI.getInstance().getResourceManager().findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses.RECONCILE_IDENTITIES_INCREMENTAL);
+						ReconcileProcessSummary rps_full = ReadyActionAPI.getInstance().getResourceManager().findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses.RECONCILE_IDENTITIES_FULL);
+						
+						if (!(rps_inc == null || rps_full == null)) {
 
-						//might be null first time...
-						if (rps != null) {
-							context.addVar("lastReconcileTime",rps.getStartDate());
+							Date lastReconcileDate = null;
+
+							if (rps_inc != null)
+								lastReconcileDate = rps_inc.getStartDate();
+
+							if (rps_full != null)
+								if (lastReconcileDate == null || lastReconcileDate.before(rps_full.getStartDate()))
+									lastReconcileDate = rps_full.getStartDate();
+
+							context.addVar("lastReconcileTime",lastReconcileDate);
+
+
+
 						} else {
-							rps = ReadyActionAPI.getInstance().getResourceManager().findLatestSuccessfullReconcileProcessSummary(ReconcileProcesses.RECONCILE_IDENTITIES_FULL);
-							if (rps != null) {
-								context.addVar("lastReconcileTime",rps.getStartDate());
-							} else {
-								throw new DataTransformException("Accounts reconciliation was never executed for this resource, please execute full reconciliation first.");
-							}
+							throw new DataTransformException("Accounts reconciliation was never executed for this resource, please execute full reconciliation first.");
 						}
 
 						//pre must be executed after initializing the lastReconcileTime in context.

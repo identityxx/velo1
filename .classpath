@@ -74,7 +74,6 @@
 	<classpathentry kind="lib" path="lib/milyn-smooks-core-1.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/test/jboss-embedded-all.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-annotations-ejb3.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.5-beta5.jar"/>
-	<classpathentry kind="lib" path="lib/poi-ooxml-3.5-beta5.jar"/>
+	<classpathentry kind="lib" path="C:/Data/Dev/Eclipse_workspace/velo/lib/poi-3.5-beta5.jar"/>
 	<classpathentry kind="output" path="test-build"/>
 </classpath>
