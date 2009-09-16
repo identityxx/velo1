@@ -10,6 +10,7 @@ import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 
+import velo.actions.readyActions.ReadyActionAPI;
 import velo.contexts.OperationContext;
 import velo.ejb.interfaces.ActionManagerLocal;
 import velo.entity.SequencedAction;
@@ -53,6 +54,7 @@ public class WfProcessTools {
 		OperationContext context = new OperationContext();
 		context.addVar("pi",processInstance);
 		context.addVar("piContext",processInstance.getContextInstance());
+		context.addVar("veloAPI", ReadyActionAPI.getInstance());
 		
 		//set the context to the action
 		action.setContext(context);

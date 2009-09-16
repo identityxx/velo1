@@ -33,7 +33,15 @@
                         <ui:define name="label">Activate Reconcile Summaries?</ui:define>
                         <h:selectBooleanCheckbox id="activateReconcileSummaries" value="#{reconcileResourcePolicyHome.instance.activateReconcileSummaries}"/>
                 </s:decorate>
-                    
+                
+                <s:decorate id="reconcileAuditPolicyDecoration" template="layout/edit.xhtml">
+					<ui:define name="label">Audit Policy</ui:define>
+					<h:selectOneMenu id="auditPolicy" value="#{reconcileResourcePolicyHome.instance.reconcileAuditPolicy}" required="true">
+                        <s:selectItems value="#{guiReconcileAuditPolicies}" var="rap" label="#{rap.name}" noSelectionLabel="---select---" />
+                        <s:convertEntity/>
+                    </h:selectOneMenu>
+				</s:decorate>
+				
 				<div style="clear: both"/>
 				</rich:panel>
 				
