@@ -82,5 +82,11 @@ public class IdentityAttributeHome extends EntityHome<IdentityAttribute> {
 	@Factory("identityAttributeSources")
 	public IdentityAttributeSources[] getIdentityAttributeSources() {
 		return IdentityAttributeSources.values();
-	}	
+	}
+	
+	@Override
+	public String persist() {
+		getInstance().setUniqueName(getInstance().getUniqueName().toUpperCase());
+		return super.persist();
+	}
 }
