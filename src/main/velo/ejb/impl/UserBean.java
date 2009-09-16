@@ -348,7 +348,7 @@ public class UserBean implements UserManagerLocal, UserManagerRemote {
 				//Get the account attribute!
 				AccountAttribute currAA = accOnResource.getAccountAttribute(currIA.getResourceAttributeSource());
 				if (currAA == null) {
-					log.debug("Could not load Identity attribute '" + currIA.getUniqueName() + "' with source type 'RESOURCE_ATTRIBUTE' for user '" + user.getName() + "', since found account '" +accOnResource.getName() + "' has no account attribute for resource attribute '" + currIA.getResourceAttributeSource().getDisplayName() + "'");  
+					log.trace("Could not load Identity attribute '" + currIA.getUniqueName() + "' with source type 'RESOURCE_ATTRIBUTE' for user '" + user.getName() + "', since found account '" +accOnResource.getName() + "' has no account attribute for resource attribute '" + currIA.getResourceAttributeSource().getDisplayName() + "'");  
 					continue;
 				}
 				

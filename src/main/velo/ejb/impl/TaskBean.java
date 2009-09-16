@@ -738,7 +738,7 @@ import velo.tasks.TaskExecuter;
                 //tasksReadyToQueueCounter += tasksToQueue.size();
             }
         } else {
-            log.info("Task Scanner couldn't find any tasks to queue...");
+            log.trace("Task Scanner couldn't find any tasks to queue...");
         }
         
         
@@ -748,7 +748,7 @@ import velo.tasks.TaskExecuter;
             
             
             //Queue tasks into the JMS queue so agents can handle them
-            log.info("Sending -" + tasksReadyToQueue.size() + "- tasks to the task queue!");
+            log.debug("Sending -" + tasksReadyToQueue.size() + "- tasks to the task queue!");
             for (Task currTaskToQueue : tasksReadyToQueue) {
                 //First lock tasks
                 //currTaskToQueue.setLocked(true);
@@ -1146,7 +1146,7 @@ import velo.tasks.TaskExecuter;
     @TransactionTimeout(value=9600)
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void scanTasksForQueuing(Timer timer) {
-        log.info("Task scanner timed out, remaining time until next execution is: '" + timer.getTimeRemaining() + "' ms.");
+        log.trace("Task scanner timed out, remaining time until next execution is: '" + timer.getTimeRemaining() + "' ms.");
         
         scanTasks();
     }

@@ -75,7 +75,7 @@ public class ReconcileEvent extends Event {
 			}
 		}
 
-		log.info("Successfully ended execution of event '" + getDisplayName() + "' for reconcile policy '" + rp.getName() + "'");
+		log.info("Successfully ended respnses (amount: " + activeResponsesForPolicy.size() + ") execution of event '" + getDisplayName() + "' for reconcile policy '" + rp.getName() + "'");
 	}
 	
 	

@@ -70,6 +70,7 @@ import velo.exceptions.AssigningRoleToUserException;
 import velo.exceptions.LoadingObjectsException;
 import velo.exceptions.MergeEntityException;
 import velo.exceptions.NoResultFoundException;
+import velo.exceptions.ObjectNotFoundException;
 import velo.exceptions.OperationException;
 import velo.exceptions.PersistEntityException;
 import velo.exceptions.ValidationException;
@@ -1271,6 +1272,28 @@ UserRole currUserRoleToRemove = new UserRole();
     }
     
     
+    public void addRolesInRolesFolderToUser(String rolesFolderName, String userName) throws OperationException {
+    	RolesFolder rf = findRolesFolder(rolesFolderName);
+    	if (rf == null)  
+    	{
+    		throw new OperationException("RolesFolder named '" + rolesFolderName + "' was not found.");
+    	}
+    	User user = um.findUser(userName);
+    	
+    	if (user == null) {
+    		throw new OperationException("User named '" + userName + "' was not found.");
+    	}
+    	
+    	Set<Role> rolesToAdd = new HashSet<Role>();
+    	Set<Role> rolesToRemove = new HashSet<Role>();
+    	
+    	
+    	for (Role currRole : rf.getRoles()) {
+    		rolesToAdd.add(currRole);
+    	}
+    	
+    	modifyDirectUserRoles(rolesToRemove,rolesToAdd,user);
+    }
     
     
     

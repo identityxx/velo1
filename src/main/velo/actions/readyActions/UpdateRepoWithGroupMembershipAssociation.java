@@ -42,6 +42,7 @@ public class UpdateRepoWithGroupMembershipAssociation extends ReadyAction {
 		Account accToBeMember = getAPI().getAccountManager().findAccount(accNameToAssoc,resource);
 		if (accToBeMember == null) {
 			log.warn("Could not create a new member for group '" + groupFromRepo.getUniqueId() + "' in resource '" + resource.getDisplayName() + "' as account name '" + accNameToAssoc + "' was not found in repository");
+			return;
 		}
 		
 		

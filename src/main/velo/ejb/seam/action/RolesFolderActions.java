@@ -107,13 +107,13 @@ public class RolesFolderActions  {
 	}
 
 	public void removeApproversGroupToAssign(ApproversGroup ag) {
-		System.out.println("Removing object: " + ag);
+		//System.out.println("Removing object: " + ag);
 		
 		//System.out.println("!!!!!!!!!APPROVERS GROUP TO REMOVE: " + ag.getApproversGroupId());
 		
-		System.out.println("!!!!!!!!!size(1): " + rolesFolder.getApproversGroupsToAssign().size());
+		//System.out.println("!!!!!!!!!size(1): " + rolesFolder.getApproversGroupsToAssign().size());
 		rolesFolder.removeApproversGroupToAssign(ag);
-		System.out.println("!!!!!!!!!size(2): " + rolesFolder.getApproversGroupsToAssign().size());
+		//System.out.println("!!!!!!!!!size(2): " + rolesFolder.getApproversGroupsToAssign().size());
 	}
 
 	

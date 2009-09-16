@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import velo.entity.Account;
 import velo.entity.AccountAttribute;
+import velo.entity.User;
 import velo.exceptions.action.ActionExecutionException;
 import velo.exceptions.action.ActionValidationException;
 
@@ -43,6 +44,12 @@ public class AddAccountToRepository extends ReadyAction {
 			for (AccountAttribute currAtt : account.getAccountAttributes()) {
 				log.trace("\tAttr of account: '" + currAtt.getAsStandardAttribute().getDisplayable());
 			}
+		}
+		
+		if (getContext().isVarExists("matchedUserEntity")) {
+			User matchedUser = (User)getContext().get("matchedUserEntity");
+			
+			account.setUser(matchedUser);
 		}
 		
 		getAPI().getAccountManager().persistAccountViaReconcile(account);

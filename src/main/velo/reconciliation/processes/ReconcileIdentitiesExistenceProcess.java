@@ -33,6 +33,7 @@ import velo.reconciliation.summary.ResourceReconcileProcess.ReconcileEvents;
  * <i>note: this process only verifies whether an identity was removed from a resource by comparing the active identities fetched from the controller
  * to the current identities snapshot that is stored in Velo repository</i>
  */
+@Deprecated //Currently not functioning
 public class ReconcileIdentitiesExistenceProcess {
 	private static Logger log = Logger.getLogger(ReconcileIdentitiesExistenceProcess.class.getName());
 	private static final String REMOVED_IDENTITY_EVENT = "IDENTITY_REMOVED";

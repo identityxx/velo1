@@ -1,6 +1,7 @@
 package velo.actions.readyActions;
 
 import org.apache.log4j.Logger;
+import org.jgroups.SetStateEvent;
 
 import velo.ejb.interfaces.AccountManagerLocal;
 import velo.ejb.interfaces.UserManagerLocal;
@@ -92,7 +93,9 @@ public class AddAccountAndUserToRepository extends ReadyAction {
 			Boolean matchedUser = getAPI().getUserManager().isUserExit(acc.getName());
 
 			if (!matchedUser) {
-				User user = User.factory(acc.getName(), false, false,UserSourceTypes.RECONCILE);
+				User user = userManager.factoryUser(acc.getName());
+				user.setSourceType(UserSourceTypes.RECONCILE);
+				
 				try {
 					userManager.persistUserEntity(user);
 					

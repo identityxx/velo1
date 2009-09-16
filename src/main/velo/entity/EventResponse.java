@@ -157,8 +157,9 @@ public class EventResponse implements Comparable<EventResponse> {//extends Seque
 	
 	
 	public int compareTo(EventResponse er) {
+		//if responses have the same sequence we still want them int the tree list
 		 if (this.getSequence() == er.getSequence())
-	            return 0;
+	            return 1;
 	        else if ((this.getSequence() > er.getSequence()))
 	            return 1;
 	        else

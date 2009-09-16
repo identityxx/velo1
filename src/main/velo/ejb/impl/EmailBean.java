@@ -107,12 +107,14 @@ public class EmailBean implements EmailManagerLocal {
            }
         }
         
+        /*
         try {
     		System.out.println("!!!!!!!!!!!!!!!zzzzzzzzzzZ2: " + tm.getStatus());
     		System.out.println("!!!!!!!!!!!!!!!Zzzzzzzzzz2: " + tm.getTransaction().getStatus());
     	}catch(SystemException e) {
     		e.printStackTrace();
     	}
+    	*/
     	
 		//throw new EmailNotificationException("ERROR ERROR ERROR!");
     	

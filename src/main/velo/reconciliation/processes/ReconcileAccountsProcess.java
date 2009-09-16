@@ -365,7 +365,7 @@ public class ReconcileAccountsProcess {
 						}
 					} else {
 						//Attribute is not persistence, should be loaded virtually.
-						log.error("ONLY PERSISTENCE RA ARE SUPPORTED RIGHT NOW");
+						log.trace("ONLY PERSISTENCE RA ARE SUPPORTED RIGHT NOW");
 					}
 				}
 				
