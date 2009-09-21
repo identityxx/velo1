@@ -404,7 +404,7 @@ public class AccountBean implements AccountManagerLocal, AccountManagerRemote {
 				throw new OperationException("Could not associate account named '"
 						+ accountName + "', on Resource name '" + resourceUniqueName
 						+ "', to User '" + userName
-						+ "' since the account does not exist!");
+						+ "' since the user does not exist!");
 			}
 			
 			//logger.info("!!!!!!!!!!!!!!!!(6)");

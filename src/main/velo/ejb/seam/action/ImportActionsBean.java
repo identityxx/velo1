@@ -52,7 +52,9 @@ import velo.entity.Resource;
 import velo.entity.Role;
 import velo.exceptions.OperationException;
 import velo.exceptions.PersistEntityException;
+import velo.importer.AccountsList;
 import velo.importer.AccountsToUsersList;
+import velo.importer.ImportAccount;
 import velo.importer.ImportAccountToUser;
 import velo.importer.RoleCreationUnit;
 import velo.importer.RoleCreationUnitList;
@@ -100,11 +102,14 @@ public class ImportActionsBean implements ImportActions {
 	private String contentType;
 	private String fileName;
 	private String spreadSheetName;
+	private boolean createAccounts;
 	
 	private AccountsToUsersList importAccountsToUsersList;
 	private RolesToPositionList importRolesToPositionList;
 	private UsersToPositionList importUsersToPositionList;
 	private RoleCreationUnitList importNewRolesList;
+	private AccountsList importAccountsList;
+
 	/**
 	 * @return the uploadedFile
 	 */
@@ -193,13 +198,19 @@ public class ImportActionsBean implements ImportActions {
 	public String performImportAccountsToUsers() {
 		if (importAccountsToUsersList.size() > 0) {
 			for (ImportAccountToUser currAccountToUser : importAccountsToUsersList) {
-				log.trace("Associating Account name '#0', on resource '#1' to User '#2'", currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
-	            try {
-	                accountManager.associateAccountToUser(currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
-	            } catch (OperationException ex) {
-	                FacesMessages.instance().add(FacesMessage.SEVERITY_WARN, ex.getMessage());
-	            }
 				
+				if (createAccounts){
+					log.trace("Creating Account name '#0', on resource '#1' and associating it to user #2", currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
+					accountManager.persistAccount(currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
+				}
+				else{
+					log.trace("Associating Account name '#0', on resource '#1' to User '#2'", currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
+					try {
+						accountManager.associateAccountToUser(currAccountToUser.getAccountName(), currAccountToUser.getResourceName(), currAccountToUser.getUserName());
+					} catch (OperationException ex) {
+						FacesMessages.instance().add(FacesMessage.SEVERITY_WARN, ex.getMessage());
+					}
+				}
 				
 	        }
 
@@ -457,6 +468,63 @@ public class ImportActionsBean implements ImportActions {
 		return "/admin/Home.seam";
 	}
 	
+	
+
+	
+	
+	
+	
+	public String showAccounts() {
+		try {
+			if (getUploadedFile() != null) {
+				importAccountsList = new AccountsList();
+				ByteArrayInputStream fileContent = new ByteArrayInputStream(getUploadedFile());
+				importAccountsList.importFromXls(fileContent, getSpreadSheetName());
+
+				FacesMessages.instance().add("Successfully loaded '"+ importAccountsList.size()+ "' rows.");
+
+				return "/admin/ImportAccountsTable.xhtml";
+			} else {
+				FacesMessages.instance().add(FacesMessage.SEVERITY_ERROR,
+						"Failed to upload file, received data is null.");
+
+				return null;
+			}
+		} catch (Exception e) {
+			log.debug("Could not handle Resource Account Import process due to: "+ e.getMessage());
+			FacesMessages.instance().add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+
+			return null;
+		}
+	}
+
+	
+	
+	public String performImportAccounts() {
+		if (importAccountsList.size() > 0) {
+			for (ImportAccount currAccount : importAccountsList) {
+				log.trace("Adding account name #0 to resource #1", currAccount.getAccountName(), currAccount.getResourceName());
+                accountManager.persistAccount(currAccount.getAccountName(), currAccount.getResourceName(), null);
+	        }
+
+			importAccountsList.clear();
+		}
+		
+		FacesMessages.instance().add("Finished resource accounts creation!");
+		return "/admin/Home.seam";
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//accessors
 	/**
 	 * @return the importAccountsToUsersList
@@ -482,6 +550,18 @@ public class ImportActionsBean implements ImportActions {
 	 */
 	public RoleCreationUnitList getImportNewRolesList() {
 		return importNewRolesList;
+	}
+
+	public AccountsList getImportAccountsList() {
+		return importAccountsList;
+	}
+
+	public boolean isCreateAccounts() {
+		return createAccounts;
+	}
+
+	public void setCreateAccounts(boolean createAccounts) {
+		this.createAccounts = createAccounts;
 	}
 
 	@Destroy

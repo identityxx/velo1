@@ -17,7 +17,7 @@
 
 	<h:form enctype="multipart/form-data">
 		<rich:panel style="text-align: center;">
-			<f:facet name="header">Import Accounts to Users Assoications</f:facet>
+			<f:facet name="header">Import Resource Accounts</f:facet>
 
 			<!-- 
 			<s:decorate id="fileTypeDecoration" template="layout/edit.xhtml">
@@ -43,16 +43,11 @@
               		contentType="#{importActions.contentType}" fileName="#{importActions.fileName}"/>
 			</s:decorate>
 
-			<s:decorate id="createAccountsDecoration" template="layout/edit.xhtml">
-				<h:selectBooleanCheckbox value="#{importActions.createAccounts}"/>
-				<h:outputText value="Create Accounts" />
-			</s:decorate>
-
 			<div style="clear:both"/>
 			
-			<h:commandButton action="#{importActions.showAccountsToUsersAssoications}" 
-				id="showAssociations" 
-				value="Show Associations"/>
+			<h:commandButton action="#{importActions.showAccounts}" 
+				id="showAccounts" 
+				value="Show Accounts"/>
 		</rich:panel>
 	</h:form>
 
