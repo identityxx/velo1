@@ -22,6 +22,7 @@ import javax.ejb.Local;
 import velo.importer.AccountsList;
 import velo.importer.AccountsToUsersList;
 import velo.importer.RoleCreationUnitList;
+import velo.importer.RolesToRolesFolderList;
 import velo.importer.UsersToPositionList;
 import velo.importer.RolesToPositionList;
 
@@ -41,6 +42,7 @@ public interface ImportActions {
 	public String showRolesToPositionAssociations();
 	public String showNewRolesAssociations();
 	public String showAccounts();
+	public String showRolesToRolesFolder();
 
 
 	//accessors
@@ -58,6 +60,9 @@ public interface ImportActions {
 
 	public AccountsList getImportAccountsList();
 	public String performImportAccounts();
+
+	public RolesToRolesFolderList getImportRolesToRolesFolderList();
+	public String performImportRolesToRolesFolder();	
 	
 	public boolean isCreateAccounts();
 	public void setCreateAccounts(boolean createAccounts);	

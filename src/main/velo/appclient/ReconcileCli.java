@@ -136,20 +136,20 @@ public class ReconcileCli extends CliUtil {
 					return;
 				}
 				
-				
+				//TODO: Changed reconcile task to Synchronic mode cause of the Oracle async task problem
 				if (recType.equals("identities")) {
 					if (mode.equals("full")) {
-						getRecm().reconcileIdentitiesFull(loadedResource.getUniqueName(),true);
+						getRecm().reconcileIdentitiesFull(loadedResource.getUniqueName(),false);
 					}else {
-						getRecm().reconcileIdentitiesIncrementally(loadedResource.getUniqueName(),true);
+						getRecm().reconcileIdentitiesIncrementally(loadedResource.getUniqueName(),false);
 					}
 				}else if (recType.equals("groups")) {
-					getRecm().reconcileGroupsFull(loadedResource.getUniqueName(),true);
+					getRecm().reconcileGroupsFull(loadedResource.getUniqueName(),false);
 				}else if (recType.equals("group_membership")) {
 					if (mode.equals("full")) {
-						getRecm().reconcileGroupMembershipFull(loadedResource.getUniqueName(),true);
+						getRecm().reconcileGroupMembershipFull(loadedResource.getUniqueName(),false);
 					}else {
-						getRecm().reconcileGroupMembershipIncremental(loadedResource.getUniqueName(),true);
+						getRecm().reconcileGroupMembershipIncremental(loadedResource.getUniqueName(),false);
 					}
 				} else {
 					System.err.println("Type should be identities/groups/group_membership");

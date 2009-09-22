@@ -348,7 +348,7 @@ import velo.tools.FileUtils;
     	
     	for (UserIdentityAttribute currUIA : getLocalUserAttributes()) {
     		if (mapOfUIAs.containsKey(currUIA.getIdentityAttribute().getUniqueName())) {
-    			log.warn("User '" + getName() + "' has already identity attribute '" + currUIA.getIdentityAttribute().getUniqueName() + "' loaded dynamically, local won't be loaded...");
+    			log.trace("User '" + getName() + "' has already identity attribute '" + currUIA.getIdentityAttribute().getUniqueName() + "' loaded dynamically, local won't be loaded...");
     		} else {
     			mapOfUIAs.put(currUIA.getIdentityAttribute().getUniqueName(),currUIA);
     		}

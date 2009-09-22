@@ -194,6 +194,10 @@
                     <rich:menuItem id="import_roles_creation" submitMode="server" value="Import New Roles" action="/admin/ImportNewRolesPre.xhtml" disabled="false">
                         <s:conversationPropagation type="none" />
                     </rich:menuItem>
+                    <rich:menuSeparator/>
+                    <rich:menuItem id="import_roles_to_roles_folder" submitMode="server" value="Import New Roles To Roles Folder" action="/admin/ImportRolesToRolesFolderPre.xhtml" disabled="false">
+                        <s:conversationPropagation type="none" />
+                    </rich:menuItem>                                        
                     </rich:menuGroup>
                 <rich:menuSeparator/>
                 <rich:menuItem id="event_list" submitMode="server" value="System Events" action="/admin/SystemEventList.xhtml">

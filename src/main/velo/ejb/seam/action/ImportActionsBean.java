@@ -50,16 +50,19 @@ import velo.entity.PositionRole;
 import velo.entity.PositionRolePK;
 import velo.entity.Resource;
 import velo.entity.Role;
+import velo.entity.RolesFolder;
 import velo.exceptions.OperationException;
 import velo.exceptions.PersistEntityException;
 import velo.importer.AccountsList;
 import velo.importer.AccountsToUsersList;
 import velo.importer.ImportAccount;
 import velo.importer.ImportAccountToUser;
+import velo.importer.ImportRoleToRolesFolder;
 import velo.importer.RoleCreationUnit;
 import velo.importer.RoleCreationUnitList;
 import velo.importer.RolesToPosition;
 import velo.importer.RolesToPositionList;
+import velo.importer.RolesToRolesFolderList;
 import velo.importer.UsersToPosition;
 import velo.importer.UsersToPositionList;
 @Stateful
@@ -109,7 +112,8 @@ public class ImportActionsBean implements ImportActions {
 	private UsersToPositionList importUsersToPositionList;
 	private RoleCreationUnitList importNewRolesList;
 	private AccountsList importAccountsList;
-
+	private RolesToRolesFolderList importRolesToRolesFolderList;
+	
 	/**
 	 * @return the uploadedFile
 	 */
@@ -516,10 +520,66 @@ public class ImportActionsBean implements ImportActions {
 	
 	
 	
+	public String showRolesToRolesFolder() {
+		try {
+			if (getUploadedFile() != null) {
+				importRolesToRolesFolderList = new RolesToRolesFolderList();
+				ByteArrayInputStream fileContent = new ByteArrayInputStream(getUploadedFile());
+
+				importRolesToRolesFolderList.importFromXls(fileContent, getSpreadSheetName());
+
+				FacesMessages.instance().add("Successfully loaded '"+ importRolesToRolesFolderList.size()+ "' rows.");
+
+				return "/admin/ImportRolesToRolesFolderTable.xhtml";
+			} else {
+				FacesMessages.instance().add(FacesMessage.SEVERITY_ERROR,
+						"Failed to upload file, received data is null.");
+
+				return null;
+			}
+		} catch (Exception e) {
+			log.debug("Could not handle Resource Account Import process due to: "+ e.getMessage());
+			FacesMessages.instance().add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+
+			return null;
+		}
+	}
+
 	
 	
-	
-	
+	public String performImportRolesToRolesFolder() {
+		if (importRolesToRolesFolderList.size() > 0) {
+			for (ImportRoleToRolesFolder currImportRole : importRolesToRolesFolderList) {
+				log.trace("Creating role name #0 in roles folder #1", currImportRole.getRoleName(), currImportRole.getRolesFolderName());
+				try{
+					Role role = new Role();
+					role.setName(currImportRole.getRoleName());
+					role.setDescription(currImportRole.getRoleName());
+					
+					RolesFolder rf = roleManager.findRolesFolder(currImportRole.getRolesFolderName());
+					if (rf != null){
+						List<RolesFolder> rfList = new ArrayList<RolesFolder>();
+						rfList.add(rf);
+						role.setRolesFolders(rfList);
+						Date creationDate = new Date();
+						role.setCreationDate(creationDate);
+						roleManager.createRole(role);
+					}
+					else
+						log.debug("Can't create the role #0 in the roles folder #1 since roles folder does not exist!", currImportRole.getRoleName(), currImportRole.getRolesFolderName());
+				}
+				catch(PersistEntityException e){
+					log.debug("Could not handle role Import process due to: "+ e.getMessage());
+					FacesMessages.instance().add(FacesMessage.SEVERITY_ERROR,e.getMessage());
+				}			
+			}
+
+			importRolesToRolesFolderList.clear();
+		}
+		
+		FacesMessages.instance().add("Finished roles creation!");
+		return "/admin/Home.seam";
+	}		
 	
 	
 	
@@ -556,6 +616,10 @@ public class ImportActionsBean implements ImportActions {
 		return importAccountsList;
 	}
 
+	public RolesToRolesFolderList getImportRolesToRolesFolderList() {
+		return importRolesToRolesFolderList;
+	}
+	
 	public boolean isCreateAccounts() {
 		return createAccounts;
 	}

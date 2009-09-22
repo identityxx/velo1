@@ -21,18 +21,31 @@ package velo.importer;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Logger;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.log.Log;
+
+import velo.ejb.interfaces.RoleManagerLocal;
+import velo.entity.Role;
+import velo.entity.RolesFolder;
 
 /**
  *
  * @author Shakarchi Asaf
  */
-public class AccountsList extends ArrayList<ImportAccount> {
-    
-    public AccountsList() {
+
+public class RolesToRolesFolderList extends ArrayList<ImportRoleToRolesFolder> {
+	
+    public RolesToRolesFolderList() {
     }
     
     
@@ -56,49 +69,45 @@ public class AccountsList extends ArrayList<ImportAccount> {
         
         
         //todo 3 cells at least!
-        
         //Make sure the headers correspond to the expected values
         HSSFRow header = sheet.getRow(0);
         HSSFCell accountNameTitle = header.getCell((short)0);
         HSSFCell targetNameTitle = header.getCell((short)1);
         
-        if (!accountNameTitle.toString().equalsIgnoreCase("ACCOUNT")) {
-            throw new Exception("Column one in first row must equal to 'ACCOUNT' and represents the Account to associate");
+        if (!accountNameTitle.toString().equalsIgnoreCase("ROLE_UNIQUE_NAME")) {
+        	throw new Exception("Column one in first row must equal to 'ROLE_UNIQUE_NAME' and represents the Role to create");
         }
-        if (!targetNameTitle.toString().equalsIgnoreCase("RESOURCE_UNIQUE_NAME")) {
-            throw new Exception("Column one in first row must equal to 'RESOURCE_UNIQUE_NAME' and represents the resource unique name the account is related to!");
+        if (!targetNameTitle.toString().equalsIgnoreCase("ROLES_FOLDER_UNIQUE_NAME")) {
+            throw new Exception("Column one in first row must equal to 'ROLES_FOLDER_UNIQUE_NAME' and represents the roles folder unique name the role is related to!");
         }
-        
         
         for (int i=1;i<=sheet.getLastRowNum();i++) {
             HSSFRow row = sheet.getRow(i);
-            HSSFCell accountName = row.getCell((short)0);
-            HSSFCell targetName = row.getCell((short)1);
+            HSSFCell roleName = row.getCell((short)0);
+            HSSFCell rolesFolderName = row.getCell((short)1);
 
-            String targetNameErrMsg = "Target Name at row # '" + i + "' is empty!";
-            if (targetName == null) {
-                throw new Exception(targetNameErrMsg);
+            String RolesFolderNameErrMsg = "Roles Folder Name at row # '" + i + "' is empty!";
+            if (rolesFolderName == null) {
+                throw new Exception(RolesFolderNameErrMsg);
             }
-            else if (targetName.toString().length() < 1) {
-                throw new Exception(targetNameErrMsg);
+            else if (rolesFolderName.toString().length() < 1) {
+                throw new Exception(RolesFolderNameErrMsg);
             }
-                            
-            String accountErrMsg = "Account Name at row # '" + i + "' is empty!";
-            if (accountName == null) {
-                throw new Exception(accountErrMsg);
-            }
-            else if (accountName.toString().length() < 1) {
-                throw new Exception(accountErrMsg);
-            }
-            
 
-            System.out.println("Row("+i+") - Account: '" + accountName.toString() + "', On Target: '" + targetName.toString() + "'");
-            velo.importer.ImportAccount ia = new velo.importer.ImportAccount();
-            ia.setResourceName(targetName.toString());
-            ia.setAccountName(accountName.toString());
+            String roleErrMsg = "Role Name at row # '" + i + "' is empty!";
+            if (roleName == null) {
+                throw new Exception(roleErrMsg);
+            }
+            else if (roleName.toString().length() < 1) {
+                throw new Exception(roleErrMsg);
+            }
             
-            this.add(ia);
+            System.out.println("Row("+i+") - Role: '" + roleName.toString() + "', On Roles Folder: '" + rolesFolderName.toString() + "'");
+
+            ImportRoleToRolesFolder role = new ImportRoleToRolesFolder(roleName.toString(), rolesFolderName.toString());
             
+            this.add(role);
+        
         }
     }
     
